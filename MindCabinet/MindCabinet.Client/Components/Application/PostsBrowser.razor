@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Data;
+@using MindCabinet.Shared.DataEntries;
+
+
+
+<div component-name="PostsBrowser" class=@this.AddedClasses>
+    <h3>Browse Posts</h3>
+
+    <div style="display: grid; grid-template-columns: auto auto;">
+        <div>
+            <span>Sort by date: </span>
+            @{
+                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_asc"
+                        @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(true) )
+                        /><label for="sort_by_create_date_asc">Ascending</label>
+                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_desc" checked
+                        @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(false) )
+                        /><label for="sort_by_create_date_desc">Descending</label>
+            }
+        </div>
+        <div style="margin-left: auto; margin-right: 0;">
+            <span>Search</span>
+            <input type="text" @onchange=@this.SetBodySearch_UI_Async />
+        </div>
+    </div>
+
+    <MultiPostRender Posts=@this.CurrentPagePosts_Cache />
+    
+    <div style="display: grid; grid-template-columns: auto auto;">
+        <Pagination CurrentPage=@this.CurrentPageNumber
+                    TotalPages=@this.TotalPages_Cache
+                    OnPageChange_Async=@this.ChangePage_UI_Async />
+        <div style="margin-left: auto; margin-right: 0;">
+            <span>Filter by tags</span>
+            <TagSetEditor AddedClasses="ib" OnTagsChange_Async=@this.SetFilterTags_UI_Async />
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private async Task SetFilterTags_UI_Async( IList<TermEntry> tags, TermEntry tag, bool isAdded ) {
+// Console.WriteLine( "tags changed "+tag.ToString() );
+        await this.SetFilterTags_Async( tags );
+    }
+
+    private async Task SetBodySearch_UI_Async( ChangeEventArgs args ) {
+        await this.SetBodySearch_Async( args.Value?.ToString() ?? "" );
+    }
+
+    private async Task ChangePage_UI_Async( int page ) {
+        await this.ChangePage_Async( page );
+    }
+
+    private async Task SetCreateDateSort_UI_Async( bool isAscending ) {
+        await this.SetCreateDateSort_Async( isAscending );
+    }
+
+    private async Task<IEnumerable<PostEntry>> GetPostsOfCurrentPage_UI_Async() {
+        return await this.GetPostsOfCurrentPage_Async();
+    }
+}

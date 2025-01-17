@@ -1,0 +1,23 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Data;
+@using MindCabinet.Shared.DataEntries;
+
+
+
+<div component-name="PostEditor" class=@this.AddedClasses>
+	<h3>Create Post</h3>
+	@* <label for="post_editor">Create post</label> *@
+	@* <br/> *@
+	<textarea name="post_editor"
+			style="width: 100%;"
+			@bind:event="oninput"
+			@bind:get=@this.PostText
+			@bind:set=@this.OnInputHandler_UI_Async></textarea>
+			@* @oninput=@(async args => this.PostText = args.Value?.ToString() ?? "")></textarea> *@
+	<br/>
+	<TagSetEditor Label="Enter tags (at least 1 required)" OnTagsChange_Async=@this.OnTagsChangeHandler_UI_Async />
+	<button disabled=@( this.CanSubmit() ? false : true ) @onclick=@this.Submit_UI_Async>Submit</button>
+</div>

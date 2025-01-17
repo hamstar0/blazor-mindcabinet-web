@@ -1,0 +1,24 @@
+﻿@inherits LayoutComponentBase;
+
+
+@* No headers here; server-prerender (MindCabinet\Components\App.razor) gives this to us without delay. *@
+
+
+<div class="page">
+    <main>
+        <div class="top-row px-4">
+            <a href="/">Home</a>
+            <a href="about">About</a>
+        </div>
+
+        <article class="content px-4">
+            @this.Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

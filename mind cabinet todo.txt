@@ -1,0 +1,13 @@
+v2
+-	Deploy
+-	Implement users
+
+
+v1
+-	Implement permanent database
+-	...
+-	Plan for more
+-	Add panel for filtering/ordering
+-	Implement data input
+-	Render data in a given plain view
+-	Define temporary database

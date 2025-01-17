@@ -1,0 +1,48 @@
+﻿<div component-name="ToggleSwitch" class=@this.AddedClasses>
+    <label component-name="ToggleSwitch" class=@(this.Disabled ? "disabled" : null)>
+        @if( this.Label is not null ) {
+            <div style="display: inline-block;">@this.Label</div>
+        }
+        <div class="my-toggle-switch">
+            <input type="checkbox"
+                    disabled=@this.Disabled
+                    checked=@this.IsOn
+                    @onchange=@this.Click_UI_Async />
+            <span class="my-toggle-switch-slider"></span>
+        </div>
+    </label>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public string? AddedClasses { get; set; } = null;
+
+
+    [Parameter]
+    public string? Label { get; set; } = null;
+
+    [Parameter]
+    public bool IsOn { get; set; } = false;
+
+    [Parameter, EditorRequired]
+    public Func<bool, Task> IsOnChanged { get; set; } = null!;
+
+    ////
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+
+
+    private async Task Click_UI_Async( ChangeEventArgs args ) {
+        if( this.Disabled ) {
+            return;
+        }
+
+        this.IsOn = (bool)(args.Value ?? false);
+
+        await this.IsOnChanged( this.IsOn );
+    }
+}

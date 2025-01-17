@@ -1,0 +1,20 @@
+﻿@using MindCabinet.Shared.DataEntries;
+
+
+
+<div component-name="TermRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
+    @(this.Term?.Term ?? "?")
+    @this.ChildContent
+    @if( this.Term?.Context?.Context is not null ) {
+        <div class="tooltiptext">@this.Term.Context.Context.Term</div>
+    }
+</div>
+
+
+@code {
+    private async Task OnClick_UI_Async( MouseEventArgs args ) {
+        if( this.OnClick_Async is not null ) {
+            await this.OnClick_Async( args );
+        }
+    }
+}

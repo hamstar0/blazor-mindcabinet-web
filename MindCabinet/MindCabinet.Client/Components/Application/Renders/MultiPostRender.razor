@@ -1,0 +1,20 @@
+﻿@using MindCabinet.Shared.DataEntries;
+
+
+
+<ul component-name="MultiPostRender" class="basic @(this.AddedClasses ?? "")">
+    @foreach( PostEntry post in this.Posts ) {
+        <li>
+            <PostRender Post=@post OnClick_Async=@(async e => await this.OnClick_UI_Async(post, e)) />
+        </li>
+    }
+</ul>
+
+
+@code {
+    private async Task OnClick_UI_Async( PostEntry post, MouseEventArgs args ) {
+        if( this.OnClick_Async is not null ) {
+            await this.OnClick_Async( post, args );
+        }
+    }
+}

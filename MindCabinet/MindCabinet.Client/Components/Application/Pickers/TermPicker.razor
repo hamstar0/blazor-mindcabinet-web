@@ -1,0 +1,28 @@
+﻿@using MindCabinet.Client.Data;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Shared.DataEntries;
+
+
+
+<div component-name="TermPicker"
+        class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
+    <input type="text"
+            disabled=@this.Disabled
+            @onfocusin=@(e => this.IsSeachFocused = true)
+            @onfocusout=@(e => this.IsSeachFocused = false)
+            @onkeydown=@this.OnInputKey_UI_Async
+            @onkeypress:preventDefault=@this.IsCurrentInputSuppressed
+            @bind:event="oninput"
+            @bind:get=@this.Value
+            @bind:set=@this.OnInputSearch_UI_Async />
+            @* @oninput=@(async e => await this.UpdateTermSearchResults_UI_Async(e.Value?.ToString() ?? "")) /> *@
+    <div>
+        <div style="position: absolute; display: inline-block;">
+            @if( this.IsSeachFocused && this.SearchOptions.Count() > 0 ) {
+                <MultiTermRender
+                        Terms=@this.SearchOptions
+                        OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
+            }
+       </div>
+    </div>
+</div>

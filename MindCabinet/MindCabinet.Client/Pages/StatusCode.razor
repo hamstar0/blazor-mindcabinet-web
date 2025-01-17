@@ -1,0 +1,13 @@
+﻿@page "/StatusCode/{ResponseCode}"
+
+
+@inherits MindCabinet.Client.Layout.MainLayout;
+
+
+<p>@this.ResponseCode</p>
+
+
+@code {
+    [Parameter]
+    public string? ResponseCode { get; set; }
+}

@@ -1,0 +1,19 @@
+﻿@using MindCabinet.Shared.DataEntries;
+
+
+
+<div component-name="PostRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
+    <div>@this.Post.Timestamp</div>
+    <div>@this.Post.Body</div>
+    <MultiTermRender Terms=@this.Post.Tags />
+</div>
+
+
+
+@code {
+    private async Task OnClick_UI_Async( MouseEventArgs args ) {
+        if( this.OnClick_Async is not null ) {
+            await this.OnClick_Async( args );
+        }
+    }
+}

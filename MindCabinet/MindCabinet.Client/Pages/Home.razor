@@ -1,0 +1,44 @@
+﻿@page "/";
+
+
+@using MindCabinet.Client.Components.Application;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Data;
+
+
+
+<PageTitle>Home</PageTitle>
+
+
+@* <HeadContent>
+    <link rel="stylesheet" href="lib/components/standard/tabs/css/tabs.css" />
+    <link rel="stylesheet" href="lib/components/standard/toggle-switch/css/toggle-switch.css" />
+</HeadContent> *@
+
+
+<h4>Mind Cabinet</h4>
+
+@* <div style="display: grid; grid-template-columns: auto auto;"> *@
+<div class="tab-container">
+    <input type="radio" id="tab-posts" name="css-tabs" checked>
+
+    <ul class="tab-button-container">
+        <li class="tab-button"><label for="tab-posts">Posts</label></li>
+    </ul>
+
+    <div class="tab-content">
+        @if( this.Data.Http.BaseAddress is not null ) {
+            <PostsInterface />
+        } else {
+            <span>Loading...</span>
+        }
+        @* <GoalEditor OnGoalSelect="async e => {}" /> *@
+    </div>
+</div>
+
+
+@code {
+    [Inject]
+    public ClientDataAccess Data { get; set; } = null!;
+}

@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Data;
+@using MindCabinet.Shared.DataEntries;
+
+
+<div component-name="TagSetEditor" class=@this.AddedClasses>
+    @* data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top"> *@
+    @if( this.Label is not null ) {
+        <span>@this.Label</span>
+    }
+    @foreach( TermEntry tag in this.Tags ) {
+        <TermRender AddedClasses="ib" Term=@tag>
+            <a class="" @onclick=@( async () => await this.RemoveTag_UI_Async(tag) )>X</a>
+        </TermRender>
+    }
+    <TermEditor AddedClasses="ib"
+            OnTermInput_Async=@this.OnTagEditConfirmSubmit_UI_Async
+            OnTermConfirm_Async=@this.AddTag_UI_Async />
+</div>
+
+
+
+@code {
+    private async Task<TermEntry?> AddTag_UI_Async( TermEntry tag, bool isNew ) {
+        if( this.Tags.Any(t => t.Equals(tag)) ) {
+            return null;
+        }
+
+        await this.AddTag_Async( tag );
+
+        this.StateHasChanged();
+
+        return null;
+        //return tag;
+    }
+
+
+    public async Task<(string, bool)> OnTagEditConfirmSubmit_UI_Async( string tag ) {
+        return tag.Contains(",")
+            ? (tag.Split(",")[0], true)
+            : (tag, false);
+    }
+
+
+    private async Task<bool> RemoveTag_UI_Async( TermEntry tag ) {
+        if( !this.Tags.Any(t => t.Equals(tag)) ) {
+            return false;
+        }
+
+        bool ret = await this.RemoveTag_Async( tag );
+
+        if( ret ) {
+            this.StateHasChanged();
+        }
+
+        return ret;
+    }
+}

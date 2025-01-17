@@ -1,0 +1,41 @@
+﻿@using MindCabinet.Client.Components.Application.Renders;
+
+
+<div component-name="Pagination" class=@this.AddedClasses>
+    @* Info: c @this.CurrentPage, t @this.TotalPages, m @this.MaxPagesToDisplay :  *@
+    @{
+        int totalPagesToDisplay = this.TotalPages > 0 ? this.TotalPages : 1;
+        int pagesRemaining = this.MaxPagesToDisplay;
+
+        for( int i=0; i<totalPagesToDisplay; i++ ) {
+            if( i >= 1 ) {
+                if( this.CurrentPage >= (this.MaxPagesToDisplay-3) ) {
+                    <span>...</span>
+
+                    i = this.CurrentPage;
+                    pagesRemaining--;
+
+                    continue;
+                } else if( i >= (this.CurrentPage+2) ) {
+                    if( pagesRemaining <= 2 && i <= (this.TotalPages-2) ) {
+                        <span>...</span>
+
+                        pagesRemaining = 1;
+                        i = this.TotalPages - 1;
+
+                        continue;
+                    }
+                }
+            }
+
+            if( i == this.CurrentPage ) {
+                <b style="margin-right:4px;">@(i + 1)</b>
+            } else {
+                int cp = i;
+                <a class="" @onclick=@(async () => await this.OnPageChange_Async(cp))>@(i + 1)</a>
+            }
+
+            pagesRemaining--;
+        }
+    }
+</div>

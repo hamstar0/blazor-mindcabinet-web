@@ -1,0 +1,51 @@
+v2
+-	Implement post meta-data input (based on tags)
+v1
+-	Deploy
+
+
+v0.5
+-	Implement users
+v0.4
+-	Create local deployment
+-	Implement permanent database
+v0.3
+-	Implement post markdown
+v0.2
+-	Implement term context input
+-	Implement picking term from dropdown via keyboard
+v0.1
+-	Create repo
+
+
+-	Set page to 0 after search
+-	@Test post filtering
+-	Ensure inputting an existing term in TagSetEditor instead selects the existing term
+-	Prevent inputting repeat terms (in the database, TagSetEditor, and TermEditor)
+-	Implement basic styling
+	-	Organize layout
+	-	Tag editor + search dropdown
+-	@Test post search
+-	Implement pagination linking
+-	Move posts search bar next to sort bar
+-	Remove grid layout of page body
+-	Fix weird pagination display
+-	Fix empty term submit
+-	Add title for post create component
+-	Add tags display for posts
+-	@Test post editor
+-	@Test tags editor
+-	Fix tags (plural) editor
+-	Update tags picker
+-	@Test tag editor
+-	Implement post form
+-	Add main (posts) view
+	-	At bottom, implement filter criteria based on tags
+	-	At bottom, implement search criteria based on words in text
+	-	At top, implement sort criteria toggles on a stationary button bar
+	-	Implement route component (stores page, search, sort, and filter criteria)
+		-	Implement data handling
+		-	Define basic component
+	-	Render a paginated view of posts
+-	Define data structure for content: Posts (body, tags)
+-	Define project + temporary database
