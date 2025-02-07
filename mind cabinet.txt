@@ -5,19 +5,22 @@ v1
 
 
 v0.5
--	Implement users
-v0.4
--	Create local deployment
--	Implement permanent database
-v0.3
 -	Implement post markdown
-v0.2
+v0.4
 -	Implement term context input
 -	Implement picking term from dropdown via keyboard
+v0.3
+-	Implement users
+v0.2
+-	Create local deployment
+-	Create queries for data operations
+
+
+-	Create tables for data structures
+-	Create special path for installing tables
+-	Implement permanent database
 v0.1
 -	Create repo
-
-
 -	Set page to 0 after search
 -	@Test post filtering
 -	Ensure inputting an existing term in TagSetEditor instead selects the existing term

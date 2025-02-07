@@ -1,155 +1,268 @@
-﻿using MindCabinet.Client.Data;
+﻿using Dapper;
+using MindCabinet.Client.Data;
 using MindCabinet.Shared.DataEntries;
+using System.Data;
 
 
 namespace MindCabinet.Data;
 
 
 public partial class ServerDataAccess {
-    private long CurrentPostId = 0;
-    private IDictionary<long, PostEntry> Posts = new Dictionary<long, PostEntry> {
-        { 4, new PostEntry(
-            id: 1,
-            timestamp: 4,
-            body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null), new TermEntry(3, "term3", null, null ) }
-        ) },
-        { 6, new PostEntry(
-            id: 2,
-            timestamp: 6,
-            body: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 7, new PostEntry(
-            id: 3,
-            timestamp: 7,
-            body: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 11, new PostEntry(
-            id: 4,
-            timestamp: 11,
-            body: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 14, new PostEntry(
-            id: 5,
-            timestamp: 14,
-            body: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 18, new PostEntry(
-            id: 6,
-            timestamp: 18,
-            body: "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 22, new PostEntry(
-            id: 7,
-            timestamp: 22,
-            body: "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.",
-            tags: new List<TermEntry> { new TermEntry(1, "term1", null, null) }
-        ) },
-        { 31, new PostEntry(
-            id: 8,
-            timestamp: 31,
-            body: "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null) }
-        ) },
-        { 32, new PostEntry(
-            id: 8,
-            timestamp: 32,
-            body: "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null) }
-        ) },
-        { 36, new PostEntry(
-            id: 9,
-            timestamp: 36,
-            body: "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null), new TermEntry(3, "term3", null, null ) }
-        ) },
-        { 39, new PostEntry(
-            id: 10,
-            timestamp: 39,
-            body: "Et harum quidem rerum facilis est et expedita distinctio.",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null), new TermEntry(3, "term3", null, null ) }
-        ) },
-        { 44, new PostEntry(
-            id: 11,
-            timestamp: 44,
-            body: "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null), new TermEntry(3, "term3", null, null ) }
-        ) },
-        { 49, new PostEntry(
-            id: 12,
-            timestamp: 49,
-            body: "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null), new TermEntry(3, "term3", null, null ) }
-        ) },
-        { 55, new PostEntry(
-            id: 13,
-            timestamp: 55,
-            body: "Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
-            tags: new List<TermEntry> { new TermEntry(2, "term2", null, null), new TermEntry(3, "term3", null, null) }
-        ) }
-    };
+    public class PostEntryData {
+        public long Id;
+        public DateTime When;
+        public string Body = "";
+        public int TermSetId;
+
+
+        public async Task<PostEntry> CreatePost_Async( IDbConnection dbCon, ServerDataAccess data ) {
+            return new PostEntry(
+                id: this.Id,
+                when: this.When,
+                body: this.Body,
+                tags: (await data.GetTermSet_Async(dbCon, this.TermSetId)).ToList()
+            );
+        }
+    }
+
+
+
+    public async Task<bool> InstallPosts_Async( IDbConnection dbConnection ) {
+        //PostID BIGINT PRIMARY KEY CLUSTERED,
+        await dbConnection.ExecuteAsync( @"
+            CREATE TABLE Posts (
+                Id BIGINT NOT NULL PRIMARY KEY CLUSTERED,
+                When DATETIME2 NOT NULL,
+                Body VARCHAR NOT NULL,
+                TermSetId BIGINT NOT NULL,
+                CONSTRAINT FK_TermSetId FOREIGN KEY (TermSetId)
+                    REFERENCES TermSet(SetId)
+            );"
+        //    ON DELETE CASCADE
+        //    ON UPDATE CASCADE
+        );
+
+        //
+
+        ClientDataAccess.CreateTermReturn term1 = await this.CreateTerm_Async(
+            dbConnection,
+            new ClientDataAccess.CreateTermParams("Term1", null, null)
+        );
+        ClientDataAccess.CreateTermReturn term2 = await this.CreateTerm_Async(
+            dbConnection,
+            new ClientDataAccess.CreateTermParams("Term2", null, null)
+        );
+        ClientDataAccess.CreateTermReturn term3 = await this.CreateTerm_Async(
+            dbConnection,
+            new ClientDataAccess.CreateTermParams("Term3", null, null)
+        );
+
+        var fillerPosts = new List<object>() {
+            new {
+                PostBody = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term, term3.Term)
+            },
+            new {
+                PostBody = "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term1.Term)
+            },
+            new {
+                PostBody = "Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur?",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term)
+            },
+            new {
+                PostBody = "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term)
+            },
+            new {
+                PostBody = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term, term3.Term)
+            },
+            new {
+                PostBody = "Et harum quidem rerum facilis est et expedita distinctio.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term, term3.Term)
+            },
+            new {
+                PostBody = "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term, term3.Term)
+            },
+            new {
+                PostBody = "Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term, term3.Term)
+            },
+            new {
+                PostBody = "Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.",
+                TagIDs = await this.CreateTermSet_Async(dbConnection, term2.Term, term3.Term)
+            },
+        };
+
+        var sql = "INSERT INTO Posts (PostBody, TagIDs) VALUES (@PostBody, @TagIDs)";
+        var rowsAffected = dbConnection.Execute( sql, fillerPosts );
+
+        return true;
+    }
 
 
 
     public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async(
+                IDbConnection dbCon,
                 ClientDataAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<PostEntry>();
         }
-
-        var filteredPosts = this.Posts.Values
-			.Where( p => p.Test(parameters.BodyPattern, parameters.Tags) );
-		var orderedPosts = filteredPosts
-			.OrderBy( p => parameters.SortAscendingByDate ? p.Timestamp : -p.Timestamp );
-
-        IEnumerable<PostEntry> posts = orderedPosts;
         
-        if( parameters.PostsPerPage > 0 ) {
-            posts = orderedPosts
-                .Skip( parameters.PageNumber * parameters.PostsPerPage )
-                .Take( parameters.PostsPerPage );
+        string sql = @"SELECT * FROM Posts AS MyPosts
+                WHERE MyPosts.PostBody LIKE @BodyPattern";
+        var sqlParams = new Dictionary<string, object> { { "BodyPattern", $"%{parameters.BodyPattern}%" } };
+
+        if( parameters.Tags.Count > 0 ) {
+            sql += @" AND (
+                        SELECT MyTerms.Id FROM Terms AS MyTerms
+                        INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        WHERE MyTermSet.Id = MyPosts.TermSetId
+                    ) ALL (";
+
+            int i = 1;
+            foreach( TermEntry tag in parameters.Tags ) {
+                if( i > 1 ) { sql += ", "; }
+                sql += "@Tag"+i;
+                sqlParams[ "Tag"+i ] = tag.Id!;
+                i++;
+            }
+            sql += ")";
         }
 
-		return posts;
+        IEnumerable<PostEntryData> posts = await dbCon.QueryAsync<PostEntryData>(
+            sql, new DynamicParameters( sqlParams )
+        );
+
+        //
+
+        IList<PostEntry> postList = new List<PostEntry>( posts.Count() );
+
+        foreach( PostEntryData post in posts ) {
+            postList.Add( await post.CreatePost_Async(dbCon, this) );
+        }
+
+        return postList;
+
+        //var filteredPosts = this.Posts.Values
+		//	.Where( p => p.Test(parameters.BodyPattern, parameters.Tags) );
+		//var orderedPosts = filteredPosts
+		//	.OrderBy( p => parameters.SortAscendingByDate ? p.Timestamp : -p.Timestamp );
+        //
+        //IEnumerable<PostEntry> posts = orderedPosts;
+        //
+        //if( parameters.PostsPerPage > 0 ) {
+        //    posts = orderedPosts
+        //        .Skip( parameters.PageNumber * parameters.PostsPerPage )
+        //        .Take( parameters.PostsPerPage );
+        //}
+        //return posts;
 	}
 
     public async Task<int> GetPostCountByCriteria_Async(
+                IDbConnection dbCon,
                 ClientDataAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
 
-        var filteredPosts = this.Posts.Values
-            .Where( p => p.Test( parameters.BodyPattern, parameters.Tags ) );
+        string sql = @"SELECT COUNT(*) FROM Posts AS MyPosts
+                WHERE MyPosts.PostBody LIKE @BodyPattern";
+        var sqlParams = new Dictionary<string, object> { { "BodyPattern", $"%{parameters.BodyPattern}%" } };
 
-        IEnumerable<PostEntry> posts = filteredPosts;
+        if( parameters.Tags.Count > 0 ) {
+            sql += @" AND (
+                        SELECT MyTerms.Id FROM Terms AS MyTerms
+                        INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        WHERE MyTermSet.Id = MyPosts.TermSetId
+                    ) ALL (";
 
-        if( parameters.PostsPerPage > 0 ) {
-            posts = filteredPosts
-                .Skip( parameters.PageNumber * parameters.PostsPerPage )
-                .Take( parameters.PostsPerPage );
+            int i = 1;
+            foreach( TermEntry tag in parameters.Tags ) {
+                if( i > 1 ) { sql += ", "; }
+                sql += "@Tag" + i;
+                sqlParams["Tag" + i] = tag.Id!;
+                i++;
+            }
+            sql += ")";
         }
 
-        return posts.Count();
+        return await dbCon.QuerySingleAsync<int>(
+            sql, new DynamicParameters( sqlParams )
+        );
+
+        //var filteredPosts = this.Posts.Values
+        //    .Where( p => p.Test( parameters.BodyPattern, parameters.Tags ) );
+        //
+        //IEnumerable<PostEntry> posts = filteredPosts;
+        //
+        //if( parameters.PostsPerPage > 0 ) {
+        //    posts = filteredPosts
+        //        .Skip( parameters.PageNumber * parameters.PostsPerPage )
+        //        .Take( parameters.PostsPerPage );
+        //}
+        //
+        //return posts.Count();
     }
 
 
-	public async Task<PostEntry> CreatePost_Async( ClientDataAccess.CreatePostParams parameters ) {
-        long id = this.CurrentPostId++;
-		var post = new PostEntry(
-			id: id,
-			timestamp: DateTime.Now.Ticks,
-			body: parameters.Body,
-			tags: parameters.Tags
-		);
+	public async Task<PostEntry> CreatePost_Async(
+                IDbConnection dbCon,
+                ClientDataAccess.CreatePostParams parameters ) {
+        DateTime now = DateTime.UtcNow;
 
-		this.Posts[id] = post;
+        int newPostId = await dbCon.QuerySingleAsync(
+            @"INSERT INTO Posts (When, Body, TermSetId) 
+                VALUES (@When, @Body, @TermSetId)
+                OUTPUT INSERTED.Id",
+            new {
+                When = now,
+                Body = parameters.Body,
+                TermSetId = await this.CreateTermSet_Async( dbCon, parameters.Tags.ToArray() ),
+            }
+        );
 
-		return post;
-	}
+        var newTerm = new PostEntry(
+            id: newPostId,
+            when: now,
+            body: parameters.Body,
+            tags: parameters.Tags
+        );
+
+        return newTerm;
+
+        //long id = this.CurrentPostId++;
+        //var post = new PostEntry(
+        //	id: id,
+        //	timestamp: DateTime.Now.Ticks,
+        //	body: parameters.Body,
+        //	tags: parameters.Tags
+        //);
+        //
+        //this.Posts[id] = post;
+        //
+        //return post;
+    }
 }
