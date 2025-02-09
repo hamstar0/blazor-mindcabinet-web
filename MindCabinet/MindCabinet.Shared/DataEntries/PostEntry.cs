@@ -11,7 +11,7 @@ public class PostEntry : IEquatable<PostEntry> {
 	public bool IsAssignedId { get; private set; } = false;
 
 
-	public DateTime When { get; set; }
+	public DateTime Created { get; set; }
 
     public string Body { get; set; }
 
@@ -25,14 +25,14 @@ public class PostEntry : IEquatable<PostEntry> {
 	}
 
 	public PostEntry( DateTime when, string body, IList<TermEntry> tags ) {
-		this.When = when;
+		this.Created = when;
 		this.Body = body;
 		this.Tags = tags;
 	}
 
-	public PostEntry( long id, DateTime when, string body, IList<TermEntry> tags ) {
+	public PostEntry( long id, DateTime created, string body, IList<TermEntry> tags ) {
         this.Id = id;
-        this.When = when;
+        this.Created = created;
         this.Body = body;
 		this.Tags = tags;
 	}
@@ -43,7 +43,7 @@ public class PostEntry : IEquatable<PostEntry> {
 		if( this == other ) { return true; }
 
 		if( this.Id != other.Id ) { return false; }
-		if( this.When != other.When ) { return false; }
+		if( this.Created != other.Created ) { return false; }
 		if( this.ContentEquals(other) ) { return false; }
 		return true;
 	}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Data;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataEntries;
+using System.Data;
 
 
 namespace MindCabinet;
@@ -20,8 +21,10 @@ public class DataController : ControllerBase {
 
 
     [HttpGet("Install")]
-    public async Task<string> GetByCriteria_Async() {
-        if( await this.Data.Install_Async() ) {
+    public async Task<string> Install_Async() {
+        using IDbConnection dbCon = await this.Data.ConnectDb( false );
+
+        if( await this.Data.Install_Async(dbCon) ) {
             return "Success";
         } else {
             return "Failure";

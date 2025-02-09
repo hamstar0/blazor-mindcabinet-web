@@ -23,10 +23,11 @@ public partial class ServerDataAccess {
         );
         await dbCon.ExecuteAsync( @"
             CREATE TABLE TermSetIdSupplier (
-                Id INT NOT NULL PRIMARY KEY CLUSTERED
+                Id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
+                Bogus BIT
             );"
         );
-
+        
         return true;
     }
 
@@ -35,9 +36,10 @@ public partial class ServerDataAccess {
     public async Task<long> CreateTermSet_Async(
                 IDbConnection dbCon,
                 params TermEntry[] parameters ) {
-        long newSetId = await dbCon.QuerySingleAsync(
-            @"INSERT INTO TermSetIdSupplier DEFAULT VALUES
-                OUTPUT INSERTED.Id"
+        long newSetId = await dbCon.QuerySingleAsync<long>(
+            @"INSERT INTO TermSetIdSupplier (Bogus)
+                    OUTPUT INSERTED.Id
+                    VALUES (null)"
         );
 
         foreach(  TermEntry termEntry in parameters ) {
@@ -54,12 +56,12 @@ public partial class ServerDataAccess {
         return newSetId;
     }
 
-    public async Task<IEnumerable<TermEntry>> GetTermSet_Async( IDbConnection dbCon, int id ) {
+    public async Task<IEnumerable<TermEntry>> GetTermSet_Async( IDbConnection dbCon, int termSetId ) {
         IEnumerable<TermEntryData?> termSetRaw = await dbCon.QueryAsync<TermEntryData?>(
-            @"SELECT A.Id A.Term A.ContextId A.AliasId FROM Terms AS A
-                INNER JOIN TermSet AS B ON (A.Id = B.TermId)
-                WHERE B.Id = @Id",
-            new { Id = id }
+            @"SELECT Terms.Id, Terms.Term, Terms.ContextId, Terms.AliasId FROM Terms
+                INNER JOIN TermSet ON (Terms.Id = TermSet.TermId)
+                WHERE TermSet.SetId = @SetId",
+            new { SetId = termSetId }
         );
 
         IList<TermEntry> terms = new List<TermEntry>( termSetRaw.Count() );
@@ -68,7 +70,7 @@ public partial class ServerDataAccess {
             TermEntry term = await termRaw!.CreateTerm_Async( dbCon, this );
             terms.Add( term );
 
-            this.TermsById_Cache.Add( term.Id!.Value, term );
+            this.TermsById_Cache[ term.Id!.Value ] = term;
         }
 
         return terms;

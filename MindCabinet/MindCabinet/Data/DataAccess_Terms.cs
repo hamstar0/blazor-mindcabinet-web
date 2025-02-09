@@ -32,7 +32,7 @@ public partial class ServerDataAccess {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( @"
             CREATE TABLE Terms (
-                Id BIGINT NOT NULL PRIMARY KEY CLUSTERED,
+                Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
@@ -97,7 +97,13 @@ public partial class ServerDataAccess {
         } else {
             sql += " WHERE MyTerms.Term LIKE @Term";
         }
-        sqlParams["Term"] = $"%{parameters.TermPattern}%";
+        sqlParams["@Term"] = $"%{parameters.TermPattern}%";
+
+        //sql += @"ORDER BY Id
+        //        OFFSET @Offset ROWS
+        //        FETCH NEXT @Quantity ROWS ONLY;";
+        //sqlParams["@Offset"] = parameters.Offset;
+        //sqlParams["@Quantity"] = parameters.Quantity;
 
         IEnumerable<TermEntryData> terms = await dbCon.QueryAsync<TermEntryData>(
             sql, new DynamicParameters(sqlParams) );
@@ -133,10 +139,12 @@ public partial class ServerDataAccess {
             throw new DataException( "Alias must be defined." );
         }
 
-        long newId = await dbCon.QuerySingleAsync(
-            @"INSERT INTO Terms (Term, ContextId, AliasId) 
-                VALUES (@Term, @ContextId, @AliasId)
-                OUTPUT INSERTED.Id",
+        long newId = await dbCon.QuerySingleAsync<long>(
+            @"INSERT INTO Terms (Term, ContextId, AliasId)
+                OUTPUT INSERTED.id
+                VALUES (@Term, @ContextId, @AliasId)",
+            //OUTPUT INSERTED.id",
+            //SELECT SCOPE_IDENTITY()
             new {
                 Term = parameters.TermPattern,
                 ContextId = parameters.Context?.Id,

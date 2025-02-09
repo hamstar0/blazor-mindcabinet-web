@@ -13,33 +13,35 @@ public partial class ServerDataAccess {
         this.ConnectionString = connectionString;
     }
 
-    private async Task<IDbConnection> ConnectDb( bool validateInstall=true ) {
+    public async Task<IDbConnection> ConnectDb( bool validateInstall=true ) {
         //using var con = new SqlConnection( this.ConnectionString );
-        var con = new SqlConnection( this.ConnectionString );
-        con.Open();
+        var dbCon = new SqlConnection( this.ConnectionString );
+        dbCon.Open();
 
         if( validateInstall ) {
-            int count = await con.ExecuteAsync( @"
-                IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Posts')
-                BEGIN
-                    RETURN 1;
-                END
-                ELSE
-                BEGIN
-                    RETURN 0;
-                END" );
+            int count = await dbCon.QuerySingleAsync<int>( @"
+                SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+                WHERE TABLE_NAME = N'Posts'"
+            );
+            //int count = await dbCon.ExecuteAsync( @"
+            //    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Posts')
+            //    BEGIN
+            //        RETURN 1;
+            //    END
+            //    ELSE
+            //    BEGIN
+            //        RETURN 0;
+            //    END" );
             if( count == 0 ) {
                 throw new DataException( "Database not installed." );
             }
         }
 
-        return con;
+        return dbCon;
     }
 
 
-    public async Task<bool> Install_Async() {
-        using IDbConnection dbCon = await this.ConnectDb( false );
-
+    public async Task<bool> Install_Async( IDbConnection dbCon ) {
         return await this.InstallTerms_Async( dbCon )
             && await this.InstallPosts_Async( dbCon );
     }

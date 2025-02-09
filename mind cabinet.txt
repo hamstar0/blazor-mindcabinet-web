@@ -12,10 +12,11 @@ v0.4
 v0.3
 -	Implement users
 v0.2
+-	@Test
 -	Create local deployment
+
+
 -	Create queries for data operations
-
-
 -	Create tables for data structures
 -	Create special path for installing tables
 -	Implement permanent database
