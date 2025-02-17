@@ -24,8 +24,8 @@ public class PostEntry : IEquatable<PostEntry> {
 		this.Tags = new List<TermEntry>();
 	}
 
-	public PostEntry( DateTime when, string body, IList<TermEntry> tags ) {
-		this.Created = when;
+	public PostEntry( DateTime created, string body, IList<TermEntry> tags ) {
+		this.Created = created;
 		this.Body = body;
 		this.Tags = tags;
 	}
@@ -43,13 +43,13 @@ public class PostEntry : IEquatable<PostEntry> {
 		if( this == other ) { return true; }
 
 		if( this.Id != other.Id ) { return false; }
-		if( this.Created != other.Created ) { return false; }
-		if( this.ContentEquals(other) ) { return false; }
+		if( this.ContentEquals(other, true) ) { return false; }
 		return true;
 	}
 
-	public bool ContentEquals( PostEntry other ) {
-		if( this.Body != other.Body ) { return false; }
+	public bool ContentEquals( PostEntry other, bool includeCreateDate ) {
+        if( includeCreateDate && this.Created != other.Created ) { return false; }
+        if( this.Body != other.Body ) { return false; }
 		if( this.Tags.Count != other.Tags.Count ) { return false; }
 		if( !this.Tags.All( t => other.Tags.Any(t2 => t2.Equals(t))) ) { return false; }
 		return true;

@@ -1,12 +1,13 @@
-using MindCabinet.Client.Data;
-using MindCabinet.Client.Pages;
-using MindCabinet.Components;
-using MindCabinet.Data;
 using System;
-using Dapper;
-using Microsoft.Data.SqlClient;
 using System.Data;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.SqlClient;
+using MindCabinet.Data;
+using MindCabinet.Components;
+using MindCabinet.Client.Data;
+using MindCabinet.Client.Pages;
+using Dapper;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace MindCabinet;
@@ -21,29 +22,18 @@ public class Program {
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        builder.Services.AddSingleton<ClientDataAccess>();  // Obligatory
-        builder.Services.AddSingleton<ServerDataAccess>( x => {
-            string? connString = builder.Configuration.GetConnectionString( "DefaultConnection" );
-            if( connString is null ) {
+        builder.Services.Configure<ServerDataAccess.ServerDataAccessParameters>( sdaParams => {
+            sdaParams.ConnectionString = builder.Configuration.GetConnectionString( "DefaultConnection" )!;
+            if( sdaParams.ConnectionString is null ) {
                 throw new Exception( "Invalid db connection string." );
             }
-            return ActivatorUtilities.CreateInstance<ServerDataAccess>( x, connString );
         } );
-        builder.Services.AddHttpClient();   // Obligatory
-        builder.Services.AddControllers();
 
-        //string connectString = @"Data Source = (localdb)\MSSQLLocalDB;
-        //    Initial Catalog = ""Mind Cabinet"";
-        //    Integrated Security = True;
-        //    Connect Timeout = 30;
-        //    Encrypt = True;
-        //    Trust Server Certificate = False;
-        //    Application Intent = ReadWrite;
-        //    Multi Subnet Failover = False";
-        //builder.Services.AddDbContext<MindCabinetDbContext>( options => options.UseSqlServer( connectionString ) );
-        //"ConnectionStrings": {
-        //    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=aspnet-MindCabinet-e18a17f9-0f11-4e92-9c2f-12d63fa72e96;Trusted_Connection=True;MultipleActiveResultSets=true"
-        //},
+        builder.Services.AddSingleton<SingletonCache>();
+        builder.Services.AddSingleton<ClientDataAccess>();
+        builder.Services.AddSingleton<ServerDataAccess>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddControllers();
         
         WebApplication app = builder.Build();
 

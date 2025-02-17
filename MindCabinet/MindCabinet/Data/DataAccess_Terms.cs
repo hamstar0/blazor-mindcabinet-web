@@ -16,7 +16,7 @@ public partial class ServerDataAccess {
         public long? AliasId;
         
 
-        public async Task<TermEntry> CreateTerm_Async( IDbConnection dbCon, ServerDataAccess data ) {
+        public async Task<TermEntry> Create_Async( IDbConnection dbCon, ServerDataAccess data ) {
             return new TermEntry(
                 id: this.Id,
                 term: this.Term,
@@ -25,6 +25,8 @@ public partial class ServerDataAccess {
             );
         }
     }
+
+    //
 
 
 
@@ -46,6 +48,8 @@ public partial class ServerDataAccess {
         return await this.InstallTermSets_Async( dbCon );
     }
 
+    //
+
 
 
     private IDictionary<long, TermEntry> TermsById_Cache = new Dictionary<long, TermEntry>();
@@ -66,7 +70,7 @@ public partial class ServerDataAccess {
             return null;
         }
 
-        TermEntry term = await termRaw.CreateTerm_Async( dbCon, this );
+        TermEntry term = await termRaw.Create_Async( dbCon, this );
 
         this.TermsById_Cache.Add( id, term );
 
@@ -111,7 +115,7 @@ public partial class ServerDataAccess {
         IList<TermEntry> termList = new List<TermEntry>( terms.Count() );
 
         foreach( TermEntryData term in terms ) {
-            termList.Add( await term.CreateTerm_Async(dbCon, this) );
+            termList.Add( await term.Create_Async(dbCon, this) );
         }
 
         return termList;

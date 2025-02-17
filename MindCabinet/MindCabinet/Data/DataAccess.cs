@@ -1,16 +1,28 @@
-﻿using Dapper;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
-using System.Data;
+using Microsoft.Extensions.Options;
+using Dapper;
+using static MindCabinet.Program;
 
 
 namespace MindCabinet.Data;
 
 
 public partial class ServerDataAccess {
+    public class ServerDataAccessParameters {
+        public string ConnectionString = "";
+    }
+
+
+
+    private SingletonCache Cache;
     private string ConnectionString;
 
-    public ServerDataAccess( string connectionString ) {
-        this.ConnectionString = connectionString;
+
+
+    public ServerDataAccess( SingletonCache cache, IOptions<ServerDataAccessParameters> connectionString ) {
+        this.Cache = cache;
+        this.ConnectionString = connectionString.Value.ConnectionString;
     }
 
     public async Task<IDbConnection> ConnectDb( bool validateInstall=true ) {

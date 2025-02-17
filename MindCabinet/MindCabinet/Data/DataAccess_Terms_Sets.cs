@@ -31,6 +31,8 @@ public partial class ServerDataAccess {
         return true;
     }
 
+    //
+
 
 
     public async Task<long> CreateTermSet_Async(
@@ -56,6 +58,10 @@ public partial class ServerDataAccess {
         return newSetId;
     }
 
+    //
+
+
+
     public async Task<IEnumerable<TermEntry>> GetTermSet_Async( IDbConnection dbCon, int termSetId ) {
         IEnumerable<TermEntryData?> termSetRaw = await dbCon.QueryAsync<TermEntryData?>(
             @"SELECT Terms.Id, Terms.Term, Terms.ContextId, Terms.AliasId FROM Terms
@@ -67,7 +73,7 @@ public partial class ServerDataAccess {
         IList<TermEntry> terms = new List<TermEntry>( termSetRaw.Count() );
 
         foreach( TermEntryData? termRaw in termSetRaw ) {
-            TermEntry term = await termRaw!.CreateTerm_Async( dbCon, this );
+            TermEntry term = await termRaw!.Create_Async( dbCon, this );
             terms.Add( term );
 
             this.TermsById_Cache[ term.Id!.Value ] = term;

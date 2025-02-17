@@ -13,6 +13,10 @@ public partial class ClientDataAccess {
         public string TermPattern { get; } = termPattern;
         public TermEntry? Context { get; } = context;
     }
+
+    //
+
+
     
     public async Task<IEnumerable<TermEntry>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Term/GetByCriteria", parameters );

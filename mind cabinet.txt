@@ -11,11 +11,16 @@ v0.4
 -	Implement picking term from dropdown via keyboard
 v0.3
 -	Implement users
+	-	Implement email validation
+	-	Define UI login prompt
+	-	Define UI registration prompt
+	-	Define session ID + session storage
+
+
+	-	Define tables
 v0.2
 -	@Test
 -	Create local deployment
-
-
 -	Create queries for data operations
 -	Create tables for data structures
 -	Create special path for installing tables

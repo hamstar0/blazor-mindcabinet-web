@@ -25,6 +25,8 @@ public partial class ServerDataAccess {
         }
     }
 
+    //
+
 
 
     public async Task<bool> InstallPosts_Async( IDbConnection dbConnection ) {
@@ -32,11 +34,15 @@ public partial class ServerDataAccess {
             CREATE TABLE Posts (
                 Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
                 Created DATETIME2(2) NOT NULL,
-                Body VARCHAR(512) NOT NULL,
-                TermSetId INT NOT NULL
+                Modified DATETIME2(2) NOT NULL,
+                SimpleUserId BIGINT NOT NULL,
+                Body NVARCHAR(MAX) NOT NULL,
+                TermSetId INT NOT NULL,
+                CONSTRAINT FK_UserId FOREIGN KEY (SimpleUserId)
+                    REFERENCES SimpleUsers(Id)
             );"
-            //    ON DELETE CASCADE
-            //    ON UPDATE CASCADE
+        //    ON DELETE CASCADE
+        //    ON UPDATE CASCADE
         );
 
         //
@@ -134,34 +140,40 @@ public partial class ServerDataAccess {
         return true;
     }
 
+    //
 
 
-    public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async(
-                IDbConnection dbCon,
-                ClientDataAccess.GetPostsByCriteriaParams parameters ) {
-        if( parameters.PostsPerPage == 0 ) {
-            return Enumerable.Empty<PostEntry>();
+
+    private (string sql, IDictionary<string, object> sqlParams) GetPostsByCriteriaSql(
+                ClientDataAccess.GetPostsByCriteriaParams parameters, bool countOnly ) {
+        bool hasWhere = false;
+        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM Posts AS MyPosts ";
+        var sqlParams = new Dictionary<string, object>();
+
+        if( !string.IsNullOrEmpty( parameters.BodyPattern ) ) {
+            sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
+            sqlParams["@Body"] = $"%{parameters.BodyPattern}%";
+            hasWhere = true;
         }
-        
-        string sql = @"SELECT * FROM Posts AS MyPosts
-                WHERE MyPosts.Body LIKE @Body";
-        var sqlParams = new Dictionary<string, object> { { "Body", $"%{parameters.BodyPattern}%" } };
 
         if( parameters.Tags.Count > 0 ) {
-            sql += @" AND (
+            sql += hasWhere ? "AND" : "WHERE";
+            sql += @" (
                         SELECT MyTerms.Id FROM Terms AS MyTerms
                         INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.Id = MyPosts.TermSetId
-                    ) ALL (";
-
-            int i = 1;
-            foreach( TermEntry tag in parameters.Tags ) {
-                if( i > 1 ) { sql += ", "; }
-                sql += "@Tag"+i;
-                sqlParams[ "Tag"+i ] = tag.Id!;
-                i++;
-            }
-            sql += ")";
+                    ) ALL (@Tags)";
+            sqlParams["@Tags"] = parameters.Tags.ToList();
+            //      ) ALL (";
+            //int i = 1;
+            //foreach( TermEntry tag in parameters.Tags ) {
+            //    if( i > 1 ) { sql += ", "; }
+            //    sql += "@Tag"+i;
+            //    sqlParams[ "Tag"+i ] = tag.Id!;
+            //    i++;
+            //}
+            //sql += ")";
+            hasWhere = true;
         }
 
         sql += $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
@@ -172,13 +184,21 @@ public partial class ServerDataAccess {
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }
 
-        //
+        return (sql, sqlParams);
+    }
+
+    public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async(
+                IDbConnection dbCon,
+                ClientDataAccess.GetPostsByCriteriaParams parameters ) {
+        if( parameters.PostsPerPage == 0 ) {
+            return Enumerable.Empty<PostEntry>();
+        }
+
+        (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
 
         IEnumerable<PostEntryData> posts = await dbCon.QueryAsync<PostEntryData>(
             sql, new DynamicParameters( sqlParams )
         );
-
-        //
 
         IList<PostEntry> postList = new List<PostEntry>( posts.Count() );
 
@@ -210,26 +230,7 @@ public partial class ServerDataAccess {
             return 0;
         }
 
-        string sql = @"SELECT COUNT(*) FROM Posts AS MyPosts
-                WHERE MyPosts.Body LIKE @Body";
-        var sqlParams = new Dictionary<string, object> { { "Body", $"%{parameters.BodyPattern}%" } };
-
-        if( parameters.Tags.Count > 0 ) {
-            sql += @" AND (
-                        SELECT MyTerms.Id FROM Terms AS MyTerms
-                        INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
-                        WHERE MyTermSet.Id = MyPosts.TermSetId
-                    ) ALL (";
-
-            int i = 1;
-            foreach( TermEntry tag in parameters.Tags ) {
-                if( i > 1 ) { sql += ", "; }
-                sql += "@Tag" + i;
-                sqlParams["Tag" + i] = tag.Id!;
-                i++;
-            }
-            sql += ")";
-        }
+        (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, true );
 
         return await dbCon.QuerySingleAsync<int>(
             sql, new DynamicParameters( sqlParams )
