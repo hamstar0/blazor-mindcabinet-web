@@ -58,32 +58,34 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 
     public string Email { get; set; }
 
-    //public string Hash { get; set; }
+	public string PwHash { get; set; }
 
-    //public string Salt { get; set; }
+	public string PwSalt { get; set; }
 
-    public bool IsValidated { get; set; }
+	public bool IsValidated { get; set; }
 
 
 
     public SimpleUserEntry() {
 		this.Name = string.Empty;
 		this.Email = string.Empty;
+		this.PwHash = string.Empty;
+		this.PwSalt = string.Empty;
 	}
 
 	public SimpleUserEntry(
 				DateTime created,
 				string name,
 				string email,
-				//string hash,
-				//string salt,
+				string pwHash,
+				string pwSalt,
 				bool isValidated ) {
 		this.Created = created;
 		this.Name = name;
 		this.Email = email;
-        //this.Hash = hash;
-        //this.Salt = salt;
-        this.IsValidated = isValidated;
+		this.PwHash = pwHash;
+		this.PwSalt = pwSalt;
+		this.IsValidated = isValidated;
 	}
 
 	public SimpleUserEntry(
@@ -91,16 +93,16 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 				DateTime created,
 				string name,
 				string email,
-				//string hash,
-				//string salt,
+				string pwHash,
+				string pwSalt,
 				bool isValidated ) {
         this.Id = id;
         this.Created = created;
         this.Name = name;
         this.Email = email;
-        //this.Hash = hash;
-        //this.Salt = salt;
-        this.IsValidated = isValidated;
+		this.PwHash = pwHash;
+		this.PwSalt = pwSalt;
+		this.IsValidated = isValidated;
     }
 
 
@@ -108,18 +110,22 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 		if( other is null ) { return false; }
 		if( this == other ) { return true; }
 
-		if( this.Id != other.Id ) { return false; }
-		if( this.ContentEquals(other, true) ) { return false; }
+		if( this.Id is not null && this.Id != other.Id ) { return false; }
+		if( this.ContentEquals(other, true, true, true) ) { return false; }
 		return true;
 	}
 
-	public bool ContentEquals( SimpleUserEntry other, bool includeCreateDate ) {
+	public bool ContentEquals(
+				SimpleUserEntry other,
+				bool includeCreateDate,
+				bool includePw,
+				bool includeValidation ) {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Name != other.Name ) { return false; }
 		if( this.Email != other.Email ) { return false; }
-		//if( this.Hash != other.Hash ) { return false; }
-		//if( this.Salt != other.Salt ) { return false; }
-		if( this.IsValidated != other.IsValidated ) { return false; }
+		if( includePw && this.PwHash != other.PwHash ) { return false; }
+		if( includePw && this.PwSalt != other.PwSalt ) { return false; }
+		if( includeValidation && this.IsValidated != other.IsValidated ) { return false; }
 		return true;
 	}
 }

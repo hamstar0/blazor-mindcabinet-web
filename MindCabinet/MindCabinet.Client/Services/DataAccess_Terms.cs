@@ -2,11 +2,11 @@
 using MindCabinet.Shared.DataEntries;
 
 
-namespace MindCabinet.Client.Data;
+namespace MindCabinet.Client.Services;
 
 
 
-public partial class ClientDataAccess {
+public partial class ClientDbAccess {
     public class GetTermsByCriteriaParams(
                 string termPattern,
                 TermEntry? context ) {

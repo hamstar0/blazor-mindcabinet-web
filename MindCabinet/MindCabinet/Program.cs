@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.SqlClient;
 using MindCabinet.Data;
 using MindCabinet.Components;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Client.Pages;
 using Dapper;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -22,18 +22,29 @@ public class Program {
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        builder.Services.Configure<ServerDataAccess.ServerDataAccessParameters>( sdaParams => {
+        builder.Services.Configure<ServerDbAccess.ServerDataAccessParameters>( sdaParams => {
             sdaParams.ConnectionString = builder.Configuration.GetConnectionString( "DefaultConnection" )!;
             if( sdaParams.ConnectionString is null ) {
                 throw new Exception( "Invalid db connection string." );
             }
         } );
 
-        builder.Services.AddSingleton<SingletonCache>();
-        builder.Services.AddSingleton<ClientDataAccess>();
-        builder.Services.AddSingleton<ServerDataAccess>();
+        //builder.Services.AddDistributedMemoryCache();
+        //builder.Services.AddSession( options => {
+        //    options.IdleTimeout = TimeSpan.FromHours( 24 );  // expire time
+        //    options.Cookie.Expiration = TimeSpan.FromHours( 24 );
+        //    options.Cookie.HttpOnly = true;
+        //    options.Cookie.IsEssential = true;
+        //} );
+        // builder.Services.AddControllersWithViews();
+        builder.Services.AddHttpContextAccessor();
+
+        builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
+        builder.Services.AddTransient<ServerDbAccess>();  // not AddSingleton
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
+
+        //
         
         WebApplication app = builder.Build();
 
@@ -52,6 +63,8 @@ public class Program {
 
         app.UseStaticFiles();
         app.UseAntiforgery();
+
+        //app.UseSession();
 
         app.MapControllers();
         //app.MapFallbackToPage("");

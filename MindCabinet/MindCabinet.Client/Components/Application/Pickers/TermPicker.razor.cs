@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 
 
@@ -13,7 +13,7 @@ public partial class TermPicker : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess Data { get; set; } = null!;
+    public ClientDbAccess DbAccess { get; set; } = null!;
 
 
     [Parameter]
@@ -88,8 +88,8 @@ public partial class TermPicker : ComponentBase {
         }
 
         if( termText is not null ) {
-            IEnumerable<TermEntry> terms = await this.Data.GetTermsByCriteria_Async(
-                new ClientDataAccess.GetTermsByCriteriaParams( termText, null )
+            IEnumerable<TermEntry> terms = await this.DbAccess.GetTermsByCriteria_Async(
+                new ClientDbAccess.GetTermsByCriteriaParams( termText, null )
             );
             this.SearchOptions = terms.ToList();    // TODO
         } else {

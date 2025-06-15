@@ -20,9 +20,30 @@
 
 <body>
     <Routes @rendermode="@RenderMode.InteractiveWebAssembly" />
-
+    
     <script src="main.js"></script>
     <script src="_framework/blazor.web.js"></script>
+    @if( this.ServerData.RenderScripts.Count > 0 ) {
+    <script>
+        @foreach( string script in this.ServerData.RenderScripts ) {
+            @(script + "\n")
+        }
+    </script>
+    }
 </body>
 
 </html>
+
+
+
+@code {
+    [Inject]
+    private MindCabinet.Data.ServerSessionData ServerData { get; set; } = null!;
+
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        this.ServerData.Load();
+    }
+}

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Components.Standard;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 
 namespace MindCabinet.Client.Components.Application;
@@ -12,7 +12,7 @@ public partial class PostsBrowser : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess Data { get; set; } = null!;
+    public ClientDbAccess DbAccess { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -65,21 +65,21 @@ public partial class PostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<PostEntry>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
-        var search = new ClientDataAccess.GetPostsByCriteriaParams(
+        var search = new ClientDbAccess.GetPostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermEntry>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<PostEntry> posts = await this.Data.GetPostsByCriteria_Async( search );
+        IEnumerable<PostEntry> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        int totalPosts = await this.Data.GetPostCountByCriteria_Async( new ClientDataAccess.GetPostsByCriteriaParams(
+        int totalPosts = await this.DbAccess.GetPostCountByCriteria_Async( new ClientDbAccess.GetPostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermEntry>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,

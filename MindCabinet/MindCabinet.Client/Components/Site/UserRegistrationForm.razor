@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Components;
+
+
+
+<div component-name="UserRegistrationForm" class=@this.AddedClasses>
+    <h3>Create new user</h3>
+    <input type="text"
+            title="User name:"
+            @bind:event="oninput"
+            @bind:get=@this.UserName
+            @bind:set=@this.OnInputUserName_UI_Async />
+    <br />
+    <input type="text"
+            title="Email:"
+            @bind:event="oninput"
+            @bind:get=@this.Email
+            @bind:set=@this.OnInputEmail_UI_Async />
+	<br />
+    <input type="text"
+            title="Password:"
+            @bind:event="oninput"
+            @bind:get=@this.Password
+            @bind:set=@this.OnInputPassword_UI_Async />
+	<br />
+    <div>@(this.GetSubmitStatuses(this.GetSubmitStatusCode()).FirstOrDefault() ?? " ")</div>
+    <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
+</div>

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Runtime.CompilerServices;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 
 
 namespace MindCabinet.Client;
@@ -14,7 +14,8 @@ public class Program {
         builder.Services.AddScoped( http => new HttpClient {
             BaseAddress = new Uri( builder.HostEnvironment.BaseAddress )
         } );
-        builder.Services.AddScoped<ClientDataAccess>();
+        builder.Services.AddScoped<ClientDbAccess>();
+        builder.Services.AddSingleton<ClientSessionData>();
 
 		//builder.Services.AddHttpClient<IEmployeeService, EmployeeService>( client =>
 		//{

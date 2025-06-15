@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System;
 using System.Data;
@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDataAccess {
+public partial class ServerDbAccess {
 	public async Task<bool> InstallTermSets_Async( IDbConnection dbCon ) {
         await dbCon.ExecuteAsync( @"
             CREATE TABLE TermSet (

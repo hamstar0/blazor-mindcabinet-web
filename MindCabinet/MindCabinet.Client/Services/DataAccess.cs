@@ -1,14 +1,14 @@
 ﻿using MindCabinet.Shared.DataEntries;
 
 
-namespace MindCabinet.Client.Data;
+namespace MindCabinet.Client.Services;
 
 
-public partial class ClientDataAccess {
+public partial class ClientDbAccess {
     public HttpClient Http;
 
 
-    public ClientDataAccess( HttpClient http ) {
+    public ClientDbAccess( HttpClient http ) {
         this.Http = http;
     }
 }

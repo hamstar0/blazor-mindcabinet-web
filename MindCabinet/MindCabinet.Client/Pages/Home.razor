@@ -4,7 +4,7 @@
 @using MindCabinet.Client.Components.Application;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
-@using MindCabinet.Client.Data;
+@using MindCabinet.Client.Services;
 
 
 
@@ -28,7 +28,7 @@
     </ul>
 
     <div class="tab-content">
-        @if( this.Data.Http.BaseAddress is not null ) {
+        @if( this.DbAccess.Http.BaseAddress is not null ) {
             <PostsInterface />
         } else {
             <span>Loading...</span>
@@ -38,7 +38,19 @@
 </div>
 
 
+
 @code {
     [Inject]
-    public ClientDataAccess Data { get; set; } = null!;
+    public ClientDbAccess DbAccess { get; set; } = null!;
+    
+    [Inject]
+    public ClientSessionData SessionData { get; set; } = null!;
+
+
+    
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        f
+    }
 }

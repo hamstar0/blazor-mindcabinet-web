@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 
 namespace MindCabinet.Client.Components.Application;

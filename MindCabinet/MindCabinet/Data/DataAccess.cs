@@ -8,20 +8,24 @@ using static MindCabinet.Program;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDataAccess {
+public partial class ServerDbAccess {
     public class ServerDataAccessParameters {
         public string ConnectionString = "";
     }
 
 
 
-    private SingletonCache Cache;
+    //private SingletonCache Cache;
+    //private ISession Session;
     private string ConnectionString;
 
 
 
-    public ServerDataAccess( SingletonCache cache, IOptions<ServerDataAccessParameters> connectionString ) {
-        this.Cache = cache;
+    public ServerDbAccess( IOptions<ServerDataAccessParameters> connectionString ) {
+        //SingletonCache cache
+        //IHttpContextAccessor hca
+        //this.SessionId = hca.HttpContext.Request.Cookies["SessionId"];
+        //this.Session = hca.HttpContext!.Session;
         this.ConnectionString = connectionString.Value.ConnectionString;
     }
 

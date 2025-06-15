@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 
 
@@ -11,7 +11,7 @@ public partial class PostEditor : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess Data { get; set; } = null!;
+    public ClientDbAccess DbAccess { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -48,8 +48,8 @@ public partial class PostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        PostEntry post = await this.Data.CreatePost_Async(
-            new ClientDataAccess.CreatePostParams( this.PostText, this.Tags )
+        PostEntry post = await this.DbAccess.CreatePost_Async(
+            new ClientDbAccess.CreatePostParams( this.PostText, this.Tags )
         );
 
         this.PostText = "";

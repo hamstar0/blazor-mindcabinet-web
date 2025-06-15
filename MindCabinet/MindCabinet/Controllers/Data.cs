@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
@@ -11,20 +11,20 @@ namespace MindCabinet;
 [ApiController]
 [Route("[controller]")]
 public class DataController : ControllerBase {
-    private readonly ServerDataAccess Data;
+    private readonly ServerDbAccess DbAccess;
 
 
 
-    public DataController( ServerDataAccess data ) {
-        this.Data = data;
+    public DataController( ServerDbAccess dbAccess ) {
+        this.DbAccess = dbAccess;
     }
 
 
     [HttpGet("Install")]
     public async Task<string> Install_Async() {
-        using IDbConnection dbCon = await this.Data.ConnectDb( false );
-
-        if( await this.Data.Install_Async(dbCon) ) {
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb( false );
+        
+        if( await this.DbAccess.Install_Async(dbCon) ) {
             return "Success";
         } else {
             return "Failure";

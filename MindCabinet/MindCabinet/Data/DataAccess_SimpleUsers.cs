@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
 
@@ -7,26 +7,28 @@ using System.Data;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDataAccess {
+public partial class ServerDbAccess {
     public class SimpleUserEntryData {
         public long Id;
         public DateTime Created;
         public string Name = "";
         public string Email = "";
-        //public string PwHash = "";
-        //public string PwSalt = "";
+        public string PwHash = "";
+        public string PwSalt = "";
         public bool IsValidated = false;
         //public bool IsPrivileged = false;
 
 
-        public async Task<SimpleUserEntry> Create_Async( IDbConnection dbCon, ServerDataAccess data ) {
+        public async Task<SimpleUserEntry> Create_Async(
+                IDbConnection dbCon,
+                ServerDbAccess data ) {
             return new SimpleUserEntry(
                 id: this.Id,
                 created: this.Created,
                 name: this.Name,
                 email: this.Email,
-                //pwHash: this.PwHash,
-                //pwSalt: this.PwSalt,
+                pwHash: this.PwHash,
+                pwSalt: this.PwSalt,
                 isValidated: this.IsValidated
                 //isPrivileged: this.IsPrivileged
             );
@@ -87,7 +89,7 @@ public partial class ServerDataAccess {
 
     public async Task<SimpleUserEntry> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.CreateSimpleUserParams parameters,
+                ClientDbAccess.CreateSimpleUserParams parameters,
                 string pwSalt ) {
         DateTime now = DateTime.UtcNow;
 
@@ -110,8 +112,8 @@ public partial class ServerDataAccess {
             created: now,
             name: parameters.Name,
             email: parameters.Email,
-            //hash: hash,
-            //salt: salt,
+            pwHash: parameters.PwHash,
+            pwSalt: pwSalt,
             isValidated: false
         );
 

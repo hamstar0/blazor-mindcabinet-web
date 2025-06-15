@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System;
 using System.Data;
@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDataAccess {
+public partial class ServerDbAccess {
     public class TermEntryData {
         public long Id;
         public string Term = "";
@@ -16,7 +16,7 @@ public partial class ServerDataAccess {
         public long? AliasId;
         
 
-        public async Task<TermEntry> Create_Async( IDbConnection dbCon, ServerDataAccess data ) {
+        public async Task<TermEntry> Create_Async( IDbConnection dbCon, ServerDbAccess data ) {
             return new TermEntry(
                 id: this.Id,
                 term: this.Term,
@@ -79,7 +79,7 @@ public partial class ServerDataAccess {
 
     public async Task<IEnumerable<TermEntry>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.GetTermsByCriteriaParams parameters ) {
+                ClientDbAccess.GetTermsByCriteriaParams parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
 
@@ -122,18 +122,18 @@ public partial class ServerDataAccess {
 	}
 
 
-    public async Task<ClientDataAccess.CreateTermReturn> CreateTerm_Async(
+    public async Task<ClientDbAccess.CreateTermReturn> CreateTerm_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.CreateTermParams parameters ) {
+                ClientDbAccess.CreateTermParams parameters ) {
 		IEnumerable<TermEntry> terms = await this.GetTermsByCriteria_Async(
             dbCon,
-			new ClientDataAccess.GetTermsByCriteriaParams(
+			new ClientDbAccess.GetTermsByCriteriaParams(
 				termPattern: parameters.TermPattern,
 				context: parameters.Context
 			)
 		);
 		if( terms.Count() > 0 ) {
-			return new ClientDataAccess.CreateTermReturn( false, terms.First() );
+			return new ClientDbAccess.CreateTermReturn( false, terms.First() );
 		}
 
         if( parameters.Context is not null && parameters.Context.Id is null ) {
@@ -164,6 +164,6 @@ public partial class ServerDataAccess {
 		);
 		this.TermsById_Cache[newId] = newTerm;
 
-        return new ClientDataAccess.CreateTermReturn( true, newTerm );
+        return new ClientDbAccess.CreateTermReturn( true, newTerm );
     }
 }

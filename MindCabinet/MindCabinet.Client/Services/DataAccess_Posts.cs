@@ -4,11 +4,11 @@ using System.Threading;
 using MindCabinet.Shared.DataEntries;
 
 
-namespace MindCabinet.Client.Data;
+namespace MindCabinet.Client.Services;
 
 
 
-public partial class ClientDataAccess {
+public partial class ClientDbAccess {
     public class GetPostsByCriteriaParams(
                 string bodyPattern,
                 ISet<TermEntry> tags,

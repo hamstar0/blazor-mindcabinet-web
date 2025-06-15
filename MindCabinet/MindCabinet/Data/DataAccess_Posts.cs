@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
 
@@ -7,7 +7,7 @@ using System.Data;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDataAccess {
+public partial class ServerDbAccess {
     public class PostEntryData {
         public long Id;
         public DateTime Created;
@@ -15,12 +15,12 @@ public partial class ServerDataAccess {
         public int TermSetId;
 
 
-        public async Task<PostEntry> CreatePost_Async( IDbConnection dbCon, ServerDataAccess data ) {
+        public async Task<PostEntry> CreatePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
             return new PostEntry(
                 id: this.Id,
                 created: this.Created,
                 body: this.Body,
-                tags: (await data.GetTermSet_Async(dbCon, this.TermSetId)).ToList()
+                tags: (await dbAccess.GetTermSet_Async(dbCon, this.TermSetId)).ToList()
             );
         }
     }
@@ -47,17 +47,17 @@ public partial class ServerDataAccess {
 
         //
 
-        ClientDataAccess.CreateTermReturn term1 = await this.CreateTerm_Async(
+        ClientDbAccess.CreateTermReturn term1 = await this.CreateTerm_Async(
             dbConnection,
-            new ClientDataAccess.CreateTermParams("Term1", null, null)
+            new ClientDbAccess.CreateTermParams("Term1", null, null)
         );
-        ClientDataAccess.CreateTermReturn term2 = await this.CreateTerm_Async(
+        ClientDbAccess.CreateTermReturn term2 = await this.CreateTerm_Async(
             dbConnection,
-            new ClientDataAccess.CreateTermParams("Term2", null, null)
+            new ClientDbAccess.CreateTermParams("Term2", null, null)
         );
-        ClientDataAccess.CreateTermReturn term3 = await this.CreateTerm_Async(
+        ClientDbAccess.CreateTermReturn term3 = await this.CreateTerm_Async(
             dbConnection,
-            new ClientDataAccess.CreateTermParams("Term3", null, null)
+            new ClientDbAccess.CreateTermParams("Term3", null, null)
         );
 
         var fillerPosts = new List<object>() {
@@ -145,7 +145,7 @@ public partial class ServerDataAccess {
 
 
     private (string sql, IDictionary<string, object> sqlParams) GetPostsByCriteriaSql(
-                ClientDataAccess.GetPostsByCriteriaParams parameters, bool countOnly ) {
+                ClientDbAccess.GetPostsByCriteriaParams parameters, bool countOnly ) {
         bool hasWhere = false;
         string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM Posts AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
@@ -189,7 +189,7 @@ public partial class ServerDataAccess {
 
     public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<PostEntry>();
         }
@@ -225,7 +225,7 @@ public partial class ServerDataAccess {
 
     public async Task<int> GetPostCountByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
@@ -253,7 +253,7 @@ public partial class ServerDataAccess {
 
 	public async Task<PostEntry> CreatePost_Async(
                 IDbConnection dbCon,
-                ClientDataAccess.CreatePostParams parameters ) {
+                ClientDbAccess.CreatePostParams parameters ) {
         DateTime now = DateTime.UtcNow;
 
         int newPostId = await dbCon.QuerySingleAsync(

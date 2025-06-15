@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using MindCabinet.Client.Data;
+using MindCabinet.Client.Services;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
@@ -11,27 +11,27 @@ namespace MindCabinet;
 [ApiController]
 [Route("[controller]")]
 public class TermController : ControllerBase {
-    private readonly ServerDataAccess Data;
+    private readonly ServerDbAccess DbAccess;
 
 
 
-    public TermController( ServerDataAccess data ) {
-        this.Data = data;
+    public TermController( ServerDbAccess dbAccess ) {
+        this.DbAccess = dbAccess;
     }
 
 
     [HttpPost("GetByCriteria")]
     public async Task<IEnumerable<TermEntry>> GetByCriteria_Async(
-                ClientDataAccess.GetTermsByCriteriaParams parameters ) {
-        using IDbConnection dbCon = await this.Data.ConnectDb();
+                ClientDbAccess.GetTermsByCriteriaParams parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
 
-        return await this.Data.GetTermsByCriteria_Async( dbCon, parameters );
+        return await this.DbAccess.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
     [HttpPost("Create")]
-    public async Task<ClientDataAccess.CreateTermReturn> Create_Async( ClientDataAccess.CreateTermParams parameters ) {
-        using IDbConnection dbCon = await this.Data.ConnectDb();
+    public async Task<ClientDbAccess.CreateTermReturn> Create_Async( ClientDbAccess.CreateTermParams parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
 
-        return await this.Data.CreateTerm_Async( dbCon, parameters );
+        return await this.DbAccess.CreateTerm_Async( dbCon, parameters );
     }
 }

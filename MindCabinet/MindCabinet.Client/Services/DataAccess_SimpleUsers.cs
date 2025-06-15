@@ -2,11 +2,11 @@
 using MindCabinet.Shared.DataEntries;
 
 
-namespace MindCabinet.Client.Data;
+namespace MindCabinet.Client.Services;
 
 
 
-public partial class ClientDataAccess {
+public partial class ClientDbAccess {
     //public class GetSimpleUsersByCriteriaParams(
     //            string? namePattern,
     //            string? emailPattern,
@@ -25,8 +25,8 @@ public partial class ClientDataAccess {
                 bool isValidated ) {
         public string Name { get; } = name;
         public string Email { get; } = email;
-        public bool IsValidated { get; } = isValidated;
         public string PwHash { get; } = pwHash;
+        public bool IsValidated { get; } = isValidated;
     }
 
 
