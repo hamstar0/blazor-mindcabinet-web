@@ -41,6 +41,8 @@ public class Program {
 
         builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
         builder.Services.AddTransient<ServerDbAccess>();  // not AddSingleton
+        builder.Services.AddScoped<ServerSessionData>();  // not AddSingleton
+        builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
 

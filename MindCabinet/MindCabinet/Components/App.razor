@@ -23,13 +23,13 @@
     
     <script src="main.js"></script>
     <script src="_framework/blazor.web.js"></script>
-    @if( this.ServerData.RenderScripts.Count > 0 ) {
+    @* @if( this.ServerData.RenderScripts.Count > 0 ) {
     <script>
         @foreach( string script in this.ServerData.RenderScripts ) {
-            @(script + "\n")
+            @(new MarkupString(script))
         }
     </script>
-    }
+    } *@
 </body>
 
 </html>

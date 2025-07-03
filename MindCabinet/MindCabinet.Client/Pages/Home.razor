@@ -2,9 +2,6 @@
 
 
 @using MindCabinet.Client.Components.Application;
-@using MindCabinet.Client.Components.Application.Editors;
-@using MindCabinet.Client.Components.Application.Pickers;
-@using MindCabinet.Client.Services;
 
 
 
@@ -28,7 +25,7 @@
     </ul>
 
     <div class="tab-content">
-        @if( this.DbAccess.Http.BaseAddress is not null ) {
+        @if( this.Http.BaseAddress is not null ) {
             <PostsInterface />
         } else {
             <span>Loading...</span>
@@ -36,21 +33,3 @@
         @* <GoalEditor OnGoalSelect="async e => {}" /> *@
     </div>
 </div>
-
-
-
-@code {
-    [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
-    
-    [Inject]
-    public ClientSessionData SessionData { get; set; } = null!;
-
-
-    
-    protected override void OnInitialized() {
-        base.OnInitialized();
-
-        f
-    }
-}

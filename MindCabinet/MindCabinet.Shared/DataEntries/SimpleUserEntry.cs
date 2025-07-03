@@ -7,6 +7,11 @@ namespace MindCabinet.Shared.DataEntries;
 
 
 public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
+	public const int PasswordHashLength = 32;
+	public const int PasswordSaltLength = 16;
+
+
+
 	public static (bool, string) ValidateUserName( string name ) {
 		if( string.IsNullOrEmpty(name) ) {
 			return (false, "Empty");
@@ -58,9 +63,9 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 
     public string Email { get; set; }
 
-	public string PwHash { get; set; }
+	public byte[] PwHash { get; set; }
 
-	public string PwSalt { get; set; }
+	public byte[] PwSalt { get; set; }
 
 	public bool IsValidated { get; set; }
 
@@ -69,16 +74,16 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
     public SimpleUserEntry() {
 		this.Name = string.Empty;
 		this.Email = string.Empty;
-		this.PwHash = string.Empty;
-		this.PwSalt = string.Empty;
+		this.PwHash = new byte[SimpleUserEntry.PasswordHashLength];
+		this.PwSalt = new byte[SimpleUserEntry.PasswordSaltLength];
 	}
 
 	public SimpleUserEntry(
 				DateTime created,
 				string name,
 				string email,
-				string pwHash,
-				string pwSalt,
+                byte[] pwHash,
+				byte[] pwSalt,
 				bool isValidated ) {
 		this.Created = created;
 		this.Name = name;
@@ -93,8 +98,8 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 				DateTime created,
 				string name,
 				string email,
-				string pwHash,
-				string pwSalt,
+				byte[] pwHash,
+				byte[] pwSalt,
 				bool isValidated ) {
         this.Id = id;
         this.Created = created;
@@ -123,7 +128,7 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Name != other.Name ) { return false; }
 		if( this.Email != other.Email ) { return false; }
-		if( includePw && this.PwHash != other.PwHash ) { return false; }
+		if( includePw && !Enumerable.SequenceEqual(this.PwHash, other.PwHash) ) { return false; }
 		if( includePw && this.PwSalt != other.PwSalt ) { return false; }
 		if( includeValidation && this.IsValidated != other.IsValidated ) { return false; }
 		return true;

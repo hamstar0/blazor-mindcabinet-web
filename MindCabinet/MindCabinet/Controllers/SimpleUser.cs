@@ -18,32 +18,35 @@ public class SimpleUserController : ControllerBase {
 
 
 
-    public SimpleUserController( ServerDbAccess dbAccess, ServerSessionData sessData ) {    //IDistributedCache cache
+    public SimpleUserController( ServerDbAccess dbAccess, ServerSessionData sessData ) {
         this.DbAccess = dbAccess;
         this.SessData = sessData;
+    }
 
-        //if( cache.Get("PwSalt") is null ) {
-        //    cache.Set(
-        //        "PwSalt",
-        //        Encoding.ASCII.GetBytes( SimpleUserEntry.GeneratePwSalt() ),
-        //        new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = new TimeSpan(0, 30, 0) }
-        //    );
-        //}
+    [HttpPost("GetSessionData")]
+    public async Task<ClientSessionData.JsonData> GetSessionData_Async() {
+        if( !this.SessData.IsLoaded ) {
+            throw new NullReferenceException( "Session not loaded." );
+        }
+        
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
+
+        return new ClientSessionData.JsonData( this.SessData.SessionId! );
     }
 
     [HttpPost("Create")]
-    public async Task<SimpleUserEntry> Create_Async( ClientDbAccess.CreateSimpleUserParams parameters ) {
-        if( this.SessData.PwSalt is null ) {
-            throw new NullReferenceException( "No password salt for current session." );
+    public async Task<ServerDbAccess.SimpleUserQueryResult> Create_Async(
+                ClientDbAccess.CreateSimpleUserParams parameters ) {
+        if( !this.SessData.IsLoaded ) {
+            throw new NullReferenceException( "Session not loaded." );
         }
-        
+
         using IDbConnection dbCon = await this.DbAccess.ConnectDb();
 
         return await this.DbAccess.CreateSimpleUser_Async(
             dbCon: dbCon,
             parameters: parameters,
-            pwSalt: this.SessData.PwSalt
-            //this.Cache.Users[ current user session id? ].PwSalt
+            pwSalt: this.SessData.PwSalt!
         );
     }
 }

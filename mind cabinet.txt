@@ -13,9 +13,9 @@ v0.3
 -	Implement users
 	-	Implement email validation
 	-	Define UI login prompt
+
+
 	-	Define UI registration prompt (instantiate a salt on first contact)
-
-
 	-	Define session ID + session storage
 	-	Define tables
 v0.2

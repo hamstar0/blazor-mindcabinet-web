@@ -16,6 +16,9 @@ public partial class UserRegistrationForm : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
+    public HttpClient Http { get; set; } = null!;
+
+    [Inject]
     public ClientDbAccess DbAccess { get; set; } = null!;
 
     [Inject]
@@ -29,12 +32,19 @@ public partial class UserRegistrationForm : ComponentBase {
 
     private string Email = "";
 
-    private string Password = "";
+    public string Password = "";
 
     [Parameter, EditorRequired]
     public OnUserCreateFunc_Async OnUserCreate_Async { get; set; } = null!;
 
 
+
+    protected async override Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+
+        await this.SessionData.Load_Async( this.Http );
+    }
+    
 
     private async Task OnInputUserName_UI_Async( string val ) {
         this.UserName = val;
@@ -64,7 +74,8 @@ public partial class UserRegistrationForm : ComponentBase {
         PW_SHORT = 1024,
         PW_LONG = 2048,
         PW_NO_NUM = 4096,
-        PW_NO_UPPER = 8192
+        PW_NO_UPPER = 8192,
+        NO_SESSION = 16384
     }
     
     public static readonly IReadOnlyDictionary<StatusCode, string> StatusCodeMessages = new Dictionary<StatusCode, string> {
@@ -82,6 +93,7 @@ public partial class UserRegistrationForm : ComponentBase {
         { StatusCode.PW_LONG, "Password is too long." },
         { StatusCode.PW_NO_NUM, "Password is missing numbers." },
         { StatusCode.PW_NO_UPPER, "Password missing uppercase letters." },
+        { StatusCode.NO_SESSION, "Session not loaded." },
     }.AsReadOnly();
 
 
@@ -171,6 +183,7 @@ public partial class UserRegistrationForm : ComponentBase {
         StatusCode code = this.GetSubmitUserNameStatusCode();
         code |= this.GetSubmitEmailStatusCode();
         code |= this.GetSubmitPasswordStatusCode();
+        code |= this.SessionData.IsLoaded ? 0 : StatusCode.NO_SESSION;
         return code;
     }
 
@@ -195,8 +208,7 @@ public partial class UserRegistrationForm : ComponentBase {
         SimpleUserEntry user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
             name: this.UserName,
             email: this.Email,
-            pwHash: this.Password,
-            //pwSalt: this.SessionData.CurrentSalt,
+            password: this.Password,
             isValidated: false
         ) );
 

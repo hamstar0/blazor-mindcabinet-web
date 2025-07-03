@@ -19,8 +19,9 @@
     <input type="text"
             title="Password:"
             @bind:event="oninput"
-            @bind:get=@this.Password
-            @bind:set=@this.OnInputPassword_UI_Async />
+            @bind:get=@( () => new string('*', this.Password.Length) )
+            @bind:set=@( async (src) => await this.OnInputPassword_UI_Async( src.Invoke() ) ) />
+            @* @bind:set=this.OnInputPassword_UI_Async /> *@
 	<br />
     <div>@(this.GetSubmitStatuses(this.GetSubmitStatusCode()).FirstOrDefault() ?? " ")</div>
     <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>

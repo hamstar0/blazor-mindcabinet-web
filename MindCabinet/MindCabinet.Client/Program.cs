@@ -14,6 +14,7 @@ public class Program {
         builder.Services.AddScoped( http => new HttpClient {
             BaseAddress = new Uri( builder.HostEnvironment.BaseAddress )
         } );
+        builder.Services.AddSingleton<IsClient>();
         builder.Services.AddScoped<ClientDbAccess>();
         builder.Services.AddSingleton<ClientSessionData>();
 

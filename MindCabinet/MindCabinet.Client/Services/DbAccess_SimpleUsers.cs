@@ -21,11 +21,11 @@ public partial class ClientDbAccess {
     public class CreateSimpleUserParams(
                 string name,
                 string email,
-                string pwHash,
+                string password,
                 bool isValidated ) {
         public string Name { get; } = name;
         public string Email { get; } = email;
-        public string PwHash { get; } = pwHash;
+        public string Password { get; } = password;
         public bool IsValidated { get; } = isValidated;
     }
 

@@ -1,27 +1,32 @@
 ﻿using Dapper;
+using Konscious.Security.Cryptography;
 using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
+using System.Text;
 
 
 namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
+    public class SimpleUserQueryResult( SimpleUserEntry? user, string status ) {
+        public SimpleUserEntry? User = user;
+        public string Status = status;
+    }
+
     public class SimpleUserEntryData {
         public long Id;
         public DateTime Created;
         public string Name = "";
         public string Email = "";
-        public string PwHash = "";
-        public string PwSalt = "";
+        public byte[] PwHash = new byte[SimpleUserEntry.PasswordHashLength];
+        public byte[] PwSalt = new byte[SimpleUserEntry.PasswordSaltLength];
         public bool IsValidated = false;
         //public bool IsPrivileged = false;
+        
 
-
-        public async Task<SimpleUserEntry> Create_Async(
-                IDbConnection dbCon,
-                ServerDbAccess data ) {
+        public SimpleUserEntry Create( IDbConnection dbCon, ServerDbAccess data ) {
             return new SimpleUserEntry(
                 id: this.Id,
                 created: this.Created,
@@ -46,8 +51,8 @@ public partial class ServerDbAccess {
                 Created DATETIME2(2) NOT NULL,
                 Name VARCHAR(128) NOT NULL,
                 Email VARCHAR(320) NOT NULL,
-                PwHash CHAR(256) NOT NULL,
-                PwSalt CHAR(32) NOT NULL,
+                PwHash BYTE("+SimpleUserEntry.PasswordHashLength+@") NOT NULL,
+                PwSalt BYTE("+SimpleUserEntry.PasswordSaltLength+@") NOT NULL,
                 IsValidated BIT NOT NULL
             );"
         //    ON DELETE CASCADE
@@ -71,7 +76,7 @@ public partial class ServerDbAccess {
         }
 
         SimpleUserEntryData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntryData?>(
-            "SELECT * FROM User AS MyUser WHERE Id = @Id",
+            "SELECT * FROM SimpleUsers AS MyUser WHERE Id = @Id",
             new { Id = id }
         );
 
@@ -79,7 +84,7 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        SimpleUserEntry user = await userRaw.Create_Async( dbCon, this );
+        SimpleUserEntry user = userRaw.Create( dbCon, this );
 
         this.SimpleUsersById_Cache.Add( id, user );
 
@@ -87,11 +92,28 @@ public partial class ServerDbAccess {
     }
 
 
-    public async Task<SimpleUserEntry> CreateSimpleUser_Async(
+    public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.CreateSimpleUserParams parameters,
-                string pwSalt ) {
+                byte[] pwSalt ) {
+        SimpleUserEntryData? userByName = await dbCon.QuerySingleAsync<SimpleUserEntryData?>(
+            @"SELECT * FROM SimpleUsers AS MyUser
+                WHERE Name = @Name",
+            new { Name = parameters.Name }
+        );
+        if( userByName is not null ) {
+            return new SimpleUserQueryResult( null, $"User {parameters.Name} already exists" );
+        }
+
         DateTime now = DateTime.UtcNow;
+
+        var argon2id = new Argon2id( Encoding.UTF8.GetBytes(parameters.Password) );
+        argon2id.Salt = pwSalt;
+        argon2id.MemorySize = 12288;
+        argon2id.Iterations = 2;
+        argon2id.DegreeOfParallelism = 1;
+
+        byte[] pw = argon2id.GetBytes( SimpleUserEntry.PasswordHashLength );
 
         int newUserId = await dbCon.QuerySingleAsync(
             @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 
@@ -101,7 +123,7 @@ public partial class ServerDbAccess {
                 Created = now,
                 Name = parameters.Name,
                 Email = parameters.Email,
-                PwHash = parameters.PwHash,
+                PwHash = pw,
                 PwSalt = pwSalt,
                 IsValidated = false
             }
@@ -112,11 +134,11 @@ public partial class ServerDbAccess {
             created: now,
             name: parameters.Name,
             email: parameters.Email,
-            pwHash: parameters.PwHash,
+            pwHash: pw,
             pwSalt: pwSalt,
             isValidated: false
         );
 
-        return newUser;
+        return new SimpleUserQueryResult( newUser, $"User {parameters.Name} successfully created." );
     }
 }
