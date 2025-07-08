@@ -29,15 +29,40 @@ public partial class ClientDbAccess {
         public bool IsValidated { get; } = isValidated;
     }
 
-
-    public async Task<SimpleUserEntry> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
+    public async Task<SimpleUserEntry.ClientData> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "SimpleUser/Create", parameters );
 
         msg.EnsureSuccessStatusCode();
 
-        SimpleUserEntry? ret = await msg.Content.ReadFromJsonAsync<SimpleUserEntry>();
+        SimpleUserEntry.ClientData? ret = await msg.Content.ReadFromJsonAsync<SimpleUserEntry.ClientData>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimpleUserEntry" );
+        }
+
+        return ret;
+    }
+
+
+    public class LoginSimpleUserParams(
+                string name,
+                string password) {
+        public string Name { get; } = name;
+        public string Password { get; } = password;
+    }
+
+    public class SimpleUserLoginReply( SimpleUserEntry.ClientData? user, string status ) {
+        public SimpleUserEntry.ClientData? User { get; } = user;
+        public string Status { get; } = status;
+    }
+
+    public async Task<SimpleUserLoginReply> LoginSimpleUser_Async( LoginSimpleUserParams parameters ) {
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "SimpleUser/Login", parameters );
+
+        msg.EnsureSuccessStatusCode();
+
+        SimpleUserLoginReply? ret = await msg.Content.ReadFromJsonAsync<SimpleUserLoginReply>();
+        if( ret is null ) {
+            throw new InvalidDataException( "Could not deserialize SimpleUserLoginReply" );
         }
 
         return ret;

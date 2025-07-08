@@ -2,11 +2,11 @@
 
 
 
-<div component-name="UserRegistrationForm" class=@this.GetClasses id=@this.ModalId>
+<div component-name="UserLoginForm" class=@this.GetClasses id=@this.ModalId>
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Create new user</h4>
+                <h4 class="modal-title">Login as user</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
@@ -18,21 +18,18 @@
                        @bind:set=@this.OnInputUserName_UI_Async />
                 <br />
                 <input type="text"
-                       title="Email:"
-                       @bind:event="oninput"
-                       @bind:get=@this.Email
-                       @bind:set=@this.OnInputEmail_UI_Async />
-                <br />
-                <input type="text"
                        title="Password:"
                        @bind:event="oninput"
                        @bind:get=@( () => new string('*', this.Password.Length) )
                        @bind:set=@( async (src) => await this.OnInputPassword_UI_Async( src.Invoke() ) ) />
                 @* @bind:set=this.OnInputPassword_UI_Async /> *@
                 <br />
-                <div>@(this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " ")</div>
-                <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
+                <button disabled=@( () => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
             </div>
+
+            @if( this.LoginStatus is not null ) {
+                <div class="modal-footer">@this.LoginStatus</div>
+            }
         </div>
     </div>
 </div>

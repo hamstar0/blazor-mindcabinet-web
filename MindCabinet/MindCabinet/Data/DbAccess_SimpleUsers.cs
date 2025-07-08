@@ -10,34 +10,23 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
+    public static byte[] GetPasswordHash( string password, byte[] pwSalt ) {
+        var argon2id = new Argon2id( Encoding.UTF8.GetBytes( password ) );
+        argon2id.Salt = pwSalt;
+        argon2id.MemorySize = 12288;
+        argon2id.Iterations = 2;
+        argon2id.DegreeOfParallelism = 1;
+
+        return argon2id.GetBytes( SimpleUserEntry.PasswordHashLength );
+    }
+
+    //
+
+
+
     public class SimpleUserQueryResult( SimpleUserEntry? user, string status ) {
         public SimpleUserEntry? User = user;
         public string Status = status;
-    }
-
-    public class SimpleUserEntryData {
-        public long Id;
-        public DateTime Created;
-        public string Name = "";
-        public string Email = "";
-        public byte[] PwHash = new byte[SimpleUserEntry.PasswordHashLength];
-        public byte[] PwSalt = new byte[SimpleUserEntry.PasswordSaltLength];
-        public bool IsValidated = false;
-        //public bool IsPrivileged = false;
-        
-
-        public SimpleUserEntry Create( IDbConnection dbCon, ServerDbAccess data ) {
-            return new SimpleUserEntry(
-                id: this.Id,
-                created: this.Created,
-                name: this.Name,
-                email: this.Email,
-                pwHash: this.PwHash,
-                pwSalt: this.PwSalt,
-                isValidated: this.IsValidated
-                //isPrivileged: this.IsPrivileged
-            );
-        }
     }
 
     //
@@ -75,7 +64,7 @@ public partial class ServerDbAccess {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserEntryData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntryData?>(
+        SimpleUserEntry.DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
             "SELECT * FROM SimpleUsers AS MyUser WHERE Id = @Id",
             new { Id = id }
         );
@@ -84,9 +73,29 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        SimpleUserEntry user = userRaw.Create( dbCon, this );
+        SimpleUserEntry user = userRaw.CreateUserEntry();
 
         this.SimpleUsersById_Cache.Add( id, user );
+
+        return user;
+    }
+
+
+    public async Task<SimpleUserEntry> GetSimpleUser_Async(
+                IDbConnection dbCon,
+                string userName ) {
+        SimpleUserEntry.DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
+            "SELECT * FROM SimpleUsers AS MyUser WHERE Name = @Name",
+            new { Name = userName }
+        );
+
+        if( userRaw is null ) {
+            return null;
+        }
+
+        SimpleUserEntry user = userRaw.CreateUserEntry();
+
+        this.SimpleUsersById_Cache.Add( userRaw.Id, user );
 
         return user;
     }
@@ -96,7 +105,7 @@ public partial class ServerDbAccess {
                 IDbConnection dbCon,
                 ClientDbAccess.CreateSimpleUserParams parameters,
                 byte[] pwSalt ) {
-        SimpleUserEntryData? userByName = await dbCon.QuerySingleAsync<SimpleUserEntryData?>(
+        SimpleUserEntry.DbData? userByName = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
             @"SELECT * FROM SimpleUsers AS MyUser
                 WHERE Name = @Name",
             new { Name = parameters.Name }
@@ -107,13 +116,7 @@ public partial class ServerDbAccess {
 
         DateTime now = DateTime.UtcNow;
 
-        var argon2id = new Argon2id( Encoding.UTF8.GetBytes(parameters.Password) );
-        argon2id.Salt = pwSalt;
-        argon2id.MemorySize = 12288;
-        argon2id.Iterations = 2;
-        argon2id.DegreeOfParallelism = 1;
-
-        byte[] pw = argon2id.GetBytes( SimpleUserEntry.PasswordHashLength );
+        byte[] pwHash = ServerDbAccess.GetPasswordHash( parameters.Password, pwSalt );
 
         int newUserId = await dbCon.QuerySingleAsync(
             @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 
@@ -123,7 +126,7 @@ public partial class ServerDbAccess {
                 Created = now,
                 Name = parameters.Name,
                 Email = parameters.Email,
-                PwHash = pw,
+                PwHash = pwHash,
                 PwSalt = pwSalt,
                 IsValidated = false
             }
@@ -134,7 +137,7 @@ public partial class ServerDbAccess {
             created: now,
             name: parameters.Name,
             email: parameters.Email,
-            pwHash: pw,
+            pwHash: pwHash,
             pwSalt: pwSalt,
             isValidated: false
         );

@@ -5,13 +5,18 @@ namespace MindCabinet.Client.Services;
 
 
 public class ClientSessionData {
-    public class JsonData( string sessionId ) {
+    public class RawData( string sessionId, SimpleUserEntry.ClientData? userData ) {
         public string SessionId = sessionId;
+        public SimpleUserEntry.ClientData? UserData = userData;
     }
 
 
 
-    public JsonData Data { get; private set; } = null!;
+    private RawData? Data;
+
+    public string? SessionId { get => Data?.SessionId; }
+
+    public string? UserName { get => Data?.UserData?.Name; }
 
     public bool IsLoaded { get; private set; } = false;
 
@@ -19,11 +24,11 @@ public class ClientSessionData {
 
     internal async Task Load_Async( HttpClient client ) {
         //ClientSessionData.Json? data = await client.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
-        HttpResponseMessage msg = await client.GetAsync( "Session/Data" );
+        HttpResponseMessage msg = await client.GetAsync( "SimpleUser/GetSessionData" );
 
         msg.EnsureSuccessStatusCode();
 
-        ClientSessionData.JsonData? data = await msg.Content.ReadFromJsonAsync<ClientSessionData.JsonData>();
+        ClientSessionData.RawData? data = await msg.Content.ReadFromJsonAsync<ClientSessionData.RawData>();
         if( data is null ) {
             throw new InvalidDataException( "Could not deserialize ClientSessionData.Json" );
         }
@@ -31,5 +36,18 @@ public class ClientSessionData {
         this.Data = data;
 
         this.IsLoaded = true;
+    }
+
+
+    public void Login( SimpleUserEntry.ClientData user ) {
+        if( this.Data is not null ) {
+            this.Data.UserData = user;
+        }
+    }
+
+    public void Logout() {
+        if( this.Data is not null ) {
+            this.Data.UserData = null;
+        }
     }
 }

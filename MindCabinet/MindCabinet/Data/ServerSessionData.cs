@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using MindCabinet.Shared.DataEntries;
+using System.Security.Cryptography;
 
 namespace MindCabinet.Data;
 
@@ -6,12 +7,16 @@ namespace MindCabinet.Data;
 
 public class ServerSessionData {
     private readonly IHttpContextAccessor HttpContextAccessor;
+    
+    private readonly ServerDbAccess Db;
 
     private IRequestCookieCollection? ReqCookies => this.HttpContextAccessor.HttpContext?.Request.Cookies;
     private IResponseCookies? RespCookies => this.HttpContextAccessor.HttpContext?.Response.Cookies;
 
 
     public string? SessionId { get; private set; }
+
+    public SimpleUserEntry? User { get; private set; }
 
     public byte[] PwSalt { get; private set; } = new byte[16];
 
@@ -23,42 +28,44 @@ public class ServerSessionData {
 
 
 
-    public ServerSessionData( IHttpContextAccessor httpContextAccessor ) {
+    public ServerSessionData( IHttpContextAccessor httpContextAccessor, ServerDbAccess db ) {
         this.HttpContextAccessor = httpContextAccessor;
+        this.Db = db;
         //this.RenderScripts = this._RenderScripts.AsReadOnly();
     }
 
 
 
-    public void Load() {
-        this.LoadSessionId();
-        this.LoadPw();
-
-        this.IsLoaded = true;
-    }
-
-    private void LoadSessionId() {
+    public async Task<bool> Load_Async() {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
-            return;
+            return false;
         }
 
         string? sessId = null;
-        if( !this.ReqCookies?.TryGetValue("sessionid", out sessId) ?? true ) {
-            this.SessionId = Guid.NewGuid().ToString();
+        this.ReqCookies?.TryGetValue( "sessionid", out sessId );
 
-            this.RespCookies.Append( "sessionid", this.SessionId );
+        if( sessId is null ) {
+            this.LoadNewSession( Guid.NewGuid().ToString() );
         } else {
-            this.SessionId = sessId;
+            await this.LoadCurrentSessionUser_Async( sessId );
         }
+
+        this.IsLoaded = true;
+
+        return sessId is not null;
     }
 
 
-    private void LoadPw() {
+    private void LoadNewSession( string sessId ) {
+        this.SessionId = Guid.NewGuid().ToString();
+
         this.PwSalt = new byte[16]; // 128 bits
+
         using( var rng = RandomNumberGenerator.Create() ) {
             rng.GetBytes( this.PwSalt );
         }
 
+        this.RespCookies?.Append( "sessionid", this.SessionId );
 //        this._RenderScripts.Add(
 //@"window.SessionDataFromServer = {
 //    CurrentSalt: """+this.PwSalt+@""",
@@ -66,5 +73,11 @@ public class ServerSessionData {
 //        return { CurrentSalt: window.SessionDataFromServer.CurrentSalt };
 //    }
 //}" );
+    }
+
+    private async Task LoadCurrentSessionUser_Async( string sessId ) {
+        this.SessionId = sessId;
+
+        this.User = await this.Db.GetSimpleUserBySession_Async( sessId );
     }
 }

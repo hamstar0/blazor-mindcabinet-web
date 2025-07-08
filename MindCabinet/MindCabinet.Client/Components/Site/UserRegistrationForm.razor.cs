@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Components.Site;
 
 
 public partial class UserRegistrationForm : ComponentBase {
-    public delegate Task<TermEntry?> OnUserCreateFunc_Async( SimpleUserEntry user );
+    public delegate Task OnUserCreateFunc_Async( SimpleUserEntry.ClientData user );
 
 
 
@@ -27,6 +27,9 @@ public partial class UserRegistrationForm : ComponentBase {
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+    [Parameter, EditorRequired]
+    public string ModalId { get; set; } = null!;
 
     private string UserName = "";
 
@@ -205,7 +208,7 @@ public partial class UserRegistrationForm : ComponentBase {
             return false;
         }
 
-        SimpleUserEntry user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
+        SimpleUserEntry.ClientData user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
             name: this.UserName,
             email: this.Email,
             password: this.Password,

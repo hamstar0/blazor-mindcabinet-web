@@ -2,6 +2,7 @@ v2
 -	Implement post meta-data input (based on tags)
 v1
 -	Deploy
+-	Implement email validation on registration
 
 
 v0.5
@@ -11,7 +12,6 @@ v0.4
 -	Implement picking term from dropdown via keyboard
 v0.3
 -	Implement users
-	-	Implement email validation
 	-	Define UI login prompt
 
 

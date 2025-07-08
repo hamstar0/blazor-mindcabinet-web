@@ -41,9 +41,9 @@
     private MindCabinet.Data.ServerSessionData ServerData { get; set; } = null!;
 
 
-    protected override void OnInitialized() {
-        base.OnInitialized();
+    protected async override Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
 
-        this.ServerData.Load();
+        await this.ServerData.Load_Async();
     }
 }

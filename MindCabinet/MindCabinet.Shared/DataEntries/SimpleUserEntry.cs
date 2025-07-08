@@ -1,17 +1,13 @@
 ﻿using MindCabinet.Shared.Utility;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using System.Text.Json.Serialization;
 
 
 namespace MindCabinet.Shared.DataEntries;
 
 
-public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
-	public const int PasswordHashLength = 32;
-	public const int PasswordSaltLength = 16;
-
-
-
+public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 	public static (bool, string) ValidateUserName( string name ) {
 		if( string.IsNullOrEmpty(name) ) {
 			return (false, "Empty");
@@ -43,15 +39,11 @@ public class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 		return (true, "Is valid");
 	}
 
-	public static string GeneratePwSalt() {
-		return Misc.GetRandomString( 32 );
-	}
-
-	//
+    //
 
 
 
-	public long? Id { get; private set; } = null;
+    public long? Id { get; private set; } = null;
 
 	[JsonIgnore]
 	public bool IsAssignedId { get; private set; } = false;

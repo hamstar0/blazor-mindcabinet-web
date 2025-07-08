@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase;
+﻿@using MindCabinet.Client.Components.Site;
+
+
+@inherits LayoutComponentBase;
 
 
 @* No headers here; server-prerender (MindCabinet\Components\App.razor) gives this to us without delay. *@
@@ -9,6 +12,15 @@
         <div class="top-row px-4">
             <a href="/">Home</a>
             <a href="about">About</a>
+            <div class="vr"></div>
+            @if( this.SessionData.IsLoaded ) {
+                @if( this.SessionData.UserName is not null ) {
+                    <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
+                } else {
+                    <a data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                    <a data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a>
+                }
+            }
         </div>
 
         <article class="content px-4">
@@ -22,3 +34,8 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@if( this.SessionData.IsLoaded && this.SessionData.UserName is null ) {
+    <UserLoginForm ModalId="loginModal" OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
+    <UserRegistrationForm ModalId="signupModal" OnUserCreate_Async=@(async user => this.SessionData.Login(user)) />
+}
