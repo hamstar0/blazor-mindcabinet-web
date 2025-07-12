@@ -1,4 +1,5 @@
 ﻿using MindCabinet.Shared.DataEntries;
+using System.Data;
 using System.Security.Cryptography;
 
 namespace MindCabinet.Data;
@@ -36,7 +37,7 @@ public class ServerSessionData {
 
 
 
-    public async Task<bool> Load_Async() {
+    public async Task<bool> Load_Async( IDbConnection dbCon ) {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
             return false;
         }
@@ -47,7 +48,7 @@ public class ServerSessionData {
         if( sessId is null ) {
             this.LoadNewSession( Guid.NewGuid().ToString() );
         } else {
-            await this.LoadCurrentSessionUser_Async( sessId );
+            await this.LoadCurrentSessionUser_Async( dbCon, sessId );
         }
 
         this.IsLoaded = true;
@@ -75,9 +76,14 @@ public class ServerSessionData {
 //}" );
     }
 
-    private async Task LoadCurrentSessionUser_Async( string sessId ) {
+    private async Task LoadCurrentSessionUser_Async( IDbConnection dbCon, string sessId ) {
         this.SessionId = sessId;
 
-        this.User = await this.Db.GetSimpleUserBySession_Async( sessId );
+        this.User = await this.Db.GetSimpleUserBySession_Async( dbCon, sessId );
+    }
+
+
+    public async Task Visit_Async( IDbConnection dbCon ) {
+        await this.Db.VisitSimpleUserSession_Async( dbCon, this );
     }
 }

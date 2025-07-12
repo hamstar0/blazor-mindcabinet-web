@@ -48,6 +48,8 @@ public partial class ServerDbAccess {
         //    ON UPDATE CASCADE
         );
 
+        await this.InstallSimpleUserSessions_Async( dbConnection );
+
         return true;
     }
 

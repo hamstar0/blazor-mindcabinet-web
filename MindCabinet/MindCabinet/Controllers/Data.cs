@@ -22,7 +22,7 @@ public class DataController : ControllerBase {
 
     [HttpGet("Install")]
     public async Task<string> Install_Async() {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb( false );
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async( false );
         
         if( await this.DbAccess.Install_Async(dbCon) ) {
             return "Success";

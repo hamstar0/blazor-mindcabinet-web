@@ -17,19 +17,23 @@ public partial class ServerDbAccess {
 
     //private SingletonCache Cache;
     //private ISession Session;
+    private IHttpContextAccessor Http;
     private string ConnectionString;
 
 
 
-    public ServerDbAccess( IOptions<ServerDataAccessParameters> connectionString ) {
+    public ServerDbAccess(
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<ServerDataAccessParameters> connectionString ) {
         //SingletonCache cache
         //IHttpContextAccessor hca
         //this.SessionId = hca.HttpContext.Request.Cookies["SessionId"];
         //this.Session = hca.HttpContext!.Session;
+        this.Http = httpContextAccessor;
         this.ConnectionString = connectionString.Value.ConnectionString;
     }
 
-    public async Task<IDbConnection> ConnectDb( bool validateInstall=true ) {
+    public async Task<IDbConnection> ConnectDb_Async( bool validateInstall=true ) {
         //using var con = new SqlConnection( this.ConnectionString );
         var dbCon = new SqlConnection( this.ConnectionString );
         dbCon.Open();

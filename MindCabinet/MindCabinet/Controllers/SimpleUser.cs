@@ -42,13 +42,21 @@ public class SimpleUserController : ControllerBase {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         ServerDbAccess.SimpleUserQueryResult result = await this.DbAccess.CreateSimpleUser_Async(
             dbCon: dbCon,
             parameters: parameters,
             pwSalt: this.SessData.PwSalt!
         );
+
+        if( result.User is not null ) {
+            await this.DbAccess.CreateSimpleUserSession_Async(
+                dbCon: dbCon,
+                user: result.User,
+                session: this.SessData
+            );
+        }
 
         return new ClientDbAccess.SimpleUserLoginReply(
             result.User?.GetClientOnlyData(),
@@ -59,7 +67,11 @@ public class SimpleUserController : ControllerBase {
     [HttpPost("Login")]
     public async Task<ClientDbAccess.SimpleUserLoginReply> Login_Async(
                 ClientDbAccess.LoginSimpleUserParams parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
+        if( !this.SessData.IsLoaded ) {
+            throw new NullReferenceException( "Session not loaded." );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         var user = await this.DbAccess.GetSimpleUser_Async( dbCon, parameters.Name );
         if( user is null ) {
@@ -70,8 +82,21 @@ public class SimpleUserController : ControllerBase {
 
         if( !Enumerable.SequenceEqual(user.PwHash, pwHash) ) {
             return new ClientDbAccess.SimpleUserLoginReply( null, "Invalid password." );
-        } else {
-            return new ClientDbAccess.SimpleUserLoginReply( user.GetClientOnlyData(), "User validated." );
         }
+
+        await this.DbAccess.VisitSimpleUserSession_Async( dbCon, this.SessData );
+
+        return new ClientDbAccess.SimpleUserLoginReply( user.GetClientOnlyData(), "User validated." );
+    }
+
+    [HttpPost("Visit")]
+    public async Task Visit_Async() {
+        if( !this.SessData.IsLoaded || this.SessData.User is null ) {
+            return;
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+
+        await this.DbAccess.VisitSimpleUserSession_Async( dbCon, this.SessData );
     }
 }

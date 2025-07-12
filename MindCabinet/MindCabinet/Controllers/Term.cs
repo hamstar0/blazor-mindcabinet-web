@@ -23,14 +23,14 @@ public class TermController : ControllerBase {
     [HttpPost("GetByCriteria")]
     public async Task<IEnumerable<TermEntry>> GetByCriteria_Async(
                 ClientDbAccess.GetTermsByCriteriaParams parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
     [HttpPost("Create")]
     public async Task<ClientDbAccess.CreateTermReturn> Create_Async( ClientDbAccess.CreateTermParams parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb();
+        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.CreateTerm_Async( dbCon, parameters );
     }

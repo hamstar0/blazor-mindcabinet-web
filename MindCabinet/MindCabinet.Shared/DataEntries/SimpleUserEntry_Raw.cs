@@ -40,6 +40,36 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
     }
 
 
+    public class SessionData {
+        public string SessionId;
+        public string Ip;
+        public long SimpleUserId;
+        public DateTime FirstVisit;
+        public DateTime LatestVisit;
+        public int Visits;
+
+        public SessionData() {
+            this.SessionId = "";
+            this.Ip = "";
+        }
+
+        public SessionData(
+                    string sessionId,
+                    string ip,
+                    long simpleUserId,
+                    DateTime firstVisit,
+                    DateTime latestVisit,
+                    int visits ) {
+            this.SessionId = sessionId;
+            this.Ip = ip;
+            this.SimpleUserId = simpleUserId;
+            this.FirstVisit = firstVisit;
+            this.LatestVisit = latestVisit;
+            this.Visits = visits;
+        }
+    }
+
+
 
     public ClientData GetClientOnlyData() {
 		return new ClientData( this.Id ?? 0, this.Name, this.Created, this.Email );
