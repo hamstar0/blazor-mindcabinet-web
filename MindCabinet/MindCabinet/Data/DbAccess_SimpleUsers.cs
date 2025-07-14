@@ -107,7 +107,7 @@ public partial class ServerDbAccess {
         var userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserAndSessionDbData?>(
             @"SELECT * FROM SimpleUsers AS User
                 INNER JOIN SimpleUserSessions AS Sess ON (User.Id = Sess.SimpleUserId)
-                WHERE Sess.Id = @SessionId",
+                WHERE Sess.SessionId = @SessionId",
             new { SessionId = sessionId }
         );
 

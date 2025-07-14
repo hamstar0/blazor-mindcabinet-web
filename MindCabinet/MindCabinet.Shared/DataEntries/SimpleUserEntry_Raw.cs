@@ -55,7 +55,7 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
     }
 
     public class UserAndSessionDbData : UserDbData {    // multiple inheritance?
-        public string Id = "";
+        public string SessionId = "";
         public string IpAddress = "";
         public long SimpleUserId;
         public DateTime FirstVisit;

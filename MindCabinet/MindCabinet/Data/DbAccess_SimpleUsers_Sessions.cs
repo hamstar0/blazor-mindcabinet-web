@@ -1,9 +1,6 @@
 ﻿using Dapper;
-using Konscious.Security.Cryptography;
-using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataEntries;
 using System.Data;
-using System.Text;
 
 
 namespace MindCabinet.Data;
@@ -13,7 +10,7 @@ public partial class ServerDbAccess {
     public async Task InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserSesions (
-                Id VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
+                SessionId VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 FirstVisit DATETIME2(2) NOT NULL,
@@ -35,30 +32,36 @@ public partial class ServerDbAccess {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }
-
-        var sessData = await dbCon.QuerySingleAsync<SimpleUserEntry.SessionDbData?>(
-            "SELECT * FROM SimpleUserSession WHERE Id = @SessionId",
-            new { SessionId = session.SessionId }
-        );
-        if( sessData is not null ) {
-            throw new Exception( "Session already exists." );
+        if( session.IpAddress is null ) {
+            throw new Exception( "Invalid IP address." );
         }
+
+        //var sessData = await dbCon.QuerySingleAsync<SimpleUserEntry.SessionDbData?>(
+        //    "SELECT * FROM SimpleUserSession WHERE SessionId = @SessionId",
+        //    new { SessionId = session.SessionId }
+        //);
+        //if( sessData is not null ) {
+        //    throw new Exception( "Session already exists." );
+        //}
 
         DateTime now = DateTime.UtcNow;
 
-        await dbCon.QuerySingleAsync(
+        int rows = await dbCon.ExecuteAsync(
             @"INSERT INTO SimpleUserSession
-                (Id, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
-                VALUES (@Id, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
+                (SessionId, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
+                VALUES (@SessionId, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
-                Id = session.SessionId,
-                IpAddress = session.IpAddress ?? "",
+                SessionId = session.SessionId,
+                IpAddress = session.IpAddress,
                 SimpleUserId = user.Id,
                 FirstVisit = now,
                 LatestVisit = now,
                 Visits = 1
             }
         );
+        if( rows != 1 ) {
+            throw new Exception( "Session already exists." );
+        }
     }
 
 
@@ -72,7 +75,7 @@ public partial class ServerDbAccess {
         int rows = await dbCon.ExecuteAsync(
             @"UPDATE SimpleUserSession
                 SET Visits = Visits + 1, LatestVisit = @Now
-                WHERE Id = @SessionId",
+                WHERE SessionId = @SessionId",
             new {
                 Now = DateTime.UtcNow,
                 SessionId = session.SessionId

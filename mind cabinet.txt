@@ -11,6 +11,7 @@ v0.5
 v0.4
 -	Implement term context input
 -	Implement picking term from dropdown via keyboard
+-	@Test
 
 
 v0.3

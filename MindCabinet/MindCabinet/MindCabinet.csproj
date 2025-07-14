@@ -9,11 +9,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Components\App.razor.cs" />
+		<Compile Remove="Components\App.razor.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Components\App.razor.cs" />
+		<Content Include="Components\App.razor.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
