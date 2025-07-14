@@ -1,13 +1,8 @@
 using System;
-using System.Data;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Data.SqlClient;
 using MindCabinet.Data;
 using MindCabinet.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Pages;
-using Dapper;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace MindCabinet;
@@ -39,9 +34,10 @@ public class Program {
         // builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
 
+        builder.Services.AddSingleton<ServerSettings>();
         builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
         builder.Services.AddTransient<ServerDbAccess>();  // not AddSingleton
-        builder.Services.AddScoped<ServerSessionData>();  // not AddSingleton
+        builder.Services.AddScoped<ServerSessionData>();
         builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();

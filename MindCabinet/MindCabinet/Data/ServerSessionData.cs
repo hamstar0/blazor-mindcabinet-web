@@ -7,15 +7,17 @@ namespace MindCabinet.Data;
 
 
 public class ServerSessionData {
-    private readonly IHttpContextAccessor HttpContextAccessor;
+    private readonly IHttpContextAccessor Http;
     
     private readonly ServerDbAccess Db;
 
-    private IRequestCookieCollection? ReqCookies => this.HttpContextAccessor.HttpContext?.Request.Cookies;
-    private IResponseCookies? RespCookies => this.HttpContextAccessor.HttpContext?.Response.Cookies;
+    private IRequestCookieCollection? ReqCookies => this.Http.HttpContext?.Request.Cookies;
+    private IResponseCookies? RespCookies => this.Http.HttpContext?.Response.Cookies;
 
 
     public string? SessionId { get; private set; }
+
+    public string? IpAddress { get; private set; }
 
     public SimpleUserEntry? User { get; private set; }
 
@@ -29,8 +31,8 @@ public class ServerSessionData {
 
 
 
-    public ServerSessionData( IHttpContextAccessor httpContextAccessor, ServerDbAccess db ) {
-        this.HttpContextAccessor = httpContextAccessor;
+    public ServerSessionData( IHttpContextAccessor http, ServerDbAccess db ) {
+        this.Http = http;
         this.Db = db;
         //this.RenderScripts = this._RenderScripts.AsReadOnly();
     }
@@ -45,20 +47,27 @@ public class ServerSessionData {
         string? sessId = null;
         this.ReqCookies?.TryGetValue( "sessionid", out sessId );
 
-        if( sessId is null ) {
-            this.LoadNewSession( Guid.NewGuid().ToString() );
-        } else {
-            await this.LoadCurrentSessionUser_Async( dbCon, sessId );
+        bool isLoggedIn = sessId is not null;
+
+        if( isLoggedIn ) {
+            isLoggedIn = await this.LoadCurrentSessionUser_Async( dbCon, sessId! );
+        }
+
+        if( !isLoggedIn ) {
+            sessId = Guid.NewGuid().ToString();
+
+            this.LoadNewSession( sessId );
         }
 
         this.IsLoaded = true;
 
-        return sessId is not null;
+        return isLoggedIn;
     }
 
 
     private void LoadNewSession( string sessId ) {
-        this.SessionId = Guid.NewGuid().ToString();
+        this.SessionId = sessId;
+        this.IpAddress = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
         this.PwSalt = new byte[16]; // 128 bits
 
@@ -76,10 +85,35 @@ public class ServerSessionData {
 //}" );
     }
 
-    private async Task LoadCurrentSessionUser_Async( IDbConnection dbCon, string sessId ) {
-        this.SessionId = sessId;
+    /**
+     * @return `true` if session is a valid user.
+     */
+    private async Task<bool> LoadCurrentSessionUser_Async( IDbConnection dbCon, string sessId ) {
+        string ip = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
+        if( string.IsNullOrEmpty(ip) ) {
+            throw new Exception( "Who are you?" );
+        }
 
-        this.User = await this.Db.GetSimpleUserBySession_Async( dbCon, sessId );
+        if( this.User is not null ) {
+            if( this.IpAddress != ip ) {
+                throw new Exception( "Hax!" );  //TODO
+            }
+
+            if( this.SessionId != sessId ) {
+                throw new Exception( "shit be whack, yo" );
+            }
+            return true;
+        }
+
+        this.User = await this.Db.GetSimpleUserBySession_Async( dbCon, sessId, ip );
+
+        if( this.User is not null ) {
+            this.SessionId = sessId;
+        } else {
+            this.SessionId = null;
+        }
+
+        return this.User is not null;
     }
 
 

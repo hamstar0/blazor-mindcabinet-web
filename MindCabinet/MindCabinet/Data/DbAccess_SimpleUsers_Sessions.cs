@@ -13,8 +13,8 @@ public partial class ServerDbAccess {
     public async Task InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserSesions (
-                SessionId VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
-                Ip VARCHAR(45) NOT NULL,
+                Id VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
+                IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 FirstVisit DATETIME2(2) NOT NULL,
                 LatestVisit DATETIME2(2) NOT NULL
@@ -36,8 +36,8 @@ public partial class ServerDbAccess {
             throw new Exception( "Session not loaded." );
         }
 
-        SimpleUserEntry.SessionData? sessData = await dbCon.QuerySingleAsync<SimpleUserEntry.SessionData?>(
-            "SELECT * FROM SimpleUserSession WHERE SessionId = @SessionId",
+        var sessData = await dbCon.QuerySingleAsync<SimpleUserEntry.SessionDbData?>(
+            "SELECT * FROM SimpleUserSession WHERE Id = @SessionId",
             new { SessionId = session.SessionId }
         );
         if( sessData is not null ) {
@@ -48,11 +48,11 @@ public partial class ServerDbAccess {
 
         await dbCon.QuerySingleAsync(
             @"INSERT INTO SimpleUserSession
-                (SessionId, Ip, SimpleUserId, FirstVisit, LatestVisit, Visits) 
-                VALUES (@SessionId, @Ip, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
+                (Id, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
+                VALUES (@Id, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
-                SessionId = session.SessionId,
-                Ip = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "",
+                Id = session.SessionId,
+                IpAddress = session.IpAddress ?? "",
                 SimpleUserId = user.Id,
                 FirstVisit = now,
                 LatestVisit = now,
@@ -72,7 +72,7 @@ public partial class ServerDbAccess {
         int rows = await dbCon.ExecuteAsync(
             @"UPDATE SimpleUserSession
                 SET Visits = Visits + 1, LatestVisit = @Now
-                WHERE SessionId = @SessionId",
+                WHERE Id = @SessionId",
             new {
                 Now = DateTime.UtcNow,
                 SessionId = session.SessionId

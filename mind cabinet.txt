@@ -2,6 +2,7 @@ v2
 -	Implement post meta-data input (based on tags)
 v1
 -	Deploy
+-	Implement invalid session ip handling
 -	Implement email validation on registration
 
 
@@ -10,12 +11,14 @@ v0.5
 v0.4
 -	Implement term context input
 -	Implement picking term from dropdown via keyboard
+
+
 v0.3
 -	Implement users
+	-	Implement session ip validation
+	-	Ensure proper scoped session caching
 	-	Implement session expiration
 	-	Implement session resume
-
-
 	-	Define UI login prompt
 	-	Define UI registration prompt (instantiate a salt on first contact)
 	-	Define session ID + session storage

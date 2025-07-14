@@ -9,6 +9,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Components\App.razor.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Components\App.razor.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\MindCabinet.Shared\MindCabinet.Shared.csproj" />
 		<ProjectReference Include="..\MindCabinet.Client\MindCabinet.Client.csproj" />
 		<PackageReference Include="Dapper" Version="2.1.35" />

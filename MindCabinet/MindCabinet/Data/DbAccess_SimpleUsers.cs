@@ -66,8 +66,8 @@ public partial class ServerDbAccess {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserEntry.DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
-            "SELECT * FROM SimpleUsers AS MyUser WHERE Id = @Id",
+        SimpleUserEntry.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+            "SELECT * FROM SimpleUsers WHERE Id = @Id",
             new { Id = id }
         );
 
@@ -83,11 +83,9 @@ public partial class ServerDbAccess {
     }
 
 
-    public async Task<SimpleUserEntry> GetSimpleUser_Async(
-                IDbConnection dbCon,
-                string userName ) {
-        SimpleUserEntry.DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
-            "SELECT * FROM SimpleUsers AS MyUser WHERE Name = @Name",
+    public async Task<SimpleUserEntry?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
+        SimpleUserEntry.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+            "SELECT * FROM SimpleUsers WHERE Name = @Name",
             new { Name = userName }
         );
 
@@ -102,14 +100,53 @@ public partial class ServerDbAccess {
         return user;
     }
 
+    public async Task<SimpleUserEntry?> GetSimpleUserBySession_Async(
+                IDbConnection dbCon,
+                string sessionId,
+                string ipAddress ) {
+        var userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserAndSessionDbData?>(
+            @"SELECT * FROM SimpleUsers AS User
+                INNER JOIN SimpleUserSessions AS Sess ON (User.Id = Sess.SimpleUserId)
+                WHERE Sess.Id = @SessionId",
+            new { SessionId = sessionId }
+        );
+
+        if( userRaw is null ) {
+            return null;
+        }
+
+        bool isValidIp = userRaw.IpAddress == ipAddress;
+        bool isNotExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
+
+        if( !isValidIp ) {
+            throw new Exception( "Hax!" );  //TODO
+        }
+
+        if( !isValidIp || !isNotExpired ) {
+            await dbCon.ExecuteAsync(
+                "DELETE FROM SimpleUserSessions WHERE Id = @SessionId",
+                new {
+                    SessionId = sessionId
+                }
+            );
+
+            return null;
+        }
+
+        SimpleUserEntry user = userRaw.CreateUserEntry();
+
+        this.SimpleUsersById_Cache.Add( (long)user.Id!, user );
+
+        return user;
+    }
+
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.CreateSimpleUserParams parameters,
                 byte[] pwSalt ) {
-        SimpleUserEntry.DbData? userByName = await dbCon.QuerySingleAsync<SimpleUserEntry.DbData?>(
-            @"SELECT * FROM SimpleUsers AS MyUser
-                WHERE Name = @Name",
+        var userByName = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+            "SELECT * FROM SimpleUsers WHERE Name = @Name",
             new { Name = parameters.Name }
         );
         if( userByName is not null ) {
