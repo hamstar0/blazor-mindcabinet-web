@@ -38,9 +38,9 @@ public partial class ServerDbAccess {
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
-                CONSTRAINT FK_ContextId FOREIGN KEY (ContextId)
+                CONSTRAINT FK_ContextTermId FOREIGN KEY (ContextId)
                     REFERENCES Terms(Id),
-                CONSTRAINT FK_AliasId FOREIGN KEY (AliasId)
+                CONSTRAINT FK_AliasTermId FOREIGN KEY (AliasId)
                     REFERENCES Terms(Id)
             );"
         );
@@ -144,10 +144,10 @@ public partial class ServerDbAccess {
         }
 
         long newId = await dbCon.QuerySingleAsync<long>(
-            @"INSERT INTO Terms (Term, ContextId, AliasId)
-                OUTPUT INSERTED.id
+            @"INSERT INTO Terms (Term, ContextId, AliasId) 
+                OUTPUT INSERTED.Id 
                 VALUES (@Term, @ContextId, @AliasId)",
-            //OUTPUT INSERTED.id",
+            //OUTPUT INSERTED.Id",
             //SELECT SCOPE_IDENTITY()
             new {
                 Term = parameters.TermPattern,

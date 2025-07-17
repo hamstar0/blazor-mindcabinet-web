@@ -15,7 +15,7 @@ public partial class ServerDbAccess {
                 SetId INT NOT NULL,
                 TermId BIGINT NOT NULL,
                 CONSTRAINT PK_Id PRIMARY KEY (SetId, TermId),
-                CONSTRAINT FK_TermId FOREIGN KEY (TermId)
+                CONSTRAINT FK_TermSetTermId FOREIGN KEY (TermId)
                     REFERENCES Terms(Id)
             );"
             //    ON DELETE CASCADE
@@ -39,8 +39,8 @@ public partial class ServerDbAccess {
                 IDbConnection dbCon,
                 params TermEntry[] parameters ) {
         long newSetId = await dbCon.QuerySingleAsync<long>(
-            @"INSERT INTO TermSetIdSupplier (Bogus)
-                    OUTPUT INSERTED.Id
+            @"INSERT INTO TermSetIdSupplier (Bogus) 
+                    OUTPUT INSERTED.Id 
                     VALUES (null)"
         );
 

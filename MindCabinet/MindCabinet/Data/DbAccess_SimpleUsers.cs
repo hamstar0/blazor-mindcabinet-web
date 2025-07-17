@@ -33,24 +33,38 @@ public partial class ServerDbAccess {
 
 
 
-    public async Task<bool> InstallSimpleUsers_Async( IDbConnection dbConnection ) {
+    public async Task<(bool success, long defaultUserId)> InstallSimpleUsers_Async(
+                IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUsers (
                 Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
                 Created DATETIME2(2) NOT NULL,
                 Name VARCHAR(128) NOT NULL,
                 Email VARCHAR(320) NOT NULL,
-                PwHash BYTE("+SimpleUserEntry.PasswordHashLength+@") NOT NULL,
-                PwSalt BYTE("+SimpleUserEntry.PasswordSaltLength+@") NOT NULL,
+                PwHash BINARY("+SimpleUserEntry.PasswordHashLength+@") NOT NULL,
+                PwSalt BINARY("+SimpleUserEntry.PasswordSaltLength+@") NOT NULL,
                 IsValidated BIT NOT NULL
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
         );
 
-        await this.InstallSimpleUserSessions_Async( dbConnection );
+        long defaultUserId = await dbConnection.QuerySingleAsync<long>(
+            @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 
+                OUTPUT INSERTED.Id 
+                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);",
+            new {
+                Created = DateTime.UtcNow,
+                Name = "hamstar",
+                Email = "hamstarhelper@gmail.com",
+                PwHash = new byte[SimpleUserEntry.PasswordHashLength],
+                PwSalt = new byte[SimpleUserEntry.PasswordSaltLength],
+                IsValidated = false,
+            }
+        );
+        //throw new Exception( JsonSerializer.Serialize(obj) );
 
-        return true;
+        return (true, defaultUserId);
     }
 
     //
@@ -159,8 +173,8 @@ public partial class ServerDbAccess {
 
         int newUserId = await dbCon.QuerySingleAsync(
             @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 
-                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated)
-                OUTPUT INSERTED.Id",
+                OUTPUT INSERTED.Id 
+                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);",
             new {
                 Created = now,
                 Name = parameters.Name,

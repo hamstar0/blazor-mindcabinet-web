@@ -65,7 +65,26 @@ public partial class ServerDbAccess {
 
 
     public async Task<bool> Install_Async( IDbConnection dbCon ) {
-        return await this.InstallTerms_Async( dbCon )
-            && await this.InstallPosts_Async( dbCon );
+        bool success;
+        long defaultUserId;
+
+        (success, defaultUserId) = await this.InstallSimpleUsers_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        success = await this.InstallSimpleUserSessions_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        success = await this.InstallTerms_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        success = await this.InstallPosts_Async( dbCon, defaultUserId );
+        if( !success ) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -7,21 +7,23 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
-    public async Task InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
+    public async Task<bool> InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
-            CREATE TABLE SimpleUserSesions (
+            CREATE TABLE SimpleUserSessions (
                 SessionId VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 FirstVisit DATETIME2(2) NOT NULL,
-                LatestVisit DATETIME2(2) NOT NULL
+                LatestVisit DATETIME2(2) NOT NULL,
                 Visits INT NOT NULL,
-                CONSTRAINT FK_UserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES SimpleUsers(Id)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
         );
+
+        return true;
     }
 
 
@@ -47,7 +49,7 @@ public partial class ServerDbAccess {
         DateTime now = DateTime.UtcNow;
 
         int rows = await dbCon.ExecuteAsync(
-            @"INSERT INTO SimpleUserSession
+            @"INSERT INTO SimpleUserSessions
                 (SessionId, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
                 VALUES (@SessionId, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
@@ -73,7 +75,7 @@ public partial class ServerDbAccess {
         }
 
         int rows = await dbCon.ExecuteAsync(
-            @"UPDATE SimpleUserSession
+            @"UPDATE SimpleUserSessions
                 SET Visits = Visits + 1, LatestVisit = @Now
                 WHERE SessionId = @SessionId",
             new {
