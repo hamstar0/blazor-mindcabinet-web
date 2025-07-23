@@ -1,4 +1,4 @@
-﻿using MindCabinet.Shared.DataEntries;
+﻿using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
 

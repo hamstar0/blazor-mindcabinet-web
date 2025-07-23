@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 using static MindCabinet.Client.Services.ClientDbAccess;
 
 
@@ -12,7 +12,7 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TermEditor : ComponentBase {
-    public delegate Task<TermEntry?> OnTermConfirmFunc_Async( TermEntry term, bool isAdded );
+    public delegate Task<TermObject?> OnTermConfirmFunc_Async( TermObject term, bool isAdded );
 
 
 
@@ -32,7 +32,7 @@ public partial class TermEditor : ComponentBase {
 
     private bool IsSeachFocused = false;
 
-    private IEnumerable<TermEntry> SearchOptions = new List<TermEntry>();
+    private IEnumerable<TermObject> SearchOptions = new List<TermObject>();
 
 
     [Parameter]
@@ -78,7 +78,7 @@ public partial class TermEditor : ComponentBase {
         }
         
         if( string.IsNullOrEmpty(termText) ) {
-            this.SearchOptions = new List<TermEntry>();
+            this.SearchOptions = new List<TermObject>();
             this.Value = "";
 
             return;
@@ -105,7 +105,7 @@ public partial class TermEditor : ComponentBase {
             return false;
         }
 
-        this.SearchOptions = new List<TermEntry>();
+        this.SearchOptions = new List<TermObject>();
 
         return await this.SubmitNewTerm_Async( termText! );
     }
@@ -114,7 +114,7 @@ public partial class TermEditor : ComponentBase {
             new ClientDbAccess.CreateTermParams( termText, null, null )
         );
 
-        TermEntry? newerTerm = await this.OnTermConfirm_Async( newTermRet.Term, newTermRet.IsAdded );
+        TermObject? newerTerm = await this.OnTermConfirm_Async( newTermRet.Term, newTermRet.IsAdded );
 
         if( newerTerm is null ) {
             this.Value = "";
@@ -132,7 +132,7 @@ public partial class TermEditor : ComponentBase {
 
     private async Task TrySearchTerm_Async( string termText ) {
         if( termText.Length == 0 ) {
-            this.SearchOptions = new List<TermEntry>();
+            this.SearchOptions = new List<TermObject>();
 
             return;
         }
@@ -142,7 +142,7 @@ public partial class TermEditor : ComponentBase {
         );
     }
 
-    private async Task SelectSearchResults_UI_Async( TermEntry term ) {
+    private async Task SelectSearchResults_UI_Async( TermObject term ) {
 //Console.WriteLine( "SelectSearchResults_UI_Async "+term.ToString()+", "+this.Disabled );
         if( this.Disabled ) {
             return;
@@ -151,7 +151,7 @@ public partial class TermEditor : ComponentBase {
         //    return;
         //}
 
-        this.SearchOptions = new List<TermEntry>();
+        this.SearchOptions = new List<TermObject>();
         this.Value = term.Term;
 
         await this.OnTermConfirm_Async( term, false );

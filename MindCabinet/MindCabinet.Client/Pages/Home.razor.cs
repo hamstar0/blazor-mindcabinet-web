@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Net.Http.Json;
 using static MindCabinet.Client.Services.ClientSessionData;
 using static System.Net.WebRequestMethods;

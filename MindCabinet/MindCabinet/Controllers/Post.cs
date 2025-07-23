@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
@@ -22,7 +22,7 @@ public class PostController : ControllerBase {
 
 
     [HttpPost("GetByCriteria")]
-    public async Task<IEnumerable<PostEntry>> GetByCriteria_Async(
+    public async Task<IEnumerable<PostObject>> GetByCriteria_Async(
                 ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
@@ -38,7 +38,7 @@ public class PostController : ControllerBase {
     }
 
     [HttpPost("Create")]
-    public async Task<PostEntry> Create_Async( ClientDbAccess.CreatePostParams parameters ) {
+    public async Task<PostObject> Create_Async( ClientDbAccess.CreatePostParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.CreatePost_Async( dbCon, parameters );

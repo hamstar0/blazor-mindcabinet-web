@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 using System;
 using System.Data;
 
@@ -16,8 +16,8 @@ public partial class ServerDbAccess {
         public long? AliasId;
         
 
-        public async Task<TermEntry> Create_Async( IDbConnection dbCon, ServerDbAccess data ) {
-            return new TermEntry(
+        public async Task<TermObject> Create_Async( IDbConnection dbCon, ServerDbAccess data ) {
+            return new TermObject(
                 id: this.Id,
                 term: this.Term,
                 context: this.ContextId is not null ? await data.GetTerm_Async(dbCon, this.ContextId.Value) : null,
@@ -52,11 +52,11 @@ public partial class ServerDbAccess {
 
 
 
-    private IDictionary<long, TermEntry> TermsById_Cache = new Dictionary<long, TermEntry>();
+    private IDictionary<long, TermObject> TermsById_Cache = new Dictionary<long, TermObject>();
 
 
 
-    public async Task<TermEntry?> GetTerm_Async( IDbConnection dbCon, long id ) {
+    public async Task<TermObject?> GetTerm_Async( IDbConnection dbCon, long id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
@@ -70,14 +70,14 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        TermEntry term = await termRaw.Create_Async( dbCon, this );
+        TermObject term = await termRaw.Create_Async( dbCon, this );
 
         this.TermsById_Cache.Add( id, term );
 
         return term;
     }
 
-    public async Task<IEnumerable<TermEntry>> GetTermsByCriteria_Async(
+    public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.GetTermsByCriteriaParams parameters ) {
         //var terms = this.Terms.Values
@@ -112,7 +112,7 @@ public partial class ServerDbAccess {
         IEnumerable<TermEntryData> terms = await dbCon.QueryAsync<TermEntryData>(
             sql, new DynamicParameters(sqlParams) );
 
-        IList<TermEntry> termList = new List<TermEntry>( terms.Count() );
+        IList<TermObject> termList = new List<TermObject>( terms.Count() );
 
         foreach( TermEntryData term in terms ) {
             termList.Add( await term.Create_Async(dbCon, this) );
@@ -125,7 +125,7 @@ public partial class ServerDbAccess {
     public async Task<ClientDbAccess.CreateTermReturn> CreateTerm_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.CreateTermParams parameters ) {
-		IEnumerable<TermEntry> terms = await this.GetTermsByCriteria_Async(
+		IEnumerable<TermObject> terms = await this.GetTermsByCriteria_Async(
             dbCon,
 			new ClientDbAccess.GetTermsByCriteriaParams(
 				termPattern: parameters.TermPattern,
@@ -156,7 +156,7 @@ public partial class ServerDbAccess {
             }
         );
 
-        var newTerm = new TermEntry(
+        var newTerm = new TermObject(
 			id: newId,
 			term: parameters.TermPattern,
 			context: parameters.Context,

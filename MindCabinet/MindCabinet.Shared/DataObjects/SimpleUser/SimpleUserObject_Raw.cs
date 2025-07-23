@@ -1,15 +1,15 @@
 ﻿using MindCabinet.Shared.Utility;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using static MindCabinet.Shared.DataEntries.SimpleUserEntry;
+using static MindCabinet.Shared.DataObjects.SimpleUserObject;
 
 
-namespace MindCabinet.Shared.DataEntries;
+namespace MindCabinet.Shared.DataObjects;
 
 
 public static class SimpleUserEntryExt {
-    public static SimpleUserEntry CreateUserEntry( this UserDbData data ) {
-        return new SimpleUserEntry(
+    public static SimpleUserObject CreateUserEntry( this UserDbData data ) {
+        return new SimpleUserObject(
             id: data.Id,
             created: data.Created,
             name: data.Name,
@@ -24,7 +24,7 @@ public static class SimpleUserEntryExt {
 
 
 
-public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
+public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
     public class ClientData( long id, string name, DateTime created, string email ) {
         public long Id { get; } = id;
         public string Name { get; } = name;
@@ -38,8 +38,8 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
         public DateTime Created;
         public string Name = "";
         public string Email = "";
-        public byte[] PwHash = new byte[SimpleUserEntry.PasswordHashLength];
-        public byte[] PwSalt = new byte[SimpleUserEntry.PasswordSaltLength];
+        public byte[] PwHash = new byte[SimpleUserObject.PasswordHashLength];
+        public byte[] PwSalt = new byte[SimpleUserObject.PasswordSaltLength];
         public bool IsValidated = false;
         //public bool IsPrivileged = false;
     }

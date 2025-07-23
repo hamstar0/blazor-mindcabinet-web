@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 
 namespace MindCabinet.Client.Components.Application;
 
@@ -35,10 +36,10 @@ public partial class PostsBrowser : ComponentBase {
 
     private string SearchTerm = "";
 
-	private IList<TermEntry> FilterTags = new List<TermEntry>();
+	private IList<TermObject> FilterTags = new List<TermObject>();
 
 
-    private IEnumerable<PostEntry> CurrentPagePosts_Cache = [];
+    private IEnumerable<PostObject> CurrentPagePosts_Cache = [];
 	private int TotalPages_Cache;
 	private int TotalPosts_Cache;
 
@@ -64,15 +65,15 @@ public partial class PostsBrowser : ComponentBase {
     }
 
 
-    public async Task<IEnumerable<PostEntry>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
+    public async Task<IEnumerable<PostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
         var search = new ClientDbAccess.GetPostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
-            tags: new HashSet<TermEntry>( this.FilterTags ),
+            tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<PostEntry> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
+        IEnumerable<PostObject> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
@@ -81,7 +82,7 @@ public partial class PostsBrowser : ComponentBase {
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
         int totalPosts = await this.DbAccess.GetPostCountByCriteria_Async( new ClientDbAccess.GetPostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
-            tags: new HashSet<TermEntry>( this.FilterTags ),
+            tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: 0,
             postsPerPage: -1
@@ -126,15 +127,18 @@ public partial class PostsBrowser : ComponentBase {
         await this.RefreshPosts_Async();
     }
 
-    public async Task SetFilterTags_Async( IList<TermEntry> tags ) {
+    public async Task SetFilterTags_Async( IList<TermObject> alreadyChangedTags ) {
+        var currentTags = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
+        var changedTags = new HashSet<string>( alreadyChangedTags.Select(t=>t.ToString()) );
+
 //Console.WriteLine( "SetFilterTags_Async " + string.Join(", ", tags.Select(t=>t.ToString())) );
-        if( new HashSet<TermEntry>( this.FilterTags).Equals( new HashSet<TermEntry>(tags) ) ) {
+        if( currentTags.SetEquals(changedTags) ) {
 //Console.WriteLine( " equal" );
             return;
         }
 
         this.CurrentPageNumber = 0;
-        this.FilterTags = tags;
+        this.FilterTags = alreadyChangedTags;
 
         await this.RefreshPosts_Async();
     }

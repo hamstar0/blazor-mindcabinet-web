@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 
 
@@ -21,7 +21,7 @@ public class TermController : ControllerBase {
 
 
     [HttpPost("GetByCriteria")]
-    public async Task<IEnumerable<TermEntry>> GetByCriteria_Async(
+    public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
                 ClientDbAccess.GetTermsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 

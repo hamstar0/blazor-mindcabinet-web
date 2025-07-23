@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using MindCabinet.Shared.DataObjects.Term;
+using System.Text.Json.Serialization;
 
 
-namespace MindCabinet.Shared.DataEntries;
+namespace MindCabinet.Shared.DataObjects;
 
 
-public class PostEntry : IEquatable<PostEntry> {
+public class PostObject : IEquatable<PostObject> {
 	public long? Id { get; private set; } = null;
 
 	[JsonIgnore]
@@ -15,22 +16,22 @@ public class PostEntry : IEquatable<PostEntry> {
 
     public string Body { get; set; }
 
-    public IList<TermEntry> Tags { get; set; }
+    public IList<TermObject> Tags { get; set; }
 
 
 
-    public PostEntry() {
+    public PostObject() {
 		this.Body = string.Empty;
-		this.Tags = new List<TermEntry>();
+		this.Tags = new List<TermObject>();
 	}
 
-	public PostEntry( DateTime created, string body, IList<TermEntry> tags ) {
+	public PostObject( DateTime created, string body, IList<TermObject> tags ) {
 		this.Created = created;
 		this.Body = body;
 		this.Tags = tags;
 	}
 
-	public PostEntry( long id, DateTime created, string body, IList<TermEntry> tags ) {
+	public PostObject( long id, DateTime created, string body, IList<TermObject> tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;
@@ -38,7 +39,7 @@ public class PostEntry : IEquatable<PostEntry> {
 	}
 
 
-	public bool Equals( PostEntry? other ) {
+	public bool Equals( PostObject? other ) {
 		if( other is null ) { return false; }
 		if( this == other ) { return true; }
 
@@ -47,7 +48,7 @@ public class PostEntry : IEquatable<PostEntry> {
 		return true;
 	}
 
-	public bool ContentEquals( PostEntry other, bool includeCreateDate ) {
+	public bool ContentEquals( PostObject other, bool includeCreateDate ) {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Body != other.Body ) { return false; }
 		if( this.Tags.Count != other.Tags.Count ) { return false; }
@@ -56,7 +57,7 @@ public class PostEntry : IEquatable<PostEntry> {
 	}
 
 
-	public bool Test( string bodyPattern, ISet<TermEntry> tags ) {
+	public bool Test( string bodyPattern, ISet<TermObject> tags ) {
 		if( !string.IsNullOrEmpty(bodyPattern) && !this.Body.Contains(bodyPattern) ) {
 			return false;
 		}

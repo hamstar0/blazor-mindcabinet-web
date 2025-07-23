@@ -1,13 +1,13 @@
-﻿using MindCabinet.Shared.DataEntries;
+﻿using MindCabinet.Shared.DataObjects;
 using System.Net.Http.Json;
 
 namespace MindCabinet.Client.Services;
 
 
 public class ClientSessionData {
-    public class RawData( string sessionId, SimpleUserEntry.ClientData? userData ) {
+    public class RawData( string sessionId, SimpleUserObject.ClientData? userData ) {
         public string SessionId = sessionId;
-        public SimpleUserEntry.ClientData? UserData = userData;
+        public SimpleUserObject.ClientData? UserData = userData;
     }
 
 
@@ -39,7 +39,7 @@ public class ClientSessionData {
     }
 
 
-    public void Login( SimpleUserEntry.ClientData user ) {
+    public void Login( SimpleUserObject.ClientData user ) {
         if( this.Data is not null ) {
             this.Data.UserData = user;
         }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Components.Site;
 
 
 public partial class UserRegistrationForm : ComponentBase {
-    public delegate Task OnUserCreateFunc_Async( SimpleUserEntry.ClientData user );
+    public delegate Task OnUserCreateFunc_Async( SimpleUserObject.ClientData user );
 
 
 
@@ -208,7 +208,7 @@ public partial class UserRegistrationForm : ComponentBase {
             return false;
         }
 
-        SimpleUserEntry.ClientData user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
+        SimpleUserObject.ClientData user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
             name: this.UserName,
             email: this.Email,
             password: this.Password,

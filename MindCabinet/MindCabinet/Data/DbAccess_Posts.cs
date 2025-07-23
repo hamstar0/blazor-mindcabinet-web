@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
@@ -15,8 +15,8 @@ public partial class ServerDbAccess {
         public int TermSetId;
 
 
-        public async Task<PostEntry> CreatePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
-            return new PostEntry(
+        public async Task<PostObject> CreatePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
+            return new PostObject(
                 id: this.Id,
                 created: this.Created,
                 body: this.Body,
@@ -173,12 +173,13 @@ public partial class ServerDbAccess {
 
 
     private (string sql, IDictionary<string, object> sqlParams) GetPostsByCriteriaSql(
-                ClientDbAccess.GetPostsByCriteriaParams parameters, bool countOnly ) {
+                ClientDbAccess.GetPostsByCriteriaParams parameters,
+                bool countOnly ) {
         bool hasWhere = false;
         string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM Posts AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
-        if( !string.IsNullOrEmpty( parameters.BodyPattern ) ) {
+        if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
             sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
             sqlParams["@Body"] = $"%{parameters.BodyPattern}%";
             hasWhere = true;
@@ -191,7 +192,9 @@ public partial class ServerDbAccess {
                         INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.Id = MyPosts.TermSetId
                     ) ALL (@Tags)";
-            sqlParams["@Tags"] = parameters.Tags.ToList();
+            sqlParams["@Tags"] = parameters.Tags
+                .Select( t => t.Id )
+                .ToList();
             //      ) ALL (";
             //int i = 1;
             //foreach( TermEntry tag in parameters.Tags ) {
@@ -204,7 +207,10 @@ public partial class ServerDbAccess {
             hasWhere = true;
         }
 
-        sql += $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
+        if( !countOnly ) {
+            sql += $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
+        }
+
         if( parameters.PostsPerPage > 0 ) {
             sql += @" OFFSET @Offset ROWS
                     FETCH NEXT @Quantity ROWS ONLY;";
@@ -215,11 +221,11 @@ public partial class ServerDbAccess {
         return (sql, sqlParams);
     }
 
-    public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async(
+    public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
-            return Enumerable.Empty<PostEntry>();
+            return Enumerable.Empty<PostObject>();
         }
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
@@ -228,7 +234,7 @@ public partial class ServerDbAccess {
             sql, new DynamicParameters( sqlParams )
         );
 
-        IList<PostEntry> postList = new List<PostEntry>( posts.Count() );
+        IList<PostObject> postList = new List<PostObject>( posts.Count() );
 
         foreach( PostEntryData post in posts ) {
             postList.Add( await post.CreatePost_Async(dbCon, this) );
@@ -260,9 +266,7 @@ public partial class ServerDbAccess {
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, true );
 
-        return await dbCon.QuerySingleAsync<int>(
-            sql, new DynamicParameters( sqlParams )
-        );
+        return await dbCon.QuerySingleAsync<int>( sql, new DynamicParameters(sqlParams) );
 
         //var filteredPosts = this.Posts.Values
         //    .Where( p => p.Test( parameters.BodyPattern, parameters.Tags ) );
@@ -279,7 +283,7 @@ public partial class ServerDbAccess {
     }
 
 
-	public async Task<PostEntry> CreatePost_Async(
+	public async Task<PostObject> CreatePost_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.CreatePostParams parameters ) {
         DateTime now = DateTime.UtcNow;
@@ -295,7 +299,7 @@ public partial class ServerDbAccess {
             }
         );
 
-        var newTerm = new PostEntry(
+        var newTerm = new PostObject(
             id: newPostId,
             created: now,
             body: parameters.Body,

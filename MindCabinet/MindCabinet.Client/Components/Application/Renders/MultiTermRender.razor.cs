@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -19,10 +19,10 @@ public partial class MultiTermRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-	public IEnumerable<TermEntry> Terms { get; set; } = null!;
+	public IEnumerable<TermObject> Terms { get; set; } = null!;
 
 	[Parameter]
-	public Func<TermEntry, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
+	public Func<TermObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
 
     public bool HasFocus { get; private set; } = false;
 }

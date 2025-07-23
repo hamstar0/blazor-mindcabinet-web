@@ -4,10 +4,10 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 
-namespace MindCabinet.Shared.DataEntries;
+namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
+public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 	public static (bool, string) ValidateUserName( string name ) {
 		if( string.IsNullOrEmpty(name) ) {
 			return (false, "Empty");
@@ -63,14 +63,14 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 
 
 
-    public SimpleUserEntry() {
+    public SimpleUserObject() {
 		this.Name = string.Empty;
 		this.Email = string.Empty;
-		this.PwHash = new byte[SimpleUserEntry.PasswordHashLength];
-		this.PwSalt = new byte[SimpleUserEntry.PasswordSaltLength];
+		this.PwHash = new byte[SimpleUserObject.PasswordHashLength];
+		this.PwSalt = new byte[SimpleUserObject.PasswordSaltLength];
 	}
 
-	public SimpleUserEntry(
+	public SimpleUserObject(
 				DateTime created,
 				string name,
 				string email,
@@ -85,7 +85,7 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 		this.IsValidated = isValidated;
 	}
 
-	public SimpleUserEntry(
+	public SimpleUserObject(
 				long id,
 				DateTime created,
 				string name,
@@ -103,7 +103,7 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
     }
 
 
-	public bool Equals( SimpleUserEntry? other ) {
+	public bool Equals( SimpleUserObject? other ) {
 		if( other is null ) { return false; }
 		if( this == other ) { return true; }
 
@@ -113,7 +113,7 @@ public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
 	}
 
 	public bool ContentEquals(
-				SimpleUserEntry other,
+				SimpleUserObject other,
 				bool includeCreateDate,
 				bool includePw,
 				bool includeValidation ) {

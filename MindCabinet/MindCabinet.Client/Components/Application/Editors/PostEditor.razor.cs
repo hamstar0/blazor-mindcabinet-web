@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Components.Application.Editors;
@@ -23,10 +24,10 @@ public partial class PostEditor : ComponentBase {
 
     private string PostText = "";
 
-    private IList<TermEntry> Tags = new List<TermEntry>();
+    private IList<TermObject> Tags = new List<TermObject>();
 
     [Parameter, EditorRequired]
-    public Func<PostEntry, Task> OnSubmit_Async { get; set; } = null!;
+    public Func<PostObject, Task> OnSubmit_Async { get; set; } = null!;
 
 
 
@@ -36,7 +37,7 @@ public partial class PostEditor : ComponentBase {
         this.StateHasChanged();
     }
 
-    private async Task OnTagsChangeHandler_UI_Async( IList<TermEntry> tags, TermEntry changedTag, bool isAdded ) {
+    private async Task OnTagsChangeHandler_UI_Async( IList<TermObject> tags, TermObject changedTag, bool isAdded ) {
         this.Tags = tags;
 
         this.StateHasChanged();
@@ -48,7 +49,7 @@ public partial class PostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        PostEntry post = await this.DbAccess.CreatePost_Async(
+        PostObject post = await this.DbAccess.CreatePost_Async(
             new ClientDbAccess.CreatePostParams( this.PostText, this.Tags )
         );
 

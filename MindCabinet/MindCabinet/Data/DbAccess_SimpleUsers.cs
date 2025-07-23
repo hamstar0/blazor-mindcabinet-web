@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Konscious.Security.Cryptography;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Text;
 
@@ -17,15 +17,15 @@ public partial class ServerDbAccess {
         argon2id.Iterations = 2;
         argon2id.DegreeOfParallelism = 1;
 
-        return argon2id.GetBytes( SimpleUserEntry.PasswordHashLength );
+        return argon2id.GetBytes( SimpleUserObject.PasswordHashLength );
     }
 
     //
 
 
 
-    public class SimpleUserQueryResult( SimpleUserEntry? user, string status ) {
-        public SimpleUserEntry? User = user;
+    public class SimpleUserQueryResult( SimpleUserObject? user, string status ) {
+        public SimpleUserObject? User = user;
         public string Status = status;
     }
 
@@ -41,8 +41,8 @@ public partial class ServerDbAccess {
                 Created DATETIME2(2) NOT NULL,
                 Name VARCHAR(128) NOT NULL,
                 Email VARCHAR(320) NOT NULL,
-                PwHash BINARY("+SimpleUserEntry.PasswordHashLength+@") NOT NULL,
-                PwSalt BINARY("+SimpleUserEntry.PasswordSaltLength+@") NOT NULL,
+                PwHash BINARY("+SimpleUserObject.PasswordHashLength+@") NOT NULL,
+                PwSalt BINARY("+SimpleUserObject.PasswordSaltLength+@") NOT NULL,
                 IsValidated BIT NOT NULL
             );"
         //    ON DELETE CASCADE
@@ -57,8 +57,8 @@ public partial class ServerDbAccess {
                 Created = DateTime.UtcNow,
                 Name = "hamstar",
                 Email = "hamstarhelper@gmail.com",
-                PwHash = new byte[SimpleUserEntry.PasswordHashLength],
-                PwSalt = new byte[SimpleUserEntry.PasswordSaltLength],
+                PwHash = new byte[SimpleUserObject.PasswordHashLength],
+                PwSalt = new byte[SimpleUserObject.PasswordSaltLength],
                 IsValidated = false,
             }
         );
@@ -71,16 +71,16 @@ public partial class ServerDbAccess {
 
 
 
-    private IDictionary<long, SimpleUserEntry> SimpleUsersById_Cache = new Dictionary<long, SimpleUserEntry>();
+    private IDictionary<long, SimpleUserObject> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject>();
 
 
 
-    public async Task<SimpleUserEntry?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
+    public async Task<SimpleUserObject?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
         if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserEntry.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+        SimpleUserObject.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.UserDbData?>(
             "SELECT * FROM SimpleUsers WHERE Id = @Id",
             new { Id = id }
         );
@@ -89,7 +89,7 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        SimpleUserEntry user = userRaw.CreateUserEntry();
+        SimpleUserObject user = userRaw.CreateUserEntry();
 
         this.SimpleUsersById_Cache.Add( id, user );
 
@@ -97,8 +97,8 @@ public partial class ServerDbAccess {
     }
 
 
-    public async Task<SimpleUserEntry?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
-        SimpleUserEntry.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+    public async Task<SimpleUserObject?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
+        SimpleUserObject.UserDbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.UserDbData?>(
             "SELECT * FROM SimpleUsers WHERE Name = @Name",
             new { Name = userName }
         );
@@ -107,21 +107,21 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        SimpleUserEntry user = userRaw.CreateUserEntry();
+        SimpleUserObject user = userRaw.CreateUserEntry();
 
         this.SimpleUsersById_Cache.Add( userRaw.Id, user );
 
         return user;
     }
 
-    public async Task<SimpleUserEntry?> GetSimpleUserBySession_Async(
+    public async Task<SimpleUserObject?> GetSimpleUserBySession_Async(
                 IDbConnection dbCon,
                 string sessionId,
                 string ipAddress ) {
-        var userRaw = await dbCon.QuerySingleAsync<SimpleUserEntry.UserAndSessionDbData?>(
-            @"SELECT * FROM SimpleUsers AS User
-                INNER JOIN SimpleUserSessions AS Sess ON (User.Id = Sess.SimpleUserId)
-                WHERE Sess.SessionId = @SessionId",
+        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSessionDbData?>(
+            @"SELECT * FROM SimpleUsers AS Users 
+                INNER JOIN SimpleUserSessions AS Sessions ON (Users.Id = Sessions.SimpleUserId) 
+                WHERE Sessions.SessionId = @SessionId",
             new { SessionId = sessionId }
         );
 
@@ -147,7 +147,7 @@ public partial class ServerDbAccess {
             return null;
         }
 
-        SimpleUserEntry user = userRaw.CreateUserEntry();
+        SimpleUserObject user = userRaw.CreateUserEntry();
 
         this.SimpleUsersById_Cache.Add( (long)user.Id!, user );
 
@@ -159,7 +159,7 @@ public partial class ServerDbAccess {
                 IDbConnection dbCon,
                 ClientDbAccess.CreateSimpleUserParams parameters,
                 byte[] pwSalt ) {
-        var userByName = await dbCon.QuerySingleAsync<SimpleUserEntry.UserDbData?>(
+        var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.UserDbData?>(
             "SELECT * FROM SimpleUsers WHERE Name = @Name",
             new { Name = parameters.Name }
         );
@@ -185,7 +185,7 @@ public partial class ServerDbAccess {
             }
         );
 
-        var newUser = new SimpleUserEntry(
+        var newUser = new SimpleUserObject(
             id: newUserId,
             created: now,
             name: parameters.Name,

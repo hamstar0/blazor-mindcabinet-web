@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Components.Site;
 
 
 public partial class UserLoginForm : ComponentBase {
-    public delegate Task OnUserLoginFunc_Async( SimpleUserEntry.ClientData user );
+    public delegate Task OnUserLoginFunc_Async( SimpleUserObject.ClientData user );
 
 
 

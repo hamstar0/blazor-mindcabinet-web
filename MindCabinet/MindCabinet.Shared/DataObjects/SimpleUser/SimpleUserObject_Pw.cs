@@ -4,10 +4,10 @@ using System.Text;
 using System.Text.Json.Serialization;
 
 
-namespace MindCabinet.Shared.DataEntries;
+namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimpleUserEntry : IEquatable<SimpleUserEntry> {
+public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 	public const int PasswordHashLength = 32;
 	public const int PasswordSaltLength = 16;
 

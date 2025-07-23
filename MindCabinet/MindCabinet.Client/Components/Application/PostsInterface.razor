@@ -3,7 +3,7 @@
 @using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataEntries;
+@using MindCabinet.Shared.DataObjects
 
 
 
@@ -15,7 +15,7 @@
 
 
 @code {
-    private async Task OnPostSubmit_UI_Async( PostEntry post ) {
+    private async Task OnPostSubmit_UI_Async( PostObject post ) {
 //var search = new ClientDataAccess.GetPostsByCriteriaParams(
 //    bodyPattern: "",
 //    tags: new HashSet<TermEntry>(),

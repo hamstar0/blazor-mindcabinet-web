@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -22,7 +22,7 @@ public partial class TermRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-	public TermEntry Term { get; set; } = null!;
+	public TermObject Term { get; set; } = null!;
 
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;

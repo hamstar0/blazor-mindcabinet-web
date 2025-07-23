@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
@@ -29,7 +29,7 @@ public partial class ServerDbAccess {
 
     public async Task CreateSimpleUserSession_Async(
                 IDbConnection dbCon,
-                SimpleUserEntry user,
+                SimpleUserObject user,
                 ServerSessionData session ) {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );

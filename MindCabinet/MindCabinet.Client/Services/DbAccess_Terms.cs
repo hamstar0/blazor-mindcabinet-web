@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Services;
@@ -9,16 +9,16 @@ namespace MindCabinet.Client.Services;
 public partial class ClientDbAccess {
     public class GetTermsByCriteriaParams(
                 string termPattern,
-                TermEntry? context ) {
+                TermObject? context ) {
         public string TermPattern { get; } = termPattern;
-        public TermEntry? Context { get; } = context;
+        public TermObject? Context { get; } = context;
     }
 
     //
 
 
     
-    public async Task<IEnumerable<TermEntry>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Term/GetByCriteria", parameters );
 
         msg.EnsureSuccessStatusCode();
@@ -26,7 +26,7 @@ public partial class ClientDbAccess {
 //string jsondata = await msg.Content.ReadAsStringAsync();
 //Console.WriteLine( "Term/GetByCriteria: "+jsondata );
 //return new List<TermEntry>();
-        IEnumerable<TermEntry>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<TermEntry>>();
+        IEnumerable<TermObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<TermObject>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<TermEntry>" );
         }
@@ -41,18 +41,18 @@ public partial class ClientDbAccess {
 
     public class CreateTermParams(
                 string termPattern,
-                TermEntry? context,
-                TermEntry? alias ) {
+                TermObject? context,
+                TermObject? alias ) {
         public string TermPattern { get; } = termPattern;
-        public TermEntry? Context { get; } = context;
-        public TermEntry? Alias { get; } = alias;
+        public TermObject? Context { get; } = context;
+        public TermObject? Alias { get; } = alias;
     }
 
     public class CreateTermReturn(
                 bool isAdded,
-                TermEntry term ) {
+                TermObject term ) {
         public bool IsAdded { get; } = isAdded;
-        public TermEntry Term { get; } = term;
+        public TermObject Term { get; } = term;
     }
     
     public async Task<CreateTermReturn> CreateTerm_Async( CreateTermParams parameters ) {

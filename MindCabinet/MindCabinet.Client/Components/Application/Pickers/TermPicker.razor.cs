@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Components.Application.Pickers;
@@ -26,7 +26,7 @@ public partial class TermPicker : ComponentBase {
 
     private bool IsCurrentInputSuppressed = false;
 
-    private IList<TermEntry> SearchOptions = new List<TermEntry>();
+    private IList<TermObject> SearchOptions = new List<TermObject>();
 
     private int SearchPosition = -1;
 
@@ -35,7 +35,7 @@ public partial class TermPicker : ComponentBase {
     public bool Disabled { get; set; } = false;
 
     [Parameter, EditorRequired]
-    public Func<TermEntry, Task> OnTermSelect_Async { get; set; } = null!;
+    public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
 
 
@@ -88,17 +88,17 @@ public partial class TermPicker : ComponentBase {
         }
 
         if( termText is not null ) {
-            IEnumerable<TermEntry> terms = await this.DbAccess.GetTermsByCriteria_Async(
+            IEnumerable<TermObject> terms = await this.DbAccess.GetTermsByCriteria_Async(
                 new ClientDbAccess.GetTermsByCriteriaParams( termText, null )
             );
             this.SearchOptions = terms.ToList();    // TODO
         } else {
-            this.SearchOptions = new List<TermEntry>();
+            this.SearchOptions = new List<TermObject>();
         }
     }
 
 
-    private async Task SelectSearchResults_UI_Async( TermEntry term ) {
+    private async Task SelectSearchResults_UI_Async( TermObject term ) {
         if( this.Disabled ) {
             return;
         }
@@ -109,7 +109,7 @@ public partial class TermPicker : ComponentBase {
         await this.SelectSearchResults_Async( term );
     }
 
-    private async Task SelectSearchResults_Async( TermEntry term ) {
+    private async Task SelectSearchResults_Async( TermObject term ) {
         this.Value = term.Term ?? "";
 
         await this.OnTermSelect_Async.Invoke( term );

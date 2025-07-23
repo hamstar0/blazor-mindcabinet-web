@@ -1,4 +1,4 @@
-﻿using MindCabinet.Shared.DataEntries;
+﻿using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Client.Services;

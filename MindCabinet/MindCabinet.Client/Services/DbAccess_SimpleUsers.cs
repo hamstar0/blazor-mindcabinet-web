@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Client.Services;
@@ -29,12 +29,12 @@ public partial class ClientDbAccess {
         public bool IsValidated { get; } = isValidated;
     }
 
-    public async Task<SimpleUserEntry.ClientData> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
+    public async Task<SimpleUserObject.ClientData> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "SimpleUser/Create", parameters );
 
         msg.EnsureSuccessStatusCode();
 
-        SimpleUserEntry.ClientData? ret = await msg.Content.ReadFromJsonAsync<SimpleUserEntry.ClientData>();
+        SimpleUserObject.ClientData? ret = await msg.Content.ReadFromJsonAsync<SimpleUserObject.ClientData>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimpleUserEntry" );
         }
@@ -50,8 +50,8 @@ public partial class ClientDbAccess {
         public string Password { get; } = password;
     }
 
-    public class SimpleUserLoginReply( SimpleUserEntry.ClientData? user, string status ) {
-        public SimpleUserEntry.ClientData? User { get; } = user;
+    public class SimpleUserLoginReply( SimpleUserObject.ClientData? user, string status ) {
+        public SimpleUserObject.ClientData? User { get; } = user;
         public string Status { get; } = status;
     }
 

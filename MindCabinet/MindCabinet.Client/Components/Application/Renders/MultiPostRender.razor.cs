@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -19,8 +19,8 @@ public partial class MultiPostRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-    public IEnumerable<PostEntry> Posts { get; set; } = [];
+    public IEnumerable<PostObject> Posts { get; set; } = [];
 
     [Parameter]
-	public Func<PostEntry, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
+	public Func<PostObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
 }

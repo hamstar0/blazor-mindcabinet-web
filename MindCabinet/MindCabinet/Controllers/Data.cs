@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 

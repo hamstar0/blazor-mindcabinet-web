@@ -1,7 +1,8 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Options;
 using System.Threading;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Services;
@@ -11,12 +12,12 @@ namespace MindCabinet.Client.Services;
 public partial class ClientDbAccess {
     public class GetPostsByCriteriaParams(
                 string bodyPattern,
-                ISet<TermEntry> tags,
+                ISet<TermObject> tags,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
         public string BodyPattern { get; } = bodyPattern;
-        public ISet<TermEntry> Tags { get; } = tags;
+        public ISet<TermObject> Tags { get; } = tags;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
         public int PageNumber { get; } = pageNumber;
         public int PostsPerPage { get; } = postsPerPage;
@@ -31,12 +32,12 @@ public partial class ClientDbAccess {
         }
     }
     
-    public async Task<IEnumerable<PostEntry>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetByCriteria", parameters );
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<PostEntry>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<PostEntry>>();
+        IEnumerable<PostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<PostObject>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<PostEntry>" );
         }
@@ -62,17 +63,17 @@ public partial class ClientDbAccess {
 
     public class CreatePostParams(
                 string body,
-                IList<TermEntry> tags ) {
+                IList<TermObject> tags ) {
         public string Body { get; } = body;
-        public IList<TermEntry> Tags { get; } = tags;
+        public IList<TermObject> Tags { get; } = tags;
     }
     
-    public async Task<PostEntry> CreatePost_Async( CreatePostParams parameters ) {
+    public async Task<PostObject> CreatePost_Async( CreatePostParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/Create", parameters );
 
         msg.EnsureSuccessStatusCode();
 
-        PostEntry? ret = await msg.Content.ReadFromJsonAsync<PostEntry>();
+        PostObject? ret = await msg.Content.ReadFromJsonAsync<PostObject>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize PostEntry" );
         }

@@ -31,7 +31,7 @@ public partial class App : ComponentBase {
 
         await this.SessionData.Load_Async( dbCon );
 
-        if( this.SessionData.SessionId is not null ) {
+        if( this.SessionData.User is not null ) {
             if( isClient ) {
                 throw new Exception( "test!" );
             } else {

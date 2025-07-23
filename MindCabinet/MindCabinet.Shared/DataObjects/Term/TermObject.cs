@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MindCabinet.Shared.DataEntries;
+namespace MindCabinet.Shared.DataObjects.Term;
 
 
-public class TermEntry : IEquatable<TermEntry>, IComparable, IComparable<TermEntry> {
+public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
     public long? Id { get; private set; } = null;
 
     [JsonIgnore]
@@ -11,23 +11,23 @@ public class TermEntry : IEquatable<TermEntry>, IComparable, IComparable<TermEnt
 
 	public string Term { get; set; }
 
-	public TermEntry? Context { get; set; }
+	public TermObject? Context { get; set; }
 
-    public TermEntry? Alias { get; set; }
+    public TermObject? Alias { get; set; }
 
 
 
-    public TermEntry() {
+    public TermObject() {
         this.Term = "";
     }
 
-	public TermEntry( string term, TermEntry? context, TermEntry? alias ) {
+	public TermObject( string term, TermObject? context, TermObject? alias ) {
 		this.Term = term;
 		this.Context = context;
 		this.Alias = alias;
 	}
 
-	public TermEntry( long id, string term, TermEntry? context, TermEntry? alias ) {
+	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
 		this.Id = id;
 		this.IsAssignedId = true;
 		this.Term = term;
@@ -49,18 +49,18 @@ public class TermEntry : IEquatable<TermEntry>, IComparable, IComparable<TermEnt
     }
 
     public override bool Equals( object? obj ) {
-        return obj is TermEntry
-			? this.EqualsTermShallow( obj as TermEntry )
+        return obj is TermObject
+			? this.EqualsTermShallow( obj as TermObject )
             : base.Equals( obj );
     }
 
-	public bool Equals( TermEntry? other ) {
+	public bool Equals( TermObject? other ) {
 		return this.EqualsTermShallow( other );
 	}
 
-    public bool EqualsTermShallow( TermEntry? other, bool ignoreNullId=true ) {
+    public bool EqualsTermShallow( TermObject? other, bool ignoreNullId=true ) {
 		if( other is null ) { return false; }
-		if( Object.ReferenceEquals(this, other) ) { return true; }
+		if( ReferenceEquals(this, other) ) { return true; }
 
 		if( ignoreNullId ) {
             if( this.Id is not null && other.Id is not null && this.Id != other.Id ) {
@@ -82,13 +82,13 @@ public class TermEntry : IEquatable<TermEntry>, IComparable, IComparable<TermEnt
     }
 
     public int CompareTo( object? obj ) {
-        if( obj is not TermEntry ) {
+        if( obj is not TermObject ) {
             return 1;
         }
-        return this.CompareTo( obj as TermEntry );
+        return this.CompareTo( obj as TermObject );
     }
 
-    public int CompareTo( TermEntry? test ) {
+    public int CompareTo( TermObject? test ) {
         if( test is null ) {
             return 1;
         }
@@ -169,12 +169,12 @@ public class TermEntry : IEquatable<TermEntry>, IComparable, IComparable<TermEnt
     //    return true;
     //}
 
-    public bool DeepTest( string pattern, TermEntry? context ) {
+    public bool DeepTest( string pattern, TermObject? context ) {
 		if( !this.Term.Contains(pattern) ) {
 			return false;
 		}
 
-		TermEntry? alias = this;
+		TermObject? alias = this;
 		while( alias.Alias is not null ) {
 			alias = alias.Alias;
 

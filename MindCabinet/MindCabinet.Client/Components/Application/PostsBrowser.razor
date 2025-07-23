@@ -1,9 +1,10 @@
-﻿@using Microsoft.AspNetCore.Components;
+﻿@using System.Text.Json;
+@using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataEntries;
+@using MindCabinet.Shared.DataObjects
 
 
 
@@ -45,7 +46,7 @@
 
 @code {
     private async Task SetFilterTags_UI_Async( IList<TermEntry> tags, TermEntry tag, bool isAdded ) {
-// Console.WriteLine( "tags changed "+tag.ToString() );
+//Console.WriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
         await this.SetFilterTags_Async( tags );
     }
 

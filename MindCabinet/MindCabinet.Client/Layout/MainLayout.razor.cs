@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 

@@ -1,4 +1,4 @@
-﻿using MindCabinet.Shared.DataEntries;
+﻿using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
 
@@ -19,7 +19,7 @@ public class ServerSessionData {
 
     public string? IpAddress { get; private set; }
 
-    public SimpleUserEntry? User { get; private set; }
+    public SimpleUserObject? User { get; private set; }
 
     public byte[] PwSalt { get; private set; } = new byte[16];
 

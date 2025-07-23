@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Components;
-using MindCabinet.Shared.DataEntries;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TagSetEditor : ComponentBase {
-    public delegate Task OnTagsChange_Func( IList<TermEntry> currentTags, TermEntry changedTag, bool isAdded );
+    public delegate Task OnTagsChange_Func( IList<TermObject> currentTags, TermObject changedTag, bool isAdded );
 
 
-    private IList<TermEntry> Tags = new List<TermEntry>();
+    private IList<TermObject> Tags = new List<TermObject>();
 
 
     [Parameter]
@@ -24,7 +24,7 @@ public partial class TagSetEditor : ComponentBase {
 
 
 
-    public async Task AddTag_Async( TermEntry tag ) {
+    public async Task AddTag_Async( TermObject tag ) {
         if( this.Tags.Any(t => t.Equals(tag)) ) {
             return;
         }
@@ -35,7 +35,7 @@ public partial class TagSetEditor : ComponentBase {
     }
     
 
-    public async Task<bool> RemoveTag_Async( TermEntry tag ) {
+    public async Task<bool> RemoveTag_Async( TermObject tag ) {
         int idx = this.Tags.IndexOf( tag );
 
         //if( !this.Tags.Any(t => t.Equals(tag)) ) {
