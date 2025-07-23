@@ -5,6 +5,7 @@
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services
 @using MindCabinet.Shared.DataObjects
+@using MindCabinet.Shared.DataObjects.Term
 
 
 
@@ -45,7 +46,7 @@
 
 
 @code {
-    private async Task SetFilterTags_UI_Async( IList<TermEntry> tags, TermEntry tag, bool isAdded ) {
+    private async Task SetFilterTags_UI_Async( IList<TermObject> tags, TermObject tag, bool isAdded ) {
 //Console.WriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
         await this.SetFilterTags_Async( tags );
     }
@@ -61,8 +62,8 @@
     private async Task SetCreateDateSort_UI_Async( bool isAscending ) {
         await this.SetCreateDateSort_Async( isAscending );
     }
-
-    private async Task<IEnumerable<PostEntry>> GetPostsOfCurrentPage_UI_Async() {
+    
+    private async Task<IEnumerable<PostObject>> GetPostsOfCurrentPage_UI_Async() {
         return await this.GetPostsOfCurrentPage_Async();
     }
 }

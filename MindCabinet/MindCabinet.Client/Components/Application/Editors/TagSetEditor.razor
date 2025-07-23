@@ -4,6 +4,7 @@
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services
 @using MindCabinet.Shared.DataObjects
+@using MindCabinet.Shared.DataObjects.Term
 
 
 <div component-name="TagSetEditor" class=@this.AddedClasses>
@@ -11,7 +12,7 @@
     @if( this.Label is not null ) {
         <span>@this.Label</span>
     }
-    @foreach( TermEntry tag in this.Tags ) {
+    @foreach( TermObject tag in this.Tags ) {
         <TermRender AddedClasses="ib" Term=@tag>
             <a class="" @onclick=@( async () => await this.RemoveTag_UI_Async(tag) )>X</a>
         </TermRender>
@@ -24,7 +25,7 @@
 
 
 @code {
-    private async Task<TermEntry?> AddTag_UI_Async( TermEntry tag, bool isNew ) {
+    private async Task<TermObject?> AddTag_UI_Async( TermObject tag, bool isNew ) {
         if( this.Tags.Any(t => t.Equals(tag)) ) {
             return null;
         }
@@ -45,7 +46,7 @@
     }
 
 
-    private async Task<bool> RemoveTag_UI_Async( TermEntry tag ) {
+    private async Task<bool> RemoveTag_UI_Async( TermObject tag ) {
         if( !this.Tags.Any(t => t.Equals(tag)) ) {
             return false;
         }

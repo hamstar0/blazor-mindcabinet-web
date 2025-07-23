@@ -1,11 +1,12 @@
 ﻿@using MindCabinet.Shared.DataObjects
+@using MindCabinet.Shared.DataObjects.Term
 
 
 
 <div component-name="MultiTermRender" class="basic @(this.AddedClasses ?? "")"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
-    @foreach( TermEntry term in this.Terms ) {
+    @foreach( TermObject term in this.Terms ) {
         <TermRender AddedClasses="ib"
                 Term=@term
                 OnClick_Async=@(async e => await this.OnClickEach_UI_Async(term, e)) />
@@ -15,7 +16,7 @@
 
 
 @code {
-    private async Task OnClickEach_UI_Async( TermEntry term, MouseEventArgs args ) {
+    private async Task OnClickEach_UI_Async( TermObject term, MouseEventArgs args ) {
         if( this.OnClick_Async is not null ) {
             //this.HasFocus = await this.OnClickEach_Async( term, args );
             await this.OnClick_Async( term, args );
