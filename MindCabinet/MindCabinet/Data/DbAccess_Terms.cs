@@ -9,7 +9,7 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
-    public class TermEntryData {
+    private class TermObjectDbData {
         public long Id;
         public string Term = "";
         public long? ContextId;
@@ -61,7 +61,7 @@ public partial class ServerDbAccess {
             return this.TermsById_Cache[id];
         }
 
-        TermEntryData? termRaw = await dbCon.QuerySingleAsync<TermEntryData?>(
+        TermObjectDbData? termRaw = await dbCon.QuerySingleAsync<TermObjectDbData?>(
             "SELECT * FROM Terms AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
@@ -109,12 +109,12 @@ public partial class ServerDbAccess {
         //sqlParams["@Offset"] = parameters.Offset;
         //sqlParams["@Quantity"] = parameters.Quantity;
 
-        IEnumerable<TermEntryData> terms = await dbCon.QueryAsync<TermEntryData>(
+        IEnumerable<TermObjectDbData> terms = await dbCon.QueryAsync<TermObjectDbData>(
             sql, new DynamicParameters(sqlParams) );
 
         IList<TermObject> termList = new List<TermObject>( terms.Count() );
 
-        foreach( TermEntryData term in terms ) {
+        foreach( TermObjectDbData term in terms ) {
             termList.Add( await term.Create_Async(dbCon, this) );
         }
 
@@ -129,19 +129,12 @@ public partial class ServerDbAccess {
             dbCon,
 			new ClientDbAccess.GetTermsByCriteriaParams(
 				termPattern: parameters.TermPattern,
-				context: parameters.Context
+				context: parameters.Context?.ToPrototype() ?? null
 			)
 		);
 		if( terms.Count() > 0 ) {
 			return new ClientDbAccess.CreateTermReturn( false, terms.First() );
 		}
-
-        if( parameters.Context is not null && parameters.Context.Id is null ) {
-            throw new DataException( "Context must be defined." );
-        }
-        if( parameters.Alias is not null && parameters.Alias.Id is null ) {
-            throw new DataException( "Alias must be defined." );
-        }
 
         long newId = await dbCon.QuerySingleAsync<long>(
             @"INSERT INTO Terms (Term, ContextId, AliasId) 

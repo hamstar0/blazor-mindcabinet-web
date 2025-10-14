@@ -41,7 +41,7 @@ public partial class ServerDbAccess {
         long newSetId = await dbCon.QuerySingleAsync<long>(
             @"INSERT INTO TermSetIdSupplier (Bogus) 
                     OUTPUT INSERTED.Id 
-                    VALUES (null)"
+                    DEFAULT VALUES" //VALUES (null)
         );
 
         foreach(  TermObject termEntry in parameters ) {
@@ -63,7 +63,7 @@ public partial class ServerDbAccess {
 
 
     public async Task<IEnumerable<TermObject>> GetTermSet_Async( IDbConnection dbCon, int termSetId ) {
-        IEnumerable<TermEntryData?> termSetRaw = await dbCon.QueryAsync<TermEntryData?>(
+        IEnumerable<TermObjectDbData?> termSetRaw = await dbCon.QueryAsync<TermObjectDbData?>(
             @"SELECT Terms.Id, Terms.Term, Terms.ContextId, Terms.AliasId FROM Terms
                 INNER JOIN TermSet ON (Terms.Id = TermSet.TermId)
                 WHERE TermSet.SetId = @SetId",
@@ -72,11 +72,11 @@ public partial class ServerDbAccess {
 
         IList<TermObject> terms = new List<TermObject>( termSetRaw.Count() );
 
-        foreach( TermEntryData? termRaw in termSetRaw ) {
+        foreach( TermObjectDbData? termRaw in termSetRaw ) {
             TermObject term = await termRaw!.Create_Async( dbCon, this );
             terms.Add( term );
 
-            this.TermsById_Cache[ term.Id!.Value ] = term;
+            this.TermsById_Cache[ term.Id ] = term;
         }
 
         return terms;

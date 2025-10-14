@@ -33,6 +33,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
     }
 
 
+
     public class UserDbData {
         public long Id;
         public DateTime Created;
@@ -45,6 +46,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
     }
 
 
+
     public class SessionDbData {
         public string Id = "";
         public string IpAddress = "";
@@ -53,6 +55,8 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         public DateTime LatestVisit;
         public int Visits;
     }
+
+
 
     public class UserAndSessionDbData : UserDbData {    // multiple inheritance?
         public string SessionId = "";
@@ -66,6 +70,6 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
 
     public ClientData GetClientOnlyData() {
-		return new ClientData( this.Id ?? 0, this.Name, this.Created, this.Email );
+		return new ClientData( this.Id, this.Name, this.Created, this.Email );
 	}
 }

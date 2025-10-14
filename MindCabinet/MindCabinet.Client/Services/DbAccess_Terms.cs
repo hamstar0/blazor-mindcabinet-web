@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
 
@@ -9,9 +10,9 @@ namespace MindCabinet.Client.Services;
 public partial class ClientDbAccess {
     public class GetTermsByCriteriaParams(
                 string termPattern,
-                TermObject? context ) {
+                TermObject.Prototype? context ) {
         public string TermPattern { get; } = termPattern;
-        public TermObject? Context { get; } = context;
+        public TermObject.Prototype? Context { get; } = context;
     }
 
     //

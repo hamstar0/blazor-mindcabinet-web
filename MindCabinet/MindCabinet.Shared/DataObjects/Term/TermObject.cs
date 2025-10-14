@@ -3,11 +3,8 @@
 namespace MindCabinet.Shared.DataObjects.Term;
 
 
-public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
-    public long? Id { get; private set; } = null;
-
-    [JsonIgnore]
-	public bool IsAssignedId { get; private set; } = false;
+public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
+    public long Id { get; private set; }
 
 	public string Term { get; set; }
 
@@ -17,19 +14,8 @@ public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermO
 
 
 
-    public TermObject() {
-        this.Term = "";
-    }
-
-	public TermObject( string term, TermObject? context, TermObject? alias ) {
-		this.Term = term;
-		this.Context = context;
-		this.Alias = alias;
-	}
-
 	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
 		this.Id = id;
-		this.IsAssignedId = true;
 		this.Term = term;
 		this.Context = context;
 		this.Alias = alias;
@@ -39,12 +25,11 @@ public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermO
     public override int GetHashCode() {
         return HashCode.Combine(
 			this.Id,
-			this.IsAssignedId,
 			this.Term,
             this.Context is null
-				? 0 : HashCode.Combine( this.Context.Id, this.Context.IsAssignedId, this.Context.Term ),
+				? 0 : HashCode.Combine( this.Context.Id, this.Context.Term ),
             this.Alias is null
-				? 0 : HashCode.Combine( this.Alias.Id, this.Alias.IsAssignedId, this.Alias.Term )
+				? 0 : HashCode.Combine( this.Alias.Id, this.Alias.Term )
 		);
     }
 
@@ -58,22 +43,18 @@ public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermO
 		return this.EqualsTermShallow( other );
 	}
 
-    public bool EqualsTermShallow( TermObject? other, bool ignoreNullId=true ) {
+    public bool EqualsTermShallow( TermObject? other ) {
 		if( other is null ) { return false; }
 		if( ReferenceEquals(this, other) ) { return true; }
 
-		if( ignoreNullId ) {
-            if( this.Id is not null && other.Id is not null && this.Id != other.Id ) {
-                return false;
-            }
-        } else if( this.Id != other.Id ) {
+        if( this.Id != other.Id ) {
             return false;
         }
 
 		if( !this.Term.Equals(other.Term) ) {
             return false;
         }
-		if( !this.Context?.EqualsTermShallow(other.Context, false) ?? other.Context is not null ) {
+		if( !this.Context?.EqualsTermShallow(other.Context) ?? other.Context is not null ) {
             return false;
         }
 		//if( !this.Alias?.Equals(other.Alias ) ?? other.Alias is not null ) { return false; }
@@ -202,5 +183,14 @@ public class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermO
 		return this.Context is not null
 			? $"{this.Term} ({this.Context.Term})"
 			: this.Term;
+    }
+
+    public Prototype ToPrototype() {
+        return new Prototype {
+            Id = this.Id,
+            Term = this.Term,
+            Context = this.Context?.ToPrototype(),
+            Alias = this.Alias?.ToPrototype()
+        };
     }
 }

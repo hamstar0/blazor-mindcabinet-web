@@ -4,6 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -80,7 +81,7 @@ public class SimpleUserController : ControllerBase {
 
         byte[] pwHash = ServerDbAccess.GetPasswordHash( parameters.Password, this.SessData.PwSalt );
 
-        if( !Enumerable.SequenceEqual(user.PwHash, pwHash) ) {
+        if( !CryptographicOperations.FixedTimeEquals( user.PwHash, pwHash) ) {
             return new ClientDbAccess.SimpleUserLoginReply( null, "Invalid password." );
         }
 

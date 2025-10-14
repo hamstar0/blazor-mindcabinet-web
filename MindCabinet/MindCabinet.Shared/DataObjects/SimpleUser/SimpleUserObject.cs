@@ -1,7 +1,7 @@
 ﻿using MindCabinet.Shared.Utility;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json.Serialization;
 
 
 namespace MindCabinet.Shared.DataObjects;
@@ -43,10 +43,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
 
 
-    public long? Id { get; private set; } = null;
-
-	[JsonIgnore]
-	public bool IsAssignedId { get; private set; } = false;
+    public long Id { get; private set; }
 
 
 	public DateTime Created { get; set; }
@@ -62,28 +59,6 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 	public bool IsValidated { get; set; }
 
 
-
-    public SimpleUserObject() {
-		this.Name = string.Empty;
-		this.Email = string.Empty;
-		this.PwHash = new byte[SimpleUserObject.PasswordHashLength];
-		this.PwSalt = new byte[SimpleUserObject.PasswordSaltLength];
-	}
-
-	public SimpleUserObject(
-				DateTime created,
-				string name,
-				string email,
-                byte[] pwHash,
-				byte[] pwSalt,
-				bool isValidated ) {
-		this.Created = created;
-		this.Name = name;
-		this.Email = email;
-		this.PwHash = pwHash;
-		this.PwSalt = pwSalt;
-		this.IsValidated = isValidated;
-	}
 
 	public SimpleUserObject(
 				long id,
@@ -107,7 +82,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 		if( other is null ) { return false; }
 		if( this == other ) { return true; }
 
-		if( this.Id is not null && this.Id != other.Id ) { return false; }
+		if( this.Id != other.Id ) { return false; }
 		if( this.ContentEquals(other, true, true, true) ) { return false; }
 		return true;
 	}
@@ -120,7 +95,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Name != other.Name ) { return false; }
 		if( this.Email != other.Email ) { return false; }
-		if( includePw && !Enumerable.SequenceEqual(this.PwHash, other.PwHash) ) { return false; }
+		if( includePw && !CryptographicOperations.FixedTimeEquals(this.PwHash, other.PwHash) ) { return false; }
 		if( includePw && this.PwSalt != other.PwSalt ) { return false; }
 		if( includeValidation && this.IsValidated != other.IsValidated ) { return false; }
 		return true;

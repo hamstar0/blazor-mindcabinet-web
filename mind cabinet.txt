@@ -12,12 +12,13 @@ v0.4
 -	Implement term context input
 -	Implement picking term from dropdown via keyboard
 -	@Test
+-	Use DbString.IsAnsi
 -	Refactor Entry classes into Object classes
 	-	Use prototypes for db entry
+
+
 	-	Create "prototype" classes for unfinished Objects
 	-	Rename
-
-
 v0.3
 -	Implement users
 	-	Implement session ip validation

@@ -5,11 +5,8 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public class PostObject : IEquatable<PostObject> {
-	public long? Id { get; private set; } = null;
-
-	[JsonIgnore]
-	public bool IsAssignedId { get; private set; } = false;
+public partial class PostObject : IEquatable<PostObject> {
+	public long Id { get; private set; }
 
 
 	public DateTime Created { get; set; }
@@ -19,17 +16,6 @@ public class PostObject : IEquatable<PostObject> {
     public IList<TermObject> Tags { get; set; }
 
 
-
-    public PostObject() {
-		this.Body = string.Empty;
-		this.Tags = new List<TermObject>();
-	}
-
-	public PostObject( DateTime created, string body, IList<TermObject> tags ) {
-		this.Created = created;
-		this.Body = body;
-		this.Tags = tags;
-	}
 
 	public PostObject( long id, DateTime created, string body, IList<TermObject> tags ) {
         this.Id = id;
