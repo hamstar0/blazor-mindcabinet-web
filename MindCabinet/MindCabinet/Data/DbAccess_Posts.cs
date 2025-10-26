@@ -32,17 +32,17 @@ public partial class ServerDbAccess {
     public async Task<bool> InstallPosts_Async( IDbConnection dbConnection, long defaultUserId ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE Posts (
-                Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
-                Created DATETIME2(2) NOT NULL,
-                Modified DATETIME2(2) NOT NULL,
+                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Created DATETIME(2) NOT NULL,
+                Modified DATETIME(2) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
-                Body NVARCHAR(MAX) NOT NULL,
+                Body LONGTEXT NOT NULL,
                 TermSetId INT NOT NULL,
                 CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES SimpleUsers(Id)
             );"
-        //    ON DELETE CASCADE
-        //    ON UPDATE CASCADE
+            //    ON DELETE CASCADE
+            //    ON UPDATE CASCADE
         );
 
         //
@@ -161,7 +161,7 @@ public partial class ServerDbAccess {
             },
         };
 
-        var sql = @"INSERT INTO Posts (Body, Created, Modified, SimpleUserId, TermSetId)
+        string sql = @"INSERT INTO Posts (Body, Created, Modified, SimpleUserId, TermSetId)
                     VALUES (@Body, @Created, @Modified, @SimpleUserId, @TermSetId)";
         int rowsAffected = await dbConnection.ExecuteAsync( sql, fillerPosts );
 
@@ -180,8 +180,13 @@ public partial class ServerDbAccess {
         var sqlParams = new Dictionary<string, object>();
 
         if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
-            sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sqlParams["@Body"] = $"%{parameters.BodyPattern}%";
+            string body = parameters.BodyPattern.Replace( "%", "\\%" );
+            body = body.Replace( "_", "\\_" );
+            //body = body.Replace( "[", "\\[" );
+
+            // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
+            sql += "WHERE MyPosts.Body LIKE @Body ESCAPE '\\'";
+            sqlParams["@Body"] = $"%{body}%";
             hasWhere = true;
         }
 
@@ -212,8 +217,8 @@ public partial class ServerDbAccess {
         }
 
         if( parameters.PostsPerPage > 0 ) {
-            sql += @" OFFSET @Offset ROWS
-                    FETCH NEXT @Quantity ROWS ONLY;";
+            sql += @" LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
+                    // FETCH NEXT @Quantity ROWS ONLY;";
             sqlParams["@Offset"] = parameters.PageNumber * parameters.PostsPerPage;
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }
@@ -288,10 +293,10 @@ public partial class ServerDbAccess {
                 ClientDbAccess.CreatePostParams parameters ) {
         DateTime now = DateTime.UtcNow;
 
-        int newPostId = await dbCon.QuerySingleAsync(
+        long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
             @"INSERT INTO Posts (Created, Body, TermSetId) 
-                OUTPUT INSERTED.Id 
-                VALUES (@Created, @Body, @TermSetId)",
+                VALUES (@Created, @Body, @TermSetId);
+            SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
                 Body = parameters.Body,

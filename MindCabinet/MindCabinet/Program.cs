@@ -1,8 +1,9 @@
-using System;
-using MindCabinet.Data;
-using MindCabinet.Components;
-using MindCabinet.Client.Services;
 using MindCabinet.Client.Pages;
+using MindCabinet.Client.Services;
+using MindCabinet.Components;
+using MindCabinet.Data;
+using MindCabinet.Shared.DataAPI;
+using System;
 
 
 namespace MindCabinet;
@@ -18,7 +19,7 @@ public class Program {
             .AddInteractiveWebAssemblyComponents();
 
         builder.Services.Configure<ServerDbAccess.ServerDataAccessParameters>( sdaParams => {
-            sdaParams.ConnectionString = builder.Configuration.GetConnectionString( "DefaultConnection" )!;
+            sdaParams.ConnectionString = builder.Configuration.GetConnectionString( "MariaDbConnection" )!;
             if( sdaParams.ConnectionString is null ) {
                 throw new Exception( "Invalid db connection string." );
             }
@@ -67,6 +68,8 @@ public class Program {
         app.MapControllers();
         //app.MapFallbackToPage("");
         //app.MapFallbackToFile("404page.html");
+
+        //CustomRouteMappingAPI.InitializeMappings( app );
 
         app.MapRazorComponents<App>()
             .AddInteractiveWebAssemblyRenderMode()

@@ -42,10 +42,10 @@ public partial class ServerDbAccess {
         dbCon.Open();
 
         if( validateInstall ) {
-            int count = await dbCon.QuerySingleAsync<int>( @"
-                SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
-                WHERE TABLE_NAME = N'Posts'"
-            );
+            dynamic result = await dbCon.QuerySingleAsync( @"SHOW TABLES LIKE 'Posts';" );
+            // int count = await dbCon.QuerySingleAsync<int>( @"
+            //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+            //  WHERE TABLE_NAME = 'Posts'"
             //int count = await dbCon.ExecuteAsync( @"
             //    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Posts')
             //    BEGIN
@@ -55,7 +55,8 @@ public partial class ServerDbAccess {
             //    BEGIN
             //        RETURN 0;
             //    END" );
-            if( count == 0 ) {
+            // if( count == 0 ) {
+            if( result is null ) {
                 throw new DataException( "Database not installed." );
             }
         }

@@ -13,10 +13,14 @@ v0.4
 -	Implement picking term from dropdown via keyboard
 -	@Test
 -	Use DbString.IsAnsi
+-	Implement client/server API via shared code
+	-	Switch to minimal API
+	-	Define API
+
+
+-	Changing from SQL Server to MariaDB
 -	Refactor Entry classes into Object classes
 	-	Use prototypes for db entry
-
-
 	-	Create "prototype" classes for unfinished Objects
 	-	Rename
 v0.3

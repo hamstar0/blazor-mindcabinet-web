@@ -10,21 +10,21 @@ namespace MindCabinet.Data;
 
 public partial class ServerDbAccess {
 	public async Task<bool> InstallTermSets_Async( IDbConnection dbCon ) {
-        await dbCon.ExecuteAsync( @"
+        await dbCon.ExecuteAsync(@"
             CREATE TABLE TermSet (
                 SetId INT NOT NULL,
                 TermId BIGINT NOT NULL,
                 CONSTRAINT PK_Id PRIMARY KEY (SetId, TermId),
                 CONSTRAINT FK_TermSetTermId FOREIGN KEY (TermId)
                     REFERENCES Terms(Id)
-            );"
+            )"
             //    ON DELETE CASCADE
             //    ON UPDATE CASCADE
         );
         await dbCon.ExecuteAsync( @"
             CREATE TABLE TermSetIdSupplier (
-                Id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
-                Bogus BIT
+                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Bogus BOOLEAN
             );"
         );
         
@@ -38,10 +38,10 @@ public partial class ServerDbAccess {
     public async Task<long> CreateTermSet_Async(
                 IDbConnection dbCon,
                 params TermObject[] parameters ) {
-        long newSetId = await dbCon.QuerySingleAsync<long>(
+        long newSetId = await dbCon.ExecuteScalarAsync<long>(
             @"INSERT INTO TermSetIdSupplier (Bogus) 
-                    OUTPUT INSERTED.Id 
-                    DEFAULT VALUES" //VALUES (null)
+                    DEFAULT VALUES
+            SELECT LAST_INSERT_ID();" //VALUES (null)
         );
 
         foreach(  TermObject termEntry in parameters ) {

@@ -34,7 +34,7 @@ public partial class ServerDbAccess {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( @"
             CREATE TABLE Terms (
-                Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
+                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
@@ -103,7 +103,7 @@ public partial class ServerDbAccess {
         }
         sqlParams["@Term"] = $"%{parameters.TermPattern}%";
 
-        //sql += @"ORDER BY Id
+        //sql += @"ORDER BY Id      <- outdated SQL Server SQL!
         //        OFFSET @Offset ROWS
         //        FETCH NEXT @Quantity ROWS ONLY;";
         //sqlParams["@Offset"] = parameters.Offset;
@@ -136,11 +136,10 @@ public partial class ServerDbAccess {
 			return new ClientDbAccess.CreateTermReturn( false, terms.First() );
 		}
 
-        long newId = await dbCon.QuerySingleAsync<long>(
+        long newId = await dbCon.ExecuteScalarAsync<long>(
             @"INSERT INTO Terms (Term, ContextId, AliasId) 
-                OUTPUT INSERTED.Id 
-                VALUES (@Term, @ContextId, @AliasId)",
-            //OUTPUT INSERTED.Id",
+                VALUES (@Term, @ContextId, @AliasId);
+            SELECT LAST_INSERT_ID();",
             //SELECT SCOPE_IDENTITY()
             new {
                 Term = parameters.TermPattern,

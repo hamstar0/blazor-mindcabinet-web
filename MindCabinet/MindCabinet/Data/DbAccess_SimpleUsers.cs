@@ -37,22 +37,22 @@ public partial class ServerDbAccess {
                 IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUsers (
-                Id BIGINT NOT NULL IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
-                Created DATETIME2(2) NOT NULL,
+                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                Created DATETIME(2) NOT NULL,
                 Name VARCHAR(128) NOT NULL,
                 Email VARCHAR(320) NOT NULL,
                 PwHash BINARY("+SimpleUserObject.PasswordHashLength+@") NOT NULL,
                 PwSalt BINARY("+SimpleUserObject.PasswordSaltLength+@") NOT NULL,
-                IsValidated BIT NOT NULL
+                IsValidated BOOLEAN NOT NULL
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
         );
-
-        long defaultUserId = await dbConnection.QuerySingleAsync<long>(
+        
+        long defaultUserId = await dbConnection.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
             @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 
-                OUTPUT INSERTED.Id 
-                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);",
+                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
+            SELECT LAST_INSERT_ID();",
             new {
                 Created = DateTime.UtcNow,
                 Name = "hamstar",

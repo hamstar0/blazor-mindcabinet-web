@@ -10,12 +10,13 @@ public partial class ServerDbAccess {
     public async Task<bool> InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserSessions (
-                SessionId VARCHAR(36) NOT NULL PRIMARY KEY NONCLUSTERED,
+                SessionId VARCHAR(36) NOT NULL,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
-                FirstVisit DATETIME2(2) NOT NULL,
-                LatestVisit DATETIME2(2) NOT NULL,
+                FirstVisit DATETIME(2) NOT NULL,
+                LatestVisit DATETIME(2) NOT NULL,
                 Visits INT NOT NULL,
+                PRIMARY KEY (SessionId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES SimpleUsers(Id)
             );"
