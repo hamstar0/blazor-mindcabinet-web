@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.WebEncoders.Testing;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects;
@@ -19,11 +20,10 @@ public class DataController : ControllerBase {
         this.DbAccess = dbAccess;
     }
 
-
     [HttpGet("Install")]
     public async Task<string> Install_Async() {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async( false );
-        
+
         if( await this.DbAccess.Install_Async(dbCon) ) {
             return "Success";
         } else {

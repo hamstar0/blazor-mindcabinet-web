@@ -12,10 +12,9 @@ v0.4
 -	Implement term context input
 -	Implement picking term from dropdown via keyboard
 -	@Test
+-	Use IDbContextFactory
 -	Use DbString.IsAnsi
--	Implement client/server API via shared code
-	-	Switch to minimal API
-	-	Define API
+-	Implement routes via constant strings
 
 
 -	Changing from SQL Server to MariaDB

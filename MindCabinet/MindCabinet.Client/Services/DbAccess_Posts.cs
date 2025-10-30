@@ -31,9 +31,14 @@ public partial class ClientDbAccess {
                 +$"{this.PostsPerPage}]";
         }
     }
-    
+
+    public readonly static (string path, string route) Post_GetByCriteria_Route = ("Post", "GetByCriteria");
+
     public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetByCriteria", parameters );
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            ClientDbAccess.Post_GetByCriteria_Route.path + "/" + ClientDbAccess.Post_GetByCriteria_Route.route,
+            parameters
+        );
 
         msg.EnsureSuccessStatusCode();
 
@@ -45,10 +50,16 @@ public partial class ClientDbAccess {
         return ret;
     }
     
+    public readonly static (string path, string route) Post_GetCountByCriteria_Route = ("Post", "GetCountByCriteria");
+
     public async Task<int> GetPostCountByCriteria_Async( GetPostsByCriteriaParams parameters ) {
         //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
-		HttpResponseMessage msg = await this.Http.PostAsync( "Post/GetCountByCriteria", content, default );
+        HttpResponseMessage msg = await this.Http.PostAsync(
+            requestUri: ClientDbAccess.Post_GetCountByCriteria_Route.path + "/" + ClientDbAccess.Post_GetCountByCriteria_Route.route,
+            content: content,
+            cancellationToken: default
+        );
 
 		msg.EnsureSuccessStatusCode();
 
@@ -68,8 +79,13 @@ public partial class ClientDbAccess {
         public IList<TermObject> Tags { get; } = tags;
     }
     
+    public readonly static (string path, string route) Route_Post_Create = ("Post", "Create");
+
     public async Task<PostObject> CreatePost_Async( CreatePostParams parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/Create", parameters );
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            ClientDbAccess.Route_Post_Create.path + "/" + ClientDbAccess.Route_Post_Create.route,
+            parameters
+        );
 
         msg.EnsureSuccessStatusCode();
 

@@ -24,6 +24,7 @@ public class SimpleUserController : ControllerBase {
         this.SessData = sessData;
     }
 
+    // [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_GetSessionData.route))]
     [HttpPost("GetSessionData")]
     public async Task<ClientSessionData.RawData> GetSessionData_Async() {
         if( !this.SessData.IsLoaded ) {
@@ -36,7 +37,7 @@ public class SimpleUserController : ControllerBase {
         );
     }
 
-    [HttpPost("Create")]
+    [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_Create.route))]
     public async Task<ClientDbAccess.SimpleUserLoginReply> Create_Async(
                 ClientDbAccess.CreateSimpleUserParams parameters ) {
         if( !this.SessData.IsLoaded ) {
@@ -65,7 +66,7 @@ public class SimpleUserController : ControllerBase {
         );
     }
 
-    [HttpPost("Login")]
+    [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_Login.route))]
     public async Task<ClientDbAccess.SimpleUserLoginReply> Login_Async(
                 ClientDbAccess.LoginSimpleUserParams parameters ) {
         if( !this.SessData.IsLoaded ) {

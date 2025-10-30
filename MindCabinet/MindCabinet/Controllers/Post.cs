@@ -21,7 +21,7 @@ public class PostController : ControllerBase {
     }
 
 
-    [HttpPost("GetByCriteria")]
+    [HttpPost(nameof(ClientDbAccess.Post_GetByCriteria_Route.route))]
     public async Task<IEnumerable<PostObject>> GetByCriteria_Async(
                 ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
@@ -29,7 +29,7 @@ public class PostController : ControllerBase {
         return await this.DbAccess.GetPostsByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost("GetCountByCriteria")]
+    [HttpPost(nameof(ClientDbAccess.Post_GetCountByCriteria_Route.route))]
     public async Task<int> GetCountByCriteria_Async(
                 ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
@@ -37,7 +37,7 @@ public class PostController : ControllerBase {
         return await this.DbAccess.GetPostCountByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost("Create")]
+    [HttpPost(nameof(ClientDbAccess.Route_Post_Create.route))]
     public async Task<PostObject> Create_Async( ClientDbAccess.CreatePostParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 

@@ -19,8 +19,13 @@ public partial class ClientDbAccess {
 
 
     
+    public readonly static (string path, string route) Route_Term_GetByCriteria = ("Term", "GetByCriteria");
+    
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Term/GetByCriteria", parameters );
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            ClientDbAccess.Route_Term_GetByCriteria.path + "/" + ClientDbAccess.Route_Term_GetByCriteria.route,
+            parameters
+        );
 
         msg.EnsureSuccessStatusCode();
 
@@ -55,9 +60,14 @@ public partial class ClientDbAccess {
         public bool IsAdded { get; } = isAdded;
         public TermObject Term { get; } = term;
     }
+
+    public readonly static (string path, string route) Route_Term_Login = ("Term", "Create");
     
     public async Task<CreateTermReturn> CreateTerm_Async( CreateTermParams parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Term/Create", parameters );
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            ClientDbAccess.Route_Term_Login.path + "/" + ClientDbAccess.Route_Term_Login.route,
+            parameters
+        );
 
         msg.EnsureSuccessStatusCode();
 
