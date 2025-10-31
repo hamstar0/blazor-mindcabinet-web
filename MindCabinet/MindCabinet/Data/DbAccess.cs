@@ -9,36 +9,28 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
-    public class ServerDataAccessParameters {
-        public string ConnectionString = "";
-    }
-
-
-
     //private SingletonCache Cache;
     //private ISession Session;
     private ServerSettings ServerSettings;
-    private IHttpContextAccessor Http;
-    private string ConnectionString;
-
+    //private IHttpContextAccessor Http;
+    private readonly Func<IDbConnection> ConnFactory;
 
 
     public ServerDbAccess(
             ServerSettings serverSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<ServerDataAccessParameters> connectionString ) {
+            //IHttpContextAccessor httpContextAccessor,
+            Func<IDbConnection> connFactory ) {
         //SingletonCache cache
         //IHttpContextAccessor hca
         //this.SessionId = hca.HttpContext.Request.Cookies["SessionId"];
         //this.Session = hca.HttpContext!.Session;
         this.ServerSettings = serverSettings;
-        this.Http = httpContextAccessor;
-        this.ConnectionString = connectionString.Value.ConnectionString;
+        //this.Http = httpContextAccessor;
+        this.ConnFactory = connFactory;
     }
 
     public async Task<IDbConnection> ConnectDb_Async( bool validateInstall=true ) {
-        //using var con = new SqlConnection( this.ConnectionString );
-        var dbCon = new SqlConnection( this.ConnectionString );
+        IDbConnection dbCon = this.ConnFactory();
         dbCon.Open();
 
         if( validateInstall ) {

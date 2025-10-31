@@ -20,9 +20,7 @@ public class TermController : ControllerBase {
     }
 
 
-    internal static readonly string? GetByCriteria;
-
-    [HttpPost(nameof(TermController.GetByCriteria))]
+    [HttpPost(nameof(ClientDbAccess.Route_Term_GetByCriteria.route))]
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
                 ClientDbAccess.GetTermsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
@@ -30,9 +28,7 @@ public class TermController : ControllerBase {
         return await this.DbAccess.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
-    internal static readonly string? Create;
-
-    [HttpPost(nameof(Create))]
+    [HttpPost(nameof(ClientDbAccess.Route_Term_Create.route))]
     public async Task<ClientDbAccess.CreateTermReturn> Create_Async( ClientDbAccess.CreateTermParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 

@@ -36,7 +36,7 @@ public partial class ServerDbAccess {
                 Created DATETIME(2) NOT NULL,
                 Modified DATETIME(2) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
-                Body LONGTEXT NOT NULL,
+                Body MEDIUMTEXT NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
                 TermSetId INT NOT NULL,
                 CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES SimpleUsers(Id)
@@ -186,7 +186,7 @@ public partial class ServerDbAccess {
 
             // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
             sql += "WHERE MyPosts.Body LIKE @Body ESCAPE '\\'";
-            sqlParams["@Body"] = $"%{body}%";
+            sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
             hasWhere = true;
         }
 
@@ -299,7 +299,7 @@ public partial class ServerDbAccess {
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
-                Body = parameters.Body,
+                Body = new DbString { Value = parameters.Body, IsAnsi = true },
                 TermSetId = await this.CreateTermSet_Async( dbCon, parameters.Tags.ToArray() ),
             }
         );

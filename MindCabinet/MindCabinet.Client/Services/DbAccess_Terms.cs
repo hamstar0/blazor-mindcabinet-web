@@ -61,11 +61,11 @@ public partial class ClientDbAccess {
         public TermObject Term { get; } = term;
     }
 
-    public readonly static (string path, string route) Route_Term_Login = ("Term", "Create");
+    public readonly static (string path, string route) Route_Term_Create = ("Term", "Create");
     
     public async Task<CreateTermReturn> CreateTerm_Async( CreateTermParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_Term_Login.path + "/" + ClientDbAccess.Route_Term_Login.route,
+            ClientDbAccess.Route_Term_Create.path + "/" + ClientDbAccess.Route_Term_Create.route,
             parameters
         );
 

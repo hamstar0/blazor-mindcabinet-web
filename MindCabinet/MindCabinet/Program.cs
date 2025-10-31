@@ -1,9 +1,8 @@
+using System.Data;
 using MindCabinet.Client.Pages;
 using MindCabinet.Client.Services;
 using MindCabinet.Components;
 using MindCabinet.Data;
-using MindCabinet.Shared.DataAPI;
-using System;
 
 
 namespace MindCabinet;
@@ -18,12 +17,10 @@ public class Program {
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        builder.Services.Configure<ServerDbAccess.ServerDataAccessParameters>( sdaParams => {
-            sdaParams.ConnectionString = builder.Configuration.GetConnectionString( "MariaDbConnection" )!;
-            if( sdaParams.ConnectionString is null ) {
-                throw new Exception( "Invalid db connection string." );
-            }
-        } );
+        string? conn = builder.Configuration.GetConnectionString( "DefaultConnection" )!;
+        if( conn is null ) {
+            throw new Exception( "No connection string configured!" );
+        }
 
         //builder.Services.AddDistributedMemoryCache();
         //builder.Services.AddSession( options => {
@@ -37,7 +34,10 @@ public class Program {
 
         builder.Services.AddSingleton<ServerSettings>();
         builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
+
+        builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection( conn ) );
         builder.Services.AddTransient<ServerDbAccess>();  // not AddSingleton
+
         builder.Services.AddScoped<ServerSessionData>();
         builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components
         builder.Services.AddHttpClient();
