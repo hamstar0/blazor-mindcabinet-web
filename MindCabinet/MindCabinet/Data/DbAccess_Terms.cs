@@ -10,10 +10,10 @@ namespace MindCabinet.Data;
 
 public partial class ServerDbAccess {
     private class TermObjectDbData {
-        public long Id;
+        public long Id = default;
         public string Term = "";
-        public long? ContextId;
-        public long? AliasId;
+        public long? ContextId = null;
+        public long? AliasId = null;
         
 
         public async Task<TermObject> Create_Async( IDbConnection dbCon, ServerDbAccess data ) {

@@ -40,8 +40,8 @@ public partial class ServerDbAccess {
                 params TermObject[] parameters ) {
         long newSetId = await dbCon.ExecuteScalarAsync<long>(
             @"INSERT INTO TermSetIdSupplier (Bogus) 
-                    DEFAULT VALUES
-            SELECT LAST_INSERT_ID();" //VALUES (null)
+                VALUES (null);
+            SELECT LAST_INSERT_ID();" //DEFAULT VALUES
         );
 
         foreach(  TermObject termEntry in parameters ) {

@@ -32,11 +32,12 @@ public partial class ClientDbAccess {
         }
     }
 
-    public readonly static (string path, string route) Post_GetByCriteria_Route = ("Post", "GetByCriteria");
+    public const string Post_GetByCriteria_Path = "Post";
+    public const string Post_GetByCriteria_Route = "GetByCriteria";
 
     public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Post_GetByCriteria_Route.path + "/" + ClientDbAccess.Post_GetByCriteria_Route.route,
+            ClientDbAccess.Post_GetByCriteria_Path + "/" + ClientDbAccess.Post_GetByCriteria_Route,
             parameters
         );
 
@@ -50,13 +51,14 @@ public partial class ClientDbAccess {
         return ret;
     }
     
-    public readonly static (string path, string route) Post_GetCountByCriteria_Route = ("Post", "GetCountByCriteria");
+    public const string Post_GetCountByCriteria_Path = "Post";
+    public const string Post_GetCountByCriteria_Route = "GetCountByCriteria";
 
     public async Task<int> GetPostCountByCriteria_Async( GetPostsByCriteriaParams parameters ) {
         //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
         HttpResponseMessage msg = await this.Http.PostAsync(
-            requestUri: ClientDbAccess.Post_GetCountByCriteria_Route.path + "/" + ClientDbAccess.Post_GetCountByCriteria_Route.route,
+            requestUri: ClientDbAccess.Post_GetCountByCriteria_Path + "/" + ClientDbAccess.Post_GetCountByCriteria_Route,
             content: content,
             cancellationToken: default
         );
@@ -79,11 +81,12 @@ public partial class ClientDbAccess {
         public IList<TermObject> Tags { get; } = tags;
     }
     
-    public readonly static (string path, string route) Route_Post_Create = ("Post", "Create");
+    public const string Post_Create_Path = "Post";
+    public const string Post_Create_Route = "Create";
 
     public async Task<PostObject> CreatePost_Async( CreatePostParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_Post_Create.path + "/" + ClientDbAccess.Route_Post_Create.route,
+            ClientDbAccess.Post_Create_Path + "/" + ClientDbAccess.Post_Create_Route,
             parameters
         );
 

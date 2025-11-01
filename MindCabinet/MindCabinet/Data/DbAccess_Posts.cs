@@ -36,7 +36,7 @@ public partial class ServerDbAccess {
                 Created DATETIME(2) NOT NULL,
                 Modified DATETIME(2) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
-                Body MEDIUMTEXT NOT NULL CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+                Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 TermSetId INT NOT NULL,
                 CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES SimpleUsers(Id)
@@ -217,8 +217,9 @@ public partial class ServerDbAccess {
         }
 
         if( parameters.PostsPerPage > 0 ) {
-            sql += @" LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
-                    // FETCH NEXT @Quantity ROWS ONLY;";
+            // FETCH NEXT @Quantity ROWS ONLY;";
+            // LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
+            sql += @" LIMIT @Offset, @Quantity;";
             sqlParams["@Offset"] = parameters.PageNumber * parameters.PostsPerPage;
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }

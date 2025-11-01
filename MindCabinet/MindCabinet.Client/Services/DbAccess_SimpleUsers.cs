@@ -29,11 +29,12 @@ public partial class ClientDbAccess {
         public bool IsValidated { get; } = isValidated;
     }
 
-    public readonly static (string path, string route) Route_SimpleUser_Create = ("SimpleUser", "Create");
+    public const string SimpleUser_Create_Path = "SimpleUser";
+    public const string SimpleUser_Create_Route = "Create";
 
     public async Task<SimpleUserObject.ClientData> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_SimpleUser_Create.path + "/" + ClientDbAccess.Route_SimpleUser_Create.route,
+            ClientDbAccess.SimpleUser_Create_Path + "/" + ClientDbAccess.SimpleUser_Create_Route,
             parameters
         );
 
@@ -60,11 +61,12 @@ public partial class ClientDbAccess {
         public string Status { get; } = status;
     }
 
-    public readonly static (string path, string route) Route_SimpleUser_Login = ("SimpleUser", "Login");
+    public const string SimpleUser_Login_Path = "SimpleUser";
+    public const string SimpleUser_Login_Route = "Login";
 
     public async Task<SimpleUserLoginReply> LoginSimpleUser_Async( LoginSimpleUserParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_SimpleUser_Login.path + "/" + ClientDbAccess.Route_SimpleUser_Login.route,
+            ClientDbAccess.SimpleUser_Login_Path + "/" + ClientDbAccess.SimpleUser_Login_Route,
             parameters
         );
 

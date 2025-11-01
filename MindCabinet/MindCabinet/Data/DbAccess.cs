@@ -34,7 +34,7 @@ public partial class ServerDbAccess {
         dbCon.Open();
 
         if( validateInstall ) {
-            dynamic result = await dbCon.QuerySingleAsync( @"SHOW TABLES LIKE 'Posts';" );
+            dynamic? result = await dbCon.QueryFirstOrDefaultAsync( @"SHOW TABLES LIKE 'Posts';" );
             // int count = await dbCon.QuerySingleAsync<int>( @"
             //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
             //  WHERE TABLE_NAME = 'Posts'"

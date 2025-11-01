@@ -17,8 +17,8 @@ public class Program {
         builder.Services.AddRazorComponents()
             .AddInteractiveWebAssemblyComponents();
 
-        string? conn = builder.Configuration.GetConnectionString( "DefaultConnection" )!;
-        if( conn is null ) {
+        string? conn = builder.Configuration.GetConnectionString( "DefaultConnection" );
+        if( string.IsNullOrEmpty(conn) ) {
             throw new Exception( "No connection string configured!" );
         }
 
@@ -69,11 +69,13 @@ public class Program {
         //app.MapFallbackToPage("");
         //app.MapFallbackToFile("404page.html");
 
-        //CustomRouteMappingAPI.InitializeMappings( app );
-
         app.MapRazorComponents<App>()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies( typeof(Home).Assembly );
+
+        //var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        //app.Lifetime.ApplicationStarted.Register( () => {
+        //    logger.LogInformation("=== Starting Endpoint Inspection ===");
 
         app.Run();
     }

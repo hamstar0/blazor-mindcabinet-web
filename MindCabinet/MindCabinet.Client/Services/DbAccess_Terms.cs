@@ -19,11 +19,12 @@ public partial class ClientDbAccess {
 
 
     
-    public readonly static (string path, string route) Route_Term_GetByCriteria = ("Term", "GetByCriteria");
+    public const string Term_GetByCriteria_Path = "Term";
+    public const string Term_GetByCriteria_Route = "GetByCriteria";
     
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_Term_GetByCriteria.path + "/" + ClientDbAccess.Route_Term_GetByCriteria.route,
+            ClientDbAccess.Term_GetByCriteria_Path + "/" + ClientDbAccess.Term_GetByCriteria_Route,
             parameters
         );
 
@@ -61,11 +62,12 @@ public partial class ClientDbAccess {
         public TermObject Term { get; } = term;
     }
 
-    public readonly static (string path, string route) Route_Term_Create = ("Term", "Create");
+    public const string Term_Create_Path = "Term";
+    public const string Term_Create_Route = "Create";
     
     public async Task<CreateTermReturn> CreateTerm_Async( CreateTermParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Route_Term_Create.path + "/" + ClientDbAccess.Route_Term_Create.route,
+            ClientDbAccess.Term_Create_Path + "/" + ClientDbAccess.Term_Create_Route,
             parameters
         );
 
