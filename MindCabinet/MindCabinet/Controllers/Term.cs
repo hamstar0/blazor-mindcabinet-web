@@ -20,7 +20,7 @@ public class TermController : ControllerBase {
     }
 
 
-    [HttpPost(nameof(ClientDbAccess.Term_GetByCriteria_Route))]
+    [HttpPost(ClientDbAccess.Term_GetByCriteria_Route)]
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
                 ClientDbAccess.GetTermsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();

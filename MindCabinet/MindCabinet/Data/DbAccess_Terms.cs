@@ -103,14 +103,16 @@ public partial class ServerDbAccess {
         }
         sqlParams["@Term"] = $"%{parameters.TermPattern}%";
 
-        //sql += @"ORDER BY Id      <- outdated SQL Server SQL!
+        //sql += @"ORDER BY Id      <- outdated SQL Server sql!
         //        OFFSET @Offset ROWS
         //        FETCH NEXT @Quantity ROWS ONLY;";
         //sqlParams["@Offset"] = parameters.Offset;
         //sqlParams["@Quantity"] = parameters.Quantity;
 
+//this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<TermObjectDbData> terms = await dbCon.QueryAsync<TermObjectDbData>(
             sql, new DynamicParameters(sqlParams) );
+//this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
         IList<TermObject> termList = new List<TermObject>( terms.Count() );
 

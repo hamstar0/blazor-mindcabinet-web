@@ -73,9 +73,28 @@ public class Program {
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies( typeof(Home).Assembly );
 
+
         //var logger = app.Services.GetRequiredService<ILogger<Program>>();
         //app.Lifetime.ApplicationStarted.Register( () => {
         //    logger.LogInformation("=== Starting Endpoint Inspection ===");
+
+        // // Log all mapped routes after UseRouting and before UseEndpoints
+        // app.Use( async ( context, next ) => {
+        //     var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        //     var endpointSources = context.RequestServices.GetRequiredService<IEnumerable<EndpointDataSource>>();
+
+        //     foreach( var endpointSource in endpointSources ) {
+        //         foreach( var endpoint in endpointSource.Endpoints ) {
+        //             if( endpoint is RouteEndpoint routeEndpoint ) {
+        //                 logger.LogInformation( "Mapped Route: {RoutePattern}", routeEndpoint.RoutePattern.RawText );
+        //                 // You can log more details if needed, e.g., routeEndpoint.Metadata, routeEndpoint.DisplayName
+        //             }
+        //         }
+        //     }
+
+        //     await next();
+        // } );
+        
 
         app.Run();
     }

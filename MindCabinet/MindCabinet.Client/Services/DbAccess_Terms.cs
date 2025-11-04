@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -15,14 +16,12 @@ public partial class ClientDbAccess {
         public TermObject.Prototype? Context { get; } = context;
     }
 
-    //
-
-
     
     public const string Term_GetByCriteria_Path = "Term";
     public const string Term_GetByCriteria_Route = "GetByCriteria";
     
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
+//Console.WriteLine( "GetTermsByCriteria_Async "+JsonSerializer.Serialize(parameters) );
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             ClientDbAccess.Term_GetByCriteria_Path + "/" + ClientDbAccess.Term_GetByCriteria_Route,
             parameters

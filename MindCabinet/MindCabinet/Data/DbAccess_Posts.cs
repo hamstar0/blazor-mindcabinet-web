@@ -193,10 +193,14 @@ public partial class ServerDbAccess {
         if( parameters.Tags.Count > 0 ) {
             sql += hasWhere ? "AND" : "WHERE";
             sql += @" (
+                (
+                    (SELECT (@Tags)) EXCEPT (
                         SELECT MyTerms.Id FROM Terms AS MyTerms
                         INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
-                        WHERE MyTermSet.Id = MyPosts.TermSetId
-                    ) ALL (@Tags)";
+                        WHERE MyTermSet.SetId = MyPosts.TermSetId
+                    )
+                ) IS NULL
+            ) ";
             sqlParams["@Tags"] = parameters.Tags
                 .Select( t => t.Id )
                 .ToList();
@@ -213,13 +217,13 @@ public partial class ServerDbAccess {
         }
 
         if( !countOnly ) {
-            sql += $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
+            sql += $"\n ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
         }
 
         if( parameters.PostsPerPage > 0 ) {
             // FETCH NEXT @Quantity ROWS ONLY;";
             // LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
-            sql += @" LIMIT @Offset, @Quantity;";
+            sql += $"\n LIMIT @Offset, @Quantity;";
             sqlParams["@Offset"] = parameters.PageNumber * parameters.PostsPerPage;
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }
@@ -236,6 +240,7 @@ public partial class ServerDbAccess {
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
 
+//this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<PostEntryData> posts = await dbCon.QueryAsync<PostEntryData>(
             sql, new DynamicParameters( sqlParams )
         );

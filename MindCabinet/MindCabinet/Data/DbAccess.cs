@@ -9,6 +9,8 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
+    private readonly ILogger<ServerDbAccess> Logger;
+
     //private SingletonCache Cache;
     //private ISession Session;
     private ServerSettings ServerSettings;
@@ -17,9 +19,11 @@ public partial class ServerDbAccess {
 
 
     public ServerDbAccess(
-            ServerSettings serverSettings,
-            //IHttpContextAccessor httpContextAccessor,
-            Func<IDbConnection> connFactory ) {
+                ILogger<ServerDbAccess> logger,
+                ServerSettings serverSettings,
+                //IHttpContextAccessor httpContextAccessor,
+                Func<IDbConnection> connFactory ) {
+        this.Logger = logger;
         //SingletonCache cache
         //IHttpContextAccessor hca
         //this.SessionId = hca.HttpContext.Request.Cookies["SessionId"];

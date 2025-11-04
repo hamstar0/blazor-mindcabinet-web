@@ -9,11 +9,12 @@ v1
 v0.5
 -	Implement post markdown
 v0.4
--	Implement term context input
+-	Implement term context input (another dropdown)
 -	Implement picking term from dropdown via keyboard
+-	@Test usability
+
+
 -	@Test
-
-
 -	Use DbString.IsAnsi
 -	Implement routes via constant strings
 -	Changing from SQL Server to MariaDB
