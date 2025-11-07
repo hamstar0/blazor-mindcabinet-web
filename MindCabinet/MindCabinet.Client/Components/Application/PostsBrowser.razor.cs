@@ -127,18 +127,23 @@ public partial class PostsBrowser : ComponentBase {
         await this.RefreshPosts_Async();
     }
 
-    public async Task SetFilterTags_Async( IList<TermObject> alreadyChangedTags ) {
-        var currentTags = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
-        var changedTags = new HashSet<string>( alreadyChangedTags.Select(t=>t.ToString()) );
+    public async Task SetFilterTags_Async( IList<TermObject> changedTags ) {
+        var currentTagStrings = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
+        var changedTagStrings = new HashSet<string>( changedTags.Select(t=>t.ToString()) );
 
-//Console.WriteLine( "SetFilterTags_Async " + string.Join(", ", tags.Select(t=>t.ToString())) );
-        if( currentTags.SetEquals(changedTags) ) {
+// Console.WriteLine( "Console: SetFilterTags_Async"
+//     +", tag:" + tag.ToString()
+//     +", isAdded:" + isAdded
+//     +", currentTags:" + string.Join(", ", currentTags.Select(t=>t.ToString()))
+//     +", changedTags:" + string.Join(", ", changedTags.Select(t=>t.ToString()))
+//     +", SetEquals:" + currentTags.SetEquals(changedTags) );
+        if( currentTagStrings.SetEquals(changedTagStrings) ) {
 //Console.WriteLine( " equal" );
             return;
         }
 
         this.CurrentPageNumber = 0;
-        this.FilterTags = alreadyChangedTags;
+        this.FilterTags = changedTags.ToList();
 
         await this.RefreshPosts_Async();
     }
