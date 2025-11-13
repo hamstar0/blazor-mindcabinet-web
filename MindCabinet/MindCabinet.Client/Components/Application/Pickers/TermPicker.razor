@@ -1,6 +1,7 @@
 ﻿@using MindCabinet.Client.Components.Application.Renders;
-@using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataObjects
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
 
 
 
@@ -26,3 +27,40 @@
        </div>
     </div>
 </div>
+
+
+@code {
+    private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
+        if( this.Disabled ) {
+            return;
+        }
+        if( !this.IsSeachFocused ) {
+            return;
+        }
+
+        await this.HandleInput_Async( arg );
+    }
+
+    private async Task OnInputSearch_UI_Async( string? termText ) {
+        if( this.Disabled ) {
+            return;
+        }
+
+        if( termText is null ) {
+            this.SearchOptions = new List<TermObject>();
+        } else {
+            await this.SearchAndStoreTerms_Async( termText );
+        }
+    }
+
+    private async Task SelectSearchResults_UI_Async( TermObject term ) {
+        if( this.Disabled ) {
+            return;
+        }
+        if( !this.IsSeachFocused ) {
+            return;
+        }
+
+        await this.SelectSearchResults_Async( term );
+    }
+}

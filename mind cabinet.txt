@@ -1,19 +1,53 @@
 v2
--	Implement post meta-data input (based on tags)
+-	@Brainstorm value data for posts (contextualized by tags)
 v1
 -	Deploy
 -	Implement invalid session ip handling
 -	Implement email validation on registration
-
-
-v0.5
 -	Implement post markdown
+-	Have any posts tagged "Push Notify" create random notifications (based on priority)
+-	@Brainstorm features
+	-	Change post input to streamlined list input if tag 'List (Post Type)' is given
+	-	Change input to a 2d map if tag 'Map (Post Type)' is given
+
+
+v0.7
+-	Add icons and descriptions for tags (optional)
+-	Add bulk tag editor for posts in view
+-	Add tag picker and remover for posts in post view (appear on focus)
+v0.6
+-	Save tab state with user session data
+-	Implement tabs: Post view + "current context" view
+-	Implement post grid view
+-	Implement post per page adjuster
+v0.5
+-	Save "current context" state with user session data
+-	Add a button to shuffle main view of posts
+-	Create a tab view for random posts of the given current context tags
+-	Implement "current context" sidebar
+	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
+	-	Add a "priority value" slider for tags
+	-	Define input for tags
+-	Alter tag picker to add popular and favorited tags
+	-	Implement tag picker
+	-	Add tag picker auto-attach popup for each post
+	-	Update cache table every time a tag is picked
+	-	Store cached history of recent tags (table: user id, tag id, count)
+	-	Store history of picked tags (table: user id, tag id, use date)
+-	Implementing "favoriting" tags
+	-	Implement tag favorites table (user id, tag id)
+	-	Add favorite button in tag display component button bar
+	-	Add button bar in tag display component
+	-	Import icons
+
+
 v0.4
--	Implement term context input (another dropdown)
--	Implement picking term from dropdown via keyboard
+-	Implement term context input
+	-	Complete new term submit after context chosen
+	-	Implement term picker
+	-	Define modal dialog for picker
+	-	Activate modal dialog for picker
 -	@Test usability
-
-
 -	@Test
 -	Use DbString.IsAnsi
 -	Implement routes via constant strings

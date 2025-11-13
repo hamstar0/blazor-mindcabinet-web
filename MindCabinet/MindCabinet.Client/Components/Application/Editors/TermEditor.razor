@@ -1,6 +1,9 @@
-﻿@using MindCabinet.Client.Components.Application.Renders;
-@using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataObjects
+﻿@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
 
 
 
@@ -29,3 +32,23 @@
        </div>
     </div>
 </div>
+
+
+<Modal @ref=@this.ModalDialog Title="Specify Context">
+    <TermPicker OnTermSelect_Async=@this.OnModalDialogTermContextSelect_Async />
+</Modal>
+
+
+@code {
+    private async Task OnModalDialogTermContextSelect_Async( TermObject term ) {
+        if( this.InProgressTermEdit is null ) {
+            throw new InvalidOperationException( "InProgressTermEdit is null in OnModalDialogTermContextSelect_Async." );
+        }
+
+        this.ModalDialog.Close();
+
+        await this.TrySubmitNewTerm_Async( this.InProgressTermEdit, term );
+
+        this.InProgressTermEdit = null;
+    }
+}

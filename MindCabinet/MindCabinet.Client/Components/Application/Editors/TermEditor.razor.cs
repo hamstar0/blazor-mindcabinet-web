@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
-using MindCabinet.Client.Components.Application.Renders;
+using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataObjects.Term;
-using static MindCabinet.Client.Services.ClientDbAccess;
 
 
 namespace MindCabinet.Client.Components.Application.Editors;
@@ -34,6 +32,10 @@ public partial class TermEditor : ComponentBase {
 
     private IEnumerable<TermObject> SearchOptions = new List<TermObject>();
 
+    // private int SearchPosition = -1;
+
+    private string? InProgressTermEdit = null;
+
 
     [Parameter]
     public bool Disabled { get; set; } = false;
@@ -45,10 +47,12 @@ public partial class TermEditor : ComponentBase {
     public string? Description { get; set; }
 
     [Parameter]
-    public Func<string, Task<(string, bool)>>? OnTermInput_Async { get; set; } = null;
+    public Func<string, Task<(string termText, bool isSubmit)>>? OnTermInput_Async { get; set; } = null;
 
     [Parameter, EditorRequired]
     public OnTermConfirmFunc_Async OnTermConfirm_Async { get; set; } = null!;
+    
+    private Modal ModalDialog = null!;
 
 
 
@@ -60,7 +64,15 @@ public partial class TermEditor : ComponentBase {
             return;
         }
 
- 
+        // switch( arg.Key ) {
+        // case "ArrowUp":
+        //     this.SearchPosition = Math.Max( this.SearchPosition - 1, 0 );
+        //     break;
+        // case "ArrowDown":
+        //     this.SearchPosition = Math.Min( this.SearchPosition + 1, this.SearchOptions.Count() - 1 );
+        //     break;
+        // }
+        
         if( arg.Code == "Enter" || arg.Code == "NumpadEnter" ) {
             await this.TrySubmitNewTerm_Async( this.Value );
 
@@ -79,6 +91,7 @@ public partial class TermEditor : ComponentBase {
         
         if( string.IsNullOrEmpty(termText) ) {
             this.SearchOptions = new List<TermObject>();
+            // this.SearchPosition = 0;
             this.Value = "";
 
             return;
@@ -100,12 +113,21 @@ public partial class TermEditor : ComponentBase {
     }
 
 
-    private async Task<bool> TrySubmitNewTerm_Async( string termText ) {
+    private async Task<bool> TrySubmitNewTerm_Async( string termText, TermObject? context = null ) {
         if( termText.Length < 2 ) {
             return false;
         }
 
+        if( context is null ) {
+            this.ModalDialog.Open();
+
+            this.InProgressTermEdit = termText;
+
+            return false;
+        }
+
         this.SearchOptions = new List<TermObject>();
+        // this.SearchPosition = 0;
 
         return await this.SubmitNewTerm_Async( termText! );
     }
@@ -133,6 +155,7 @@ public partial class TermEditor : ComponentBase {
     private async Task TrySearchTerm_Async( string termText ) {
         if( termText.Length == 0 ) {
             this.SearchOptions = new List<TermObject>();
+            // this.SearchPosition = 0;
 
             return;
         }
@@ -152,6 +175,7 @@ public partial class TermEditor : ComponentBase {
         //}
 
         this.SearchOptions = new List<TermObject>();
+        // this.SearchPosition = 0;
         this.Value = term.Term;
 
         await this.OnTermConfirm_Async( term, false );

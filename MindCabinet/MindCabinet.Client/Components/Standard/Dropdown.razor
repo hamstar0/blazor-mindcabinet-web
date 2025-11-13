@@ -1,0 +1,24 @@
+﻿@using MindCabinet.Shared.Utility;
+
+@* @typeparam TKey where TKey : struct, Enum; *@
+
+
+<div class="dropdown @this.AddedClasses" style=@this.AddedStyle>
+    <button class="btn btn-secondary dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+        @(this.Options.GetValueOrDefault(this.CurrentSelection) ?? "-")
+    </button>
+    <ul class="dropdown-menu">
+        @foreach( (int optionValue, string label) in this.Options ) {
+            int thisOptionVal = optionValue;
+            <li>
+				<a href="#" class="dropdown-item" @onclick=@(e => this.Select_UI( thisOptionVal ))>
+                    @label
+                </a>
+            </li>
+        }
+    </ul>
+</div>
+

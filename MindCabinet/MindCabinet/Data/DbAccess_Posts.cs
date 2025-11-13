@@ -185,14 +185,15 @@ public partial class ServerDbAccess {
             //body = body.Replace( "[", "\\[" );
 
             // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sql += "WHERE MyPosts.Body LIKE @Body ESCAPE '\\'";
+            sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\'";
             sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
             hasWhere = true;
         }
 
         if( parameters.Tags.Count > 0 ) {
             sql += hasWhere ? "AND" : "WHERE";
-            sql += @" (
+            sql += @"
+            (
                 (
                     (SELECT (@Tags)) EXCEPT (
                         SELECT MyTerms.Id FROM Terms AS MyTerms
@@ -200,7 +201,7 @@ public partial class ServerDbAccess {
                         WHERE MyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
-            ) ";
+            )";
             sqlParams["@Tags"] = parameters.Tags
                 .Select( t => t.Id )
                 .ToList();
@@ -223,11 +224,12 @@ public partial class ServerDbAccess {
         if( parameters.PostsPerPage > 0 ) {
             // FETCH NEXT @Quantity ROWS ONLY;";
             // LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
-            sql += $"\n LIMIT @Offset, @Quantity;";
+            sql += $"\n LIMIT @Offset, @Quantity";
             sqlParams["@Offset"] = parameters.PageNumber * parameters.PostsPerPage;
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }
 
+        sql += ";";
         return (sql, sqlParams);
     }
 
@@ -240,7 +242,7 @@ public partial class ServerDbAccess {
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
 
-//this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
+// this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<PostEntryData> posts = await dbCon.QueryAsync<PostEntryData>(
             sql, new DynamicParameters( sqlParams )
         );
@@ -300,8 +302,8 @@ public partial class ServerDbAccess {
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            @"INSERT INTO Posts (Created, Body, TermSetId) 
-                VALUES (@Created, @Body, @TermSetId);
+            @"INSERT INTO Posts (Created, Modified, Body, TermSetId) 
+                VALUES (@Created, @Created, @Body, @TermSetId);
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,

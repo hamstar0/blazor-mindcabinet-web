@@ -1,10 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Components;
-@using MindCabinet.Client.Components.Application.Editors
+@using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Standard;
-@using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataObjects
-@using MindCabinet.Shared.DataObjects.Term
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
 
 
 <div component-name="TagSetEditor" class=@this.AddedClasses>
@@ -39,7 +39,7 @@
     }
 
 
-    public async Task<(string, bool)> OnTagEditConfirmSubmit_UI_Async( string tag ) {
+    public async Task<(string termText, bool isSubmit)> OnTagEditConfirmSubmit_UI_Async( string tag ) {
         return tag.Contains(",")
             ? (tag.Split(",")[0], true)
             : (tag, false);

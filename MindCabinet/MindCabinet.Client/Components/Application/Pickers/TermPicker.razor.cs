@@ -38,15 +38,7 @@ public partial class TermPicker : ComponentBase {
     public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
 
-
-    private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
-        if( this.Disabled ) {
-            return;
-        }
-        if( !this.IsSeachFocused ) {
-            return;
-        }
-
+    private async Task HandleInput_Async( KeyboardEventArgs arg ) {
         int optionCount = this.SearchOptions.Count();
         if( optionCount == 0 ) {
             return;
@@ -68,11 +60,7 @@ public partial class TermPicker : ComponentBase {
             this.IsCurrentInputSuppressed = optionCount > 0;
         }
 
-        if( this.SearchPosition < 0 ) {
-            this.SearchPosition = 0;
-        } else if( this.SearchPosition >= optionCount ) {
-            this.SearchPosition = optionCount - 1;
-        }
+        this.SearchPosition = Math.Clamp( this.SearchPosition, 0, optionCount - 1 );
 
         if( isEnter && optionCount > 0 ) {
             await this.SelectSearchResults_Async( this.SearchOptions[this.SearchPosition] );
@@ -82,36 +70,18 @@ public partial class TermPicker : ComponentBase {
     }
 
 
-    private async Task OnInputSearch_UI_Async( string? termText ) {
-        if( this.Disabled ) {
-            return;
-        }
-
-        if( termText is not null ) {
-            IEnumerable<TermObject> terms = await this.DbAccess.GetTermsByCriteria_Async(
-                new ClientDbAccess.GetTermsByCriteriaParams( termText, null )
-            );
-            this.SearchOptions = terms.ToList();    // TODO
-        } else {
-            this.SearchOptions = new List<TermObject>();
-        }
+    private async Task SearchAndStoreTerms_Async( string termText ) {
+        IEnumerable<TermObject> terms = await this.DbAccess.GetTermsByCriteria_Async(
+            new ClientDbAccess.GetTermsByCriteriaParams( termText, null )
+        );
+        this.SearchOptions = terms.ToList();    // TODO
     }
 
-
-    private async Task SelectSearchResults_UI_Async( TermObject term ) {
-        if( this.Disabled ) {
-            return;
-        }
-        if( !this.IsSeachFocused ) {
-            return;
-        }
-
-        await this.SelectSearchResults_Async( term );
-    }
 
     private async Task SelectSearchResults_Async( TermObject term ) {
         this.Value = term.Term ?? "";
 
+Console.WriteLine( $"SelectSearchResults_Async: '{term.Term}'." );
         await this.OnTermSelect_Async.Invoke( term );
 
        // await this.Js.InvokeVoidAsync(
