@@ -45,7 +45,7 @@ public partial class UserRegistrationForm : ComponentBase {
     protected async override Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
 
-        await this.SessionData.Load_Async( this.Http );
+        await this.SessionData.Load_Async();
     }
     
 

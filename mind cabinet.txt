@@ -29,15 +29,16 @@ v0.5
 	-	Add a "priority value" slider for tags
 	-	Define input for tags
 -	Alter tag picker to add popular and favorited tags
-	-	Implement tag picker
 	-	Add tag picker auto-attach popup for each post
-	-	Update cache table every time a tag is picked
-	-	Store cached history of recent tags (table: user id, tag id, count)
-	-	Store history of picked tags (table: user id, tag id, use date)
+	-	Implement tag picker button bars
+		-	Add tag quick-pick buttons for recent tags
+		-	Add tag quick-pick buttons for favorite tags
+
+
+		-	Define space for button bars
+	-	Store history the last 100 tags used
 -	Implementing "favoriting" tags
 	-	Implement tag favorites table (user id, tag id)
-
-
 	-	Add favorite button in tag display component
 	-	Store favorites with session data
 v0.4

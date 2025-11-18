@@ -13,11 +13,14 @@ namespace MindCabinet;
 public class PostController : ControllerBase {
     private readonly ServerDbAccess DbAccess;
 
+    private readonly ServerSessionData SessData;
 
 
-    public PostController( ServerDbAccess dbAccess ) {
+
+    public PostController( ServerDbAccess dbAccess, ServerSessionData sessData ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
+        this.SessData = sessData;
     }
 
 
@@ -41,6 +44,6 @@ public class PostController : ControllerBase {
     public async Task<PostObject> Create_Async( ClientDbAccess.CreatePostParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
-        return await this.DbAccess.CreatePost_Async( dbCon, parameters );
+        return await this.DbAccess.CreatePost_Async( dbCon, parameters, this.SessData, false );
     }
 }

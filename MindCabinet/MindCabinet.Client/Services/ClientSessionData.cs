@@ -1,15 +1,22 @@
 ﻿using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using System.Net.Http.Json;
 
 namespace MindCabinet.Client.Services;
 
 
 public partial class ClientSessionData {
-    public class RawData( string sessionId, SimpleUserObject.ClientData? userData, List<long> favoriteTermIds ) {
+    public class RawData(
+                string sessionId,
+                SimpleUserObject.ClientData? userData,
+                List<TermObject> favoriteTerms,
+                List<TermObject> recentTerms ) {
         public string SessionId = sessionId;
         public SimpleUserObject.ClientData? UserData = userData;
 
-        public List<long> FavoriteTermIds = favoriteTermIds;
+        public List<TermObject> FavoriteTerms = favoriteTerms;
+
+        public List<TermObject> RecentTerms = recentTerms;
     }
 
 
@@ -37,7 +44,7 @@ public partial class ClientSessionData {
     internal async Task Load_Async() {
         //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
         HttpResponseMessage msg = await this.Http.GetAsync(
-            ClientSessionData.Session_GetSessionData_Path + "/" + ClientSessionData.Session_GetSessionData_Route
+            $"{Session_GetSessionData_Path}/{Session_GetSessionData_Route}"
         );
 
         msg.EnsureSuccessStatusCode();

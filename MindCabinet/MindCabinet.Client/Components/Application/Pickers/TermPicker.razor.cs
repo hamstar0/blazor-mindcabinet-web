@@ -15,6 +15,9 @@ public partial class TermPicker : ComponentBase {
     [Inject]
     public ClientDbAccess DbAccess { get; set; } = null!;
 
+    [Inject]
+    public ClientSessionData Session { get; set; } = null!;
+
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;

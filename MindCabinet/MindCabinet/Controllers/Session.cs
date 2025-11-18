@@ -34,7 +34,21 @@ public class SessionController : ControllerBase {
         return new ClientSessionData.RawData(
             sessionId: this.SessData.SessionId!,
             userData: this.SessData.User?.GetClientOnlyData(),
-            favoriteTermIds: this.SessData.FavoriteTermIds
+            favoriteTerms: this.SessData.FavoriteTerms.ToList(),
+            recentTerms: this.SessData.TermHistory.ToList()
         );
+    }
+
+    [HttpPost(ClientSessionData.Session_SetFavoriteTerm_Route)]
+    public async Task<object> SetFavoriteTerm_Async( ClientSessionData.SetFavoriteTermSessionParams parameters ) {
+        if( parameters.IsFavorite ) {
+            IDbConnection dbConn = await this.DbAccess.ConnectDb_Async();
+            
+            await this.SessData.AddFavoriteTerm( dbConn, parameters.TermId );
+        } else {
+            this.SessData.RemoveFavoriteTerm( parameters.TermId );
+        }
+
+        return new object();
     }
 }

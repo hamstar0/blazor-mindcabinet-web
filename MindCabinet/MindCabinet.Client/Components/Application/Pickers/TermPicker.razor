@@ -26,6 +26,16 @@
             }
        </div>
     </div>
+    @if( this.Session.FavoriteTerms.Count > 0 ) {
+        <div>
+            <label>Popular Terms:</label>
+        </div>
+    }
+    @if( this.Session.RecentTerms.Count > 0 ) {
+        <div>
+            <label>Recent Terms:</label>
+        </div>
+    }
 </div>
 
 
