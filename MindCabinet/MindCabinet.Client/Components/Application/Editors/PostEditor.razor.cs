@@ -24,7 +24,7 @@ public partial class PostEditor : ComponentBase {
 
     private string PostText = "";
 
-    private IList<TermObject> Tags = new List<TermObject>();
+    private List<TermObject> Tags = new List<TermObject>();
 
     [Parameter, EditorRequired]
     public Func<PostObject, Task> OnSubmit_Async { get; set; } = null!;
@@ -37,7 +37,7 @@ public partial class PostEditor : ComponentBase {
         this.StateHasChanged();
     }
 
-    private async Task OnTagsChangeHandler_UI_Async( IList<TermObject> tags, TermObject changedTag, bool isAdded ) {
+    private async Task OnTagsChangeHandler_UI_Async( List<TermObject> tags, TermObject changedTag, bool isAdded ) {
         this.Tags = tags;
 
         this.StateHasChanged();

@@ -4,9 +4,15 @@
 
 <div component-name="TermRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
     @(this.Term?.Term ?? "?")
-    @this.ChildContent
     @if( this.Term?.Context?.Context is not null ) {
         <div class="tooltiptext">@this.Term.Context.Context.Term</div>
+    }
+    @this.ChildContent
+    @if( this.HasFavoriteButton && this.Term is not null ) {
+        <button class="@(this.Session.FavoriteTermIds.Contains(this.Term.Id) ? "lit" : "unlit")"
+                @onclick=@(async e => await this.OnFavoriteButtonClick_Async(e))>
+            ★
+        </button>
     }
 </div>
 
@@ -16,5 +22,11 @@
         if( this.OnClick_Async is not null ) {
             await this.OnClick_Async( args );
         }
+    }
+
+
+    private async Task OnFavoriteButtonClick_Async( MouseEventArgs args ) {
+        /*⭐*/
+        await this.Session.SetFavoriteTerm_Async( this.Term!.Id, !this.Session.FavoriteTermIds.Contains(this.Term.Id) );
     }
 }

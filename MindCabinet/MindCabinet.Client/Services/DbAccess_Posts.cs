@@ -55,8 +55,9 @@ public partial class ClientDbAccess {
     public const string Post_GetCountByCriteria_Route = "GetCountByCriteria";
 
     public async Task<int> GetPostCountByCriteria_Async( GetPostsByCriteriaParams parameters ) {
-        //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
+        
+        //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
         HttpResponseMessage msg = await this.Http.PostAsync(
             requestUri: ClientDbAccess.Post_GetCountByCriteria_Path + "/" + ClientDbAccess.Post_GetCountByCriteria_Route,
             content: content,
@@ -76,9 +77,9 @@ public partial class ClientDbAccess {
 
     public class CreatePostParams(
                 string body,
-                IList<TermObject> tags ) {
+                List<TermObject> tags ) {
         public string Body { get; } = body;
-        public IList<TermObject> Tags { get; } = tags;
+        public List<TermObject> Tags { get; } = tags;
     }
     
     public const string Post_Create_Path = "Post";
@@ -86,8 +87,8 @@ public partial class ClientDbAccess {
 
     public async Task<PostObject> CreatePost_Async( CreatePostParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Post_Create_Path + "/" + ClientDbAccess.Post_Create_Route,
-            parameters
+            requestUri: ClientDbAccess.Post_Create_Path + "/" + ClientDbAccess.Post_Create_Route,
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();

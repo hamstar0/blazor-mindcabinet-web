@@ -36,11 +36,10 @@ v0.5
 	-	Store history of picked tags (table: user id, tag id, use date)
 -	Implementing "favoriting" tags
 	-	Implement tag favorites table (user id, tag id)
-	-	Add favorite button in tag display component button bar
-	-	Add button bar in tag display component
-	-	Import icons
 
 
+	-	Add favorite button in tag display component
+	-	Store favorites with session data
 v0.4
 -	Implement term context input
 	-	Complete new term submit after context chosen

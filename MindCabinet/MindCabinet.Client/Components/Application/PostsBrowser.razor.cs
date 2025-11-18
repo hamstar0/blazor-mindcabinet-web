@@ -36,7 +36,7 @@ public partial class PostsBrowser : ComponentBase {
 
     private string SearchTerm = "";
 
-	private IList<TermObject> FilterTags = new List<TermObject>();
+	private List<TermObject> FilterTags = new List<TermObject>();
 
 
     private IEnumerable<PostObject> CurrentPagePosts_Cache = [];
@@ -127,7 +127,7 @@ public partial class PostsBrowser : ComponentBase {
         await this.RefreshPosts_Async();
     }
 
-    public async Task SetFilterTags_Async( IList<TermObject> changedTags ) {
+    public async Task SetFilterTags_Async( List<TermObject> changedTags ) {
         var currentTagStrings = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
         var changedTagStrings = new HashSet<string>( changedTags.Select(t=>t.ToString()) );
 

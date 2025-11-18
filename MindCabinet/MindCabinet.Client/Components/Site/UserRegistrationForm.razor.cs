@@ -190,7 +190,7 @@ public partial class UserRegistrationForm : ComponentBase {
         return code;
     }
 
-    public IList<string> GetSubmitStatuses( StatusCode code ) {
+    public List<string> GetSubmitStatuses( StatusCode code ) {
         var statuses = new List<string>();
 
         foreach( (StatusCode msgCode, string message) in UserRegistrationForm.StatusCodeMessages ) {

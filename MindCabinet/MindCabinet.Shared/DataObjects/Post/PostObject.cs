@@ -13,11 +13,11 @@ public partial class PostObject : IEquatable<PostObject> {
 
     public string Body { get; set; }
 
-    public IList<TermObject> Tags { get; set; }
+    public List<TermObject> Tags { get; set; }
 
 
 
-	public PostObject( long id, DateTime created, string body, IList<TermObject> tags ) {
+	public PostObject( long id, DateTime created, string body, List<TermObject> tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;

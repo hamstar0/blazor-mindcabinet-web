@@ -5,7 +5,7 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientDbAccess {
-    public HttpClient Http;
+    private HttpClient Http;
 
 
     public ClientDbAccess( HttpClient http ) {

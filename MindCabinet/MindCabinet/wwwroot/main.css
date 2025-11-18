@@ -96,3 +96,12 @@ component-label {
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
+
+
+.lit {
+    color: #ffff00; 
+}
+
+.unlit {
+    color: #bbbb88; 
+}

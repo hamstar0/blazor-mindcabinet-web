@@ -13,6 +13,6 @@ public partial class PostObject : IEquatable<PostObject> {
 
 		public string? Body;
 
-		public IList<TermObject>? Tags;
+		public List<TermObject>? Tags;
 	}
 }

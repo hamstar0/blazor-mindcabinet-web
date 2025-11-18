@@ -4,13 +4,17 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public class ClientSessionData {
-    public class RawData( string sessionId, SimpleUserObject.ClientData? userData ) {
+public partial class ClientSessionData {
+    public class RawData( string sessionId, SimpleUserObject.ClientData? userData, List<long> favoriteTermIds ) {
         public string SessionId = sessionId;
         public SimpleUserObject.ClientData? UserData = userData;
+
+        public List<long> FavoriteTermIds = favoriteTermIds;
     }
 
 
+
+    private HttpClient Http;
 
     private RawData? Data;
 
@@ -21,10 +25,20 @@ public class ClientSessionData {
     public bool IsLoaded { get; private set; } = false;
 
 
+    public ClientSessionData( HttpClient http ) {
+        this.Http = http;
+    }
 
-    internal async Task Load_Async( HttpClient client ) {
-        //ClientSessionData.Json? data = await client.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
-        HttpResponseMessage msg = await client.GetAsync( "SimpleUser/GetSessionData" );
+
+
+    public const string Session_GetSessionData_Path = "Session";
+    public const string Session_GetSessionData_Route = "GetSessionData";
+
+    internal async Task Load_Async() {
+        //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
+        HttpResponseMessage msg = await this.Http.GetAsync(
+            ClientSessionData.Session_GetSessionData_Path + "/" + ClientSessionData.Session_GetSessionData_Route
+        );
 
         msg.EnsureSuccessStatusCode();
 

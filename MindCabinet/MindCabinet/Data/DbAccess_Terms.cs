@@ -114,7 +114,7 @@ public partial class ServerDbAccess {
             sql, new DynamicParameters(sqlParams) );
 //this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
-        IList<TermObject> termList = new List<TermObject>( terms.Count() );
+        var termList = new List<TermObject>( terms.Count() );
 
         foreach( TermObjectDbData term in terms ) {
             termList.Add( await term.Create_Async(dbCon, this) );

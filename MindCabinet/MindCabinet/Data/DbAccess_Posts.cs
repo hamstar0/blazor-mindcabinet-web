@@ -247,7 +247,7 @@ public partial class ServerDbAccess {
             sql, new DynamicParameters( sqlParams )
         );
 
-        IList<PostObject> postList = new List<PostObject>( posts.Count() );
+        var postList = new List<PostObject>( posts.Count() );
 
         foreach( PostEntryData post in posts ) {
             postList.Add( await post.CreatePost_Async(dbCon, this) );

@@ -4,11 +4,11 @@ namespace MindCabinet.Shared.DataObjects.Term;
 
 
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
-    public long Id { get; private set; }
+    public long Id { get; set; }
 
-	public string Term { get; set; }
+    public string Term { get; set; }
 
-	public TermObject? Context { get; set; }
+    public TermObject? Context { get; set; }
 
     public TermObject? Alias { get; set; }
 

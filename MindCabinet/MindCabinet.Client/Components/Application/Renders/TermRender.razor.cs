@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using MindCabinet.Client.Services;
 using MindCabinet.Shared.DataObjects.Term;
 
 
@@ -12,10 +13,18 @@ public partial class TermRender : ComponentBase {
 
     //[Inject]
     //public ClientDataAccess Data { get; set; } = null!;
+    //public IJSRuntime Js { get; set; } = null!;
+
+    [Inject]
+    public ClientSessionData Session { get; set; } = null!;
 
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+
+    [Parameter]
+    public bool HasFavoriteButton { get; set; } = false;
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; } = null;

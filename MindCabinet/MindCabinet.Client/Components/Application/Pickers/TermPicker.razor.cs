@@ -26,7 +26,7 @@ public partial class TermPicker : ComponentBase {
 
     private bool IsCurrentInputSuppressed = false;
 
-    private IList<TermObject> SearchOptions = new List<TermObject>();
+    private List<TermObject> SearchOptions = new List<TermObject>();
 
     private int SearchPosition = -1;
 

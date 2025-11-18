@@ -70,7 +70,7 @@ public partial class ServerDbAccess {
             new { SetId = termSetId }
         );
 
-        IList<TermObject> terms = new List<TermObject>( termSetRaw.Count() );
+        var terms = new List<TermObject>( termSetRaw.Count() );
 
         foreach( TermObjectDbData? termRaw in termSetRaw ) {
             TermObject term = await termRaw!.Create_Async( dbCon, this );
