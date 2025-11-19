@@ -7,7 +7,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Client.Components.Application.Editors;
 
 
-public partial class PostEditor : ComponentBase {
+public partial class SimplePostEditor : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -49,8 +49,8 @@ public partial class PostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        SimplePostObject post = await this.DbAccess.CreatePost_Async(
-            new ClientDbAccess.CreatePostParams( this.PostText, this.Tags )
+        SimplePostObject post = await this.DbAccess.CreateSimplePost_Async(
+            new ClientDbAccess.CreateSimplePostParams( this.PostText, this.Tags )
         );
 
         this.PostText = "";

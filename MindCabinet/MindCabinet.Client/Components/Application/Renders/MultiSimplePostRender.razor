@@ -2,7 +2,7 @@
 
 
 
-<ul component-name="MultiPostRender" class="basic @(this.AddedClasses ?? "")">
+<ul component-name="MultiSimplePostRender" class="basic @(this.AddedClasses ?? "")">
     @foreach( SimplePostObject post in this.Posts ) {
         <li>
             <SimplePostRender Post=@post OnClick_Async=@(async e => await this.OnClick_UI_Async(post, e)) />

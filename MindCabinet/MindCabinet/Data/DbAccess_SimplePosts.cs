@@ -29,7 +29,7 @@ public partial class ServerDbAccess {
 
 
 
-    public async Task<bool> InstallPosts_Async( IDbConnection dbConnection, long defaultUserId ) {
+    public async Task<bool> InstallSimplePosts_Async( IDbConnection dbConnection, long defaultUserId ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimplePosts (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -56,8 +56,8 @@ public partial class ServerDbAccess {
 
 
 
-    private (string sql, IDictionary<string, object> sqlParams) GetPostsByCriteriaSql(
-                ClientDbAccess.GetPostsByCriteriaParams parameters,
+    private (string sql, IDictionary<string, object> sqlParams) GetSimplePostsByCriteriaSql(
+                ClientDbAccess.GetSimplePostsByCriteriaParams parameters,
                 bool countOnly ) {
         bool hasWhere = false;
         string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM SimplePosts AS MyPosts ";
@@ -117,14 +117,14 @@ public partial class ServerDbAccess {
         return (sql, sqlParams);
     }
 
-    public async Task<IEnumerable<SimplePostObject>> GetPostsByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject>> GetSimplePostsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<SimplePostObject>();
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetSimplePostsByCriteriaSql( parameters, false );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<SimplePostEntryData> posts = await dbCon.QueryAsync<SimplePostEntryData>(
@@ -154,14 +154,14 @@ public partial class ServerDbAccess {
         //return posts;
 	}
 
-    public async Task<int> GetPostCountByCriteria_Async(
+    public async Task<int> GetSimplePostCountByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, true );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetSimplePostsByCriteriaSql( parameters, true );
 
         return await dbCon.QuerySingleAsync<int>( sql, new DynamicParameters(sqlParams) );
 
@@ -180,9 +180,9 @@ public partial class ServerDbAccess {
     }
 
 
-	public async Task<SimplePostObject> CreatePost_Async(
+	public async Task<SimplePostObject> CreateSimplePost_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.CreatePostParams parameters,
+                ClientDbAccess.CreateSimplePostParams parameters,
                 ServerSessionData session,
                 bool skipHistory ) {
         DateTime now = DateTime.UtcNow;

@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientDbAccess {
-    public class GetPostsByCriteriaParams(
+    public class GetSimplePostsByCriteriaParams(
                 string bodyPattern,
                 ISet<TermObject> tags,
                 bool sortAscendingByDate,
@@ -35,7 +35,7 @@ public partial class ClientDbAccess {
     public const string SimplePost_GetByCriteria_Path = "SimplePost";
     public const string SimplePost_GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<IEnumerable<SimplePostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<SimplePostObject>> GetSimplePostsByCriteria_Async( GetSimplePostsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             ClientDbAccess.SimplePost_GetByCriteria_Path + "/" + ClientDbAccess.SimplePost_GetByCriteria_Route,
             parameters
@@ -45,7 +45,7 @@ public partial class ClientDbAccess {
 
         IEnumerable<SimplePostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<PostEntry>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<SimplePostObject>" );
         }
 
         return ret;
@@ -54,7 +54,7 @@ public partial class ClientDbAccess {
     public const string SimplePost_GetCountByCriteria_Path = "SimplePost";
     public const string SimplePost_GetCountByCriteria_Route = "GetCountByCriteria";
 
-    public async Task<int> GetPostCountByCriteria_Async( GetPostsByCriteriaParams parameters ) {
+    public async Task<int> GetSimplePostCountByCriteria_Async( GetSimplePostsByCriteriaParams parameters ) {
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
         
         //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
@@ -75,7 +75,7 @@ public partial class ClientDbAccess {
     }
 
 
-    public class CreatePostParams(
+    public class CreateSimplePostParams(
                 string body,
                 List<TermObject> tags ) {
         public string Body { get; } = body;
@@ -85,7 +85,7 @@ public partial class ClientDbAccess {
     public const string SimplePost_Create_Path = "SimplePost";
     public const string SimplePost_Create_Route = "Create";
 
-    public async Task<SimplePostObject> CreatePost_Async( CreatePostParams parameters ) {
+    public async Task<SimplePostObject> CreateSimplePost_Async( CreateSimplePostParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: ClientDbAccess.SimplePost_Create_Path + "/" + ClientDbAccess.SimplePost_Create_Route,
             value: parameters
@@ -95,7 +95,7 @@ public partial class ClientDbAccess {
 
         SimplePostObject? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize PostEntry" );
+            throw new InvalidDataException( "Could not deserialize SimplePostEntry" );
         }
 
         return ret;

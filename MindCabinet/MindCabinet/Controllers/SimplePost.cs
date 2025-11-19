@@ -26,24 +26,24 @@ public class SimplePostController : ControllerBase {
 
     [HttpPost(ClientDbAccess.SimplePost_GetByCriteria_Route)]
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
-                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
-        return await this.DbAccess.GetPostsByCriteria_Async( dbCon, parameters );
+        return await this.DbAccess.GetSimplePostsByCriteria_Async( dbCon, parameters );
     }
 
     [HttpPost(ClientDbAccess.SimplePost_GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
-                ClientDbAccess.GetPostsByCriteriaParams parameters ) {
+                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
-        return await this.DbAccess.GetPostCountByCriteria_Async( dbCon, parameters );
+        return await this.DbAccess.GetSimplePostCountByCriteria_Async( dbCon, parameters );
     }
 
     [HttpPost(ClientDbAccess.SimplePost_Create_Route)]
-    public async Task<SimplePostObject> Create_Async( ClientDbAccess.CreatePostParams parameters ) {
+    public async Task<SimplePostObject> Create_Async( ClientDbAccess.CreateSimplePostParams parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
-        return await this.DbAccess.CreatePost_Async( dbCon, parameters, this.SessData, false );
+        return await this.DbAccess.CreateSimplePost_Async( dbCon, parameters, this.SessData, false );
     }
 }

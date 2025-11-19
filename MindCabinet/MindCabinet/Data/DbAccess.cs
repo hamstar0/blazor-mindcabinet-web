@@ -77,7 +77,7 @@ public partial class ServerDbAccess {
         if( !success ) {
             return false;
         }
-        success = await this.InstallPosts_Async( dbCon, defaultUserId );
+        success = await this.InstallSimplePosts_Async( dbCon, defaultUserId );
         if( !success ) {
             return false;
         }

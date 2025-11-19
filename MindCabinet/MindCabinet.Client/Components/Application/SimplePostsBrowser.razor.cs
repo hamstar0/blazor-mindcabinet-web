@@ -8,7 +8,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Client.Components.Application;
 
 
-public partial class PostsBrowser : ComponentBase {
+public partial class SimplePostsBrowser : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -66,21 +66,21 @@ public partial class PostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
-        var search = new ClientDbAccess.GetPostsByCriteriaParams(
+        var search = new ClientDbAccess.GetSimplePostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<SimplePostObject> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
+        IEnumerable<SimplePostObject> posts = await this.DbAccess.GetSimplePostsByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        int totalPosts = await this.DbAccess.GetPostCountByCriteria_Async( new ClientDbAccess.GetPostsByCriteriaParams(
+        int totalPosts = await this.DbAccess.GetSimplePostCountByCriteria_Async( new ClientDbAccess.GetSimplePostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,

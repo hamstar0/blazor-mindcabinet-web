@@ -9,7 +9,7 @@
 
 
 
-<div component-name="PostsBrowser" class=@this.AddedClasses>
+<div component-name="SimplePostsBrowser" class=@this.AddedClasses>
     <h3>Browse Posts</h3>
 
     <div style="display: grid; grid-template-columns: auto auto;">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <MultiPostRender Posts=@this.CurrentPagePosts_Cache />
+    <MultiSimplePostRender Posts=@this.CurrentPagePosts_Cache />
     
     <div style="display: grid; grid-template-columns: auto auto;">
         <Pagination CurrentPage=@this.CurrentPageNumber

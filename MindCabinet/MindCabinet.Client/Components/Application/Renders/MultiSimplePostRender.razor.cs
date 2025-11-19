@@ -6,7 +6,7 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class MultiPostRender : ComponentBase {
+public partial class MultiSimplePostRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
