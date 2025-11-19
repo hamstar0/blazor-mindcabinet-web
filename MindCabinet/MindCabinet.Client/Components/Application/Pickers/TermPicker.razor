@@ -28,12 +28,18 @@
     </div>
     @if( this.Session.FavoriteTerms.Count > 0 ) {
         <div>
-            <label>Popular Terms:</label>
+            <label>Favorite Terms:</label>
+            <MultiTermRender
+                    Terms=@this.Session.FavoriteTerms
+                    OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
     @if( this.Session.RecentTerms.Count > 0 ) {
         <div>
             <label>Recent Terms:</label>
+            <MultiTermRender
+                    Terms=@this.Session.RecentTerms
+                    OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
 </div>
@@ -70,6 +76,8 @@
         if( !this.IsSeachFocused ) {
             return;
         }
+
+        this.SearchOptions = new List<TermObject>();
 
         await this.SelectSearchResults_Async( term );
     }

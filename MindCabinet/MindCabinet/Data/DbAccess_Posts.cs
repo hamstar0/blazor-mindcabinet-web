@@ -15,8 +15,8 @@ public partial class ServerDbAccess {
         public int TermSetId;
 
 
-        public async Task<PostObject> CreatePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
-            return new PostObject(
+        public async Task<SimplePostObject> CreateSimplePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
+            return new SimplePostObject(
                 id: this.Id,
                 created: this.Created,
                 body: this.Body,
@@ -31,7 +31,7 @@ public partial class ServerDbAccess {
 
     public async Task<bool> InstallPosts_Async( IDbConnection dbConnection, long defaultUserId ) {
         await dbConnection.ExecuteAsync( @"
-            CREATE TABLE Posts (
+            CREATE TABLE SimplePosts (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Created DATETIME(2) NOT NULL,
                 Modified DATETIME(2) NOT NULL,
@@ -47,7 +47,7 @@ public partial class ServerDbAccess {
 
         //
 
-        await this.InstallSamplePosts( dbConnection, defaultUserId );
+        await this.InstallSampleSimplePosts( dbConnection, defaultUserId );
 
         return true;
     }
@@ -60,7 +60,7 @@ public partial class ServerDbAccess {
                 ClientDbAccess.GetPostsByCriteriaParams parameters,
                 bool countOnly ) {
         bool hasWhere = false;
-        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM Posts AS MyPosts ";
+        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM SimplePosts AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
         if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
@@ -117,11 +117,11 @@ public partial class ServerDbAccess {
         return (sql, sqlParams);
     }
 
-    public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject>> GetPostsByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.GetPostsByCriteriaParams parameters ) {
         if( parameters.PostsPerPage == 0 ) {
-            return Enumerable.Empty<PostObject>();
+            return Enumerable.Empty<SimplePostObject>();
         }
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
@@ -131,10 +131,10 @@ public partial class ServerDbAccess {
             sql, new DynamicParameters( sqlParams )
         );
 
-        var postList = new List<PostObject>( posts.Count() );
+        var postList = new List<SimplePostObject>( posts.Count() );
 
         foreach( PostEntryData post in posts ) {
-            postList.Add( await post.CreatePost_Async(dbCon, this) );
+            postList.Add( await post.CreateSimplePost_Async(dbCon, this) );
         }
 
         return postList;
@@ -180,7 +180,7 @@ public partial class ServerDbAccess {
     }
 
 
-	public async Task<PostObject> CreatePost_Async(
+	public async Task<SimplePostObject> CreatePost_Async(
                 IDbConnection dbCon,
                 ClientDbAccess.CreatePostParams parameters,
                 ServerSessionData session,
@@ -188,7 +188,7 @@ public partial class ServerDbAccess {
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            @"INSERT INTO Posts (Created, Modified, Body, TermSetId) 
+            @"INSERT INTO SimplePosts (Created, Modified, Body, TermSetId) 
                 VALUES (@Created, @Created, @Body, @TermSetId);
             SELECT LAST_INSERT_ID();",
             new {
@@ -198,7 +198,7 @@ public partial class ServerDbAccess {
             }
         );
 
-        var newTerm = new PostObject(
+        var newTerm = new SimplePostObject(
             id: newPostId,
             created: now,
             body: parameters.Body,

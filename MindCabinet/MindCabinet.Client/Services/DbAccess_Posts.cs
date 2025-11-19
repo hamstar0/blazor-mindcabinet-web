@@ -32,18 +32,18 @@ public partial class ClientDbAccess {
         }
     }
 
-    public const string Post_GetByCriteria_Path = "Post";
-    public const string Post_GetByCriteria_Route = "GetByCriteria";
+    public const string SimplePost_GetByCriteria_Path = "SimplePost";
+    public const string SimplePost_GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<IEnumerable<PostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<SimplePostObject>> GetPostsByCriteria_Async( GetPostsByCriteriaParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Post_GetByCriteria_Path + "/" + ClientDbAccess.Post_GetByCriteria_Route,
+            ClientDbAccess.SimplePost_GetByCriteria_Path + "/" + ClientDbAccess.SimplePost_GetByCriteria_Route,
             parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<PostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<PostObject>>();
+        IEnumerable<SimplePostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<PostEntry>" );
         }
@@ -51,15 +51,15 @@ public partial class ClientDbAccess {
         return ret;
     }
     
-    public const string Post_GetCountByCriteria_Path = "Post";
-    public const string Post_GetCountByCriteria_Route = "GetCountByCriteria";
+    public const string SimplePost_GetCountByCriteria_Path = "SimplePost";
+    public const string SimplePost_GetCountByCriteria_Route = "GetCountByCriteria";
 
     public async Task<int> GetPostCountByCriteria_Async( GetPostsByCriteriaParams parameters ) {
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
         
         //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
         HttpResponseMessage msg = await this.Http.PostAsync(
-            requestUri: ClientDbAccess.Post_GetCountByCriteria_Path + "/" + ClientDbAccess.Post_GetCountByCriteria_Route,
+            requestUri: ClientDbAccess.SimplePost_GetCountByCriteria_Path + "/" + ClientDbAccess.SimplePost_GetCountByCriteria_Route,
             content: content,
             cancellationToken: default
         );
@@ -82,18 +82,18 @@ public partial class ClientDbAccess {
         public List<TermObject> Tags { get; } = tags;
     }
     
-    public const string Post_Create_Path = "Post";
-    public const string Post_Create_Route = "Create";
+    public const string SimplePost_Create_Path = "SimplePost";
+    public const string SimplePost_Create_Route = "Create";
 
-    public async Task<PostObject> CreatePost_Async( CreatePostParams parameters ) {
+    public async Task<SimplePostObject> CreatePost_Async( CreatePostParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: ClientDbAccess.Post_Create_Path + "/" + ClientDbAccess.Post_Create_Route,
+            requestUri: ClientDbAccess.SimplePost_Create_Path + "/" + ClientDbAccess.SimplePost_Create_Route,
             value: parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        PostObject? ret = await msg.Content.ReadFromJsonAsync<PostObject>();
+        SimplePostObject? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize PostEntry" );
         }

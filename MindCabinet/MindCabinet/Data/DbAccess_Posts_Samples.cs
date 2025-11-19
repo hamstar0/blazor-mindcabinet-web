@@ -8,7 +8,7 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
-    private async Task InstallSamplePosts( IDbConnection dbConnection, long defaultUserId ) {
+    private async Task InstallSampleSimplePosts( IDbConnection dbConnection, long defaultUserId ) {
         ClientDbAccess.CreateTermReturn term1 = await this.CreateTerm_Async(
             dbConnection,
             new ClientDbAccess.CreateTermParams("Term1", null, null)
@@ -123,7 +123,7 @@ public partial class ServerDbAccess {
             },
         };
 
-        string sql = @"INSERT INTO Posts (Body, Created, Modified, SimpleUserId, TermSetId)
+        string sql = @"INSERT INTO SimplePosts (Body, Created, Modified, SimpleUserId, TermSetId)
                     VALUES (@Body, @Created, @Modified, @SimpleUserId, @TermSetId)";
         int rowsAffected = await dbConnection.ExecuteAsync( sql, fillerPosts );
     }

@@ -6,6 +6,7 @@ v1
 -	Implement email validation on registration
 -	Implement post markdown
 -	Have any posts tagged "Push Notify" create random notifications (based on priority)
+-	Add tag picker auto-attach popup for each post
 -	@Brainstorm features
 	-	Change post input to streamlined list input if tag 'List (Post Type)' is given
 	-	Change input to a 2d map if tag 'Map (Post Type)' is given
@@ -28,13 +29,16 @@ v0.5
 	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
 	-	Add a "priority value" slider for tags
 	-	Define input for tags
+
+	
+-	Rename Post to SimplePost
+	-	Rename db table
+	-	Rename routes
+	-	Rename data structure
 -	Alter tag picker to add popular and favorited tags
-	-	Add tag picker auto-attach popup for each post
 	-	Implement tag picker button bars
 		-	Add tag quick-pick buttons for recent tags
 		-	Add tag quick-pick buttons for favorite tags
-
-
 		-	Define space for button bars
 	-	Store history the last 100 tags used
 -	Implementing "favoriting" tags

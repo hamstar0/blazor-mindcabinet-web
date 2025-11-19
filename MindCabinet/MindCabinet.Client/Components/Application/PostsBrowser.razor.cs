@@ -39,7 +39,7 @@ public partial class PostsBrowser : ComponentBase {
 	private List<TermObject> FilterTags = new List<TermObject>();
 
 
-    private IEnumerable<PostObject> CurrentPagePosts_Cache = [];
+    private IEnumerable<SimplePostObject> CurrentPagePosts_Cache = [];
 	private int TotalPages_Cache;
 	private int TotalPosts_Cache;
 
@@ -65,7 +65,7 @@ public partial class PostsBrowser : ComponentBase {
     }
 
 
-    public async Task<IEnumerable<PostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
+    public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
         var search = new ClientDbAccess.GetPostsByCriteriaParams(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermObject>( this.FilterTags ),
@@ -73,7 +73,7 @@ public partial class PostsBrowser : ComponentBase {
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<PostObject> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
+        IEnumerable<SimplePostObject> posts = await this.DbAccess.GetPostsByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class PostObject : IEquatable<PostObject> {
+public partial class SimplePostObject : IEquatable<SimplePostObject> {
 	public class Prototype {
 		public long? Id;
 

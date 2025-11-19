@@ -19,8 +19,8 @@ public partial class MultiPostRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-    public IEnumerable<PostObject> Posts { get; set; } = [];
+    public IEnumerable<SimplePostObject> Posts { get; set; } = [];
 
     [Parameter]
-	public Func<PostObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
+	public Func<SimplePostObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
 }

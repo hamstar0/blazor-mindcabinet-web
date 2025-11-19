@@ -27,7 +27,7 @@ public partial class PostEditor : ComponentBase {
     private List<TermObject> Tags = new List<TermObject>();
 
     [Parameter, EditorRequired]
-    public Func<PostObject, Task> OnSubmit_Async { get; set; } = null!;
+    public Func<SimplePostObject, Task> OnSubmit_Async { get; set; } = null!;
 
 
 
@@ -49,7 +49,7 @@ public partial class PostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        PostObject post = await this.DbAccess.CreatePost_Async(
+        SimplePostObject post = await this.DbAccess.CreatePost_Async(
             new ClientDbAccess.CreatePostParams( this.PostText, this.Tags )
         );
 

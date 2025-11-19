@@ -63,7 +63,7 @@
         await this.SetCreateDateSort_Async( isAscending );
     }
     
-    private async Task<IEnumerable<PostObject>> GetPostsOfCurrentPage_UI_Async() {
+    private async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_UI_Async() {
         return await this.GetPostsOfCurrentPage_Async();
     }
 }

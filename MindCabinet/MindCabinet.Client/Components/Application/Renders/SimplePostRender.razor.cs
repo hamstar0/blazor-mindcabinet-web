@@ -6,7 +6,7 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class PostRender : ComponentBase {
+public partial class SimplePostRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -19,7 +19,7 @@ public partial class PostRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-	public PostObject Post { get; set; } = null!;
+	public SimplePostObject Post { get; set; } = null!;
 
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;

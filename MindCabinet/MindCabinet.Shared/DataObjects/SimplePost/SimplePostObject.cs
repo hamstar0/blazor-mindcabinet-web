@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class PostObject : IEquatable<PostObject> {
+public partial class SimplePostObject : IEquatable<SimplePostObject> {
 	public long Id { get; private set; }
 
 
@@ -17,7 +17,7 @@ public partial class PostObject : IEquatable<PostObject> {
 
 
 
-	public PostObject( long id, DateTime created, string body, List<TermObject> tags ) {
+	public SimplePostObject( long id, DateTime created, string body, List<TermObject> tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;
@@ -25,7 +25,7 @@ public partial class PostObject : IEquatable<PostObject> {
 	}
 
 
-	public bool Equals( PostObject? other ) {
+	public bool Equals( SimplePostObject? other ) {
 		if( other is null ) { return false; }
 		if( this == other ) { return true; }
 
@@ -34,7 +34,7 @@ public partial class PostObject : IEquatable<PostObject> {
 		return true;
 	}
 
-	public bool ContentEquals( PostObject other, bool includeCreateDate ) {
+	public bool ContentEquals( SimplePostObject other, bool includeCreateDate ) {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Body != other.Body ) { return false; }
 		if( this.Tags.Count != other.Tags.Count ) { return false; }
