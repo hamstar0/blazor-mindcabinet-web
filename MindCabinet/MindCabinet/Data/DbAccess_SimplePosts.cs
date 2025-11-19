@@ -8,7 +8,7 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerDbAccess {
-    public class PostEntryData {
+    public class SimplePostEntryData {
         public long Id;
         public DateTime Created;
         public string Body = "";
@@ -127,13 +127,13 @@ public partial class ServerDbAccess {
         (string sql, IDictionary<string, object> sqlParams) = this.GetPostsByCriteriaSql( parameters, false );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<PostEntryData> posts = await dbCon.QueryAsync<PostEntryData>(
+        IEnumerable<SimplePostEntryData> posts = await dbCon.QueryAsync<SimplePostEntryData>(
             sql, new DynamicParameters( sqlParams )
         );
 
         var postList = new List<SimplePostObject>( posts.Count() );
 
-        foreach( PostEntryData post in posts ) {
+        foreach( SimplePostEntryData post in posts ) {
             postList.Add( await post.CreateSimplePost_Async(dbCon, this) );
         }
 
