@@ -1,0 +1,38 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term
+
+
+
+<div component-name="CurrentContextEditor" class=@this.AddedClasses>
+	<h4>Enter tags to descibe your current circumstances:</h4>
+	<TagSetEditor @ref=this.TagSetEditorRef
+				Label="Enter tags (at least 1 required)"
+				AllowFavoritingTerms=@false
+				OnTagsChange_Async=@(async (tags, changed, isAdded) => this.Tags = tags.ToList())>
+		<TagPostfix Context="tag">
+			<SliderNumberInput
+					InitialValue=@this.GetTagPriorityValue(tag)
+					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_Async(tag, val) ) />
+		</TagPostfix>
+	</TagSetEditor>
+	<button disabled=@(!this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+</div>
+
+
+
+@code {
+	private TagSetEditor TagSetEditorRef = null!;
+
+
+
+	private double GetTagPriorityValue( TermObject tag ) {
+	}
+	
+	private async Task OnPriorityChange_Async( TermObject tag, double newValue ) {
+	}	
+}

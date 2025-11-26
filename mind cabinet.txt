@@ -1,3 +1,9 @@
+@Brainstorm features
+-	Change input to a 2d map if tag 'Map (Post Type)' is given
+-	Push notification prompts for additional possible information for important tags
+
+
+
 v2
 -	@Brainstorm value data for posts (contextualized by tags)
 v1
@@ -7,9 +13,7 @@ v1
 -	Implement post markdown
 -	Have any posts tagged "Push Notify" create random notifications (based on priority)
 -	Add tag picker auto-attach popup for each post
--	@Brainstorm features
-	-	Change post input to streamlined list input if tag 'List (Post Type)' is given
-	-	Change input to a 2d map if tag 'Map (Post Type)' is given
+
 
 
 v0.7
@@ -21,55 +25,70 @@ v0.6
 -	Implement tabs: Post view + "current context" view
 -	Implement post grid view
 -	Implement post per page adjuster
+-	Implement clickable tags for posts (adds tags to current context)
 v0.5
 -	Save "current context" state with user session data
 -	Add a button to shuffle main view of posts
--	Create a tab view for random posts of the given current context tags
+-	On picking a context, deploy a priority tab for viewing posts of that context
+	-	@Plan
+		-	Posts are queried as ANY of the context's tab (except 'is required' tags)
+		-	Posts are sorted by sum of their context tags' priority metrics
+-	Implement tabs of posts views
 -	Implement "current context" sidebar
-	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
-	-	Add a "priority value" slider for tags
-	-	Define input for tags
+	-	Implement picker list of context loadouts
+	-	Implement name input for current context loadout
+	-	Implement input for 'is required' tag
+ 	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
+ 	-	Add a "priority value" slider for tags
+		-	Implement priority value storage for tags
+			-	Implement session crap
+			-	Add API for session crap to db
+			-	Declare table (also one for favorites)
 
-	
+
+		-	Add slider to each context editor tags
+		-	Create component for hybrid slider + numeric input for number values
+ 	-	Define input for tags
+ 	-	Define sidebar
 -	Rename Post to SimplePost
-	-	Rename db table
-	-	Rename routes
-	-	Rename data structure
+ 	-	Rename db table
+ 	-	Rename routes
+ 	-	Rename data structure
 -	Alter tag picker to add popular and favorited tags
-	-	Implement tag picker button bars
-		-	Add tag quick-pick buttons for recent tags
-		-	Add tag quick-pick buttons for favorite tags
-		-	Define space for button bars
-	-	Store history the last 100 tags used
+ 	-	Implement tag picker button bars
+ 		-	Add tag quick-pick buttons for recent tags
+ 		-	Add tag quick-pick buttons for favorite tags
+ 		-	Define space for button bars
+ 	-	Store history the last 100 tags used
 -	Implementing "favoriting" tags
-	-	Implement tag favorites table (user id, tag id)
-	-	Add favorite button in tag display component
-	-	Store favorites with session data
+ 	-	Implement tag favorites table (user id, tag id)
+ 	-	Add favorite button in tag display component
+ 	-	Store favorites with session data
 v0.4
 -	Implement term context input
-	-	Complete new term submit after context chosen
-	-	Implement term picker
-	-	Define modal dialog for picker
-	-	Activate modal dialog for picker
+ 	-	Complete new term submit after context chosen
+ 	-	Implement term picker
+ 	-	Define modal dialog for picker
+ 	-	Activate modal dialog for picker
 -	@Test usability
 -	@Test
 -	Use DbString.IsAnsi
 -	Implement routes via constant strings
 -	Changing from SQL Server to MariaDB
 -	Refactor Entry classes into Object classes
-	-	Use prototypes for db entry
-	-	Create "prototype" classes for unfinished Objects
-	-	Rename
+ 	-	Use prototypes for db entry
+ 	-	Create "prototype" classes for unfinished Objects
+ 	-	Rename
 v0.3
 -	Implement users
-	-	Implement session ip validation
-	-	Ensure proper scoped session caching
-	-	Implement session expiration
-	-	Implement session resume
-	-	Define UI login prompt
-	-	Define UI registration prompt (instantiate a salt on first contact)
-	-	Define session ID + session storage
-	-	Define tables
+ 	-	Implement session ip validation
+ 	-	Ensure proper scoped session caching
+ 	-	Implement session expiration
+ 	-	Implement session resume
+ 	-	Define UI login prompt
+ 	-	Define UI registration prompt (instantiate a salt on first contact)
+ 	-	Define session ID + session storage
+ 	-	Define tables
 v0.2
 -	@Test
 -	Create local deployment
@@ -84,8 +103,8 @@ v0.1
 -	Ensure inputting an existing term in TagSetEditor instead selects the existing term
 -	Prevent inputting repeat terms (in the database, TagSetEditor, and TermEditor)
 -	Implement basic styling
-	-	Organize layout
-	-	Tag editor + search dropdown
+ 	-	Organize layout
+ 	-	Tag editor + search dropdown
 -	@Test post search
 -	Implement pagination linking
 -	Move posts search bar next to sort bar
@@ -101,12 +120,12 @@ v0.1
 -	@Test tag editor
 -	Implement post form
 -	Add main (posts) view
-	-	At bottom, implement filter criteria based on tags
-	-	At bottom, implement search criteria based on words in text
-	-	At top, implement sort criteria toggles on a stationary button bar
-	-	Implement route component (stores page, search, sort, and filter criteria)
-		-	Implement data handling
-		-	Define basic component
-	-	Render a paginated view of posts
+ 	-	At bottom, implement filter criteria based on tags
+ 	-	At bottom, implement search criteria based on words in text
+ 	-	At top, implement sort criteria toggles on a stationary button bar
+ 	-	Implement route component (stores page, search, sort, and filter criteria)
+ 		-	Implement data handling
+ 		-	Define basic component
+ 	-	Render a paginated view of posts
 -	Define data structure for content: Posts (body, tags)
 -	Define project + temporary database

@@ -1,4 +1,5 @@
 ﻿@using MindCabinet.Client.Components.Site;
+@using MindCabinet.Client.Components.Application.Editors;
 
 
 @inherits LayoutComponentBase;
@@ -8,6 +9,10 @@
 
 
 <div class="page">
+    <div class="sidebar">
+        <CurrentContextEditor OnSubmit_Async=@( async (t) => this.SessionData.SetCurrentContextTags(t)) />
+    </div>
+    
     <main>
         <div class="top-row px-4">
             <a href="/">Home</a>

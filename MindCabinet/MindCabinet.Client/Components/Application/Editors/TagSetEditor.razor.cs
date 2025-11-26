@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -6,10 +7,12 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TagSetEditor : ComponentBase {
-    public delegate Task OnTagsChange_Func( List<TermObject> currentTags, TermObject changedTag, bool isAdded );
+    public delegate Task OnTagsChange_Func( IReadOnlyList<TermObject> currentTags, TermObject changedTag, bool isAdded );
 
 
-    private List<TermObject> Tags = new List<TermObject>();
+    private List<TermObject> _Tags = new List<TermObject>();
+
+    public IReadOnlyList<TermObject> Tags => this._Tags.AsReadOnly();
 
 
     [Parameter]
@@ -17,6 +20,9 @@ public partial class TagSetEditor : ComponentBase {
 
     [Parameter]
     public string? Label { get; set; } = null;
+
+    [Parameter]
+    public bool AllowFavoritingTerms { get; set; } = true;
 
 
     [Parameter, EditorRequired]
@@ -29,21 +35,21 @@ public partial class TagSetEditor : ComponentBase {
             return;
         }
 
-        this.Tags.Add( tag );
+        this._Tags.Add( tag );
 
         await this.OnTagsChange_Async( this.Tags, tag, true );
     }
     
 
     public async Task<bool> RemoveTag_Async( TermObject tag ) {
-        int idx = this.Tags.IndexOf( tag );
+        int idx = this._Tags.IndexOf( tag );
 
         //if( !this.Tags.Any(t => t.Equals(tag)) ) {
         if( idx == -1 ) {
             return false;
         }
 
-        this.Tags.RemoveAt( idx );
+        this._Tags.RemoveAt( idx );
 
         await this.OnTagsChange_Async( this.Tags, tag, false );
 

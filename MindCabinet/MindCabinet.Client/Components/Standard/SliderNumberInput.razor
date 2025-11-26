@@ -1,0 +1,33 @@
+﻿<div class=@this.AddedClasses style="@this.AddedStyles border: 1px;">
+    <input type="range"
+            min=@this.Min
+            max=@this.Max
+            @* step=@this.Step *@
+            value=@this.Value
+            @onchange=@this.OnInput_UI_Async />
+    <input type="number"
+            min=@this.Min
+            max=@this.Max
+            value=@this.Value
+            @onchange=@this.OnInput_UI_Async />
+</div>
+
+
+
+@code {
+    private async Task OnInput_UI_Async( ChangeEventArgs e ) {
+        if( e.Value is null ) {
+            return;
+        }
+
+        if( !double.TryParse(e.Value.ToString(), out double newValue) ) {
+            return;
+        }
+
+        this.Value = newValue;
+
+        if( this.OnValueChanged_Async is not null ) {
+            await this.OnValueChanged_Async.Invoke( newValue );
+        }
+    }
+}

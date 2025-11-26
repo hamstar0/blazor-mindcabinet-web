@@ -26,12 +26,12 @@ public class SessionController : ControllerBase {
 
     // [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_GetSessionData.route))]
     [HttpGet(ClientSessionData.Session_GetSessionData_Route)]
-    public async Task<ClientSessionData.RawData> GetSessionData_Async() {
+    public async Task<ClientSessionData.RawServerData> GetSessionData_Async() {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        return new ClientSessionData.RawData(
+        return new ClientSessionData.RawServerData(
             sessionId: this.SessData.SessionId!,
             userData: this.SessData.User?.GetClientOnlyData(),
             favoriteTerms: this.SessData.FavoriteTerms.ToList(),

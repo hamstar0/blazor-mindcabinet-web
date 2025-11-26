@@ -9,7 +9,7 @@
     }
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {
-        <button class="@(this.Session.FavoriteTermIds.Contains(this.Term.Id) ? "lit" : "unlit")"
+        <button class="@(this.Session.FavoriteTerms.Any(t=>t.Id == this.Term.Id) ? "lit" : "unlit")"
                 @onclick=@(async e => await this.OnFavoriteButtonClick_Async(e))>
             ★
         </button>
@@ -27,6 +27,9 @@
 
     private async Task OnFavoriteButtonClick_Async( MouseEventArgs args ) {
         /*⭐*/
-        await this.Session.SetFavoriteTerm_Async( this.Term!.Id, !this.Session.FavoriteTermIds.Contains(this.Term.Id) );
+        await this.Session.SetFavoriteTerm_Async(
+            term: this.Term!,
+            isFavorite: !this.Session.FavoriteTerms.Any(t=>t.Id == this.Term.Id)
+        );
     }
 }

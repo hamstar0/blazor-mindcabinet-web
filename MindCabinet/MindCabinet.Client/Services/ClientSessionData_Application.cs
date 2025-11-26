@@ -8,11 +8,11 @@ namespace MindCabinet.Client.Services;
 
 public partial class ClientSessionData {
     public ReadOnlyCollection<TermObject> FavoriteTerms {
-        get => this.Data?.FavoriteTerms.AsReadOnly() ?? new ReadOnlyCollection<TermObject>([]);
+        get => this.ServerData?.FavoriteTerms.AsReadOnly() ?? new ReadOnlyCollection<TermObject>([]);
 
     }
     public ReadOnlyCollection<TermObject> RecentTerms {
-        get => this.Data?.RecentTerms.AsReadOnly() ?? new ReadOnlyCollection<TermObject>([]);
+        get => this.ServerData?.RecentTerms.AsReadOnly() ?? new ReadOnlyCollection<TermObject>([]);
     }
 
 
@@ -28,21 +28,26 @@ public partial class ClientSessionData {
     public const string Session_SetFavoriteTerm_Route = "SetFavoriteTerm";
 
     public async Task SetFavoriteTerm_Async( TermObject term, bool isFavorite ) {
-        if( this.Data is null ) {
+        if( this.ServerData is null ) {
             throw new InvalidOperationException( "ClientSessionData is not loaded." );
         }
 
         if( isFavorite ) {
-            if( !this.Data.FavoriteTerms.Any(t => t.Id == term.Id) ) {
-                this.Data.FavoriteTerms.Add( term );
+            if( !this.ServerData.FavoriteTerms.Any(t => t.Id == term.Id) ) {
+                this.ServerData.FavoriteTerms.Add( term );
             }
         } else {
-            this.Data.FavoriteTerms.Remove( term );
+            this.ServerData.FavoriteTerms.Remove( term );
         }
         
         var response = await this.Http.PostAsJsonAsync(
             $"{Session_SetFavoriteTerm_Path}/{Session_SetFavoriteTerm_Route}",
             new SetFavoriteTermSessionParams( term.Id, isFavorite )
         );
+    }
+
+
+    public void SetCurrentContextTags( List<TermObject> tags ) {
+        this.CurrentContextTags = tags.ToList();
     }
 }
