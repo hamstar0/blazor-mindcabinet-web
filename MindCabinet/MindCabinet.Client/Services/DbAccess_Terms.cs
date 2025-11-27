@@ -9,7 +9,22 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientDbAccess {
-    public class GetTermsByCriteriaParams(
+    public readonly ClientDbAccess_Terms Terms;
+}
+
+
+
+public class ClientDbAccess_Terms {
+    private HttpClient Http;
+
+
+
+    internal ClientDbAccess_Terms( HttpClient http ) {
+        this.Http = http;
+    }
+
+
+    public class GetByCriteria_Params(
                 string termPattern,
                 TermObject.Prototype? context ) {
         public string TermPattern { get; } = termPattern;
@@ -17,13 +32,13 @@ public partial class ClientDbAccess {
     }
 
     
-    public const string Term_GetByCriteria_Path = "Term";
-    public const string Term_GetByCriteria_Route = "GetByCriteria";
+    public const string GetByCriteria_Path = "Term";
+    public const string GetByCriteria_Route = "GetByCriteria";
     
-    public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async( GetTermsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<TermObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
 //Console.WriteLine( "GetTermsByCriteria_Async "+JsonSerializer.Serialize(parameters) );
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Term_GetByCriteria_Path + "/" + ClientDbAccess.Term_GetByCriteria_Route,
+            $"{GetByCriteria_Path}/{GetByCriteria_Route}",
             parameters
         );
 
@@ -45,7 +60,7 @@ public partial class ClientDbAccess {
     }
 
 
-    public class CreateTermParams(
+    public class Create_Params(
                 string termPattern,
                 TermObject? context,
                 TermObject? alias ) {
@@ -54,25 +69,25 @@ public partial class ClientDbAccess {
         public TermObject? Alias { get; } = alias;
     }
 
-    public class CreateTermReturn(
+    public class Create_Return(
                 bool isAdded,
                 TermObject term ) {
         public bool IsAdded { get; } = isAdded;
         public TermObject Term { get; } = term;
     }
 
-    public const string Term_Create_Path = "Term";
-    public const string Term_Create_Route = "Create";
+    public const string Create_Path = "Term";
+    public const string Create_Route = "Create";
     
-    public async Task<CreateTermReturn> CreateTerm_Async( CreateTermParams parameters ) {
+    public async Task<Create_Return> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.Term_Create_Path + "/" + ClientDbAccess.Term_Create_Route,
+            $"{Create_Path}/{Create_Route}",
             parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        CreateTermReturn? ret = await msg.Content.ReadFromJsonAsync<CreateTermReturn>();
+        Create_Return? ret = await msg.Content.ReadFromJsonAsync<Create_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize TermEntry" );
         }

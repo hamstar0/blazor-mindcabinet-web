@@ -31,18 +31,17 @@ public partial class ServerDbAccess {
 
     public async Task<IEnumerable<long>> GetFavoriteTermIds_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.GetSimpleUserFavoriteTagsParams parameters ) {
-        string sql = @"SELECT FavTermId FROM SimpleUserFavoriteTerms
-            WHERE SimpleUserId = @UserId;";
+                ClientDbAccess.GetSimpleUserFavoriteTagIdsParams parameters ) {
+        string sql = @"SELECT FavTermId FROM SimpleUserFavoriteTerms WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
 
         return await dbCon.QueryAsync<long>( sql, new DynamicParameters(sqlParams) );
 	}
 
 
-    public async Task AddSimpleUserFavoriteTerms_Async(
+    public async Task AddSimpleUserFavoriteTermsById_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.AddSimpleUserFavoriteTagsParams parameters ) {
+                ClientDbAccess.AddSimpleUserFavoriteTagsByIdParams parameters ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
@@ -53,7 +52,7 @@ public partial class ServerDbAccess {
 
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
             bulkCopy.DestinationTableName = "SimpleUserFavoriteTerms"; 
-            
+
             bulkCopy.WriteToServer( dataTable );
         }
     }

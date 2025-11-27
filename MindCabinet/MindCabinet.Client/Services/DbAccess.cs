@@ -10,5 +10,7 @@ public partial class ClientDbAccess {
 
     public ClientDbAccess( HttpClient http ) {
         this.Http = http;
+        this.Terms = new ClientDbAccess_Terms( this.Http );
+        this.SimpleUsers = new ClientDbAccess_SimpleUsers( this.Http );
     }
 }

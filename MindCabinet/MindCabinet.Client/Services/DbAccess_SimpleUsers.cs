@@ -7,6 +7,21 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientDbAccess {
+    public readonly ClientDbAccess_SimpleUsers SimpleUsers;
+}
+
+
+
+public class ClientDbAccess_SimpleUsers {
+    private HttpClient Http;
+
+
+
+    internal ClientDbAccess_SimpleUsers( HttpClient http ) {
+        this.Http = http;
+    }
+
+
     //public class GetSimpleUsersByCriteriaParams(
     //            string? namePattern,
     //            string? emailPattern,
@@ -18,7 +33,7 @@ public partial class ClientDbAccess {
     //    public DateTime? CreatedAfter { get; } = createdAfter;
     //}
 
-    public class CreateSimpleUserParams(
+    public class Create_Params(
                 string name,
                 string email,
                 string password,
@@ -29,12 +44,12 @@ public partial class ClientDbAccess {
         public bool IsValidated { get; } = isValidated;
     }
 
-    public const string SimpleUser_Create_Path = "SimpleUser";
-    public const string SimpleUser_Create_Route = "Create";
+    public const string Create_Path = "SimpleUser";
+    public const string Create_Route = "Create";
 
-    public async Task<SimpleUserObject.ClientData> CreateSimpleUser_Async( CreateSimpleUserParams parameters ) {
+    public async Task<SimpleUserObject.ClientData> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.SimpleUser_Create_Path + "/" + ClientDbAccess.SimpleUser_Create_Route,
+            $"{Create_Path}/{Create_Route}",
             parameters
         );
 
@@ -49,30 +64,30 @@ public partial class ClientDbAccess {
     }
 
 
-    public class LoginSimpleUserParams(
+    public class Login_Params(
                 string name,
                 string password) {
         public string Name { get; } = name;
         public string Password { get; } = password;
     }
 
-    public class SimpleUserLoginReply( SimpleUserObject.ClientData? user, string status ) {
+    public class LoginReply( SimpleUserObject.ClientData? user, string status ) {
         public SimpleUserObject.ClientData? User { get; } = user;
         public string Status { get; } = status;
     }
 
-    public const string SimpleUser_Login_Path = "SimpleUser";
-    public const string SimpleUser_Login_Route = "Login";
+    public const string Login_Path = "SimpleUser";
+    public const string Login_Route = "Login";
 
-    public async Task<SimpleUserLoginReply> LoginSimpleUser_Async( LoginSimpleUserParams parameters ) {
+    public async Task<LoginReply> Login_Async( Login_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.SimpleUser_Login_Path + "/" + ClientDbAccess.SimpleUser_Login_Route,
+            $"{Login_Path}/{Login_Route}",
             parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        SimpleUserLoginReply? ret = await msg.Content.ReadFromJsonAsync<SimpleUserLoginReply>();
+        LoginReply? ret = await msg.Content.ReadFromJsonAsync<LoginReply>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimpleUserLoginReply" );
         }

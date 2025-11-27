@@ -7,16 +7,17 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientDbAccess {
-    public class GetSimpleUserFavoriteTagsParams( long userId ) {
+    public class GetSimpleUserFavoriteTagIdsParams( long userId ) {
         public long UserId { get; } = userId;
     }
 
-    public const string SimpleUser_GetFavoriteTags_Path = "SimpleUser";
-    public const string SimpleUser_GetFavoriteTags_Route = "GetFavoriteTags";
+    public const string SimpleUser_GetFavoriteTagIds_Path = "SimpleUser";
+    public const string SimpleUser_GetFavoriteTagIds_Route = "GetFavoriteTagIds";
 
-    public async Task<IEnumerable<long>> GetSimpleUserFavoriteTags_Async( GetSimpleUserFavoriteTagsParams parameters ) {
+    public async Task<IEnumerable<long>> GetSimpleUserFavoriteTagIds_Async(
+                GetSimpleUserFavoriteTagIdsParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.SimpleUser_GetFavoriteTags_Path + "/" + ClientDbAccess.SimpleUser_GetFavoriteTags_Route,
+            $"{SimpleUser_GetFavoriteTagIds_Path}/{SimpleUser_GetFavoriteTagIds_Route}",
             parameters
         );
 
@@ -31,19 +32,19 @@ public partial class ClientDbAccess {
     }
 
 
-    public class AddSimpleUserFavoriteTagsParams(
+    public class AddSimpleUserFavoriteTagsByIdParams(
                 long userId,
                 List<long> termIds ) {
         public long UserId { get; } = userId;
         public List<long> TermIds { get; } = termIds;
     }
 
-    public const string SimpleUser_AddFavoriteTags_Path = "SimpleUser";
-    public const string SimpleUser_AddFavoriteTags_Route = "AddFavoriteTags";
+    public const string SimpleUser_AddFavoriteTagsById_Path = "SimpleUser";
+    public const string SimpleUser_AddFavoriteTagsById_Route = "AddFavoriteTagsById";
 
-    public async Task AddSimpleUserFavoriteTags_Async( AddSimpleUserFavoriteTagsParams parameters ) {
+    public async Task AddSimpleUserFavoriteTagsById_Async( AddSimpleUserFavoriteTagsByIdParams parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.SimpleUser_AddFavoriteTags_Path + "/" + ClientDbAccess.SimpleUser_AddFavoriteTags_Route,
+            $"{SimpleUser_AddFavoriteTagsById_Path}/{SimpleUser_AddFavoriteTagsById_Route}",
             parameters
         );
 
