@@ -2,11 +2,19 @@
 using MindCabinet.Shared.DataObjects;
 
 
-namespace MindCabinet.Client.Services;
+namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess {
+public partial class ClientDbAccess_SimplePosts_FavoriteTags {
+    private HttpClient Http;
+
+
+    internal ClientDbAccess_SimplePosts_FavoriteTags( HttpClient http ) {
+        this.Http = http;
+    }
+
+
     public class GetSimpleUserFavoriteTagIdsParams( long userId ) {
         public long UserId { get; } = userId;
     }

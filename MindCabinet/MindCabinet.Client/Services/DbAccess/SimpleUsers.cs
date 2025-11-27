@@ -2,19 +2,11 @@
 using MindCabinet.Shared.DataObjects;
 
 
-namespace MindCabinet.Client.Services;
-
-
-
-public partial class ClientDbAccess {
-    public readonly ClientDbAccess_SimpleUsers SimpleUsers;
-}
-
+namespace MindCabinet.Client.Services.DbAccess;
 
 
 public class ClientDbAccess_SimpleUsers {
     private HttpClient Http;
-
 
 
     internal ClientDbAccess_SimpleUsers( HttpClient http ) {

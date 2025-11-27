@@ -5,11 +5,19 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
 
-namespace MindCabinet.Client.Services;
+namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess {
+public partial class ClientDbAccess_SimplePosts {
+    private HttpClient Http;
+
+
+    internal ClientDbAccess_SimplePosts( HttpClient http ) {
+        this.Http = http;
+    }
+
+
     public class GetSimplePostsByCriteriaParams(
                 string bodyPattern,
                 ISet<TermObject> tags,

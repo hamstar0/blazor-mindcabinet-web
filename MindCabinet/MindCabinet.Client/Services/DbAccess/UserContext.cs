@@ -2,11 +2,19 @@
 using MindCabinet.Shared.DataObjects;
 
 
-namespace MindCabinet.Client.Services;
+namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess {
+public partial class ClientDbAccess_UserContext {
+    private HttpClient Http;
+
+
+    internal ClientDbAccess_UserContext( HttpClient http ) {
+        this.Http = http;
+    }
+
+
     public class GetContextsByUserIdParams( long userId ) {
         public long UserId { get; } = userId;
     }

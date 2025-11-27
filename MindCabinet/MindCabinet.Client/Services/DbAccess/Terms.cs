@@ -4,13 +4,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
 
-namespace MindCabinet.Client.Services;
-
-
-
-public partial class ClientDbAccess {
-    public readonly ClientDbAccess_Terms Terms;
-}
+namespace MindCabinet.Client.Services.DbAccess;
 
 
 
