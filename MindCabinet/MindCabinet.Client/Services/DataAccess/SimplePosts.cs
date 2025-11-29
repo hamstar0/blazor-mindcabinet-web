@@ -3,17 +3,18 @@ using Microsoft.Extensions.Options;
 using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Client.Services.DataAccess;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess_SimplePosts : IClientDbAccess {
+public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     private HttpClient Http;
 
 
-    internal ClientDbAccess_SimplePosts( HttpClient http ) {
+    internal ClientDataAccess_SimplePosts( HttpClient http ) {
         this.Http = http;
     }
 

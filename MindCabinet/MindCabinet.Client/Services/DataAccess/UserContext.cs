@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserContext;
 
@@ -7,11 +8,11 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess_UserContext : IClientDbAccess {
+public partial class ClientDataAccess_UserContext : IClientDataAccess {
     private HttpClient Http;
 
 
-    internal ClientDbAccess_UserContext( HttpClient http ) {
+    internal ClientDataAccess_UserContext( HttpClient http ) {
         this.Http = http;
     }
 

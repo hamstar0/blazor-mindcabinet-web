@@ -13,20 +13,20 @@ namespace MindCabinet;
 
 
 public partial class SimpleUserController : ControllerBase {
-    [HttpPost(ClientDbAccess_SimplePosts_FavoriteTags.Get_Route)]
+    [HttpPost(ClientDataAccess_SimplePosts_FavoriteTags.Get_Route)]
     public async Task<IEnumerable<long>> GetFavoriteTagIds_Async(
-                ClientDbAccess_SimplePosts_FavoriteTags.Get_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+                ClientDataAccess_SimplePosts_FavoriteTags.Get_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.DbAccess.GetFavoriteTermIds_Async( dbCon, parameters );
+        return await this.FavoriteTagsData.GetFavoriteTermIds_Async( dbCon, parameters );
     }
 
 
-    [HttpPost(ClientDbAccess_SimplePosts_FavoriteTags.Add_Route)]
+    [HttpPost(ClientDataAccess_SimplePosts_FavoriteTags.Add_Route)]
     public async Task AddFavoriteTagsById_Async(
-                ClientDbAccess_SimplePosts_FavoriteTags.Add_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+                ClientDataAccess_SimplePosts_FavoriteTags.Add_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        await this.DbAccess.AddSimpleUserFavoriteTermsById_Async( dbCon, parameters );
+        await this.FavoriteTagsData.AddSimpleUserFavoriteTermsById_Async( dbCon, parameters );
     }
 }

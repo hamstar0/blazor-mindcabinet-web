@@ -6,23 +6,23 @@ using System;
 using System.Data;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_Terms {
-    private class TermObjectDbData {
+public partial class ServerDataAccess_Terms {
+    public class TermObjectDbData {
         public long Id = default;
         public string Term = "";
         public long? ContextId = null;
         public long? AliasId = null;
         
 
-        public async Task<TermObject> Create_Async( IDbConnection dbCon, ServerDbAccess data ) {
+        public async Task<TermObject> Create_Async( IDbConnection dbCon, ServerDataAccess_Terms termData ) {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,
-                context: this.ContextId is not null ? await data.GetTerm_Async(dbCon, this.ContextId.Value) : null,
-                alias: this.AliasId is not null ? await data.GetTerm_Async(dbCon, this.AliasId.Value) : null
+                context: this.ContextId is not null ? await termData.GetTerm_Async(dbCon, this.ContextId.Value) : null,
+                alias: this.AliasId is not null ? await termData.GetTerm_Async(dbCon, this.AliasId.Value) : null
             );
         }
     }
@@ -31,7 +31,7 @@ public partial class ServerDbAccess_Terms {
 
 
 
-	public async Task<bool> InstallTerms_Async( IDbConnection dbCon ) {
+	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_Terms_Sets termsSetsData ) {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( @"
             CREATE TABLE Terms (
@@ -46,14 +46,14 @@ public partial class ServerDbAccess_Terms {
             );"
         );
 
-        return await this.InstallTermSets_Async( dbCon );
+        return await termsSetsData.Install_Async( dbCon );
     }
 
     //
 
 
 
-    private IDictionary<long, TermObject> TermsById_Cache = new Dictionary<long, TermObject>();
+    internal IDictionary<long, TermObject> TermsById_Cache = new Dictionary<long, TermObject>();
 
 
 
@@ -80,7 +80,7 @@ public partial class ServerDbAccess_Terms {
 
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_Terms.GetByCriteria_Params parameters ) {
+                ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
 
@@ -125,18 +125,18 @@ public partial class ServerDbAccess_Terms {
 	}
 
 
-    public async Task<ClientDbAccess_Terms.Create_Return> CreateTerm_Async(
+    public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_Terms.Create_Params parameters ) {
+                ClientDataAccess_Terms.Create_Params parameters ) {
 		IEnumerable<TermObject> terms = await this.GetTermsByCriteria_Async(
             dbCon,
-			new ClientDbAccess_Terms.GetByCriteria_Params(
+			new ClientDataAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
 				context: parameters.Context?.ToPrototype() ?? null
 			)
 		);
 		if( terms.Count() > 0 ) {
-			return new ClientDbAccess_Terms.Create_Return( false, terms.First() );
+			return new ClientDataAccess_Terms.Create_Return( false, terms.First() );
 		}
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
@@ -159,6 +159,6 @@ public partial class ServerDbAccess_Terms {
 		);
 		this.TermsById_Cache[newId] = newTerm;
 
-        return new ClientDbAccess_Terms.Create_Return( true, newTerm );
+        return new ClientDataAccess_Terms.Create_Return( true, newTerm );
     }
 }

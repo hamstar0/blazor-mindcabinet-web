@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
@@ -14,13 +15,15 @@ namespace MindCabinet;
 [ApiController]
 [Route("[controller]")]
 public class SessionController : ControllerBase {
-    private ServerDbAccess DbAccess;
+    private DbAccess DbAccess;
+    private ServerDataAccess_Terms TermsData;
     private ServerSessionData SessData;
 
 
 
-    public SessionController( ServerDbAccess dbAccess, ServerSessionData sessData ) {
+    public SessionController( DbAccess dbAccess, ServerDataAccess_Terms termsData, ServerSessionData sessData ) {
         this.DbAccess = dbAccess;
+        this.TermsData = termsData;
         this.SessData = sessData;
     }
 
@@ -42,9 +45,9 @@ public class SessionController : ControllerBase {
     [HttpPost(ClientSessionData.Session_SetFavoriteTerm_Route)]
     public async Task<object> SetFavoriteTerm_Async( ClientSessionData.SetFavoriteTermSessionParams parameters ) {
         if( parameters.IsFavorite ) {
-            IDbConnection dbConn = await this.DbAccess.ConnectDb_Async();
+            IDbConnection dbConn = await this.DbAccess.GetDbConnection_Async();
             
-            await this.SessData.AddFavoriteTerm( dbConn, parameters.TermId );
+            await this.SessData.AddFavoriteTerm_Async( dbConn, this.TermsData, parameters.TermId );
         } else {
             this.SessData.RemoveFavoriteTerm( parameters.TermId );
         }

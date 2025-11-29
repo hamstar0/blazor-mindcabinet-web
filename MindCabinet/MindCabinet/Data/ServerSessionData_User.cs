@@ -1,4 +1,5 @@
-﻿using MindCabinet.Shared.DataObjects;
+﻿using MindCabinet.Data.DataAccess;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
 
@@ -16,7 +17,10 @@ public partial class ServerSessionData {
     /**
      * @return `true` if session is a valid user.
      */
-    private async Task<bool> LoadCurrentSessionUser_Async( IDbConnection dbCon, string sessId ) {
+    private async Task<bool> LoadCurrentSessionUser_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_SimpleUsers simpleUsersData,
+                string sessId ) {
         string ip = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
         if( string.IsNullOrEmpty(ip) ) {
             throw new Exception( "Who are you?" );
@@ -33,7 +37,7 @@ public partial class ServerSessionData {
             return true;
         }
 
-        this.User = await this.Db.GetSimpleUserBySession_Async( dbCon, sessId, ip );
+        this.User = await simpleUsersData.GetSimpleUserBySession_Async( dbCon, sessId, ip );
 
         if( this.User is not null ) {
             this.SessionId = sessId;
@@ -45,7 +49,7 @@ public partial class ServerSessionData {
     }
 
 
-    public async Task Visit_Async( IDbConnection dbCon ) {
-        await this.Db.VisitSimpleUserSession_Async( dbCon, this );
+    public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+        await sessionsData.VisitSimpleUserSession_Async( dbCon, this );
     }
 }

@@ -5,11 +5,11 @@ using System;
 using System.Data;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_Terms_Sets {
-	public async Task<bool> InstallTermSets_Async( IDbConnection dbCon ) {
+public partial class ServerDataAccess_Terms_Sets {
+	public async Task<bool> Install_Async( IDbConnection dbCon ) {
         await dbCon.ExecuteAsync(@"
             CREATE TABLE TermSet (
                 SetId INT NOT NULL,
@@ -35,7 +35,7 @@ public partial class ServerDbAccess_Terms_Sets {
 
 
 
-    public async Task<long> CreateTermSet_Async(
+    public async Task<long> Create_Async(
                 IDbConnection dbCon,
                 params TermObject[] parameters ) {
         long newSetId = await dbCon.ExecuteScalarAsync<long>(
@@ -62,8 +62,11 @@ public partial class ServerDbAccess_Terms_Sets {
 
 
 
-    public async Task<IEnumerable<TermObject>> GetTermSet_Async( IDbConnection dbCon, int termSetId ) {
-        IEnumerable<TermObjectDbData?> termSetRaw = await dbCon.QueryAsync<TermObjectDbData?>(
+    public async Task<IEnumerable<TermObject>> GetTermSet_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                int termSetId ) {
+        IEnumerable<ServerDataAccess_Terms.TermObjectDbData?> termSetRaw = await dbCon.QueryAsync<ServerDataAccess_Terms.TermObjectDbData?>(
             @"SELECT Terms.Id, Terms.Term, Terms.ContextId, Terms.AliasId FROM Terms
                 INNER JOIN TermSet ON (Terms.Id = TermSet.TermId)
                 WHERE TermSet.SetId = @SetId",
@@ -72,11 +75,11 @@ public partial class ServerDbAccess_Terms_Sets {
 
         var terms = new List<TermObject>( termSetRaw.Count() );
 
-        foreach( TermObjectDbData? termRaw in termSetRaw ) {
-            TermObject term = await termRaw!.Create_Async( dbCon, this );
+        foreach( ServerDataAccess_Terms.TermObjectDbData? termRaw in termSetRaw ) {
+            TermObject term = await termRaw!.Create_Async( dbCon, termsData );
             terms.Add( term );
 
-            this.TermsById_Cache[ term.Id ] = term;
+            termsData.TermsById_Cache[ term.Id ] = term;
         }
 
         return terms;

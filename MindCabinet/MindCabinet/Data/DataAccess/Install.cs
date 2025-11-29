@@ -5,27 +5,34 @@ using Dapper;
 using static MindCabinet.Program;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_Install {
-    public async Task<bool> Install_Async( IDbConnection dbCon ) {
+public partial class ServerDataAccess_Install {
+    public async Task<bool> Install_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_SimpleUsers simpleUsersData,
+                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUsers_FavoriteTags favoriteTagsData,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_SimplePosts simplePostsData ) {
         bool success;
         long defaultUserId;
 
-        (success, defaultUserId) = await this.InstallSimpleUsers_Async( dbCon );
+        (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        success = await this.InstallSimpleUserSessions_Async( dbCon );
+        success = await sessionsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        success = await this.InstallTerms_Async( dbCon );
+        success = await termsData.Install_Async( dbCon, termSetsData );
         if( !success ) {
             return false;
         }
-        success = await this.InstallSimplePosts_Async( dbCon, defaultUserId );
+        success = await simplePostsData.Install_Async( dbCon, termsData, termSetsData, defaultUserId );
         if( !success ) {
             return false;
         }

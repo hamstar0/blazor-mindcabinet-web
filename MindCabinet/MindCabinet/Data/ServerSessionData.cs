@@ -1,4 +1,5 @@
-﻿using MindCabinet.Shared.DataObjects;
+﻿using MindCabinet.Data.DataAccess;
+using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
 
@@ -9,7 +10,7 @@ namespace MindCabinet.Data;
 public partial class ServerSessionData {
     private readonly IHttpContextAccessor Http;
     
-    private readonly ServerDbAccess Db;
+    private readonly DbAccess Db;
 
     private IRequestCookieCollection? ReqCookies => this.Http.HttpContext?.Request.Cookies;
     private IResponseCookies? RespCookies => this.Http.HttpContext?.Response.Cookies;
@@ -27,7 +28,7 @@ public partial class ServerSessionData {
 
 
 
-    public ServerSessionData( IHttpContextAccessor http, ServerDbAccess db ) {
+    public ServerSessionData( IHttpContextAccessor http, DbAccess db ) {
         this.Http = http;
         this.Db = db;
         //this.RenderScripts = this._RenderScripts.AsReadOnly();
@@ -35,7 +36,7 @@ public partial class ServerSessionData {
 
 
 
-    public async Task<bool> Load_Async( IDbConnection dbCon ) {
+    public async Task<bool> Load_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers userData ) {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
             return false;
         }
@@ -46,7 +47,7 @@ public partial class ServerSessionData {
         bool isLoggedIn = sessId is not null;
 
         if( isLoggedIn ) {
-            isLoggedIn = await this.LoadCurrentSessionUser_Async( dbCon, sessId! );
+            isLoggedIn = await this.LoadCurrentSessionUser_Async( dbCon, userData, sessId! );
         }
 
         if( !isLoggedIn ) {

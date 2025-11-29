@@ -7,10 +7,10 @@ using System.Data;
 using System.Text;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_SimpleUsers {
+public partial class ServerDataAccess_SimpleUsers {
     public static byte[] GetPasswordHash( string password, byte[] pwSalt ) {
         var argon2id = new Argon2id( Encoding.UTF8.GetBytes( password ) );
         argon2id.Salt = pwSalt;
@@ -34,7 +34,7 @@ public partial class ServerDbAccess_SimpleUsers {
 
 
 
-    public async Task<(bool success, long defaultUserId)> InstallSimpleUsers_Async(
+    public async Task<(bool success, long defaultUserId)> Install_Async(
                 IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUsers (
@@ -70,7 +70,13 @@ public partial class ServerDbAccess_SimpleUsers {
 
     //
 
+    private ServerSettings ServerSettings;
 
+
+
+    public ServerDataAccess_SimpleUsers( ServerSettings serverSettings ) {
+        this.ServerSettings = serverSettings;
+    }
 
     private IDictionary<long, SimpleUserObject> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject>();
 
@@ -158,7 +164,7 @@ public partial class ServerDbAccess_SimpleUsers {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_SimpleUsers.Create_Params parameters,
+                ClientDataAccess_SimpleUsers.Create_Params parameters,
                 byte[] pwSalt ) {
         var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.UserDbData?>(
             "SELECT * FROM SimpleUsers WHERE Name = @Name",
@@ -170,7 +176,7 @@ public partial class ServerDbAccess_SimpleUsers {
 
         DateTime now = DateTime.UtcNow;
 
-        byte[] pwHash = ServerDbAccess.GetPasswordHash( parameters.Password, pwSalt );
+        byte[] pwHash = ServerDataAccess_SimpleUsers.GetPasswordHash( parameters.Password, pwSalt );
 
         int newUserId = await dbCon.QuerySingleAsync(
             @"INSERT INTO SimpleUsers (Created, Name, Email, PwHash, PwSalt, IsValidated) 

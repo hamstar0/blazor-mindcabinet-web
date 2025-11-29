@@ -1,15 +1,16 @@
 ﻿using System.Net.Http.Json;
+using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
 
 
-public class ClientDbAccess_SimpleUsers : IClientDbAccess {
+public class ClientDataAccess_SimpleUsers : IClientDataAccess {
     private HttpClient Http;
 
 
-    internal ClientDbAccess_SimpleUsers( HttpClient http ) {
+    internal ClientDataAccess_SimpleUsers( HttpClient http ) {
         this.Http = http;
     }
 

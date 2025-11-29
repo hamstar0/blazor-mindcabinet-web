@@ -5,10 +5,10 @@ using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_SimplePosts {
+public partial class ServerDataAccess_SimplePosts {
     public class SimplePostEntryData {
         public long Id;
         public DateTime Created;
@@ -16,12 +16,15 @@ public partial class ServerDbAccess_SimplePosts {
         public int TermSetId;
 
 
-        public async Task<SimplePostObject> CreateSimplePost_Async( IDbConnection dbCon, ServerDbAccess dbAccess ) {
+        public async Task<SimplePostObject> CreateSimplePost_Async(
+                    IDbConnection dbCon,
+                    ServerDataAccess_Terms termsData,
+                    ServerDataAccess_Terms_Sets termSetsData ) {
             return new SimplePostObject(
                 id: this.Id,
                 created: this.Created,
                 body: this.Body,
-                tags: (await dbAccess.GetTermSet_Async(dbCon, this.TermSetId)).ToList()
+                tags: (await termSetsData.GetTermSet_Async(dbCon, termsData, this.TermSetId)).ToList()
             );
         }
     }
@@ -30,7 +33,11 @@ public partial class ServerDbAccess_SimplePosts {
 
 
 
-    public async Task<bool> InstallSimplePosts_Async( IDbConnection dbConnection, long defaultUserId ) {
+    public async Task<bool> Install_Async(
+                IDbConnection dbConnection, 
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms_Sets termSetsData,
+                long defaultUserId ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimplePosts (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +55,7 @@ public partial class ServerDbAccess_SimplePosts {
 
         //
 
-        await this.InstallSampleSimplePosts( dbConnection, defaultUserId );
+        await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId );
 
         return true;
     }
@@ -58,7 +65,7 @@ public partial class ServerDbAccess_SimplePosts {
 
 
     private (string sql, IDictionary<string, object> sqlParams) GetSimplePostsByCriteriaSql(
-                ClientDbAccess_SimplePosts.GetByCriteria_Params parameters,
+                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters,
                 bool countOnly ) {
         bool hasWhere = false;
         string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM SimplePosts AS MyPosts ";
@@ -120,7 +127,9 @@ public partial class ServerDbAccess_SimplePosts {
 
     public async Task<IEnumerable<SimplePostObject>> GetSimplePostsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_SimplePosts.GetByCriteria_Params parameters ) {
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms_Sets termSetsData,
+                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<SimplePostObject>();
         }
@@ -135,7 +144,7 @@ public partial class ServerDbAccess_SimplePosts {
         var postList = new List<SimplePostObject>( posts.Count() );
 
         foreach( SimplePostEntryData post in posts ) {
-            postList.Add( await post.CreateSimplePost_Async(dbCon, this) );
+            postList.Add( await post.CreateSimplePost_Async(dbCon, termsData, termSetsData) );
         }
 
         return postList;
@@ -157,7 +166,7 @@ public partial class ServerDbAccess_SimplePosts {
 
     public async Task<int> GetSimplePostCountByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_SimplePosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
@@ -183,7 +192,8 @@ public partial class ServerDbAccess_SimplePosts {
 
 	public async Task<SimplePostObject> CreateSimplePost_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_SimplePosts.Create_Params parameters,
+                ServerDataAccess_Terms_Sets termSetsData,
+                ClientDataAccess_SimplePosts.Create_Params parameters,
                 ServerSessionData session,
                 bool skipHistory ) {
         DateTime now = DateTime.UtcNow;
@@ -195,7 +205,7 @@ public partial class ServerDbAccess_SimplePosts {
             new {
                 Created = now,
                 Body = new DbString { Value = parameters.Body, IsAnsi = true },
-                TermSetId = await this.CreateTermSet_Async( dbCon, parameters.Tags.ToArray() ),
+                TermSetId = await termSetsData.Create_Async( dbCon, parameters.Tags.ToArray() ),
             }
         );
 

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 
 
@@ -6,11 +7,11 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess_SimplePosts_FavoriteTags : IClientDbAccess {
+public partial class ClientDataAccess_SimplePosts_FavoriteTags : IClientDataAccess {
     private HttpClient Http;
 
 
-    internal ClientDbAccess_SimplePosts_FavoriteTags( HttpClient http ) {
+    internal ClientDataAccess_SimplePosts_FavoriteTags( HttpClient http ) {
         this.Http = http;
     }
 

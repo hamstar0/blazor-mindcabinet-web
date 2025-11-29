@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
 using System.Data;
 using System.Text;
 
@@ -9,10 +10,16 @@ namespace MindCabinet.Components;
 
 public partial class App : ComponentBase {
     [Inject]
-    private ServerDbAccess Db { get; set; } = null!;
+    private DbAccess Db { get; set; } = null!;
 
     [Inject]
-    private ServerSessionData SessionData { get; set; } = null!;
+    private ServerDataAccess_SimpleUsers UserData { get; set; } = null!;
+
+    [Inject]
+    private ServerDataAccess_SimpleUsers_Sessions UserSessionsData { get; set; } = null!;
+
+    [Inject]
+    private ServerSessionData ServerSessionData { get; set; } = null!;
 
     [Inject]
     public IServiceProvider ServiceProvider { get; set; } = null!;
@@ -24,18 +31,18 @@ public partial class App : ComponentBase {
 
         bool isClient = this.ServiceProvider.GetService<IsClient>() is not null;
         if( isClient ) {
-            throw new Exception( "Not server!"  );
+            throw new Exception( "Not server!"  );  // lol
         }
 
-        IDbConnection dbCon = await this.Db.ConnectDb_Async();
+        IDbConnection dbCon = await this.Db.GetDbConnection_Async();
 
-        await this.SessionData.Load_Async( dbCon );
+        await this.ServerSessionData.Load_Async( dbCon, this.UserData );
 
-        if( this.SessionData.User is not null ) {
+        if( this.ServerSessionData.User is not null ) {
             if( isClient ) {
                 throw new Exception( "test!" );
             } else {
-                await this.SessionData.Visit_Async( dbCon );
+                await this.ServerSessionData.Visit_Async( dbCon, this.UserSessionsData );
             }
         }
     }

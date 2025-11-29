@@ -1,4 +1,5 @@
-﻿using MindCabinet.Shared.DataObjects;
+﻿using MindCabinet.Data.DataAccess;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,24 +19,30 @@ public partial class ServerSessionData {
 
 
 
-    public async Task AddFavoriteTerm( IDbConnection dbCon, long termId ) {
+    public async Task AddFavoriteTerm_Async( IDbConnection dbCon, ServerDataAccess_Terms termsData, long termId ) {
         if( this._FavoriteTerms.Any( t => t.Id == termId ) ) {
             return;
         }
 
-        TermObject? term = await this.Db.GetTerm_Async( dbCon, termId );
+        TermObject? term = await termsData.GetTerm_Async( dbCon, termId );
         if( term is null ) {
             throw new Exception( $"Term with ID {termId} not found." );
         }
+
+        add to database
 
         this._FavoriteTerms.Add( term );
     }
 
     public void RemoveFavoriteTerm( long termId ) {
         TermObject? term = this._FavoriteTerms.FirstOrDefault( t => t.Id == termId );
-        if( term is not null ) {
-            this._FavoriteTerms.Remove( term );
+        if( term is null ) {
+            return;
         }
+
+        remove from database
+
+        this._FavoriteTerms.Remove( term );
     }
     
 

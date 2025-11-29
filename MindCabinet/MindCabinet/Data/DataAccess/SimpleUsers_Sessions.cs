@@ -3,11 +3,11 @@ using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_SimpleUsers_Sessions {
-    public async Task<bool> InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
+public partial class ServerDataAccess_SimpleUsers_Sessions {
+    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserSessions (
                 SessionId VARCHAR(36) NOT NULL,

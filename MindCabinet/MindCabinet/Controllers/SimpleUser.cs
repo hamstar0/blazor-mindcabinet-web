@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
@@ -15,40 +16,55 @@ namespace MindCabinet;
 [ApiController]
 [Route("[controller]")]
 public partial class SimpleUserController : ControllerBase {
-    private ServerDbAccess DbAccess;
-    private ServerSessionData SessData;
+    private readonly DbAccess DbAccess;
+
+    private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
+
+    private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
+
+    private readonly ServerDataAccess_SimpleUsers_FavoriteTags FavoriteTagsData;
+    
+    private readonly ServerSessionData ServerSessionData;
 
 
 
-    public SimpleUserController( ServerDbAccess dbAccess, ServerSessionData sessData ) {
+    public SimpleUserController(
+                DbAccess dbAccess,
+                ServerDataAccess_SimpleUsers simpleUsersData,
+                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUsers_FavoriteTags favoriteTagsData,
+                ServerSessionData sessData ) {
         this.DbAccess = dbAccess;
-        this.SessData = sessData;
+        this.SimpleUsersData = simpleUsersData;
+        this.SessionsData = sessionsData;
+        this.FavoriteTagsData = favoriteTagsData;
+        this.ServerSessionData = sessData;
     }
 
-    [HttpPost(ClientDbAccess_SimpleUsers.Create_Route)]
-    public async Task<ClientDbAccess_SimpleUsers.Login_Return> Create_Async(
-                ClientDbAccess_SimpleUsers.Create_Params parameters ) {
-        if( !this.SessData.IsLoaded ) {
+    [HttpPost(ClientDataAccess_SimpleUsers.Create_Route)]
+    public async Task<ClientDataAccess_SimpleUsers.Login_Return> Create_Async(
+                ClientDataAccess_SimpleUsers.Create_Params parameters ) {
+        if( !this.ServerSessionData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        ServerDbAccess.SimpleUserQueryResult result = await this.DbAccess.CreateSimpleUser_Async(
+        ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersData.CreateSimpleUser_Async(
             dbCon: dbCon,
             parameters: parameters,
-            pwSalt: this.SessData.PwSalt!
+            pwSalt: this.ServerSessionData.PwSalt!
         );
 
         if( result.User is not null ) {
-            await this.DbAccess.CreateSimpleUserSession_Async(
+            await this.SessionsData.CreateSimpleUserSession_Async(
                 dbCon: dbCon,
                 user: result.User,
-                session: this.SessData
+                session: this.ServerSessionData
             );
         }
 
-        return new ClientDbAccess_SimpleUsers.Login_Return(
+        return new ClientDataAccess_SimpleUsers.Login_Return(
             result.User?.GetClientOnlyData(),
             result.User is not null ? "User created." : "Could not create user."
         );

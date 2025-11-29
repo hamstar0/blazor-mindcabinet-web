@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Runtime.CompilerServices;
 using MindCabinet.Client.Services;
 using System.Reflection;
+using MindCabinet.Client.Services.DataAccess;
 
 
 namespace MindCabinet.Client;
@@ -37,6 +38,7 @@ public class Program {
 	}
 
 
+
     public static async Task Main( string[] args ) {
         var builder = WebAssemblyHostBuilder.CreateDefault( args );
 
@@ -45,7 +47,7 @@ public class Program {
         } );
         builder.Services.AddSingleton<IsClient>();
 
-		Program.RegisterAllClassesOfInterface<IClientDbAccess>( builder.Services );
+		Program.RegisterAllClassesOfInterface<IClientDataAccess>( builder.Services );
 
         builder.Services.AddSingleton<ClientSessionData>();
 

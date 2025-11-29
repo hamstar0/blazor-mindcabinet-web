@@ -5,8 +5,8 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
 
-namespace MindCabinet.Client.Services;
+namespace MindCabinet.Client.Services.DataAccess;
 
 
 
-public interface IClientDbAccess { }
+public interface IClientDataAccess { }

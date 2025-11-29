@@ -8,21 +8,21 @@ using static MindCabinet.Program;
 namespace MindCabinet.Data;
 
 
-public partial class ServerDbAccess {
-    private readonly ILogger<ServerDbAccess> Logger;
+public partial class DbAccess {
+    private readonly ILogger<DbAccess> Logger;
 
     //private SingletonCache Cache;
     //private ISession Session;
-    private ServerSettings ServerSettings;
+    //private ServerSettings ServerSettings;
     //private IHttpContextAccessor Http;
     private readonly Func<IDbConnection> ConnFactory;
 
     private IDbConnection? DbConnectionCache = null;
 
 
-    public ServerDbAccess(
-                ILogger<ServerDbAccess> logger,
-                ServerSettings serverSettings,
+    public DbAccess(
+                ILogger<DbAccess> logger,
+                // ServerSettings serverSettings,
                 //IHttpContextAccessor httpContextAccessor,
                 Func<IDbConnection> connFactory ) {
         this.Logger = logger;
@@ -30,7 +30,7 @@ public partial class ServerDbAccess {
         //IHttpContextAccessor hca
         //this.SessionId = hca.HttpContext.Request.Cookies["SessionId"];
         //this.Session = hca.HttpContext!.Session;
-        this.ServerSettings = serverSettings;
+        // this.ServerSettings = serverSettings;
         //this.Http = httpContextAccessor;
         this.ConnFactory = connFactory;
     }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 
@@ -12,28 +13,31 @@ namespace MindCabinet;
 [ApiController]
 [Route("[controller]")]
 public class TermController : ControllerBase {
-    private readonly ServerDbAccess DbAccess;
+    private readonly DbAccess DbAccess;
+
+    private readonly ServerDataAccess_Terms TermsData;
 
 
 
-    public TermController( ServerDbAccess dbAccess ) {
+    public TermController( DbAccess dbAccess, ServerDataAccess_Terms termsData ) {
         this.DbAccess = dbAccess;
+        this.TermsData = termsData;
     }
 
 
-    [HttpPost(ClientDbAccess_Terms.GetByCriteria_Route)]
+    [HttpPost(ClientDataAccess_Terms.GetByCriteria_Route)]
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
-                ClientDbAccess_Terms.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+                ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.DbAccess.GetTermsByCriteria_Async( dbCon, parameters );
+        return await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDbAccess_Terms.Create_Route)]
-    public async Task<ClientDbAccess_Terms.Create_Return> Create_Async(
-                ClientDbAccess_Terms.Create_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
+    [HttpPost(ClientDataAccess_Terms.Create_Route)]
+    public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
+                ClientDataAccess_Terms.Create_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.DbAccess.CreateTerm_Async( dbCon, parameters );
+        return await this.TermsData.Create_Async( dbCon, parameters );
     }
 }

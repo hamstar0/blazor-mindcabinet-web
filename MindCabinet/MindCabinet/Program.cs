@@ -33,10 +33,10 @@ public class Program {
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddSingleton<ServerSettings>();
-        builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
+        //////////builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
 
-        builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection( conn ) );
-        builder.Services.AddTransient<ServerDbAccess>();  // not AddSingleton
+        builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection(conn) );
+        builder.Services.AddTransient<DbAccess>();  // not AddSingleton
 
         builder.Services.AddScoped<ServerSessionData>();
         builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components

@@ -7,10 +7,10 @@ using MindCabinet.Shared.Utility;
 using System.Data;
 
 
-namespace MindCabinet.Data.DbAccess;
+namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDbAccess_UserContext {
+public partial class ServerDataAccess_UserContext {
     public async Task<bool> InstallUserContext_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE UserContexts (
@@ -43,12 +43,12 @@ public partial class ServerDbAccess_UserContext {
 
     public async Task<IEnumerable<long>> GetByUserId_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_UserContext.GetByUserId_Params parameters ) {
+                ClientDataAccess_UserContext.GetByUserId_Params parameters ) {
 	}
 
 
     public async Task AddUserContext_Async(
                 IDbConnection dbCon,
-                ClientDbAccess_UserContext.Add_Params parameters ) {
+                ClientDataAccess_UserContext.Create_Params parameters ) {
     }
 }
