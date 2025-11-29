@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public class ClientDbAccess_Terms {
+public class ClientDbAccess_Terms : IClientDbAccess {
     private HttpClient Http;
 
 

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Konscious.Security.Cryptography;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Text;
@@ -157,7 +158,7 @@ public partial class ServerDbAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.CreateSimpleUserParams parameters,
+                ClientDbAccess_SimpleUsers.Create_Params parameters,
                 byte[] pwSalt ) {
         var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.UserDbData?>(
             "SELECT * FROM SimpleUsers WHERE Name = @Name",

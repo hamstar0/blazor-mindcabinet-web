@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
@@ -24,24 +25,24 @@ public class SimplePostController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDbAccess.SimplePost_GetByCriteria_Route)]
+    [HttpPost(ClientDbAccess_SimplePosts.GetByCriteria_Route)]
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
-                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
+                ClientDbAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.GetSimplePostsByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDbAccess.SimplePost_GetCountByCriteria_Route)]
+    [HttpPost(ClientDbAccess_SimplePosts.GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
-                ClientDbAccess.GetSimplePostsByCriteriaParams parameters ) {
+                ClientDbAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.GetSimplePostCountByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDbAccess.SimplePost_Create_Route)]
-    public async Task<SimplePostObject> Create_Async( ClientDbAccess.CreateSimplePostParams parameters ) {
+    [HttpPost(ClientDbAccess_SimplePosts.Create_Route)]
+    public async Task<SimplePostObject> Create_Async( ClientDbAccess_SimplePosts.Create_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.CreateSimplePost_Async( dbCon, parameters, this.SessData, false );

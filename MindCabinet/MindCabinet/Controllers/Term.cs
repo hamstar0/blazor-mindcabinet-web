@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
@@ -20,16 +21,17 @@ public class TermController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDbAccess.Term_GetByCriteria_Route)]
+    [HttpPost(ClientDbAccess_Terms.GetByCriteria_Route)]
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
-                ClientDbAccess.GetTermsByCriteriaParams parameters ) {
+                ClientDbAccess_Terms.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDbAccess.Term_Create_Route)]
-    public async Task<ClientDbAccess.CreateTermReturn> Create_Async( ClientDbAccess.CreateTermParams parameters ) {
+    [HttpPost(ClientDbAccess_Terms.Create_Route)]
+    public async Task<ClientDbAccess_Terms.Create_Return> Create_Async(
+                ClientDbAccess_Terms.Create_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.ConnectDb_Async();
 
         return await this.DbAccess.CreateTerm_Async( dbCon, parameters );

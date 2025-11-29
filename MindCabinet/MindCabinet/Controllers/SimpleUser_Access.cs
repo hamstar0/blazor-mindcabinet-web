@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
@@ -12,9 +13,9 @@ namespace MindCabinet;
 
 
 public partial class SimpleUserController : ControllerBase {
-    [HttpPost(ClientDbAccess.SimpleUser_Login_Route)]
-    public async Task<ClientDbAccess.SimpleUserLoginReply> Login_Async(
-                ClientDbAccess.LoginSimpleUserParams parameters ) {
+    [HttpPost(ClientDbAccess_SimpleUsers.Login_Route)]
+    public async Task<ClientDbAccess_SimpleUsers.Login_Return> Login_Async(
+                ClientDbAccess_SimpleUsers.Login_Params parameters ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -23,18 +24,18 @@ public partial class SimpleUserController : ControllerBase {
 
         var user = await this.DbAccess.GetSimpleUser_Async( dbCon, parameters.Name );
         if( user is null ) {
-            return new ClientDbAccess.SimpleUserLoginReply( null, "User not found by name: "+parameters.Name );
+            return new ClientDbAccess_SimpleUsers.Login_Return( null, "User not found by name: "+parameters.Name );
         }
 
         byte[] pwHash = ServerDbAccess.GetPasswordHash( parameters.Password, this.SessData.PwSalt );
 
         if( !CryptographicOperations.FixedTimeEquals(user.PwHash, pwHash) ) {
-            return new ClientDbAccess.SimpleUserLoginReply( null, "Invalid password." );
+            return new ClientDbAccess_SimpleUsers.Login_Return( null, "Invalid password." );
         }
 
         await this.DbAccess.VisitSimpleUserSession_Async( dbCon, this.SessData );
 
-        return new ClientDbAccess.SimpleUserLoginReply( user.GetClientOnlyData(), "User validated." );
+        return new ClientDbAccess_SimpleUsers.Login_Return( user.GetClientOnlyData(), "User validated." );
     }
 
     [HttpPost("Visit")]

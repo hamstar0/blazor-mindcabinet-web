@@ -9,7 +9,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDbAccess_SimplePosts {
+public partial class ClientDbAccess_SimplePosts : IClientDbAccess {
     private HttpClient Http;
 
 
@@ -18,7 +18,7 @@ public partial class ClientDbAccess_SimplePosts {
     }
 
 
-    public class GetSimplePostsByCriteriaParams(
+    public class GetByCriteria_Params(
                 string bodyPattern,
                 ISet<TermObject> tags,
                 bool sortAscendingByDate,
@@ -40,12 +40,12 @@ public partial class ClientDbAccess_SimplePosts {
         }
     }
 
-    public const string SimplePost_GetByCriteria_Path = "SimplePost";
-    public const string SimplePost_GetByCriteria_Route = "GetByCriteria";
+    public const string GetByCriteria_Path = "SimplePost";
+    public const string GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<IEnumerable<SimplePostObject>> GetSimplePostsByCriteria_Async( GetSimplePostsByCriteriaParams parameters ) {
+    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            ClientDbAccess.SimplePost_GetByCriteria_Path + "/" + ClientDbAccess.SimplePost_GetByCriteria_Route,
+            $"{GetByCriteria_Path}/{GetByCriteria_Route}",
             parameters
         );
 
@@ -59,15 +59,15 @@ public partial class ClientDbAccess_SimplePosts {
         return ret;
     }
     
-    public const string SimplePost_GetCountByCriteria_Path = "SimplePost";
-    public const string SimplePost_GetCountByCriteria_Route = "GetCountByCriteria";
+    public const string GetCountByCriteria_Path = "SimplePost";
+    public const string GetCountByCriteria_Route = "GetCountByCriteria";
 
-    public async Task<int> GetSimplePostCountByCriteria_Async( GetSimplePostsByCriteriaParams parameters ) {
+    public async Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters ) {
 		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
         
         //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
         HttpResponseMessage msg = await this.Http.PostAsync(
-            requestUri: ClientDbAccess.SimplePost_GetCountByCriteria_Path + "/" + ClientDbAccess.SimplePost_GetCountByCriteria_Route,
+            requestUri: $"{GetCountByCriteria_Path}/{GetCountByCriteria_Route}",
             content: content,
             cancellationToken: default
         );
@@ -83,19 +83,19 @@ public partial class ClientDbAccess_SimplePosts {
     }
 
 
-    public class CreateSimplePostParams(
+    public class Create_Params(
                 string body,
                 List<TermObject> tags ) {
         public string Body { get; } = body;
         public List<TermObject> Tags { get; } = tags;
     }
     
-    public const string SimplePost_Create_Path = "SimplePost";
-    public const string SimplePost_Create_Route = "Create";
+    public const string Create_Path = "SimplePost";
+    public const string Create_Route = "Create";
 
-    public async Task<SimplePostObject> CreateSimplePost_Async( CreateSimplePostParams parameters ) {
+    public async Task<SimplePostObject> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: ClientDbAccess.SimplePost_Create_Path + "/" + ClientDbAccess.SimplePost_Create_Route,
+            requestUri: $"{Create_Path}/{Create_Route}",
             value: parameters
         );
 

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.Utility;
 using System.Data;
@@ -40,14 +41,14 @@ public partial class ServerDbAccess {
     }
     
 
-    public async Task<IEnumerable<long>> GetUserContextsByUserId_Async(
+    public async Task<IEnumerable<long>> GetByUserId_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.GetSimpleUserFavoriteTagIdsParams parameters ) {
+                ClientDbAccess_UserContext.GetByUserId_Params parameters ) {
 	}
 
 
     public async Task AddUserContext_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.AddSimpleUserFavoriteTagsByIdParams parameters ) {
+                ClientDbAccess_UserContext.Add_Params parameters ) {
     }
 }

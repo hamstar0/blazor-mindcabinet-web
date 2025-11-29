@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
 using System;
 using System.Data;
@@ -79,7 +80,7 @@ public partial class ServerDbAccess {
 
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.GetTermsByCriteriaParams parameters ) {
+                ClientDbAccess_Terms.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
 
@@ -124,18 +125,18 @@ public partial class ServerDbAccess {
 	}
 
 
-    public async Task<ClientDbAccess.CreateTermReturn> CreateTerm_Async(
+    public async Task<ClientDbAccess_Terms.Create_Return> CreateTerm_Async(
                 IDbConnection dbCon,
-                ClientDbAccess.CreateTermParams parameters ) {
+                ClientDbAccess_Terms.Create_Params parameters ) {
 		IEnumerable<TermObject> terms = await this.GetTermsByCriteria_Async(
             dbCon,
-			new ClientDbAccess.GetTermsByCriteriaParams(
+			new ClientDbAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
 				context: parameters.Context?.ToPrototype() ?? null
 			)
 		);
 		if( terms.Count() > 0 ) {
-			return new ClientDbAccess.CreateTermReturn( false, terms.First() );
+			return new ClientDbAccess_Terms.Create_Return( false, terms.First() );
 		}
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
@@ -158,6 +159,6 @@ public partial class ServerDbAccess {
 		);
 		this.TermsById_Cache[newId] = newTerm;
 
-        return new ClientDbAccess.CreateTermReturn( true, newTerm );
+        return new ClientDbAccess_Terms.Create_Return( true, newTerm );
     }
 }

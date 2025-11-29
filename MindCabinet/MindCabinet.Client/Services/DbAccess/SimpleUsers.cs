@@ -5,7 +5,7 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Client.Services.DbAccess;
 
 
-public class ClientDbAccess_SimpleUsers {
+public class ClientDbAccess_SimpleUsers : IClientDbAccess {
     private HttpClient Http;
 
 
@@ -63,7 +63,7 @@ public class ClientDbAccess_SimpleUsers {
         public string Password { get; } = password;
     }
 
-    public class LoginReply( SimpleUserObject.ClientData? user, string status ) {
+    public class Login_Return( SimpleUserObject.ClientData? user, string status ) {
         public SimpleUserObject.ClientData? User { get; } = user;
         public string Status { get; } = status;
     }
@@ -71,7 +71,7 @@ public class ClientDbAccess_SimpleUsers {
     public const string Login_Path = "SimpleUser";
     public const string Login_Route = "Login";
 
-    public async Task<LoginReply> Login_Async( Login_Params parameters ) {
+    public async Task<Login_Return> Login_Async( Login_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{Login_Path}/{Login_Route}",
             parameters
@@ -79,7 +79,7 @@ public class ClientDbAccess_SimpleUsers {
 
         msg.EnsureSuccessStatusCode();
 
-        LoginReply? ret = await msg.Content.ReadFromJsonAsync<LoginReply>();
+        Login_Return? ret = await msg.Content.ReadFromJsonAsync<Login_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimpleUserLoginReply" );
         }

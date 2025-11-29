@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
@@ -24,9 +25,9 @@ public partial class SimpleUserController : ControllerBase {
         this.SessData = sessData;
     }
 
-    [HttpPost(ClientDbAccess.SimpleUser_Create_Route)]
-    public async Task<ClientDbAccess.SimpleUserLoginReply> Create_Async(
-                ClientDbAccess.CreateSimpleUserParams parameters ) {
+    [HttpPost(ClientDbAccess_SimpleUsers.Create_Route)]
+    public async Task<ClientDbAccess_SimpleUsers.Login_Return> Create_Async(
+                ClientDbAccess_SimpleUsers.Create_Params parameters ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -47,7 +48,7 @@ public partial class SimpleUserController : ControllerBase {
             );
         }
 
-        return new ClientDbAccess.SimpleUserLoginReply(
+        return new ClientDbAccess_SimpleUsers.Login_Return(
             result.User?.GetClientOnlyData(),
             result.User is not null ? "User created." : "Could not create user."
         );
