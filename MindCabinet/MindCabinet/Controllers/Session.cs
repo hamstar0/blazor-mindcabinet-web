@@ -28,8 +28,8 @@ public class SessionController : ControllerBase {
     }
 
     // [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_GetSessionData.route))]
-    [HttpGet(ClientSessionData.Session_GetSessionData_Route)]
-    public async Task<ClientSessionData.RawServerData> GetSessionData_Async() {
+    [HttpGet(ClientSessionData.Session_Get_Route)]
+    public async Task<ClientSessionData.RawServerData> Get_Async() {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -40,18 +40,5 @@ public class SessionController : ControllerBase {
             favoriteTerms: this.SessData.FavoriteTerms.ToList(),
             recentTerms: this.SessData.TermHistory.ToList()
         );
-    }
-
-    [HttpPost(ClientSessionData.Session_SetFavoriteTerm_Route)]
-    public async Task<object> SetFavoriteTerm_Async( ClientSessionData.SetFavoriteTermSessionParams parameters ) {
-        if( parameters.IsFavorite ) {
-            IDbConnection dbConn = await this.DbAccess.GetDbConnection_Async();
-            
-            await this.SessData.AddFavoriteTerm_Async( dbConn, this.TermsData, parameters.TermId );
-        } else {
-            this.SessData.RemoveFavoriteTerm( parameters.TermId );
-        }
-
-        return new object();
     }
 }

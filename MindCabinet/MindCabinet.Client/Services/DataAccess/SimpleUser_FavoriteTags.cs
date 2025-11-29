@@ -7,11 +7,11 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_SimplePosts_FavoriteTags : IClientDataAccess {
+public partial class ClientDataAccess_FavoriteTags : IClientDataAccess {
     private HttpClient Http;
 
 
-    internal ClientDataAccess_SimplePosts_FavoriteTags( HttpClient http ) {
+    internal ClientDataAccess_FavoriteTags( HttpClient http ) {
         this.Http = http;
     }
 
@@ -20,8 +20,8 @@ public partial class ClientDataAccess_SimplePosts_FavoriteTags : IClientDataAcce
         public long UserId { get; } = userId;
     }
 
-    public const string Get_Path = "SimpleUser";
-    public const string Get_Route = "GetFavoriteTagIds";
+    public const string Get_Path = "FavoriteTags";
+    public const string Get_Route = "GetIds";
 
     public async Task<IEnumerable<long>> Get_Async(
                 Get_Params parameters ) {
@@ -48,7 +48,7 @@ public partial class ClientDataAccess_SimplePosts_FavoriteTags : IClientDataAcce
         public List<long> TermIds { get; } = termIds;
     }
 
-    public const string Add_Path = "SimpleUser";
+    public const string Add_Path = "FavoriteTags";
     public const string Add_Route = "Add";
 
     public async Task Add_Async( Add_Params parameters ) {

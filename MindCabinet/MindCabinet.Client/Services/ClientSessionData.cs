@@ -44,13 +44,13 @@ public partial class ClientSessionData {
 
 
 
-    public const string Session_GetSessionData_Path = "Session";
-    public const string Session_GetSessionData_Route = "GetSessionData";
+    public const string Session_Get_Path = "Session";
+    public const string Session_Get_Route = "Get";
 
     internal async Task Load_Async() {
         //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
         HttpResponseMessage msg = await this.Http.GetAsync(
-            $"{Session_GetSessionData_Path}/{Session_GetSessionData_Route}"
+            $"{Session_Get_Path}/{Session_Get_Route}"
         );
 
         msg.EnsureSuccessStatusCode();

@@ -12,23 +12,23 @@ namespace MindCabinet;
 
 [ApiController]
 [Route("[controller]")]
-public class DataController : ControllerBase {
+public class SetupController : ControllerBase {
     private readonly DbAccess DbAccess;
     private readonly ServerDataAccess_Install InstallData;
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
     private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
-    private readonly ServerDataAccess_SimpleUsers_FavoriteTags FavoriteTagsData;
+    private readonly ServerDataAccess_FavoriteTags FavoriteTagsData;
     private readonly ServerDataAccess_Terms TermsData;
     private readonly ServerDataAccess_Terms_Sets TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
 
 
 
-    public DataController( DbAccess dbAccess,
+    public SetupController( DbAccess dbAccess,
                 ServerDataAccess_Install installData,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_SimpleUsers_FavoriteTags favoriteTagsData,
+                ServerDataAccess_FavoriteTags favoriteTagsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData ) {

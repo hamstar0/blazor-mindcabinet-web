@@ -10,7 +10,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_SimpleUsers_FavoriteTags {
+public partial class ServerDataAccess_FavoriteTags {
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserFavoriteTerms (
@@ -32,7 +32,7 @@ public partial class ServerDataAccess_SimpleUsers_FavoriteTags {
 
     public async Task<IEnumerable<long>> GetFavoriteTermIds_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimplePosts_FavoriteTags.Get_Params parameters ) {
+                ClientDataAccess_FavoriteTags.Get_Params parameters ) {
         string sql = @"SELECT FavTermId FROM SimpleUserFavoriteTerms WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
 
@@ -42,7 +42,7 @@ public partial class ServerDataAccess_SimpleUsers_FavoriteTags {
 
     public async Task AddSimpleUserFavoriteTermsById_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimplePosts_FavoriteTags.Add_Params parameters ) {
+                ClientDataAccess_FavoriteTags.Add_Params parameters ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
