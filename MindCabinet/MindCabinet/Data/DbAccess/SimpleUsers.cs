@@ -7,7 +7,7 @@ using System.Data;
 using System.Text;
 
 
-namespace MindCabinet.Data;
+namespace MindCabinet.Data.DbAccess;
 
 
 public partial class ServerDbAccess {

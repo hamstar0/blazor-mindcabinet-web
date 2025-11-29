@@ -3,7 +3,7 @@ using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
-namespace MindCabinet.Data;
+namespace MindCabinet.Data.DbAccess;
 
 
 public partial class ServerDbAccess {
