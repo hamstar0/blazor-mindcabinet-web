@@ -7,7 +7,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_SimplePosts {
     private async Task InstallSampleSimplePosts( IDbConnection dbConnection, long defaultUserId ) {
         ClientDbAccess.CreateTermReturn term1 = await this.CreateTerm_Async(
             dbConnection,

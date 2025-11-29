@@ -10,7 +10,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_SimpleUsers_FavoriteTags {
     public async Task<bool> InstallSimpleUserFavoriteTags_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserFavoriteTerms (

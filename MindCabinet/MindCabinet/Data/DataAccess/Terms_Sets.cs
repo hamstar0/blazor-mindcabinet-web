@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_Terms_Sets {
 	public async Task<bool> InstallTermSets_Async( IDbConnection dbCon ) {
         await dbCon.ExecuteAsync(@"
             CREATE TABLE TermSet (

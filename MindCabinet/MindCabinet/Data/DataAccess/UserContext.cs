@@ -10,7 +10,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_UserContext {
     public async Task<bool> InstallUserContext_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE UserContexts (

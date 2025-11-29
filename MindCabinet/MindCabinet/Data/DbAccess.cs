@@ -17,6 +17,8 @@ public partial class ServerDbAccess {
     //private IHttpContextAccessor Http;
     private readonly Func<IDbConnection> ConnFactory;
 
+    private IDbConnection? DbConnectionCache = null;
+
 
     public ServerDbAccess(
                 ILogger<ServerDbAccess> logger,
@@ -33,12 +35,16 @@ public partial class ServerDbAccess {
         this.ConnFactory = connFactory;
     }
 
-    public async Task<IDbConnection> ConnectDb_Async( bool validateInstall=true ) {
-        IDbConnection dbCon = this.ConnFactory();
-        dbCon.Open();
+    public async Task<IDbConnection> GetDbConnection_Async( bool validateInstall=true ) {
+        if( this.DbConnectionCache is not null ) {
+            return this.DbConnectionCache;
+        }
+
+        this.DbConnectionCache = this.ConnFactory();
+        this.DbConnectionCache.Open();
 
         if( validateInstall ) {
-            dynamic? result = await dbCon.QueryFirstOrDefaultAsync( @"SHOW TABLES LIKE 'Posts';" );
+            dynamic? result = await this.DbConnectionCache.QueryFirstOrDefaultAsync( @"SHOW TABLES LIKE 'Posts';" );
             // int count = await dbCon.QuerySingleAsync<int>( @"
             //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
             //  WHERE TABLE_NAME = 'Posts'"
@@ -57,6 +63,6 @@ public partial class ServerDbAccess {
             }
         }
 
-        return dbCon;
+        return this.DbConnectionCache;
     }
 }

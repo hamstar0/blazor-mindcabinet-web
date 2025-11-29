@@ -9,7 +9,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_Terms {
     private class TermObjectDbData {
         public long Id = default;
         public string Term = "";

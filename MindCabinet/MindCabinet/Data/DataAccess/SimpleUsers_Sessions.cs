@@ -6,7 +6,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_SimpleUsers_Sessions {
     public async Task<bool> InstallSimpleUserSessions_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
             CREATE TABLE SimpleUserSessions (

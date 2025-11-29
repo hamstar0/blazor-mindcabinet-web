@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_SimplePosts {
     public class SimplePostEntryData {
         public long Id;
         public DateTime Created;

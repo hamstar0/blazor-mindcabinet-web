@@ -8,7 +8,7 @@ using static MindCabinet.Program;
 namespace MindCabinet.Data.DbAccess;
 
 
-public partial class ServerDbAccess {
+public partial class ServerDbAccess_Install {
     public async Task<bool> Install_Async( IDbConnection dbCon ) {
         bool success;
         long defaultUserId;
