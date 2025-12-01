@@ -41,7 +41,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
                 ClientDataAccess_UserFavoriteTerms.Get_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.FavoriteTermsData.GetFavoriteTermIds_Async( dbCon, parameters );
+        return await this.FavoriteTermsData.GetTermIds_Async( dbCon, parameters );
     }
 
 

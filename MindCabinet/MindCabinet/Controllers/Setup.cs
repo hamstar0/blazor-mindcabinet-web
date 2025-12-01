@@ -17,7 +17,7 @@ public class SetupController : ControllerBase {
     private readonly ServerDataAccess_Install InstallData;
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
     private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
-    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTagsData;
+    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTermsData;
     private readonly ServerDataAccess_Terms TermsData;
     private readonly ServerDataAccess_Terms_Sets TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
@@ -28,7 +28,7 @@ public class SetupController : ControllerBase {
                 ServerDataAccess_Install installData,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTagsData,
+                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData ) {
@@ -36,7 +36,7 @@ public class SetupController : ControllerBase {
         this.InstallData = installData;
         this.SimpleUsersData = simpleUsersData;
         this.SessionsData = sessionsData;
-        this.FavoriteTagsData = favoriteTagsData;
+        this.FavoriteTermsData = favoriteTermsData;
         this.TermsData = termsData;
         this.TermSetsData = termSetsData;
         this.SimplePostsData = simplePostsData;
@@ -49,7 +49,7 @@ public class SetupController : ControllerBase {
             dbCon,
             this.SimpleUsersData,
             this.SessionsData,
-            this.FavoriteTagsData,
+            this.FavoriteTermsData,
             this.TermsData,
             this.TermSetsData,
             this.SimplePostsData

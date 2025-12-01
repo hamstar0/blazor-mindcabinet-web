@@ -32,7 +32,7 @@ public partial class ServerDataAccess_UserFavoriteTerms {
     }
     
 
-    public async Task<IEnumerable<long>> GetFavoriteTermIds_Async(
+    public async Task<IEnumerable<long>> GetTermIds_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_UserFavoriteTerms.Get_Params parameters ) {
         string sql = $"SELECT FavTermId FROM {TableName} WHERE SimpleUserId = @UserId;";

@@ -15,7 +15,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http ) : ICl
         public long UserId { get; } = userId;
     }
 
-    public const string Get_Path = "UserFavoriteTags";
+    public const string Get_Path = "UserFavoriteTerms";
     public const string Get_Route = "GetIds";
 
     public async Task<IEnumerable<long>> Get_Async(
@@ -41,7 +41,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http ) : ICl
         public List<long> TermIds { get; } = termIds;
     }
 
-    public const string AddTerms_Path = "UserFavoriteTags";
+    public const string AddTerms_Path = "UserFavoriteTerms";
     public const string AddTerms_Route = "AddTerms";
 
     public async Task AddTerms_Async( AddTerms_Params parameters ) {
