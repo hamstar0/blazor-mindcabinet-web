@@ -222,7 +222,7 @@ public partial class ServerDataAccess_SimplePosts {
                 termHistoryData.AddTerm_Async(
                     dbCon,
                     simpleUserId,
-                    new ClientDataAccess_UserTermsHistory.Add_Params(
+                    new ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params(
                         termId: tag.Id
                     )
                 )

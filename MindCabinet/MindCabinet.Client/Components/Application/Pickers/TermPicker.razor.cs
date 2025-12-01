@@ -54,8 +54,17 @@ public partial class TermPicker : ComponentBase {
 
 
     protected override async Task OnInitializedAsync() {
-        this.FavoriteTerms_Cache = await this.UserFavoriteTermsData.Get_Async().ToList();
-        this.RecentTerms_Cache = await this.UserTermsHistoryData.Get_Async().ToList();
+        IEnumerable<long> favTermIds
+            = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
+        IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return> histTermIds
+            = await this.UserTermsHistoryData.GetTermIdsForCurrentUser_Async();
+
+        this.FavoriteTerms_Cache = await this.TermsData.GetByIds_Async( favTermIds );
+        this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
+            histTermIds
+                .OrderByDescending( x => x.Created )
+                .Select( x => x.TermId )
+        );
     }
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {

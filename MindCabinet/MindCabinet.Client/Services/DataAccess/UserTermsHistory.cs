@@ -7,37 +7,31 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
-    private HttpClient Http;
+public partial class ClientDataAccess_UserTermsHistory( HttpClient http ) : IClientDataAccess {
+    private HttpClient Http = http;
 
 
-    internal ClientDataAccess_UserTermsHistory( HttpClient http ) {
-        this.Http = http;
+    public class GetTermIdsForCurrentUser_Params { //( long userId ) {
+        //public long UserId { get; } = userId;
     }
 
-
-    public class GetByUserId_Params( long userId ) {
-        public long UserId { get; } = userId;
-    }
-
-    public class GetByUserId_Return( long termId, DateTime created ) {
+    public class GetTermIdsForCurrentUser_Return( long termId, DateTime created ) {
         public long TermId { get; } = termId;
         public DateTime Created { get; } = created;
     }
 
-    public const string GetByUserId_Path = "UserTermsHistory";
-    public const string GetByUserId_Route = "Get";
+    public const string GetTermIdsForCurrentUser_Path = "UserTermsHistory";
+    public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
 
-    public async Task<IEnumerable<GetByUserId_Return>> GetByUserId_Async(
-                GetByUserId_Params parameters ) {
+    public async Task<IEnumerable<GetTermIdsForCurrentUser_Return>> GetTermIdsForCurrentUser_Async() {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetByUserId_Path}/{GetByUserId_Route}",
-            parameters
+            $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
+            new GetTermIdsForCurrentUser_Params()  //parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<GetByUserId_Return>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<GetByUserId_Return>>();
+        IEnumerable<GetTermIdsForCurrentUser_Return>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<GetTermIdsForCurrentUser_Return>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<ClientDataAccess_UserTermsHistory.GetByUserId_Return>" );
         }
@@ -46,19 +40,19 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
     }
 
 
-    public class Add_Params(
+    public class AddTermsForCurrentUser_Params(
                 //long simpleUserId,
                 long termId ) {
         //public long SimpleUserId { get; } = simpleUserId;
         public long TermId { get; } = termId;
     }
 
-    public const string Add_Path = "UserTermsHistory";
-    public const string Add_Route = "Add";
+    public const string AddTermsForCurrentUser_Path = "UserTermsHistory";
+    public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
 
-    public async Task Add_Async( Add_Params parameters ) {
+    public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{Add_Path}/{Add_Route}",
+            $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
             parameters
         );
 

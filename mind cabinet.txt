@@ -44,9 +44,11 @@ v0.5
 		-	Implement priority value storage for tags
 			-	Implement session crap
 			-	Add API for session crap to db
-			-	Declare table and protocols for contexts (contextid, userid, name, termid, priority)
+			-	Implement capacity limit for history
+			-	Declare table and protocols for contexts
 
 
+			-	Declare table and protocols for history
 			-	Declare table and protocols for favorites
 		-	Add slider to each context editor tags
 		-	Create component for hybrid slider + numeric input for number values

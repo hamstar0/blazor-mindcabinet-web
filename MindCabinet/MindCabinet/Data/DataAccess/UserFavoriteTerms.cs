@@ -34,18 +34,19 @@ public partial class ServerDataAccess_UserFavoriteTerms {
 
     public async Task<IEnumerable<long>> GetTermIds_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_UserFavoriteTerms.Get_Params parameters ) {
+                long simpleUserId,
+                ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT FavTermId FROM {TableName} WHERE SimpleUserId = @UserId;";
-        var sqlParams = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
+        var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
         return await dbCon.QueryAsync<long>( sql, new DynamicParameters(sqlParams) );
 	}
 
 
-    public async Task AddTermsByIds_Async(
+    public async Task AddTermIds_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ClientDataAccess_UserFavoriteTerms.AddTerms_Params parameters ) {
+                ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params parameters ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));

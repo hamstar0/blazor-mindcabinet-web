@@ -34,18 +34,22 @@ public partial class UserTermsHistoryController : ControllerBase {
     }
 
     
-    [HttpPost(ClientDataAccess_UserTermsHistory.GetByUserId_Route)]
-    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetByUserId_Return>> GetByUserId_Async(
-                ClientDataAccess_UserTermsHistory.GetByUserId_Params parameters ) {
+    [HttpPost(ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Route)]
+    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>> GetForCurrentUserId_Async(
+                ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
+        if( this.SessionData.User is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, parameters );
+        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionData.User.Id, parameters );
     }
 
 
-    [HttpPost(ClientDataAccess_UserTermsHistory.Add_Route)]
-    public async Task AddFavoriteTermsById_Async(
-                ClientDataAccess_UserTermsHistory.Add_Params parameters ) {
+    [HttpPost(ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Route)]
+    public async Task AddFavoriteTermsByIdForCurrentUserId_Async(
+                ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
         if( this.SessionData.User is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

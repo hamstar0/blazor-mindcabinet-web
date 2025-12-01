@@ -34,20 +34,21 @@ public partial class ServerDataAccess_UserTermsHistory {
     }
     
 
-    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetByUserId_Return>> GetByUserId_Async(
+    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>> GetByUserId_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_UserTermsHistory.GetByUserId_Params parameters ) {
+                long simpleUserId,
+                ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT TermId, Created FROM {TableName} WHERE SimpleUserId = @UserId;";
-        var sqlParams = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
+        var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
-        return await dbCon.QueryAsync<ClientDataAccess_UserTermsHistory.GetByUserId_Return>( sql, new DynamicParameters(sqlParams) );
+        return await dbCon.QueryAsync<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>( sql, new DynamicParameters(sqlParams) );
 	}
 
 
     public async Task AddTerm_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ClientDataAccess_UserTermsHistory.Add_Params parameters ) {
+                ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
             @"INSERT INTO "+TableName+@" (SimpleUserId, TermId, Created) 
                 VALUES (@SimpleUserId, @TermId, @Created);",
