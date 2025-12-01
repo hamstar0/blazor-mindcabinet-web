@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -9,13 +10,13 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 public partial class SimplePostEditor : ComponentBase {
     //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    private ClientDataAccess_SimplePosts SimplePostsData { get; set; } = null!;
 
     //[Inject]
-    //public LocalData LocalData { get; set; } = null!;
+    //private LocalData LocalData { get; set; } = null!;
 
 
     [Parameter]
@@ -37,8 +38,8 @@ public partial class SimplePostEditor : ComponentBase {
         this.StateHasChanged();
     }
 
-    private async Task OnTagsChangeHandler_UI_Async( List<TermObject> tags, TermObject changedTag, bool isAdded ) {
-        this.Tags = tags;
+    private async Task OnTagsChangeHandler_UI_Async( IEnumerable<TermObject> tags, TermObject changedTag, bool isAdded ) {
+        this.Tags = tags.ToList();
 
         this.StateHasChanged();
     }
@@ -49,8 +50,8 @@ public partial class SimplePostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        SimplePostObject post = await this.DbAccess.CreateSimplePost_Async(
-            new ClientDbAccess.CreateSimplePostParams( this.PostText, this.Tags )
+        SimplePostObject post = await this.SimplePostsData.Create_Async(
+            new ClientDataAccess_SimplePosts.Create_Params( this.PostText, this.Tags )
         );
 
         this.PostText = "";

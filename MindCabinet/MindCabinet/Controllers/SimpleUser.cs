@@ -22,7 +22,7 @@ public partial class SimpleUserController : ControllerBase {
 
     private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
 
-    private readonly ServerDataAccess_FavoriteTags FavoriteTagsData;
+    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTagsData;
     
     private readonly ServerSessionData ServerSessionData;
 
@@ -32,7 +32,7 @@ public partial class SimpleUserController : ControllerBase {
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_FavoriteTags favoriteTagsData,
+                ServerDataAccess_UserFavoriteTerms favoriteTagsData,
                 ServerSessionData sessData ) {
         this.DbAccess = dbAccess;
         this.SimpleUsersData = simpleUsersData;

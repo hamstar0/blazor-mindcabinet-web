@@ -46,7 +46,7 @@
 
 
 @code {
-    private async Task SetFilterTags_UI_Async( List<TermObject> tags, TermObject tag, bool isAdded ) {
+    private async Task SetFilterTags_UI_Async( IEnumerable<TermObject> tags, TermObject tag, bool isAdded ) {
 //Console.WriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
         await this.SetFilterTags_Async( tags );
     }

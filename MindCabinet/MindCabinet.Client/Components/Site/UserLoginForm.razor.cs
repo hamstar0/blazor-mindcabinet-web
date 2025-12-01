@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -13,16 +14,16 @@ public partial class UserLoginForm : ComponentBase {
 
 
     //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public HttpClient Http { get; set; } = null!;
+    private HttpClient Http { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
 
     [Inject]
-    public ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionData SessionData { get; set; } = null!;
 
 
     [Parameter]
@@ -45,7 +46,7 @@ public partial class UserLoginForm : ComponentBase {
     protected async override Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
 
-        await this.SessionData.Load_Async( this.Http );
+        await this.SessionData.Load_Async();
     }
     
 
@@ -63,8 +64,8 @@ public partial class UserLoginForm : ComponentBase {
     }
 
     private async Task<bool> Submit_UI_Async() {
-        ClientDbAccess.SimpleUserLoginReply reply = await this.DbAccess.LoginSimpleUser_Async(
-            new ClientDbAccess.LoginSimpleUserParams(
+        ClientDataAccess_SimpleUsers.Login_Return reply = await this.UsersData.Login_Async(
+            new ClientDataAccess_SimpleUsers.Login_Params(
                 name: this.UserName,
                 password: this.Password
             )

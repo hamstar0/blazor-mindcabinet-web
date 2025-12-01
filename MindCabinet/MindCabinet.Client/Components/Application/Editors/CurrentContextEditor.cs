@@ -23,8 +23,8 @@ public partial class CurrentContextEditor : ComponentBase {
 
     private List<TermObject> Tags = new List<TermObject>();
 
-    [Parameter, EditorRequired]
-    public Func<List<TermObject>, Task> OnSubmit_Async { get; set; } = null!;
+    [Parameter]
+    public Func<List<TermObject>, Task>? OnSubmit_Async { get; set; } = null;
 
 
     public bool CanSubmit() {
@@ -34,6 +34,10 @@ public partial class CurrentContextEditor : ComponentBase {
     private async Task Submit_UI_Async() {
         this.Tags.Clear();
 
-        await this.OnSubmit_Async( this.Tags );
+        add to database
+
+        if( this.OnSubmit_Async is not null ) {
+            await this.OnSubmit_Async.Invoke( this.Tags );
+        }
     }
 }

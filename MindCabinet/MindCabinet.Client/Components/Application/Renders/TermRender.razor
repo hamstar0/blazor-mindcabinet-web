@@ -1,4 +1,5 @@
 ﻿@using MindCabinet.Shared.DataObjects
+@using MindCabinet.Shared.DataObjects.Term
 
 
 
@@ -9,8 +10,8 @@
     }
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {
-        <button class="@(this.Session.FavoriteTerms.Any(t=>t.Id == this.Term.Id) ? "lit" : "unlit")"
-                @onclick=@(async e => await this.OnFavoriteButtonClick_Async(e))>
+        <button class=@(async () => await this.CurrentTermIsFavorite_Async() ? "lit" : "unlit")
+                @onclick=this.OnFavoriteButtonClick_UI_Async>
             ★
         </button>
     }
@@ -25,11 +26,10 @@
     }
 
 
-    private async Task OnFavoriteButtonClick_Async( MouseEventArgs args ) {
+    private async Task OnFavoriteButtonClick_UI_Async( MouseEventArgs args ) {
         /*⭐*/
-        await this.Session.SetFavoriteTerm_Async(
-            term: this.Term!,
-            isFavorite: !this.Session.FavoriteTerms.Any(t=>t.Id == this.Term.Id)
-        );
+        await this.ToggleFavoriteTerm_Async();
+
+        this.StateHasChanged();
     }
 }

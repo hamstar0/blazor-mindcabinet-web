@@ -7,7 +7,7 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TagSetEditor : ComponentBase {
-    public delegate Task OnTagsChange_Func( IReadOnlyList<TermObject> currentTags, TermObject changedTag, bool isAdded );
+    public delegate Task OnTagsChange_Func( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded );
 
 
     private List<TermObject> _Tags = new List<TermObject>();

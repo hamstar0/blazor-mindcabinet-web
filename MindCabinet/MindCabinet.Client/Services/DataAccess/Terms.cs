@@ -9,14 +9,8 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public class ClientDataAccess_Terms : IClientDataAccess {
-    private HttpClient Http;
-
-
-
-    internal ClientDataAccess_Terms( HttpClient http ) {
-        this.Http = http;
-    }
+public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
+    private HttpClient Http = http;
 
 
     public class GetByCriteria_Params(

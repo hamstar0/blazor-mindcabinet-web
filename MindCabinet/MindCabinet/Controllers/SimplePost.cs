@@ -21,7 +21,9 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_Terms_Sets TermSetsData;
 
-    private readonly ServerSessionData SessData;
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
+
+    private readonly ServerSessionData SessionData;
 
 
 
@@ -30,13 +32,15 @@ public class SimplePostController : ControllerBase {
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerSessionData sessData ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
         this.SimplePostsData = simplePostsData;
         this.TermsData = termsData;
         this.TermSetsData = termSetsData;
-        this.SessData = sessData;
+        this.UserTermsHistoryData = userTermsHistoryData;
+        this.SessionData = sessData;
     }
 
 
@@ -45,7 +49,7 @@ public class SimplePostController : ControllerBase {
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.SimplePostsData.GetSimplePostsByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
+        return await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.GetCountByCriteria_Route)]
@@ -53,13 +57,24 @@ public class SimplePostController : ControllerBase {
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.SimplePostsData.GetSimplePostCountByCriteria_Async( dbCon, parameters );
+        return await this.SimplePostsData.GetCountByCriteria_Async( dbCon, parameters );
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
     public async Task<SimplePostObject> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
+        if( this.SessionData.User is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.SimplePostsData.CreateSimplePost_Async( dbCon, this.TermSetsData, parameters, this.SessData, false );
+        return await this.SimplePostsData.Create_Async(
+            dbCon: dbCon,
+            simpleUserId: this.SessionData.User.Id,
+            termSetsData: this.TermSetsData,
+            termHistoryData: this.UserTermsHistoryData,
+            parameters: parameters,
+            skipHistory: false
+        );
     }
 }

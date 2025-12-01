@@ -13,19 +13,19 @@ namespace MindCabinet.Client.Pages;
 
 public partial class Home : ComponentBase {
     //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    //private IJSRuntime Js { get; set; } = null!;
 
     //[Inject]
-    //public IServiceProvider ServiceProvider { get; set; } = null!;
+    //private IServiceProvider ServiceProvider { get; set; } = null!;
 
     [Inject]
-    public HttpClient Http { get; set; } = null!;
+    private HttpClient Http { get; set; } = null!;
 
     //[Inject]
-    //public ClientDbAccess DbAccess { get; set; } = null!;
+    //private ClientDbAccess DbAccess { get; set; } = null!;
 
     //[Inject]
-    //public ClientSessionData SessionData { get; set; } = null!;
+    //private ClientSessionData SessionData { get; set; } = null!;
 
 
 

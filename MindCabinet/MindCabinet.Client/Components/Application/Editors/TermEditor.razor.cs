@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
 
 
@@ -21,7 +22,7 @@ public partial class TermEditor : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    public ClientDataAccess_Terms TermsData { get; set; } = null!;
 
 
     [Parameter]
@@ -132,8 +133,8 @@ public partial class TermEditor : ComponentBase {
         return await this.SubmitNewTerm_Async( termText! );
     }
     private async Task<bool> SubmitNewTerm_Async( string termText ) {
-        ClientDbAccess.CreateTermReturn newTermRet = await this.DbAccess.CreateTerm_Async(
-            new ClientDbAccess.CreateTermParams( termText, null, null )
+        ClientDataAccess_Terms.Create_Return newTermRet = await this.TermsData.Create_Async(
+            new ClientDataAccess_Terms.Create_Params( termText, null, null )
         );
 
         TermObject? newerTerm = await this.OnTermConfirm_Async( newTermRet.Term, newTermRet.IsAdded );
@@ -160,8 +161,8 @@ public partial class TermEditor : ComponentBase {
             return;
         }
 
-        this.SearchOptions = await this.DbAccess.GetTermsByCriteria_Async(
-            new ClientDbAccess.GetTermsByCriteriaParams( termText!, null )
+        this.SearchOptions = await this.TermsData.GetByCriteria_Async(
+            new ClientDataAccess_Terms.GetByCriteria_Params( termText!, null )
         );
     }
 

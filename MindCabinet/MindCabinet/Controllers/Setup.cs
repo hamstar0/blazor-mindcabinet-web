@@ -17,7 +17,7 @@ public class SetupController : ControllerBase {
     private readonly ServerDataAccess_Install InstallData;
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
     private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
-    private readonly ServerDataAccess_FavoriteTags FavoriteTagsData;
+    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTagsData;
     private readonly ServerDataAccess_Terms TermsData;
     private readonly ServerDataAccess_Terms_Sets TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
@@ -28,7 +28,7 @@ public class SetupController : ControllerBase {
                 ServerDataAccess_Install installData,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_FavoriteTags favoriteTagsData,
+                ServerDataAccess_UserFavoriteTerms favoriteTagsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData ) {

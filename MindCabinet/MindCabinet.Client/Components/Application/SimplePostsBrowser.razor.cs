@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -13,7 +14,7 @@ public partial class SimplePostsBrowser : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    public ClientDataAccess_SimplePosts SimplePostsData { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -66,21 +67,21 @@ public partial class SimplePostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
-        var search = new ClientDbAccess.GetSimplePostsByCriteriaParams(
+        var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<SimplePostObject> posts = await this.DbAccess.GetSimplePostsByCriteria_Async( search );
+        IEnumerable<SimplePostObject> posts = await this.SimplePostsData.GetByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        int totalPosts = await this.DbAccess.GetSimplePostCountByCriteria_Async( new ClientDbAccess.GetSimplePostsByCriteriaParams(
+        int totalPosts = await this.SimplePostsData.GetCountByCriteria_Async( new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
             tags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
@@ -127,7 +128,7 @@ public partial class SimplePostsBrowser : ComponentBase {
         await this.RefreshPosts_Async();
     }
 
-    public async Task SetFilterTags_Async( List<TermObject> changedTags ) {
+    public async Task SetFilterTags_Async( IEnumerable<TermObject> changedTags ) {
         var currentTagStrings = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
         var changedTagStrings = new HashSet<string>( changedTags.Select(t=>t.ToString()) );
 

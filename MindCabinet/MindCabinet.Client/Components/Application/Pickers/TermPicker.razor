@@ -2,6 +2,7 @@
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term;
+@using System.Threading.Tasks
 
 
 
@@ -26,19 +27,19 @@
             }
        </div>
     </div>
-    @if( this.Session.FavoriteTerms.Count > 0 ) {
+    @if( this.FavoriteTerms_Cache.Count > 0 ) {
         <div>
             <label>Favorite Terms:</label>
             <MultiTermRender
-                    Terms=@this.Session.FavoriteTerms
+                    Terms=@this.FavoriteTerms_Cache
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
-    @if( this.Session.RecentTerms.Count > 0 ) {
+    @if( this.RecentTerms_Cache.Count > 0 ) {
         <div>
             <label>Recent Terms:</label>
             <MultiTermRender
-                    Terms=@this.Session.RecentTerms
+                    Terms=@this.RecentTerms_Cache
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }

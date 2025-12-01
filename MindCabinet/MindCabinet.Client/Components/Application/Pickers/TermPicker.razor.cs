@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
 
 
@@ -10,13 +11,19 @@ namespace MindCabinet.Client.Components.Application.Pickers;
 
 public partial class TermPicker : ComponentBase {
     //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    private ClientDataAccess_Terms TermsData { get; set; } = null!;
 
     [Inject]
-    public ClientSessionData Session { get; set; } = null!;
+    private ClientDataAccess_UserFavoriteTerms UserFavoriteTermsData { get; set; } = null!;
+
+    [Inject]
+    private ClientDataAccess_UserTermsHistory UserTermsHistoryData { get; set; } = null!;
+
+    [Inject]
+    private ClientSessionData Session { get; set; } = null!;
 
 
     [Parameter]
@@ -40,6 +47,16 @@ public partial class TermPicker : ComponentBase {
     [Parameter, EditorRequired]
     public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
+
+    private List<TermObject> FavoriteTerms_Cache = new List<TermObject>();
+    private List<TermObject> RecentTerms_Cache = new List<TermObject>();
+
+
+
+    protected override async Task OnInitializedAsync() {
+        this.FavoriteTerms_Cache = await this.UserFavoriteTermsData.Get_Async().ToList();
+        this.RecentTerms_Cache = await this.UserTermsHistoryData.Get_Async().ToList();
+    }
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
         int optionCount = this.SearchOptions.Count();
@@ -74,8 +91,8 @@ public partial class TermPicker : ComponentBase {
 
 
     private async Task SearchAndStoreTerms_Async( string termText ) {
-        IEnumerable<TermObject> terms = await this.DbAccess.GetTermsByCriteria_Async(
-            new ClientDbAccess.GetTermsByCriteriaParams( termText, null )
+        IEnumerable<TermObject> terms = await this.TermsData.GetTermsByCriteria_Async(
+            new ClientDataAccess_Terms.GetByCriteria_Params( termText, null )
         );
         this.SearchOptions = terms.ToList();    // TODO
     }

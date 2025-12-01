@@ -7,20 +7,15 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_FavoriteTags : IClientDataAccess {
-    private HttpClient Http;
-
-
-    internal ClientDataAccess_FavoriteTags( HttpClient http ) {
-        this.Http = http;
-    }
+public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http ) : IClientDataAccess {
+    private HttpClient Http = http;
 
 
     public class Get_Params( long userId ) {
         public long UserId { get; } = userId;
     }
 
-    public const string Get_Path = "FavoriteTags";
+    public const string Get_Path = "UserFavoriteTags";
     public const string Get_Route = "GetIds";
 
     public async Task<IEnumerable<long>> Get_Async(
@@ -41,19 +36,17 @@ public partial class ClientDataAccess_FavoriteTags : IClientDataAccess {
     }
 
 
-    public class Add_Params(
-                long userId,
+    public class AddTerms_Params(
                 List<long> termIds ) {
-        public long UserId { get; } = userId;
         public List<long> TermIds { get; } = termIds;
     }
 
-    public const string Add_Path = "FavoriteTags";
-    public const string Add_Route = "Add";
+    public const string AddTerms_Path = "UserFavoriteTags";
+    public const string AddTerms_Route = "AddTerms";
 
-    public async Task Add_Async( Add_Params parameters ) {
+    public async Task AddTerms_Async( AddTerms_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{Add_Path}/{Add_Route}",
+            $"{AddTerms_Path}/{AddTerms_Route}",
             parameters
         );
 

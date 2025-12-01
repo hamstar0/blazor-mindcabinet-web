@@ -13,8 +13,6 @@ public partial class UserContext( long id, string Name, List<UserContextEntry> e
 
 
     public override string ToString() {
-        Func<UserContextEntry, string> entry = (e) => $"{e.Term} - {e.Priority}";
-        IEnumerable<string> entries = this.Entries.Select( entry );
-		return $"{this.Name}: {string.Join( ", ", entries )}";
+		return $"{this.Name}: {string.Join( ", ", this.Entries )}";
     }
 }

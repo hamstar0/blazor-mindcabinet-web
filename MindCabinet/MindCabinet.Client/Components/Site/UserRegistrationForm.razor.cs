@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -16,13 +17,13 @@ public partial class UserRegistrationForm : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public HttpClient Http { get; set; } = null!;
+    private HttpClient Http { get; set; } = null!;
 
     [Inject]
-    public ClientDbAccess DbAccess { get; set; } = null!;
+    private ClientDataAccess_SimpleUsers SimpleUsersData {get; set; } = null!;
 
     [Inject]
-    public ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionData SessionData { get; set; } = null!;
 
 
     [Parameter]
@@ -208,7 +209,7 @@ public partial class UserRegistrationForm : ComponentBase {
             return false;
         }
 
-        SimpleUserObject.ClientData user = await this.DbAccess.CreateSimpleUser_Async( new ClientDbAccess.CreateSimpleUserParams(
+        SimpleUserObject.ClientData user = await this.SimpleUsersData.Create_Async( new ClientDataAccess_SimpleUsers.Create_Params(
             name: this.UserName,
             email: this.Email,
             password: this.Password,

@@ -10,10 +10,12 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_FavoriteTags {
+public partial class ServerDataAccess_UserFavoriteTerms {
+    public const string TableName = "UserFavoriteTerms";
+
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
-            CREATE TABLE SimpleUserFavoriteTerms (
+            CREATE TABLE "+TableName+@" (
                 SimpleUserId BIGINT NOT NULL,
                 FavTermId BIGINT NOT NULL,
                 PRIMARY KEY (SimpleUserId, FavTermId),
@@ -32,27 +34,28 @@ public partial class ServerDataAccess_FavoriteTags {
 
     public async Task<IEnumerable<long>> GetFavoriteTermIds_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_FavoriteTags.Get_Params parameters ) {
-        string sql = @"SELECT FavTermId FROM SimpleUserFavoriteTerms WHERE SimpleUserId = @UserId;";
+                ClientDataAccess_UserFavoriteTerms.Get_Params parameters ) {
+        string sql = $"SELECT FavTermId FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
 
         return await dbCon.QueryAsync<long>( sql, new DynamicParameters(sqlParams) );
 	}
 
 
-    public async Task AddSimpleUserFavoriteTermsById_Async(
+    public async Task AddTermsByIds_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_FavoriteTags.Add_Params parameters ) {
+                long simpleUserId,
+                ClientDataAccess_UserFavoriteTerms.AddTerms_Params parameters ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
 
         for( int i=0; i<parameters.TermIds.Count; i++ ) {
-            dataTable.Rows.Add( parameters.UserId, parameters.TermIds[i] );
+            dataTable.Rows.Add( simpleUserId, parameters.TermIds[i] );
         }
 
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
-            bulkCopy.DestinationTableName = "SimpleUserFavoriteTerms"; 
+            bulkCopy.DestinationTableName = TableName; 
 
             bulkCopy.WriteToServer( dataTable );
         }

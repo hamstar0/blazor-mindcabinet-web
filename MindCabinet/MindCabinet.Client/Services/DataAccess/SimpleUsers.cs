@@ -6,13 +6,8 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Client.Services.DbAccess;
 
 
-public class ClientDataAccess_SimpleUsers : IClientDataAccess {
-    private HttpClient Http;
-
-
-    internal ClientDataAccess_SimpleUsers( HttpClient http ) {
-        this.Http = http;
-    }
+public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess {
+    private readonly HttpClient Http = http;
 
 
     //public class GetSimpleUsersByCriteriaParams(

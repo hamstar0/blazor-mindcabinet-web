@@ -13,7 +13,7 @@ public partial class ServerDataAccess_Install {
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_FavoriteTags favoriteTagsData,
+                ServerDataAccess_UserFavoriteTerms favoriteTagsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData ) {

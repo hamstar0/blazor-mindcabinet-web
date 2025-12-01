@@ -15,45 +15,43 @@ namespace MindCabinet;
 
 [ApiController]
 [Route("[controller]")]
-public partial class UserFavoriteTermsController : ControllerBase {
+public partial class UserTermsHistoryController : ControllerBase {
     private readonly DbAccess DbAccess;
 
-    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTermsData;
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
     private readonly ServerSessionData SessionData;
 
 
 
-    public UserFavoriteTermsController(
+    public UserTermsHistoryController(
                 DbAccess dbAccess,
-                ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
+                ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerSessionData sessionData ) {
         this.DbAccess = dbAccess;
-        this.FavoriteTermsData = favoriteTermsData;
+        this.UserTermsHistoryData = userTermsHistoryData;
         this.SessionData = sessionData;
     }
 
     
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.Get_Route)]
-    public async Task<IEnumerable<long>> GetFavoriteTermsIds_Async(
-                ClientDataAccess_UserFavoriteTerms.Get_Params parameters ) {
+    [HttpPost(ClientDataAccess_UserTermsHistory.GetByUserId_Route)]
+    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetByUserId_Return>> GetByUserId_Async(
+                ClientDataAccess_UserTermsHistory.GetByUserId_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.FavoriteTermsData.GetFavoriteTermIds_Async( dbCon, parameters );
+        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, parameters );
     }
 
 
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.AddTerms_Route)]
+    [HttpPost(ClientDataAccess_UserTermsHistory.Add_Route)]
     public async Task AddFavoriteTermsById_Async(
-                ClientDataAccess_UserFavoriteTerms.AddTerms_Params parameters ) {
+                ClientDataAccess_UserTermsHistory.Add_Params parameters ) {
         if( this.SessionData.User is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        await this.FavoriteTermsData.AddTermsByIds_Async( dbCon, this.SessionData.User.Id, parameters );
+        await this.UserTermsHistoryData.AddTerm_Async( dbCon, this.SessionData.User.Id, parameters );
     }
 }

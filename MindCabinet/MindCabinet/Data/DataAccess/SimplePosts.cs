@@ -64,7 +64,7 @@ public partial class ServerDataAccess_SimplePosts {
 
 
 
-    private (string sql, IDictionary<string, object> sqlParams) GetSimplePostsByCriteriaSql(
+    private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters,
                 bool countOnly ) {
         bool hasWhere = false;
@@ -125,7 +125,7 @@ public partial class ServerDataAccess_SimplePosts {
         return (sql, sqlParams);
     }
 
-    public async Task<IEnumerable<SimplePostObject>> GetSimplePostsByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
@@ -134,7 +134,7 @@ public partial class ServerDataAccess_SimplePosts {
             return Enumerable.Empty<SimplePostObject>();
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetSimplePostsByCriteriaSql( parameters, false );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, false );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<SimplePostEntryData> posts = await dbCon.QueryAsync<SimplePostEntryData>(
@@ -164,14 +164,14 @@ public partial class ServerDataAccess_SimplePosts {
         //return posts;
 	}
 
-    public async Task<int> GetSimplePostCountByCriteria_Async(
+    public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetSimplePostsByCriteriaSql( parameters, true );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, true );
 
         return await dbCon.QuerySingleAsync<int>( sql, new DynamicParameters(sqlParams) );
 
@@ -190,11 +190,12 @@ public partial class ServerDataAccess_SimplePosts {
     }
 
 
-	public async Task<SimplePostObject> CreateSimplePost_Async(
+	public async Task<SimplePostObject> Create_Async(
                 IDbConnection dbCon,
+                long simpleUserId,
                 ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_UserTermsHistory termHistoryData,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
-                ServerSessionData session,
                 bool skipHistory ) {
         DateTime now = DateTime.UtcNow;
 
@@ -217,7 +218,15 @@ public partial class ServerDataAccess_SimplePosts {
         );
 
         if( !skipHistory ) {
-            session.AddTermsToHistory( parameters.Tags );
+            await Task.WhenAll( parameters.Tags.Select( tag =>
+                termHistoryData.AddTerm_Async(
+                    dbCon,
+                    simpleUserId,
+                    new ClientDataAccess_UserTermsHistory.Add_Params(
+                        termId: tag.Id
+                    )
+                )
+            ) );
         }
 
         return newTerm;

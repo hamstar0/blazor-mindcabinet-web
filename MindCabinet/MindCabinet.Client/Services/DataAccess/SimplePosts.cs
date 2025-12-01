@@ -10,13 +10,8 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
-    private HttpClient Http;
-
-
-    internal ClientDataAccess_SimplePosts( HttpClient http ) {
-        this.Http = http;
-    }
+public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDataAccess {
+    private HttpClient Http = http;
 
 
     public class GetByCriteria_Params(

@@ -34,6 +34,7 @@ v0.5
 		-	Posts are queried as ANY of the context's tab (except 'is required' tags)
 		-	Posts are sorted by sum of their context tags' priority metrics
 -	Implement tabs of posts views
+-	Ensure user is validated before using write or sensitive read API calls
 -	Implement "current context" sidebar
 	-	Implement picker list of context loadouts
 	-	Implement name input for current context loadout

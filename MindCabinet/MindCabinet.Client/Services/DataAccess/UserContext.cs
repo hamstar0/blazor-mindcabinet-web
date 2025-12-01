@@ -8,13 +8,8 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserContext : IClientDataAccess {
-    private HttpClient Http;
-
-
-    internal ClientDataAccess_UserContext( HttpClient http ) {
-        this.Http = http;
-    }
+public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDataAccess {
+    private HttpClient Http = http;
 
 
     public class GetByUserId_Params( long userId ) {
