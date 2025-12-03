@@ -128,7 +128,8 @@ public partial class ServerDataAccess_SimplePosts {
             },
         };
 
-        string sql = @"INSERT INTO SimplePosts (Body, Created, Modified, SimpleUserId, TermSetId)
+        string sql = @"INSERT INTO "+ServerDataAccess_SimplePosts.TableName+@"
+                    (Body, Created, Modified, SimpleUserId, TermSetId)
                     VALUES (@Body, @Created, @Modified, @SimpleUserId, @TermSetId)";
         int rowsAffected = await dbConnection.ExecuteAsync( sql, fillerPosts );
     }

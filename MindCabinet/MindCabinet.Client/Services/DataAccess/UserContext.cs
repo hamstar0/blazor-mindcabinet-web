@@ -16,7 +16,11 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
         public long UserId { get; } = userId;
     }
 
-    public const string GetByUserId_Path = "Context";
+    public class GetByUserId_Return( IEnumerable<UserContext.UserContextWithTermEntries_DbData> contexts ) {
+        public IEnumerable<UserContext.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
+    }
+
+    public const string GetByUserId_Path = "UserContext";
     public const string GetByUserId_Route = "GetByUserId";
 
     public async Task<IEnumerable<UserContext>> GetByUserId_Async( GetByUserId_Params parameters ) {
@@ -36,32 +40,30 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     }
 
 
-    public class Create_Params(
+    public class CreateForCurrentUser_Params(
                 string name,
                 List<UserContextEntry> entries ) {
         public string Name { get; } = name;
-        public List<UserContextEntry> Context { get; } = entries;
+        public List<UserContextEntry> Entries { get; } = entries;
     }
 
-    public class Create_Return(
-                bool isAdded,
-                UserContext context ) {
-        public bool IsAdded { get; } = isAdded;
-        public UserContext Context { get; } = context;
+    public class CreateForCurrentUser_Return(
+                long userContextId ) {
+        public long UserContextId { get; } = userContextId;
     }
 
-    public const string Create_Path = "UserContext";
-    public const string Create_Route = "Create";
+    public const string CreateForCurrentUser_Path = "UserContext";
+    public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<Create_Return> Create_Async( Create_Params parameters ) {
+    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( CreateForCurrentUser_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{Create_Path}/{Create_Route}",
+            $"{CreateForCurrentUser_Path}/{CreateForCurrentUser_Route}",
             parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        Create_Return? ret = await msg.Content.ReadFromJsonAsync<Create_Return>();
+        CreateForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<CreateForCurrentUser_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize UserContext" );
         }

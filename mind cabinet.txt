@@ -40,6 +40,7 @@ v0.5
 	-	Implement name input for current context loadout
 	-	Implement input for 'is required' tag
  	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
+	-	@Add SimpleUserId to SimplePost
  	-	Add a "priority value" slider for tags
 		-	Implement priority value storage for tags
 			-	Implement session crap

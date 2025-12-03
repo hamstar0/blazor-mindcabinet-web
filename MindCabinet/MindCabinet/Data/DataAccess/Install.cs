@@ -13,10 +13,10 @@ public partial class ServerDataAccess_Install {
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
-                ServerDataAccess_SimplePosts simplePostsData ) {
+                ServerDataAccess_SimplePosts simplePostsData,
+                ServerDataAccess_UserFavoriteTerms favoriteTermsData ) {
         bool success;
         long defaultUserId;
 
@@ -33,6 +33,10 @@ public partial class ServerDataAccess_Install {
             return false;
         }
         success = await simplePostsData.Install_Async( dbCon, termsData, termSetsData, defaultUserId );
+        if( !success ) {
+            return false;
+        }
+        success = await favoriteTermsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }

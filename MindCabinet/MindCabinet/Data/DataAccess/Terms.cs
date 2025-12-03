@@ -31,21 +31,23 @@ public partial class ServerDataAccess_Terms {
 
 
 
+    public const string TableName = "Terms";
+
 	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_Terms_Sets termsSetsData ) {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( @"
-            CREATE TABLE Terms (
+            CREATE TABLE "+TableName+@" (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
                 CONSTRAINT FK_ContextTermId FOREIGN KEY (ContextId)
-                    REFERENCES Terms(Id),
+                    REFERENCES "+TableName+@"(Id),
                 CONSTRAINT FK_AliasTermId FOREIGN KEY (AliasId)
-                    REFERENCES Terms(Id)
+                    REFERENCES "+TableName+@"(Id)
             );"
         );
-
+        
         return await termsSetsData.Install_Async( dbCon );
     }
 
@@ -63,7 +65,7 @@ public partial class ServerDataAccess_Terms {
         }
 
         TermObjectDbData? termRaw = await dbCon.QuerySingleAsync<TermObjectDbData?>(
-            "SELECT * FROM Terms AS MyTerms WHERE Id = @Id",
+            $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
 
@@ -84,12 +86,12 @@ public partial class ServerDataAccess_Terms {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
 
-        string sql = @"SELECT * FROM Terms AS MyTerms";
+        string sql = $"SELECT * FROM {TableName} AS MyTerms";
         var sqlParams = new Dictionary<string, object>();
 
         if( parameters.Context is not null ) {
             if( parameters.Context.Id is null ) {
-                sql += @" INNER JOIN Terms AS CtxTerms
+                sql += @" INNER JOIN "+TableName+@" AS CtxTerms
                     ON (MyTerms.Context.Id = CtxTerms.Id)
                     WHERE CtxTerms.Term = @ContextTerm";
                 sqlParams["@ContextTerm"] = parameters.Context.Term!;
@@ -140,7 +142,7 @@ public partial class ServerDataAccess_Terms {
 		}
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
-            @"INSERT INTO Terms (Term, ContextId, AliasId) 
+            @"INSERT INTO "+TableName+@" (Term, ContextId, AliasId) 
                 VALUES (@Term, @ContextId, @AliasId);
             SELECT LAST_INSERT_ID();",
             //SELECT SCOPE_IDENTITY()

@@ -26,4 +26,36 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
     //    return argon2id.GetBytes( SimpleUserEntry.PasswordHashLength );
     //}
+
+
+	public static (bool, string) ValidateUserName( string name ) {
+		if( string.IsNullOrEmpty(name) ) {
+			return (false, "Empty");
+		}
+		if( name.Length < 3 ) {
+			return (false, "Too short");
+		}
+		if( name.Any(Char.IsWhiteSpace) ) {
+            return (false, "Contains whitespace(s)");
+        }
+		if( !name.All(Char.IsLetterOrDigit) ) {
+            return (false, "Contains non-letter or non-digit characters");
+        }
+		//if( Char.IsDigit(name[0]) ) {
+		//    return (false, "Starts with digit");
+		//}
+		return (true, "Is valid");
+	}
+
+	public static (bool, string) ValidateEmailAddress( string name ) {
+		if( string.IsNullOrEmpty(name) ) {
+			return (false, "Empty");
+		}
+
+        var email = new EmailAddressAttribute();
+        if( !email.IsValid(name) ) {
+            return (false, "Invalid email address");
+        }
+		return (true, "Is valid");
+	}
 }

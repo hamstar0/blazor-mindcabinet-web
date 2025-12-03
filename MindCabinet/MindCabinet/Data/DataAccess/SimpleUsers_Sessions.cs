@@ -7,9 +7,11 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers_Sessions {
+    public const string TableName = "SimpleUserSessions";
+
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( @"
-            CREATE TABLE SimpleUserSessions (
+            CREATE TABLE "+TableName+@" (
                 SessionId VARCHAR(36) NOT NULL,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
@@ -18,7 +20,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
                 Visits INT NOT NULL,
                 PRIMARY KEY (SessionId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES SimpleUsers(Id)
+                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
@@ -50,7 +52,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
         DateTime now = DateTime.UtcNow;
 
         int rows = await dbCon.ExecuteAsync(
-            @"INSERT INTO SimpleUserSessions
+            @"INSERT INTO "+TableName+@"
                 (SessionId, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
                 VALUES (@SessionId, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
@@ -76,7 +78,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
         }
 
         int rows = await dbCon.ExecuteAsync(
-            @"UPDATE SimpleUserSessions
+            @"UPDATE "+TableName+@"
                 SET Visits = Visits + 1, LatestVisit = @Now
                 WHERE SessionId = @SessionId",
             new {

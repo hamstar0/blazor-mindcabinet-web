@@ -33,13 +33,15 @@ public partial class ServerDataAccess_SimplePosts {
 
 
 
+    public const string TableName = "SimplePosts";
+
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 long defaultUserId ) {
         await dbConnection.ExecuteAsync( @"
-            CREATE TABLE SimplePosts (
+            CREATE TABLE "+TableName+@" (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Created DATETIME(2) NOT NULL,
                 Modified DATETIME(2) NOT NULL,
@@ -47,7 +49,7 @@ public partial class ServerDataAccess_SimplePosts {
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 TermSetId INT NOT NULL,
                 CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES SimpleUsers(Id)
+                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id)
             );"
             //    ON DELETE CASCADE
             //    ON UPDATE CASCADE
@@ -68,7 +70,7 @@ public partial class ServerDataAccess_SimplePosts {
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters,
                 bool countOnly ) {
         bool hasWhere = false;
-        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM SimplePosts AS MyPosts ";
+        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM "+TableName+@" AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
         if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
@@ -88,8 +90,8 @@ public partial class ServerDataAccess_SimplePosts {
             (
                 (
                     (SELECT (@Tags)) EXCEPT (
-                        SELECT MyTerms.Id FROM Terms AS MyTerms
-                        INNER JOIN TermSet AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        SELECT MyTerms.Id FROM "+ServerDataAccess_Terms.TableName+@" AS MyTerms
+                        INNER JOIN "+ServerDataAccess_Terms_Sets.TableName+@" AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
@@ -200,7 +202,7 @@ public partial class ServerDataAccess_SimplePosts {
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            @"INSERT INTO SimplePosts (Created, Modified, Body, TermSetId) 
+            @"INSERT INTO "+TableName+@" (Created, Modified, Body, TermSetId) 
                 VALUES (@Created, @Created, @Body, @TermSetId);
             SELECT LAST_INSERT_ID();",
             new {
