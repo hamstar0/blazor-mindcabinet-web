@@ -26,7 +26,7 @@ public partial class ServerDataAccess_UserContext {
                 Name VARCHAR(256) NOT NULL,
                 PRIMARY KEY (ContextId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES SimpleUsers(Id)
+                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id)
             );"
         );
         await dbConnection.ExecuteAsync( @"
@@ -58,8 +58,9 @@ public partial class ServerDataAccess_UserContext {
             );
 
         foreach( UserContext.UserContextWithTermEntries_DbData ctx in contexts ) {
-            string sql2 = $"SELECT MyContextEntries.TermId, MyContextEntries.Priority FROM {EntriesTableName} AS MyContextEntries"
-                +" WHERE MyContextEntries.ContextId = @ContextId;";
+            string sql2 = @"SELECT MyContextEntries.TermId, MyContextEntries.Priority
+                FROM {EntriesTableName} AS MyContextEntries
+                WHERE MyContextEntries.ContextId = @ContextId;";
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.ContextId } };
 
             ctx.Entries = await dbCon.QueryAsync<UserContext.UserContextWithTermEntries_DbData.UserContextEntryDbData>(
@@ -83,7 +84,7 @@ public partial class ServerDataAccess_UserContext {
                 Name = parameters.Name,
             }
         );
-        
+
         string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority) 
                 VALUES (@ContextId, @TermId, @Priority)";
         foreach( var entry in parameters.Entries ) {

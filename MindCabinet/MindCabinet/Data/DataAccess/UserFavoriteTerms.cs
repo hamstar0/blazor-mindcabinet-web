@@ -20,9 +20,9 @@ public partial class ServerDataAccess_UserFavoriteTerms {
                 FavTermId BIGINT NOT NULL,
                 PRIMARY KEY (SimpleUserId, FavTermId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES SimpleUsers(Id),
+                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id),
                 CONSTRAINT FK_FavTermId FOREIGN KEY (FavTermId)
-                    REFERENCES Terms(Id)
+                    REFERENCES "+ServerDataAccess_Terms.TableName+@"(Id)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE

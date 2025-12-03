@@ -20,9 +20,9 @@ public partial class ServerDataAccess_UserTermsHistory {
                 TermId BIGINT NOT NULL,
                 Created DATETIME(2) NOT NULL,
                 CONSTRAINT FK_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES SimpleUsers(Id),
+                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id),
                 CONSTRAINT FK_TermId FOREIGN KEY (TermId)
-                    REFERENCES Terms(Id),
+                    REFERENCES "+ServerDataAccess_Terms.TableName+@"(Id),
                 INDEX IDX_User (SimpleUserId),
                 INDEX IDX_UserCreated (SimpleUserId, Created)
             );"

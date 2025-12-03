@@ -181,10 +181,10 @@ public partial class ServerDataAccess_SimpleUsers {
 
         byte[] pwHash = ServerDataAccess_SimpleUsers.GetPasswordHash( parameters.Password, pwSalt );
 
-        int newUserId = await dbCon.QuerySingleAsync(
+        long newUserId = await dbCon.ExecuteScalarAsync<long>(   //QuerySingleAsync
             @"INSERT INTO "+TableName+@" (Created, Name, Email, PwHash, PwSalt, IsValidated) 
-                OUTPUT INSERTED.Id 
-                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);",
+                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
+            SELECT LAST_INSERT_ID();",  //OUTPUT INSERTED.Id 
             new {
                 Created = now,
                 Name = parameters.Name,
