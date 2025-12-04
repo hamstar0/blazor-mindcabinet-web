@@ -27,7 +27,7 @@
             }
        </div>
     </div>
-    @if( this.FavoriteTerms_Cache.Count > 0 ) {
+    @if( this.FavoriteTerms_Cache.Count() > 0 ) {
         <div>
             <label>Favorite Terms:</label>
             <MultiTermRender
@@ -35,7 +35,7 @@
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
-    @if( this.RecentTerms_Cache.Count > 0 ) {
+    @if( this.RecentTerms_Cache.Count() > 0 ) {
         <div>
             <label>Recent Terms:</label>
             <MultiTermRender

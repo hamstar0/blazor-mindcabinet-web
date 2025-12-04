@@ -11,6 +11,9 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserTermsHistory {
+    public const int HistoryMaxEntries = 100;
+
+
     public const string TableName = "UserTermsHistory";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
@@ -56,6 +59,30 @@ public partial class ServerDataAccess_UserTermsHistory {
                 SimpleUserId = simpleUserId,
                 TermId = parameters.TermId,
                 Created = DateTime.UtcNow,
+            }
+        );
+
+        // int count = await dbCon.ExecuteScalarAsync<int>(
+        //     @"SELECT COUNT(*) FROM "+TableName+@" 
+        //         WHERE SimpleUserId = @SimpleUserId;",
+        //     new {
+        //         SimpleUserId = simpleUserId,
+        //     }
+        // );
+        // if( count > ServerDataAccess_UserTermsHistory.HistoryMaxEntries ) {
+
+        await dbCon.ExecuteAsync(
+            @"DELETE FROM "+TableName+@" AS Trimmed
+                WHERE Trimmed.SimpleUserId = @SimpleUserId
+                AND Trimmed.Created NOT IN (
+                    SELECT Kept.Created FROM "+TableName+@" AS Kept
+                    WHERE Kept.SimpleUserId = @SimpleUserId
+                    ORDER BY Kept.Created ASC
+                    LIMIT @AllowedCount
+                );",
+            new {
+                SimpleUserId = simpleUserId,
+                AllowedCount = ServerDataAccess_UserTermsHistory.HistoryMaxEntries,
             }
         );
     }

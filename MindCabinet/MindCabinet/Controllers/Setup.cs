@@ -49,10 +49,10 @@ public class SetupController : ControllerBase {
             dbCon,
             this.SimpleUsersData,
             this.SessionsData,
-            this.FavoriteTermsData,
             this.TermsData,
             this.TermSetsData,
-            this.SimplePostsData
+            this.SimplePostsData,
+            this.FavoriteTermsData
         );
 
         if( isInstalled ) {

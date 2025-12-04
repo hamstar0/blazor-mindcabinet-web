@@ -33,6 +33,14 @@ public class TermController : ControllerBase {
         return await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
     }
 
+    [HttpPost(ClientDataAccess_Terms.GetByIds_Route)]
+    public async Task<IEnumerable<TermObject>> GetByIds_Async(
+                IEnumerable<long> termIds ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+
+        return await this.TermsData.GetByIds_Async( dbCon, termIds );
+    }
+
     [HttpPost(ClientDataAccess_Terms.Create_Route)]
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 ClientDataAccess_Terms.Create_Params parameters ) {

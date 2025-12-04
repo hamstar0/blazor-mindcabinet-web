@@ -48,8 +48,8 @@ public partial class TermPicker : ComponentBase {
     public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
 
-    private List<TermObject> FavoriteTerms_Cache = new List<TermObject>();
-    private List<TermObject> RecentTerms_Cache = new List<TermObject>();
+    private IEnumerable<TermObject> FavoriteTerms_Cache = new List<TermObject>();
+    private IEnumerable<TermObject> RecentTerms_Cache = new List<TermObject>();
 
 
 
@@ -59,7 +59,9 @@ public partial class TermPicker : ComponentBase {
         IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return> histTermIds
             = await this.UserTermsHistoryData.GetTermIdsForCurrentUser_Async();
 
-        this.FavoriteTerms_Cache = await this.TermsData.GetByIds_Async( favTermIds );
+        this.FavoriteTerms_Cache = await this.TermsData.GetByIds_Async(
+            favTermIds
+        );
         this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
             histTermIds
                 .OrderByDescending( x => x.Created )
@@ -100,7 +102,7 @@ public partial class TermPicker : ComponentBase {
 
 
     private async Task SearchAndStoreTerms_Async( string termText ) {
-        IEnumerable<TermObject> terms = await this.TermsData.GetTermsByCriteria_Async(
+        IEnumerable<TermObject> terms = await this.TermsData.GetByCriteria_Async(
             new ClientDataAccess_Terms.GetByCriteria_Params( termText, null )
         );
         this.SearchOptions = terms.ToList();    // TODO

@@ -44,11 +44,10 @@ v0.5
  	-	Add a "priority value" slider for tags
 		-	Implement priority value storage for tags
 			-	Implement session crap
-			-	Add API for session crap to db
+
+
 			-	Implement capacity limit for history
 			-	Declare table and protocols for contexts
-
-
 			-	Declare table and protocols for history
 			-	Declare table and protocols for favorites
 		-	Add slider to each context editor tags

@@ -13,13 +13,33 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
     private HttpClient Http = http;
 
 
+
+    public const string GetByIds_Path = "Term";
+    public const string GetByIds_Route = "GetByIds";
+
+    public async Task<IEnumerable<TermObject>> GetByIds_Async( IEnumerable<long> termIds ) {
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            $"{GetByIds_Path}/{GetByIds_Route}",
+            termIds
+        );
+        
+        msg.EnsureSuccessStatusCode();
+
+        IEnumerable<TermObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<TermObject>>();
+        if( ret is null ) {
+            throw new InvalidDataException( "Could not deserialize IEnumerable<TermEntry>" );
+        }
+
+        return ret;
+    }
+
+
     public class GetByCriteria_Params(
                 string termPattern,
                 TermObject.Prototype? context ) {
         public string TermPattern { get; } = termPattern;
         public TermObject.Prototype? Context { get; } = context;
     }
-
     
     public const string GetByCriteria_Path = "Term";
     public const string GetByCriteria_Route = "GetByCriteria";

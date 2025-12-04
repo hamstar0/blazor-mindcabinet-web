@@ -21,8 +21,12 @@ public partial class ServerDataAccess_Terms {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,
-                context: this.ContextId is not null ? await termData.GetTerm_Async(dbCon, this.ContextId.Value) : null,
-                alias: this.AliasId is not null ? await termData.GetTerm_Async(dbCon, this.AliasId.Value) : null
+                context: this.ContextId is not null
+                    ? await termData.GetById_Async(dbCon, this.ContextId.Value)
+                    : null,
+                alias: this.AliasId is not null
+                    ? await termData.GetById_Async(dbCon, this.AliasId.Value)
+                    : null
             );
         }
     }
@@ -59,7 +63,7 @@ public partial class ServerDataAccess_Terms {
 
 
 
-    public async Task<TermObject?> GetTerm_Async( IDbConnection dbCon, long id ) {
+    public async Task<TermObject?> GetById_Async( IDbConnection dbCon, long id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
@@ -78,6 +82,30 @@ public partial class ServerDataAccess_Terms {
         this.TermsById_Cache.Add( id, term );
 
         return term;
+    }
+
+    public async Task<IEnumerable<TermObject>> GetByIds_Async(
+                IDbConnection dbCon,
+                IEnumerable<long> ids ) {
+        if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
+            return ids.Select( id => this.TermsById_Cache[id] );
+        }
+        // todo: optimize query to fetch only remaining uncached terms
+
+        string sql = @"SELECT * FROM "+TableName+@" AS MyTerms
+            WHERE MyTerms.Id IN @Ids";
+        var sqlParams = new Dictionary<string, object> { { "@Ids", ids } };
+
+        IEnumerable<TermObjectDbData> terms = await dbCon.QueryAsync<TermObjectDbData>(
+            sql, new DynamicParameters(sqlParams) );
+
+        var termList = new List<TermObject>( terms.Count() );
+
+        foreach( TermObjectDbData term in terms ) {
+            termList.Add( await term.Create_Async(dbCon, this) );
+        }
+
+        return termList;
     }
 
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
