@@ -44,30 +44,30 @@ public partial class ServerDataAccess_UserContext {
     }
     
 
-    public async Task<ClientDataAccess_UserContext.GetByUserId_Return> GetByUserId_Async(
+    public async Task<ClientDataAccess_UserContext.Get_Return> GetByUserId_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_UserContext.GetByUserId_Params parameters ) {
+                long simpleUserId ) {
         string sql1 = $"SELECT * FROM {TableName} AS MyContext"
             +" WHERE MyContext.SimpleUserId = @UserId;";
-        var sqlParams1 = new Dictionary<string, object> { { "@UserId", parameters.UserId } };
+        var sqlParams1 = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
-        IEnumerable<UserContext.UserContextWithTermEntries_DbData> contexts
-            = await dbCon.QueryAsync<UserContext.UserContextWithTermEntries_DbData>(
+        IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts
+            = await dbCon.QueryAsync<UserContextObject.UserContextWithTermEntries_DbData>(
                 sql1,
                 new DynamicParameters(sqlParams1)
             );
 
-        foreach( UserContext.UserContextWithTermEntries_DbData ctx in contexts ) {
+        foreach( UserContextObject.UserContextWithTermEntries_DbData ctx in contexts ) {
             string sql2 = @"SELECT MyContextEntries.TermId, MyContextEntries.Priority
                 FROM {EntriesTableName} AS MyContextEntries
                 WHERE MyContextEntries.ContextId = @ContextId;";
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.ContextId } };
 
-            ctx.Entries = await dbCon.QueryAsync<UserContext.UserContextWithTermEntries_DbData.UserContextEntryDbData>(
+            ctx.Entries = await dbCon.QueryAsync<UserContextObject.UserContextWithTermEntries_DbData.UserContextEntryDbData>(
                 sql2, new DynamicParameters(sqlParams2) );
         }
 
-        return new ClientDataAccess_UserContext.GetByUserId_Return( contexts );
+        return new ClientDataAccess_UserContext.Get_Return( contexts );
     }
 
 

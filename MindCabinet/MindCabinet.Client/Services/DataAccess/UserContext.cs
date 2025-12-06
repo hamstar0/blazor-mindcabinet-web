@@ -12,26 +12,21 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
-    public class GetByUserId_Params( long userId ) {
-        public long UserId { get; } = userId;
+    public class Get_Return( IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts ) {
+        public IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
     }
 
-    public class GetByUserId_Return( IEnumerable<UserContext.UserContextWithTermEntries_DbData> contexts ) {
-        public IEnumerable<UserContext.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
-    }
+    public const string GetForCurrentUser_Path = "UserContext";
+    public const string GetForCurrentUser_Route = "GetForCurrentUser";
 
-    public const string GetByUserId_Path = "UserContext";
-    public const string GetByUserId_Route = "GetByUserId";
-
-    public async Task<IEnumerable<UserContext>> GetByUserId_Async( GetByUserId_Params parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetByUserId_Path}/{GetByUserId_Route}",
-            parameters
+    public async Task<IEnumerable<UserContextObject>> GetForCurrentUser_Async() {
+        HttpResponseMessage msg = await this.Http.GetAsync(
+            $"{GetForCurrentUser_Path}/{GetForCurrentUser_Route}"
         );
         
         msg.EnsureSuccessStatusCode();
         
-        IEnumerable<UserContext>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContext>>();
+        IEnumerable<UserContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContextObject>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<UserContext>" );
         }
@@ -40,11 +35,39 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     }
 
 
+    // public class GetByUserId_Params( long userId ) {
+    //     public long UserId { get; } = userId;
+    // }
+
+    // public class GetByUserId_Return( IEnumerable<UserContext.UserContextWithTermEntries_DbData> contexts ) {
+    //     public IEnumerable<UserContext.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
+    // }
+
+    // public const string GetByUserId_Path = "UserContext";
+    // public const string GetByUserId_Route = "GetByUserId";
+
+    // public async Task<IEnumerable<UserContext>> GetByUserId_Async( GetByUserId_Params parameters ) {
+    //     HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+    //         $"{GetByUserId_Path}/{GetByUserId_Route}",
+    //         parameters
+    //     );
+        
+    //     msg.EnsureSuccessStatusCode();
+        
+    //     IEnumerable<UserContext>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContext>>();
+    //     if( ret is null ) {
+    //         throw new InvalidDataException( "Could not deserialize IEnumerable<UserContext>" );
+    //     }
+
+    //     return ret;
+    // }
+
+
     public class CreateForCurrentUser_Params(
                 string name,
-                List<UserContextEntry> entries ) {
+                List<UserContextEntryObject> entries ) {
         public string Name { get; } = name;
-        public List<UserContextEntry> Entries { get; } = entries;
+        public List<UserContextEntryObject> Entries { get; } = entries;
     }
 
     public class CreateForCurrentUser_Return(

@@ -4,7 +4,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public partial class UserContext {
+public partial class UserContextObject {
     public class UserContextWithTermEntries_DbData {
         public class UserContextEntryDbData {
             public long TermId = default;

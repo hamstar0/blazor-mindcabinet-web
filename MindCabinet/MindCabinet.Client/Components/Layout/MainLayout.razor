@@ -10,7 +10,9 @@
 
 <div class="page">
     <div class="sidebar">
-        <CurrentContextEditor />
+        <CurrentContextEditor
+            Contexts=@this.SessionData.GetUserContexts()
+            CurrentContext=@this.SessionData.GetCurrentUserContext() />
     </div>
     
     <main>

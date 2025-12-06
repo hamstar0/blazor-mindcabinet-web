@@ -5,19 +5,23 @@
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term
+@using MindCabinet.Shared.DataObjects.UserContext
 
 
 
 <div component-name="CurrentContextEditor" class=@this.AddedClasses>
-	<h4>Enter tags to descibe your current circumstances:</h4>
+	<h4>Enter tags to describe your current circumstances:</h4>
 	<TagSetEditor @ref=this.TagSetEditorRef
 				Label="Enter tags (at least 1 required)"
 				AllowFavoritingTerms=@false
-				OnTagsChange_Async=@(async (tags, changed, isAdded) => this.Tags = tags.ToList())>
+				OnTagsChange_Async=@this.OnTagsChanged_UI_Async>
 		<TagPostfix Context="tag">
 			<SliderNumberInput
 					InitialValue=@this.GetTagPriorityValue(tag)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_Async(tag, val) ) />
+			<input type="checkbox"
+					checked=@this.IsChecked
+					@onchange=@( async (e) => await this.OnIsRequiredChange_Async(tag, (bool)e.Value!) ) />
 		</TagPostfix>
 	</TagSetEditor>
 	<button disabled=@(!this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
@@ -28,13 +32,47 @@
 @code {
 	private TagSetEditor TagSetEditorRef = null!;
 
+	private bool IsChecked { get; set; } = false;
+
 
 
 	private double GetTagPriorityValue( TermObject tag ) {
-		get current context terms of current user
+		return this.CurrentContext?
+			.Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id )?
+			.Priority ?? 0;
+	}
+	
+	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
+		if( this.CurrentContext is null ) {
+			return;
+		}
+
+		if( isAdded ) {
+			await this.AddNewTag_Async( changedTag );
+		}
+		else {
+			await this.RemoveTag_Async( changedTag );
+		}
 	}
 	
 	private async Task OnPriorityChange_Async( TermObject tag, double newValue ) {
-		set current context term priority for current user
-	}	
+		UserContextEntryObject? entry = this.CurrentContext?
+			.Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id );
+
+		if( entry is not null ) {
+			entry.Priority = newValue;
+		}
+	}
+	
+	private async Task OnIsRequiredChange_Async( TermObject tag, bool newValue ) {
+		UserContextEntryObject? entry = this.CurrentContext?
+			.Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id );
+
+		if( entry is not null ) {
+			entry.IsRequired = newValue;
+		}
+	}
 }

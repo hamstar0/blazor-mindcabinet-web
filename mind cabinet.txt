@@ -13,7 +13,7 @@ v1
 -	Implement post markdown
 -	Have any posts tagged "Push Notify" create random notifications (based on priority)
 -	Add tag picker auto-attach popup for each post
-
+-	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
 
 
 v0.7
@@ -35,17 +35,18 @@ v0.5
 		-	Posts are sorted by sum of their context tags' priority metrics
 -	Implement tabs of posts views
 -	Ensure user is validated before using write or sensitive read API calls
+-	Add SimpleUserId to SimplePost
 -	Implement "current context" sidebar
 	-	Implement picker list of context loadouts
-	-	Implement name input for current context loadout
-	-	Implement input for 'is required' tag
- 	-	Implement drag and drop to re-order tags (implicitly adjusts their priority)
-	-	@Add SimpleUserId to SimplePost
+	-	Implement name input for current context
+
+	
+	-	Implement tag input for 'is required'
  	-	Add a "priority value" slider for tags
 		-	Implement priority value storage for tags
 			-	Implement session crap
-
-
+				-	Load 'current context' for ui from client session data
+				-	Load all contexts after user session is loaded (calls server for contexts)
 			-	Implement capacity limit for history
 			-	Declare table and protocols for contexts
 			-	Declare table and protocols for history

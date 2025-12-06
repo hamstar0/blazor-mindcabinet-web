@@ -28,12 +28,11 @@ public class UserContextController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserContext.GetByUserId_Route)]
-    public async Task<ClientDataAccess_UserContext.GetByUserId_Return> GetByCriteria_Async(
-                ClientDataAccess_UserContext.GetByUserId_Params parameters ) {
+    [HttpPost(ClientDataAccess_UserContext.GetForCurrentUser_Route)]
+    public async Task<ClientDataAccess_UserContext.Get_Return> GetByCriteria_Async() {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        return await this.UserContextsData.GetByUserId_Async( dbCon, parameters );
+        return await this.UserContextsData.GetByUserId_Async( dbCon, this.SessionData.User!.Id );
     }
 
     [HttpPost(ClientDataAccess_UserContext.CreateForCurrentUser_Route)]

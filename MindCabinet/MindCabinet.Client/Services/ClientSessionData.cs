@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Net.Http.Json;
@@ -6,7 +7,7 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData( HttpClient http ) {
+public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserContext userContextData ) {
     public class RawServerData(
                 string sessionId,
                 SimpleUserObject.ClientData? userData ) {
@@ -17,6 +18,8 @@ public partial class ClientSessionData( HttpClient http ) {
 
 
     private HttpClient Http = http;
+
+    private ClientDataAccess_UserContext UserContextData = userContextData;
     
 
     public bool IsLoaded { get; private set; } = false;
@@ -47,6 +50,8 @@ public partial class ClientSessionData( HttpClient http ) {
         }
 
         this.ServerData = data;
+
+        await this.LoadContexts_Async();
 
         this.IsLoaded = true;
     }
