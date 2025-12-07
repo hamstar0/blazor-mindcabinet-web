@@ -9,7 +9,7 @@ using MindCabinet.Shared.DataObjects.UserContext;
 namespace MindCabinet.Client.Components.Application.Editors;
 
 
-public partial class CurrentContextEditor : ComponentBase {
+public partial class UserContextEditor : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
