@@ -16,7 +16,9 @@ public partial class ClientSessionData {
 
 
     private async Task LoadContexts_Async() {
-        this.CurrentContexts_Cache = await this.UserContextData.GetForCurrentUser_Async();
+        this.CurrentContexts_Cache = await this.UserContextData.GetForCurrentUserByCriteria_Async(
+            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params( null )
+        );
     }
 
 

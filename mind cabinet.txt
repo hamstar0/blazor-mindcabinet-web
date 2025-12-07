@@ -1,6 +1,8 @@
 @Brainstorm features
 -	Change input to a 2d map if tag 'Map (Post Type)' is given
 -	Push notification prompts for additional possible information for important tags
+-	Implement post markdown
+-	Add icons and descriptions for tags (optional)
 
 
 
@@ -8,39 +10,37 @@ v2
 -	@Brainstorm value data for posts (contextualized by tags)
 v1
 -	Deploy
+-	Implement admin features
 -	Implement invalid session ip handling
 -	Implement email validation on registration
--	Implement post markdown
--	Have any posts tagged "Push Notify" create random notifications (based on priority)
--	Add tag picker auto-attach popup for each post
--	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
-
-
-v0.7
--	Add icons and descriptions for tags (optional)
--	Add bulk tag editor for posts in view
--	Add tag picker and remover for posts in post view (appear on focus)
-v0.6
--	Save tab state with user session data
--	Implement tabs: Post view + "current context" view
--	Implement post grid view
--	Implement post per page adjuster
--	Implement clickable tags for posts (adds tags to current context)
-v0.5
--	Save "current context" state with user session data
--	Add a button to shuffle main view of posts
--	On picking a context, deploy a priority tab for viewing posts of that context
-	-	@Plan
-		-	Posts are queried as ANY of the context's tab (except 'is required' tags)
-		-	Posts are sorted by sum of their context tags' priority metrics
--	Implement tabs of posts views
 -	Ensure user is validated before using write or sensitive read API calls
+v0.9
+-	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
+-	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
+-	(Decide) Add a button to shuffle main view of posts
+-	Add bulk tag editor for posts in view
+v0.8
+-	Implement post grid view
+-	Styling!
+v0.7
+-	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
+-	Implement tag removals for posts
+-	Implement posts per page adjuster
+-	Save tab state with user session data
+-	Implement tabs of posts views
+v0.6
+-	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
--	Implement "current context" sidebar
-	-	Implement picker list of context loadouts
+-	Implement "current context" editor + picker (sidebar)
+	-	On picking a context, deploy a priority tab for viewing posts of that context
+		-	@Plan
+			-	Posts are queried as ANY of the context's tab (except 'is required' tags)
+			-	Posts are sorted by sum of their context tags' priority metrics
 	-	Implement name input for current context
+	-	Implement picker list of contexts
 
-	
+
+	-	Set tag set editor to initialize and apply changes with its tags to the current context
 	-	Implement tag input for 'is required'
  	-	Add a "priority value" slider for tags
 		-	Implement priority value storage for tags
@@ -55,6 +55,7 @@ v0.5
 		-	Create component for hybrid slider + numeric input for number values
  	-	Define input for tags
  	-	Define sidebar
+v0.5
 -	Rename Post to SimplePost
  	-	Rename db table
  	-	Rename routes

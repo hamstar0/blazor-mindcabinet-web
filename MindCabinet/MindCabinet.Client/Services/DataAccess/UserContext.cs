@@ -12,23 +12,28 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
+    public class GetForCurrentUserByCriteria_Params( string? nameContains ) {
+        public string? NameContains { get; set; } = nameContains;
+    }
+
     public class Get_Return( IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts ) {
         public IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
     }
 
-    public const string GetForCurrentUser_Path = "UserContext";
-    public const string GetForCurrentUser_Route = "GetForCurrentUser";
+    public const string GetForCurrentUserByCriteria_Path = "UserContext";
+    public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
-    public async Task<IEnumerable<UserContextObject>> GetForCurrentUser_Async() {
-        HttpResponseMessage msg = await this.Http.GetAsync(
-            $"{GetForCurrentUser_Path}/{GetForCurrentUser_Route}"
+    public async Task<IEnumerable<UserContextObject>> GetForCurrentUserByCriteria_Async( GetForCurrentUserByCriteria_Params parameters ) {
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            $"{GetForCurrentUserByCriteria_Path}/{GetForCurrentUserByCriteria_Route}",
+            parameters
         );
         
         msg.EnsureSuccessStatusCode();
         
         IEnumerable<UserContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContextObject>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<UserContext>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<UserContextObject>" );
         }
 
         return ret;

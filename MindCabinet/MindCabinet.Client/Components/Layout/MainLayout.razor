@@ -1,5 +1,6 @@
 ﻿@using MindCabinet.Client.Components.Site;
 @using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Pickers;
 
 
 @inherits LayoutComponentBase;
@@ -10,8 +11,10 @@
 
 <div class="page">
     <div class="sidebar">
-        <CurrentContextEditor
+        <UserContextPicker
             Contexts=@this.SessionData.GetUserContexts()
+            CurrentContext=@this.SessionData.GetCurrentUserContext() />
+        <CurrentContextEditor
             CurrentContext=@this.SessionData.GetCurrentUserContext() />
     </div>
     

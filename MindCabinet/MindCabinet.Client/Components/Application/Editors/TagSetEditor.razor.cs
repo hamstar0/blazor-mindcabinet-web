@@ -10,6 +10,11 @@ public partial class TagSetEditor : ComponentBase {
     public delegate Task OnTagsChange_Func( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded );
 
 
+
+    
+    [Parameter]
+    public List<TermObject> InitialTags { get; set; } = new List<TermObject>();
+
     private List<TermObject> _Tags = new List<TermObject>();
 
     public IReadOnlyList<TermObject> Tags => this._Tags.AsReadOnly();
@@ -29,6 +34,12 @@ public partial class TagSetEditor : ComponentBase {
     public OnTagsChange_Func OnTagsChange_Async { get; set; } = null!;
 
 
+
+	protected override void OnParametersSet() {
+		base.OnParametersSet();
+
+        this._Tags = new List<TermObject>( this.InitialTags );
+    }
 
     public async Task AddTag_Async( TermObject tag ) {
         if( this.Tags.Any(t => t.Equals(tag)) ) {

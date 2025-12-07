@@ -23,14 +23,13 @@ public partial class CurrentContextEditor : ComponentBase {
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
-	[Parameter, EditorRequired]
-	public List<UserContextObject> Contexts { get; set; } = null!;
-
 	[Parameter]
 	public UserContextObject? CurrentContext { get; set; } = null;
+    
+	private UserContextObject.Prototype CurrentContextPrototype = new UserContextObject.Prototype();
 
     [Parameter]
-    public Func<List<TermObject>, Task>? OnSubmit_Async { get; set; } = null;
+    public Func<UserContextObject, Task>? OnCreate_Async { get; set; } = null;
 
 
 	
@@ -55,15 +54,15 @@ public partial class CurrentContextEditor : ComponentBase {
         }
 	}
 
-
-    public bool CanSubmit() {
+    
+    public bool CanCreateNewContext() {
     }
     
-    private async Task Submit_UI_Async() {
+    private async Task Create_Async() {
         add to database
 
-        if( this.OnSubmit_Async is not null ) {
-            await this.OnSubmit_Async.Invoke( this.Tags );
+        if( this.OnCreate_Async is not null ) {
+            await this.OnCreate_Async.Invoke( this.CurrentContext! );
         }
     }
 }

@@ -15,7 +15,7 @@
     }
     @foreach( TermObject tag in this.Tags ) {
         <TermRender AddedClasses="ib" Term=@tag HasFavoriteButton=@this.AllowFavoritingTerms>
-            @this.TagPostfix?.Invoke( tag )
+            @this.PerTagAffix?.Invoke( tag )
             <a class="" @onclick=@( async () => await this.RemoveTag_UI_Async(tag) )>X</a>
         </TermRender>
     }
@@ -28,7 +28,7 @@
 
 @code {
     [Parameter]
-    public RenderFragment<TermObject>? TagPostfix  { get; set; }
+    public RenderFragment<TermObject>? PerTagAffix  { get; set; }
 
 
     private async Task<TermObject?> AddTag_UI_Async( TermObject tag, bool isNew ) {

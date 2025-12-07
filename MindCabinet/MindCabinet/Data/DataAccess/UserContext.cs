@@ -44,12 +44,18 @@ public partial class ServerDataAccess_UserContext {
     }
     
 
-    public async Task<ClientDataAccess_UserContext.Get_Return> GetByUserId_Async(
+    public async Task<ClientDataAccess_UserContext.Get_Return> GetByCriteria_Async(
                 IDbConnection dbCon,
-                long simpleUserId ) {
+                long simpleUserId,
+                ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters ) {
         string sql1 = $"SELECT * FROM {TableName} AS MyContext"
             +" WHERE MyContext.SimpleUserId = @UserId;";
         var sqlParams1 = new Dictionary<string, object> { { "@UserId", simpleUserId } };
+
+        if( parameters.NameContains is not null ) {
+            sql1 += " AND MyContext.Name LIKE @NamePattern;";   // TODO: Validate
+            sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
+        }
 
         IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts
             = await dbCon.QueryAsync<UserContextObject.UserContextWithTermEntries_DbData>(

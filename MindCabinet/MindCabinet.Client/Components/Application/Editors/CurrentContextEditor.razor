@@ -13,18 +13,19 @@
 	<h4>Enter tags to describe your current circumstances:</h4>
 	<TagSetEditor @ref=this.TagSetEditorRef
 				Label="Enter tags (at least 1 required)"
+				InitialTags=@( this.CurrentContext?.Entries.Select(e => e.Term).ToList() ?? new List<TermObject>() )
 				AllowFavoritingTerms=@false
 				OnTagsChange_Async=@this.OnTagsChanged_UI_Async>
-		<TagPostfix Context="tag">
+		<PerTagAffix Context="tag">
 			<SliderNumberInput
 					InitialValue=@this.GetTagPriorityValue(tag)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_Async(tag, val) ) />
 			<input type="checkbox"
 					checked=@this.IsChecked
 					@onchange=@( async (e) => await this.OnIsRequiredChange_Async(tag, (bool)e.Value!) ) />
-		</TagPostfix>
+		</PerTagAffix>
 	</TagSetEditor>
-	<button disabled=@(!this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+	<button disabled=@(!this.CanCreateNewContext()) @onclick=@this.Create_UI_Async>Create</button>
 </div>
 
 
@@ -75,4 +76,8 @@
 			entry.IsRequired = newValue;
 		}
 	}
+    
+    private async Task Create_UI_Async() {
+		await this.Create_Async();
+    }
 }

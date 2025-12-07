@@ -36,11 +36,17 @@ public partial class TermRender : ComponentBase {
     
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
-        report if current term is a favorite via data access service 
+        // TODO: Add caching
+        IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
+        return termIds.Contains( this.Term.Id );
     }
 
 
     private async Task ToggleFavoriteTerm_Async() {
-        toggle current term as favorite via data access service
+        // Todo: Add caching
+        toggle, not add
+        await this.UserFavoriteTermsData.AddTermsForCurrentUser_Async(
+            new ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params( [this.Term.Id] )
+        );
     }
 }
