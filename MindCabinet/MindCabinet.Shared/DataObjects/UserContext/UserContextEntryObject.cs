@@ -4,7 +4,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public class UserContextEntryObject( TermObject term, double priority, bool isRequired ) {
+public partial class UserContextEntryObject( TermObject term, double priority, bool isRequired ) {
     public TermObject Term { get; set; } = term;
     public double Priority { get; set; } = priority;
     public bool IsRequired { get; set; } = isRequired;

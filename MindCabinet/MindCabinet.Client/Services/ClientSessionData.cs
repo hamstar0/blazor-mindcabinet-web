@@ -51,8 +51,6 @@ public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserCo
 
         this.ServerData = data;
 
-        await this.LoadContexts_Async();
-
         this.IsLoaded = true;
     }
 

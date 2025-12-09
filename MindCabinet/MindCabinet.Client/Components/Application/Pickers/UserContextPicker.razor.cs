@@ -78,7 +78,9 @@ public partial class UserContextPicker : ComponentBase {
 
     private async Task SearchAndStoreTerms_Async( string contextText ) {
         IEnumerable<UserContextObject> contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params( contextText )
+            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
+                NameContains = contextText
+            }
         );
         this.SearchOptions = contexts.ToList();    // TODO
     }

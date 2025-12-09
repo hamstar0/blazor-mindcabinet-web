@@ -43,10 +43,16 @@ public partial class TermRender : ComponentBase {
 
 
     private async Task ToggleFavoriteTerm_Async() {
-        // Todo: Add caching
-        toggle, not add
-        await this.UserFavoriteTermsData.AddTermsForCurrentUser_Async(
-            new ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params( [this.Term.Id] )
-        );
+        IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
+
+        if( termIds.Contains(this.Term.Id) ) {
+            await this.UserFavoriteTermsData.RemoveTermsForCurrentUser_Async(
+                new ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params( this.Term.Id )
+            );
+        } else {
+            await this.UserFavoriteTermsData.AddTermsForCurrentUser_Async(
+                new ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params( [this.Term.Id] )
+            );
+        }
     }
 }

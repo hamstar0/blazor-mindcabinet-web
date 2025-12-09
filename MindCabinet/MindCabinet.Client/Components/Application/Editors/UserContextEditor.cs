@@ -19,36 +19,54 @@ public partial class UserContextEditor : ComponentBase {
     [Inject]
     private ClientDataAccess_Terms TermsData { get; set; } = null!;
 
+    [Inject]
+    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
-	[Parameter]
-	public UserContextObject? CurrentContext { get; set; } = null;
-    
+    [Parameter]
+    public UserContextObject? InitialContext { get; set; } = null;
+
 	private UserContextObject.Prototype CurrentContextPrototype = new UserContextObject.Prototype();
 
     [Parameter]
-    public Func<UserContextObject, Task>? OnCreate_Async { get; set; } = null;
+    public Func<UserContextObject.Prototype, Task>? OnCreate_Async { get; set; } = null;
 
 
-	
+
+	protected override void OnParametersSet() {
+		base.OnParametersSet();
+        
+        if( this.InitialContext is not null ) {
+            this.CurrentContextPrototype = new UserContextObject.Prototype {
+                Name = this.InitialContext?.Name,
+                Description = this.InitialContext?.Description,
+                Entries = this.InitialContext?.Entries
+                    .Select( e => new UserContextEntryObject.DatabaseEntry {
+                        TermId = e.Term.Id,
+                        Priority = e.Priority,
+                        IsRequired = e.IsRequired
+                    } ).ToList()
+                    ?? new List<UserContextEntryObject.DatabaseEntry>()
+            };
+        }
+	}
+
+
 	private async Task AddNewTag_Async( TermObject newTag ) {
-		if( this.CurrentContext is null ) {
-			throw new Exception( "CurrentContext is null" );
-		}
-
-        this.CurrentContext.Entries.Add( new UserContextEntryObject(newTag, 0d, false) );
+        this.CurrentContextPrototype.Entries.Add( new UserContextEntryObject.DatabaseEntry {
+            TermId = newTag.Id,
+            Priority = 0d,
+            IsRequired = false
+        } );
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
-		if( this.CurrentContext is null ) {
-			throw new Exception( "CurrentContext is null" );
-		}
-
-        for( int i = 0; i < this.CurrentContext.Entries.Count; i++ ) {
-            if( this.CurrentContext.Entries[i].Term.Id == newTag.Id ) {
-                this.CurrentContext.Entries.RemoveAt( i );
+        for( int i = 0; i < this.CurrentContextPrototype.Entries.Count; i++ ) {
+            if( this.CurrentContextPrototype.Entries[i].TermId == newTag.Id ) {
+                this.CurrentContextPrototype.Entries.RemoveAt( i );
                 break;
             }
         }
@@ -56,13 +74,16 @@ public partial class UserContextEditor : ComponentBase {
 
     
     public bool CanCreateNewContext() {
+        return this.CurrentContextPrototype.IsValid();
     }
     
     private async Task Create_Async() {
-        add to database
+        await this.UserContextsData.CreateForCurrentUser_Async(
+            this.CurrentContextPrototype.CreateDatabaseEntry()
+        );
 
         if( this.OnCreate_Async is not null ) {
-            await this.OnCreate_Async.Invoke( this.CurrentContext! );
+            await this.OnCreate_Async.Invoke( this.CurrentContextPrototype! );
         }
     }
 }

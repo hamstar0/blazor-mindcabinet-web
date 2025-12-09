@@ -34,6 +34,7 @@ public partial class ServerDataAccess_UserContext {
                 ContextId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Priority DOUBLE NOT NULL,
+                IsRequired BOOLEAN NOT NULL,
                 PRIMARY KEY (ContextId, TermId),
                 CONSTRAINT FK_TermId FOREIGN KEY (TermId)
                     REFERENCES "+ServerDataAccess_Terms.TableName+@"(Id)
@@ -52,24 +53,32 @@ public partial class ServerDataAccess_UserContext {
             +" WHERE MyContext.SimpleUserId = @UserId;";
         var sqlParams1 = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
+        if( parameters.Ids.Count >= 2 ) {
+            sql1 += " AND MyContext.ContextId IN @Ids;";
+            sqlParams1.Add( "@Ids", parameters.Ids );
+        } else if( parameters.Ids.Count == 1 ) {
+            sql1 += " AND MyContext.ContextId = @Id;";
+            sqlParams1.Add( "@Id", parameters.Ids[0] );
+        }
+
         if( parameters.NameContains is not null ) {
             sql1 += " AND MyContext.Name LIKE @NamePattern;";   // TODO: Validate
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
         }
 
-        IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts
-            = await dbCon.QueryAsync<UserContextObject.UserContextWithTermEntries_DbData>(
+        IEnumerable<UserContextObject.DatabaseEntry> contexts
+            = await dbCon.QueryAsync<UserContextObject.DatabaseEntry>(
                 sql1,
                 new DynamicParameters(sqlParams1)
             );
 
-        foreach( UserContextObject.UserContextWithTermEntries_DbData ctx in contexts ) {
+        foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
             string sql2 = @"SELECT MyContextEntries.TermId, MyContextEntries.Priority
                 FROM {EntriesTableName} AS MyContextEntries
                 WHERE MyContextEntries.ContextId = @ContextId;";
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.ContextId } };
 
-            ctx.Entries = await dbCon.QueryAsync<UserContextObject.UserContextWithTermEntries_DbData.UserContextEntryDbData>(
+            ctx.Entries = await dbCon.QueryAsync<UserContextEntryObject.DatabaseEntry>(
                 sql2, new DynamicParameters(sqlParams2) );
         }
 
@@ -80,7 +89,7 @@ public partial class ServerDataAccess_UserContext {
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ClientDataAccess_UserContext.CreateForCurrentUser_Params parameters ) {
+                UserContextObject.DatabaseEntry parameters ) {
         long userContextId = await dbCon.ExecuteScalarAsync<long>(
             @"INSERT INTO "+TableName+@" (SimpleUserId, Name) 
                 VALUES (@SimpleUserId, @Name);
@@ -91,15 +100,16 @@ public partial class ServerDataAccess_UserContext {
             }
         );
 
-        string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority) 
-                VALUES (@ContextId, @TermId, @Priority)";
-        foreach( var entry in parameters.Entries ) {
+        string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority, IsRequired) 
+                VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
+        foreach( UserContextEntryObject.DatabaseEntry entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
                     ContextId = userContextId,
-                    TermId = entry.Term.Id,
+                    TermId = entry.TermId,
                     Priority = entry.Priority,
+                    IsRequired = entry.IsRequired
                 }
             );
         }

@@ -12,12 +12,14 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
-    public class GetForCurrentUserByCriteria_Params( string? nameContains ) {
-        public string? NameContains { get; set; } = nameContains;
+    public class GetForCurrentUserByCriteria_Params {
+        public string? NameContains { get; set; }
+
+        public List<long> Ids { get; set; } = [];
     }
 
-    public class Get_Return( IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> contexts ) {
-        public IEnumerable<UserContextObject.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
+    public class Get_Return( IEnumerable<UserContextObject.DatabaseEntry> contexts ) {
+        public IEnumerable<UserContextObject.DatabaseEntry> Contexts { get; } = contexts;
     }
 
     public const string GetForCurrentUserByCriteria_Path = "UserContext";
@@ -67,14 +69,6 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     //     return ret;
     // }
 
-
-    public class CreateForCurrentUser_Params(
-                string name,
-                List<UserContextEntryObject> entries ) {
-        public string Name { get; } = name;
-        public List<UserContextEntryObject> Entries { get; } = entries;
-    }
-
     public class CreateForCurrentUser_Return(
                 long userContextId ) {
         public long UserContextId { get; } = userContextId;
@@ -83,10 +77,10 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     public const string CreateForCurrentUser_Path = "UserContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( CreateForCurrentUser_Params parameters ) {
+    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{CreateForCurrentUser_Path}/{CreateForCurrentUser_Route}",
-            parameters
+            parameter
         );
 
         msg.EnsureSuccessStatusCode();

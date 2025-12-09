@@ -1,0 +1,26 @@
+﻿@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
+@using MindCabinet.Shared.DataObjects.UserContext;
+
+
+
+<div component-name="MultiUserContextRender" class="basic @(this.AddedClasses ?? "")"
+        @onfocusin=@(e => this.HasFocus = true)
+        @onfocusout=@(e => this.HasFocus = false)>
+    @foreach( UserContextObject context in this.Contexts ) {
+        <UserContextRender AddedClasses="ib"
+                Context=@context
+                OnClick_Async=@(async e => await this.OnClickEach_UI_Async(context, e)) />
+    }
+</div>
+
+
+
+@code {
+    private async Task OnClickEach_UI_Async( UserContextObject context, MouseEventArgs args ) {
+        if( this.OnClick_Async is not null ) {
+            //this.HasFocus = await this.OnClickEach_Async( term, args );
+            await this.OnClick_Async( context, args );
+        }
+    }
+}

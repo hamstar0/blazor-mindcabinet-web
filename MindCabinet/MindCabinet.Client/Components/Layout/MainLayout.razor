@@ -11,11 +11,8 @@
 
 <div class="page">
     <div class="sidebar">
-        <UserContextPicker
-            Contexts=@this.SessionData.GetUserContexts()
-            CurrentContext=@this.SessionData.GetCurrentUserContext() />
-        <UserContextEditor
-            CurrentContext=@this.SessionData.GetCurrentUserContext() />
+        <UserContextPicker OnContextSelect_Async=@this.OnContextSelect_Async />
+        <UserContextEditor Context=@this.CurrentContext />
     </div>
     
     <main>
