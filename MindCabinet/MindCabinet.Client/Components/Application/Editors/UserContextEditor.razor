@@ -11,6 +11,11 @@
 
 <div component-name="UserContextEditor" class=@this.AddedClasses>
 	<h4>Enter tags to describe your current circumstances:</h4>
+	<input type="text"
+			placeholder="Enter context name"
+			@bind:event="oninput"
+            @bind:get=@this.CurrentContextPrototype.Name
+            @bind:set=@this.OnInputName_UI_Async />
 	<TagSetEditor @ref=this.TagSetEditorRef
 				Label="Enter tags (at least 1 required)"
 				InitialTags=@( this.InitialContext?.Entries
@@ -28,12 +33,36 @@
 					@onchange=@( async (e) => await this.OnIsRequiredChange_Async(tag, (bool)e.Value!) ) />
 		</PerTagAffix>
 	</TagSetEditor>
-	<button disabled=@(!this.CanCreateNewContext()) @onclick=@this.Create_UI_Async>Create</button>
+	<div>
+		<button @onclick=@this.NewContext_UI_Async>
+			New
+		</button>
+		<button disabled=@(!this.CanSaveCurrentContext_UI())
+				@onclick=@this.SaveContext_UI_Async>
+			Save
+		</button>
+	</div>
 </div>
 
+<Modal @ref=@this.ModalDialog Title="Confirm Context Creation">
+	<i>You have unsaved changes. Remove all changes?</i>
+	<div>
+		<button @onclick=@( async () => this.ModalDialog.Close())>
+			Cancel
+		</button>
+		<button @onclick=@( async () => {
+				await this.Create_Async();
+				this.ModalDialog.Close();
+			})>
+			Confirm
+		</button>
+	</div>
+</Modal>
 
 
 @code {
+    private Modal ModalDialog = null!;
+
 	private TagSetEditor TagSetEditorRef = null!;
 
 	private bool IsChecked { get; set; } = false;
@@ -46,6 +75,14 @@
 			.Priority ?? 0;
 	}
 	
+    private async Task OnInputName_UI_Async( string? nameText ) {
+        if( string.IsNullOrEmpty(nameText) ) {
+            return;
+        }
+
+		this.CurrentContextPrototype.Name = nameText;
+    }
+
 	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
 		if( isAdded ) {
 			await this.AddNewTag_Async( changedTag );
@@ -75,9 +112,27 @@
 		}
 	}
     
-    private async Task Create_UI_Async() {
-		await this.Create_Async();
+	private bool HasUnsavedChanges() {
+		return !this.CurrentContextPrototype.Matches( this.SessionsData.CurrentContext );
+	}
 
+    private async Task NewContext_UI_Async() {
+		if( this.HasUnsavedChanges() ) {
+			this.ModalDialog.Open();
+		} else {
+			this.ResetCurrentContext();
+		}
+	}
+
+	private void ResetCurrentContext() {
 		this.CurrentContextPrototype = new UserContextObject.Prototype();
+	}
+
+	private async Task SaveContext_UI_Async() {
+		if( this.SessionsData.CurrentContext is null ) {
+				
+		} else {
+
+		}
     }
 }
