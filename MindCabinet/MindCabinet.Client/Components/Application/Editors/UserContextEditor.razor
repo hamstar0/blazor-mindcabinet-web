@@ -27,17 +27,17 @@
 		<PerTagAffix Context="tag">
 			<SliderNumberInput
 					InitialValue=@this.GetTagPriorityValue(tag)
-					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_Async(tag, val) ) />
+					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(tag, val) ) />
 			<input type="checkbox"
 					checked=@this.IsChecked
-					@onchange=@( async (e) => await this.OnIsRequiredChange_Async(tag, (bool)e.Value!) ) />
+					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(tag, (bool)e.Value!) ) />
 		</PerTagAffix>
 	</TagSetEditor>
 	<div>
 		<button @onclick=@this.NewContext_UI_Async>
 			New
 		</button>
-		<button disabled=@(!this.CanSaveCurrentContext_UI())
+		<button disabled=@(!this.CanSaveCurrentContext())
 				@onclick=@this.SaveContext_UI_Async>
 			Save
 		</button>
@@ -92,7 +92,7 @@
 		}
 	}
 	
-	private async Task OnPriorityChange_Async( TermObject tag, double newValue ) {
+	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
 		UserContextEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
@@ -102,7 +102,7 @@
 		}
 	}
 	
-	private async Task OnIsRequiredChange_Async( TermObject tag, bool newValue ) {
+	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
 		UserContextEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
@@ -111,28 +111,20 @@
 			entry.IsRequired = newValue;
 		}
 	}
-    
-	private bool HasUnsavedChanges() {
-		return !this.CurrentContextPrototype.Matches( this.SessionsData.CurrentContext );
-	}
 
-    private async Task NewContext_UI_Async() {
-		if( this.HasUnsavedChanges() ) {
+	private async Task NewContext_UI_Async() {
+		if( await this.HasUnsavedChanges() ) {
 			this.ModalDialog.Open();
 		} else {
 			this.ResetCurrentContext();
 		}
 	}
 
-	private void ResetCurrentContext() {
-		this.CurrentContextPrototype = new UserContextObject.Prototype();
-	}
-
 	private async Task SaveContext_UI_Async() {
-		if( this.SessionsData.CurrentContext is null ) {
-				
+		if( this.SessionsData.GetCurrentContextById() is null ) {
+			await this.Create_Async();
 		} else {
-
+			await this.Update_Async();
 		}
     }
 }

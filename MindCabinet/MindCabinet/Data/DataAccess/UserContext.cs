@@ -73,8 +73,8 @@ public partial class ServerDataAccess_UserContext {
             );
 
         foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
-            string sql2 = @"SELECT MyContextEntries.TermId, MyContextEntries.Priority
-                FROM {EntriesTableName} AS MyContextEntries
+            string sql2 = @"SELECT MyContextEntries.TermId, MyContextEntries.Priority, MyContextEntries.IsRequired
+                FROM "+EntriesTableName+@" AS MyContextEntries
                 WHERE MyContextEntries.ContextId = @ContextId;";
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.ContextId } };
 
@@ -91,12 +91,54 @@ public partial class ServerDataAccess_UserContext {
                 long simpleUserId,
                 UserContextObject.DatabaseEntry parameters ) {
         long userContextId = await dbCon.ExecuteScalarAsync<long>(
-            @"INSERT INTO "+TableName+@" (SimpleUserId, Name) 
-                VALUES (@SimpleUserId, @Name);
+            @"INSERT INTO "+TableName+@" (SimpleUserId, Name, Description) 
+                VALUES (@SimpleUserId, @Name, @Description);
             SELECT LAST_INSERT_ID();",
             new {
                 SimpleUserId = simpleUserId,
                 Name = parameters.Name,
+                Description = parameters.Description,
+            }
+        );
+
+        string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority, IsRequired) 
+                VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
+        foreach( UserContextEntryObject.DatabaseEntry entry in parameters.Entries ) {
+            await dbCon.ExecuteAsync(
+                sqlInsertEntries,
+                new {
+                    ContextId = userContextId,
+                    TermId = entry.TermId,
+                    Priority = entry.Priority,
+                    IsRequired = entry.IsRequired
+                }
+            );
+        }
+
+        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( userContextId );
+    }
+
+
+    public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Update_Async(
+                IDbConnection dbCon,
+                long userContextId,
+                UserContextObject.DatabaseEntry parameters ) {
+        await dbCon.ExecuteAsync(
+            @"UPDATE "+TableName+@"
+                SET Name = @Name, Description = @Description
+                WHERE ContextId = @ContextId;",
+            new {
+                Name = parameters.Name,
+                Description = parameters.Description,
+                ContextId = parameters.ContextId
+            }
+        );
+        
+        await dbCon.ExecuteAsync(
+            @"DELETE FROM "+EntriesTableName+@"
+                WHERE ContextId = @ContextId;",
+            new {
+                ContextId = parameters.ContextId
             }
         );
 

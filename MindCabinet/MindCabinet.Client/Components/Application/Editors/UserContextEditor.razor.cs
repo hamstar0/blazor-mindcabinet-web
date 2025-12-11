@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
@@ -21,6 +22,9 @@ public partial class UserContextEditor : ComponentBase {
 
     [Inject]
     private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+
+    [Inject]
+    private ClientSessionData SessionsData { get; set; } = null!;
 
 
     [Parameter]
@@ -73,7 +77,34 @@ public partial class UserContextEditor : ComponentBase {
 	}
 
     
-    public bool CanCreateNewContext() {
+	private async Task<bool> HasUnsavedChanges() {
+        long? currentContextId = this.SessionsData.GetCurrentContextById();
+        
+        if( currentContextId is null ) {
+            return this.CurrentContextPrototype.Name is not null
+                || this.CurrentContextPrototype.Description is not null
+                || this.CurrentContextPrototype.Entries.Any();
+        }
+
+        IEnumerable<UserContextObject> contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
+            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
+                Ids = [ currentContextId.Value ]
+            }
+        );
+
+        UserContextObject currentContext = contexts.First( ctx => ctx.Id == currentContextId );
+
+		return !this.CurrentContextPrototype
+			.Matches( currentContext );
+	}
+
+
+	private void ResetCurrentContext() {
+		this.CurrentContextPrototype = new UserContextObject.Prototype();
+	}
+
+
+    public bool CanSaveCurrentContext() {
         return this.CurrentContextPrototype.IsValid();
     }
     
@@ -85,5 +116,11 @@ public partial class UserContextEditor : ComponentBase {
         if( this.OnCreate_Async is not null ) {
             await this.OnCreate_Async.Invoke( this.CurrentContextPrototype! );
         }
+    }
+    
+    private async Task Update_Async() {
+        await this.UserContextsData.UpdateForCurrentUser_Async(
+            this.CurrentContextPrototype.CreateDatabaseEntry()
+        );
     }
 }

@@ -4,6 +4,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserContext;
 using System.Data;
 
 
@@ -38,7 +39,7 @@ public class UserContextController : ControllerBase {
 
     [HttpPost(ClientDataAccess_UserContext.CreateForCurrentUser_Route)]
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> CreateForCurrentUser_Async(
-                ClientDataAccess_UserContext.CreateForCurrentUser_Params parameters ) {
+                UserContextObject.DatabaseEntry parameters ) {
         if( this.SessionData.User is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -46,5 +47,17 @@ public class UserContextController : ControllerBase {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
         return await this.UserContextsData.Create_Async( dbCon, this.SessionData.User.Id, parameters );
+    }
+
+    [HttpPost(ClientDataAccess_UserContext.UpdateForCurrentUser_Route)]
+    public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> UpdateForCurrentUser_Async(
+                UserContextObject.DatabaseEntry parameters ) {
+        if( this.SessionData.User is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+
+        return await this.UserContextsData.Update_Async( dbCon, this.SessionData.User.Id, parameters );
     }
 }

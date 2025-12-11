@@ -87,7 +87,27 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
 
         CreateForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<CreateForCurrentUser_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize UserContext" );
+            throw new InvalidDataException( "Could not deserialize CreateForCurrentUser_Return" );
+        }
+
+        return ret;
+    }
+    
+
+    public const string UpdateForCurrentUser_Path = "UserContext";
+    public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
+    
+    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            $"{UpdateForCurrentUser_Path}/{UpdateForCurrentUser_Route}",
+            parameter
+        );
+
+        msg.EnsureSuccessStatusCode();
+
+        CreateForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<CreateForCurrentUser_Return>();
+        if( ret is null ) {
+            throw new InvalidDataException( "Could not deserialize CreateForCurrentUser_Return (Update)" );
         }
 
         return ret;
