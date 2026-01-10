@@ -22,6 +22,9 @@ public partial class Modal : ComponentBase {
     public string FullStyles => $"{this.ModalDisplay} {this.AddedStyles}";
 
 
+    public bool IsOpen => this.ModalClass == "Show";
+
+
     //private Guid Guid = Guid.NewGuid();
     private string ModalDisplay = "display: none;";
     private string ModalClass = "";

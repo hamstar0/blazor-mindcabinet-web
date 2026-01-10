@@ -25,7 +25,8 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     public const string GetForCurrentUserByCriteria_Path = "UserContext";
     public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
-    public async Task<IEnumerable<UserContextObject>> GetForCurrentUserByCriteria_Async( GetForCurrentUserByCriteria_Params parameters ) {
+    public async Task<IEnumerable<UserContextObject>> GetForCurrentUserByCriteria_Async(
+                GetForCurrentUserByCriteria_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{GetForCurrentUserByCriteria_Path}/{GetForCurrentUserByCriteria_Route}",
             parameters

@@ -16,20 +16,11 @@
 
 <h4>Mind Cabinet</h4>
 
-@* <div style="display: grid; grid-template-columns: auto auto;"> *@
-<div class="tab-container">
-    <input type="radio" id="tab-posts" name="css-tabs" checked>
-
-    <ul class="tab-button-container">
-        <li class="tab-button"><label for="tab-posts">Posts</label></li>
-    </ul>
-
-    <div class="tab-content">
-        @if( this.Http.BaseAddress is not null ) {
-            <PostsInterface />
-        } else {
-            <span>Loading...</span>
-        }
-        @* <GoalEditor OnGoalSelect="async e => {}" /> *@
-    </div>
+<div>
+    @if( this.Http.BaseAddress is not null ) {
+        <PostsInterface />
+    } else {
+        <span>Loading...</span>
+    }
+    @* <GoalEditor OnGoalSelect="async e => {}" /> *@
 </div>

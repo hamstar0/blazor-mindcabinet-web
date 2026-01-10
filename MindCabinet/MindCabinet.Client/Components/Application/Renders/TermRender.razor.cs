@@ -47,7 +47,7 @@ public partial class TermRender : ComponentBase {
 
         if( termIds.Contains(this.Term.Id) ) {
             await this.UserFavoriteTermsData.RemoveTermsForCurrentUser_Async(
-                new ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params( this.Term.Id )
+                new ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params( [this.Term.Id] )
             );
         } else {
             await this.UserFavoriteTermsData.AddTermsForCurrentUser_Async(

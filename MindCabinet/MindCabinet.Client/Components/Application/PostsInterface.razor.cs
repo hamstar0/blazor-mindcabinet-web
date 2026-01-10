@@ -20,5 +20,9 @@ public partial class PostsInterface : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
+    [Parameter]
+    public string? Source { get; set; } = null;
+
+
     private SimplePostsBrowser BrowserComponent = null!;
 }

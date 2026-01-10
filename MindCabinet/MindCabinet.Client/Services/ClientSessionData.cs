@@ -7,8 +7,8 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserContext userContextData ) {
-    public class RawServerData(
+public partial class ClientSessionData( HttpClient http ) {
+    public class SessionDataJson(
                 string sessionId,
                 SimpleUserObject.ClientData? userData ) {
         public string SessionId = sessionId;
@@ -18,14 +18,14 @@ public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserCo
 
 
     private HttpClient Http = http;
-
-    private ClientDataAccess_UserContext UserContextData = userContextData;
     
 
     public bool IsLoaded { get; private set; } = false;
 
+    private bool IsLoading = false;
 
-    private RawServerData? ServerData;
+
+    private SessionDataJson? ServerData;
 
     public string? SessionId { get => this.ServerData?.SessionId; }
 
@@ -37,6 +37,11 @@ public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserCo
     public const string Get_Route = "Get";
 
     internal async Task Load_Async() {
+        if( this.IsLoaded || this.IsLoading ) {
+            return;
+        }
+        this.IsLoading = true;
+
         //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
         HttpResponseMessage msg = await this.Http.GetAsync(
             $"{Get_Path}/{Get_Route}"
@@ -44,13 +49,15 @@ public partial class ClientSessionData( HttpClient http, ClientDataAccess_UserCo
 
         msg.EnsureSuccessStatusCode();
 
-        ClientSessionData.RawServerData? data = await msg.Content.ReadFromJsonAsync<ClientSessionData.RawServerData>();
+        ClientSessionData.SessionDataJson? data = await msg.Content
+            .ReadFromJsonAsync<ClientSessionData.SessionDataJson>();
         if( data is null ) {
-            throw new InvalidDataException( "Could not deserialize ClientSessionData.Json" );
+            throw new InvalidDataException( "Could not deserialize ClientSessionData.RawServerData" );
         }
 
         this.ServerData = data;
 
+        this.IsLoading = false;
         this.IsLoaded = true;
     }
 

@@ -31,14 +31,17 @@ v0.7
 v0.6
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
+-	Set all components that use ClientSessionData to call its Load_Async in their OnInitializationAsync methods
 -	Implement "current context" editor + picker (sidebar)
-	-	On picking a context, update the main posts view of that context
+	-	On picking or editing a context, update the main posts view of that context
+		-	Implement custom posts sorting (via hook?)
+		-	Implement pipe from current context to posts view filter tags
+
+
 		-	@Plan
-			-	Posts are queried as ANY of the context's tab (except 'is required' tags)
+			-	Posts are queried as ANY of the context's view (except 'is required' tags)
 			-	Posts are sorted by sum of their context tags' priority metrics
 	-	Implement name input for current context
-
-
 	-	Implement picker list of contexts
 	-	Set tag set editor to initialize and apply changes with its tags to the current context
 	-	Implement tag input for 'is required'

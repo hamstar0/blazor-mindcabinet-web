@@ -51,4 +51,22 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http ) : ICl
 
         msg.EnsureSuccessStatusCode();
     }
+
+
+    public class RemoveTermsForCurrentUser_Params(
+                List<long> termIds ) {
+        public List<long> TermIds { get; } = termIds;
+    }
+
+    public const string RemoveTermsForCurrentUser_Path = "UserFavoriteTerms";
+    public const string RemoveTermsForCurrentUser_Route = "RemoveTermsForCurrentUser";
+
+    public async Task RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters ) {
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            $"{RemoveTermsForCurrentUser_Path}/{RemoveTermsForCurrentUser_Route}",
+            parameters
+        );
+
+        msg.EnsureSuccessStatusCode();
+    }
 }

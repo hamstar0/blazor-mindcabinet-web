@@ -61,4 +61,20 @@ public partial class ServerDataAccess_UserFavoriteTerms {
             bulkCopy.WriteToServer( dataTable );
         }
     }
+
+
+    public async Task RemoveTermIds_Async(
+                IDbConnection dbCon,
+                long simpleUserId,
+                ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
+        await dbCon.ExecuteAsync(
+            "DELETE FROM "+TableName
+                +" WHERE SimpleUserId = @SimpleUserId"
+                +" AND FavTermId IN @TermIds",
+            new {
+                SimpleUserId = simpleUserId,
+                TermIds = parameters.TermIds
+            }
+        );
+    }
 }

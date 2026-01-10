@@ -60,4 +60,17 @@ public partial class UserFavoriteTermsController : ControllerBase {
 
         await this.FavoriteTermsData.AddTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
     }
+
+
+    [HttpPost(ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Route)]
+    public async Task RemoveTermIdsForCurrentUser_Async(
+                ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
+        if( this.SessionData.User is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+
+        await this.FavoriteTermsData.RemoveTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
+    }
 }

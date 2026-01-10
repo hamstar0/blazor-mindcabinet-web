@@ -16,8 +16,7 @@
 			@bind:event="oninput"
             @bind:get=@this.CurrentContextPrototype.Name
             @bind:set=@this.OnInputName_UI_Async />
-	<TagSetEditor @ref=this.TagSetEditorRef
-				Label="Enter tags (at least 1 required)"
+	<TagSetEditor Label="Enter tags (at least 1 required)"
 				InitialTags=@( this.InitialContext?.Entries
 						.Select( e => e.Term )
 						.ToList()
@@ -29,12 +28,15 @@
 					InitialValue=@this.GetTagPriorityValue(tag)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(tag, val) ) />
 			<input type="checkbox"
-					checked=@this.IsChecked
+					checked=@(this.CurrentContextPrototype
+						.Entries
+						.First(t => t.TermId == tag.Id)
+						.IsRequired)
 					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(tag, (bool)e.Value!) ) />
 		</PerTagAffix>
 	</TagSetEditor>
 	<div>
-		<button @onclick=@this.NewContext_UI_Async>
+		<button @onclick=@(async () => await this.NewContext_UI_Async(false))>
 			New
 		</button>
 		<button disabled=@(!this.CanSaveCurrentContext())
@@ -44,28 +46,24 @@
 	</div>
 </div>
 
-<Modal @ref=@this.ModalDialog Title="Confirm Context Creation">
+
+<Modal @ref=@this.ResetPromptDialog Title="Confirm Context Creation">
 	<i>You have unsaved changes. Remove all changes?</i>
 	<div>
-		<button @onclick=@( async () => this.ModalDialog.Close())>
+		<button @onclick=@(this.ResetPromptDialog.Close)>
 			Cancel
 		</button>
-		<button @onclick=@( async () => {
-				await this.Create_Async();
-				this.ModalDialog.Close();
-			})>
+		<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
 			Confirm
 		</button>
 	</div>
 </Modal>
 
 
+
 @code {
-    private Modal ModalDialog = null!;
+    private Modal ResetPromptDialog = null!;
 
-	private TagSetEditor TagSetEditorRef = null!;
-
-	private bool IsChecked { get; set; } = false;
 
 
 	private double GetTagPriorityValue( TermObject tag ) {
@@ -112,11 +110,15 @@
 		}
 	}
 
-	private async Task NewContext_UI_Async() {
-		if( await this.HasUnsavedChanges() ) {
-			this.ModalDialog.Open();
+	private async Task NewContext_UI_Async( bool forceReset ) {
+		if( await this.HasUnsavedChanges() && !forceReset ) {
+			this.ResetPromptDialog.Open();
 		} else {
 			this.ResetCurrentContext();
+
+			if( this.ResetPromptDialog.IsOpen ) {
+				this.ResetPromptDialog.Close();
+			}
 		}
 	}
 
