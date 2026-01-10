@@ -48,19 +48,19 @@ public partial class UserContextEditor : ComponentBase {
                 Name = this.InitialContext?.Name,
                 Description = this.InitialContext?.Description,
                 Entries = this.InitialContext?.Entries
-                    .Select( e => new UserContextEntryObject.DatabaseEntry {
+                    .Select( e => new UserContextTermEntryObject.DatabaseEntry {
                         TermId = e.Term.Id,
                         Priority = e.Priority,
                         IsRequired = e.IsRequired
                     } ).ToList()
-                    ?? new List<UserContextEntryObject.DatabaseEntry>()
+                    ?? new List<UserContextTermEntryObject.DatabaseEntry>()
             };
         }
 	}
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
-        this.CurrentContextPrototype.Entries.Add( new UserContextEntryObject.DatabaseEntry {
+        this.CurrentContextPrototype.Entries.Add( new UserContextTermEntryObject.DatabaseEntry {
             TermId = newTag.Id,
             Priority = 0d,
             IsRequired = false

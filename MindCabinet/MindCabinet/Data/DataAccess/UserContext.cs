@@ -78,7 +78,7 @@ public partial class ServerDataAccess_UserContext {
                 WHERE MyContextEntries.ContextId = @ContextId;";
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.ContextId } };
 
-            ctx.Entries = await dbCon.QueryAsync<UserContextEntryObject.DatabaseEntry>(
+            ctx.Entries = await dbCon.QueryAsync<UserContextTermEntryObject.DatabaseEntry>(
                 sql2, new DynamicParameters(sqlParams2) );
         }
 
@@ -103,7 +103,7 @@ public partial class ServerDataAccess_UserContext {
 
         string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority, IsRequired) 
                 VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextEntryObject.DatabaseEntry entry in parameters.Entries ) {
+        foreach( UserContextTermEntryObject.DatabaseEntry entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
@@ -144,7 +144,7 @@ public partial class ServerDataAccess_UserContext {
 
         string sqlInsertEntries = @"INSERT INTO "+EntriesTableName+@" (ContextId, TermId, Priority, IsRequired) 
                 VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextEntryObject.DatabaseEntry entry in parameters.Entries ) {
+        foreach( UserContextTermEntryObject.DatabaseEntry entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {

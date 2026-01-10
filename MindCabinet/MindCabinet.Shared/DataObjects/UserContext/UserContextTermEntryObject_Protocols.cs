@@ -4,7 +4,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public partial class UserContextEntryObject {
+public partial class UserContextTermEntryObject {
     public class DatabaseEntry {
         public long TermId = default;
         public double Priority = default;

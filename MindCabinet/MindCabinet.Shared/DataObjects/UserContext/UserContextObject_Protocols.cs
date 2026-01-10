@@ -11,6 +11,6 @@ public partial class UserContextObject {
         public string Name = "";
         public string? Description;
 
-        public IEnumerable<UserContextEntryObject.DatabaseEntry> Entries = default!;
+        public IEnumerable<UserContextTermEntryObject.DatabaseEntry> Entries = default!;
     }
 }

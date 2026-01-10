@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 
 namespace MindCabinet.Client.Services.DataProcessors;
@@ -52,11 +53,20 @@ public class ContextPostsSupplier {
             //return [];
         }
 
+        TermObject[] anyTags = currCtx.Entries
+            .Where( e => !e.IsRequired )
+            .Select( e => e.Term )
+            .ToArray();
+        TermObject[] allTags = currCtx.Entries
+            .Where( e => e.IsRequired )
+            .Select( e => e.Term )
+            .ToArray();
+
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
                 bodyPattern: null,
-                anyTags: currCtx.Entries.Select( e => !e.IsRequired ),
-                allTags: currCtx.Entries.Select( e => e.IsRequired ),
+                anyTags: anyTags,
+                allTags: allTags,
                 sortAscendingByDate: true,
                 pageNumber: this.CurrentPostsPage,
                 postsPerPage: this.CurrentPostsPerPage
@@ -67,6 +77,16 @@ public class ContextPostsSupplier {
     }
 
     public double GetPriority( UserContextObject ctx, SimplePostObject post ) {
-        
+        double priority = 0.0;
+
+        HashSet<long> postTagIds = post.Tags?.Select( t => t.Id ).ToHashSet() ?? new HashSet<long>();
+
+        foreach( UserContextTermEntryObject entry in ctx.Entries ) {
+            if( postTagIds.Contains(entry.Term.Id) ) { f
+                priority += entry.Priority;
+            }
+        }
+
+        return priority;
     }
 }

@@ -9,7 +9,7 @@ public partial class UserContextObject {
         public string? Name;
         public string? Description;
 
-        public List<UserContextEntryObject.DatabaseEntry> Entries = new List<UserContextEntryObject.DatabaseEntry>();
+        public List<UserContextTermEntryObject.DatabaseEntry> Entries = new List<UserContextTermEntryObject.DatabaseEntry>();
 
 
 
@@ -25,8 +25,8 @@ public partial class UserContextObject {
             }
 
             for( int i = 0; i < this.Entries.Count; i++ ) {
-                UserContextEntryObject.DatabaseEntry entryA = this.Entries[i];
-                UserContextEntryObject entryB = other.Entries[i];
+                UserContextTermEntryObject.DatabaseEntry entryA = this.Entries[i];
+                UserContextTermEntryObject entryB = other.Entries[i];
 
                 if( entryA.TermId != entryB.Term.Id
                     || entryA.Priority != entryB.Priority

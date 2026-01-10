@@ -91,7 +91,7 @@
 	}
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
-		UserContextEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
+		UserContextTermEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
@@ -101,7 +101,7 @@
 	}
 	
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
-		UserContextEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
+		UserContextTermEntryObject.DatabaseEntry? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
