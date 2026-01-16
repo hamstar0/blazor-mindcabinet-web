@@ -10,8 +10,8 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
     public const string TableName = "SimpleUserSessions";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 SessionId VARCHAR(36) NOT NULL,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
@@ -20,7 +20,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
                 Visits INT NOT NULL,
                 PRIMARY KEY (SessionId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id)
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
@@ -52,7 +52,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
         DateTime now = DateTime.UtcNow;
 
         int rows = await dbCon.ExecuteAsync(
-            @"INSERT INTO "+TableName+@"
+            $@"INSERT INTO {TableName}
                 (SessionId, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
                 VALUES (@SessionId, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
@@ -78,7 +78,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions {
         }
 
         int rows = await dbCon.ExecuteAsync(
-            @"UPDATE "+TableName+@"
+            $@"UPDATE {TableName}
                 SET Visits = Visits + 1, LatestVisit = @Now
                 WHERE SessionId = @SessionId",
             new {

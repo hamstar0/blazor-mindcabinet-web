@@ -15,6 +15,9 @@ namespace MindCabinet.Client.Services.DataProcessors;
 
 public class ContextPostsSupplier {
     [Inject]
+    private ILogger<ContextPostsSupplier> Logger { get; set; } = null!;
+
+    [Inject]
     private ClientSessionData SessionData { get; set; } = null!;
 
 
@@ -35,15 +38,12 @@ public class ContextPostsSupplier {
     }
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetPosts_Async( long userContextId ) {
-        long? currCtxId = SessionData.GetCurrentContextById();
-        if( currCtxId is null ) {
-            return [];
-        }
-
+    public async Task<IEnumerable<SimplePostObject>> GetPosts_Async(
+                long userContextId,
+                long[] additionalTagIds ) {
         IEnumerable<UserContextObject> ctxs = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params{
-                Ids = [ currCtxId.Value ]
+                Ids = [ userContextId ]
             }
         );
         UserContextObject? currCtx = ctxs.FirstOrDefault();
@@ -53,40 +53,57 @@ public class ContextPostsSupplier {
             //return [];
         }
 
-        TermObject[] anyTags = currCtx.Entries
-            .Where( e => !e.IsRequired )
-            .Select( e => e.Term )
-            .ToArray();
-        TermObject[] allTags = currCtx.Entries
-            .Where( e => e.IsRequired )
-            .Select( e => e.Term )
-            .ToArray();
+        // long[] anyTagsIds = currCtx.Entries
+        //     .Where( e => !e.IsRequired )
+        //     .Select( e => e.Term.Id )
+        //     .ToArray();
+        // long[] allTagsIds = currCtx.Entries
+        //     .Where( e => e.IsRequired )
+        //     .Select( e => e.Term.Id )
+        //     .ToArray();
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
+                userContextId: userContextId,
                 bodyPattern: null,
-                anyTags: anyTags,
-                allTags: allTags,
+                additionalTagIds: additionalTagIds,
                 sortAscendingByDate: true,
                 pageNumber: this.CurrentPostsPage,
                 postsPerPage: this.CurrentPostsPerPage
             )
         );
+
+        var postPriorities = posts.Select( post => new KeyValuePair<long, double?>(
+            post.Id,
+            this.GetPriority( currCtx!, post )
+        ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
+
+        if( postPriorities.ContainsValue(null) ) {
+            this.Logger.LogWarning(
+                $"Some posts returned for context {userContextId} have null priority."
+            );
+        }
         
-        return posts.OrderBy( post => this.GetPriority(currCtx!, post) );
+        return posts
+            .Where( post => postPriorities[post.Id] is not null )
+            .OrderBy( post => postPriorities[post.Id] );
     }
 
-    public double GetPriority( UserContextObject ctx, SimplePostObject post ) {
-        double priority = 0.0;
-
-        HashSet<long> postTagIds = post.Tags?.Select( t => t.Id ).ToHashSet() ?? new HashSet<long>();
+    public double? GetPriority( UserContextObject ctx, SimplePostObject post ) {
+        double totalPriority = 0;
+        int matchedCount = 0;
 
         foreach( UserContextTermEntryObject entry in ctx.Entries ) {
-            if( postTagIds.Contains(entry.Term.Id) ) { f
-                priority += entry.Priority;
+            if( post.Tags.FirstOrDefault(t => t.Id == entry.Term.Id) is not null ) {
+                matchedCount++;
+                totalPriority += entry.Priority;
+            } else if( entry.IsRequired ) {
+                return null;
             }
         }
 
-        return priority;
+        return matchedCount > 0
+            ? totalPriority
+            : null;
     }
 }

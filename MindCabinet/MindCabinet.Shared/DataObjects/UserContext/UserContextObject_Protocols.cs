@@ -7,7 +7,6 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 public partial class UserContextObject {
     public class DatabaseEntry {
         public long ContextId = default;
-        public long SimpleUserId = default;
         public string Name = "";
         public string? Description;
 

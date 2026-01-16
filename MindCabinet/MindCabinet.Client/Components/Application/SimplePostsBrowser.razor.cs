@@ -69,7 +69,7 @@ public partial class SimplePostsBrowser : ComponentBase {
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
         var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
-            tags: new HashSet<TermObject>( this.FilterTags ),
+            allTags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
@@ -83,7 +83,7 @@ public partial class SimplePostsBrowser : ComponentBase {
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
         int totalPosts = await this.SimplePostsData.GetCountByCriteria_Async( new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
-            tags: new HashSet<TermObject>( this.FilterTags ),
+            allTags: new HashSet<TermObject>( this.FilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: 0,
             postsPerPage: -1

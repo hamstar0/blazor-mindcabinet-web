@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MindCabinet;
+namespace MindCabinet.Controllers;
 
 
 [ApiController]

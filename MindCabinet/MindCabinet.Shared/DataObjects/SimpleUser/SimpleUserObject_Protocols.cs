@@ -8,7 +8,7 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
-    public class SimpleUser_DbData {
+    public class User_DatabaseEntry {
         public SimpleUserObject CreateUserEntry() {
             return new SimpleUserObject(
                 id: this.Id,
@@ -32,7 +32,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         //public bool IsPrivileged = false;
     }
 
-    public class Session_DbData {
+    public class Session_DatabaseEntry {
         public string Id = "";
         public string IpAddress = "";
         public long SimpleUserId;
@@ -41,7 +41,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         public int Visits;
     }
 
-    public class SimpleUserAndSession_DbData : SimpleUser_DbData {    // no multiple inheritance
+    public class UserAndSession_DatabaseEntry : User_DatabaseEntry {    // no multiple inheritance
         public string SessionId = "";
         public string IpAddress = "";
         public long SimpleUserId;

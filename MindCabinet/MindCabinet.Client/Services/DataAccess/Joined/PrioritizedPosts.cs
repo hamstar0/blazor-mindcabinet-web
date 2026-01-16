@@ -15,15 +15,15 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
 
     public class GetByCriteria_Params(
+                long userContextId,
                 string? bodyPattern,
-                TermObject[] allTags,
-                TermObject[] anyTags,
+                long[] additionalTagIds,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
+        public long UserContextId { get; } = userContextId;
         public string? BodyPattern { get; } = bodyPattern;
-        public TermObject[] AllTags { get; } = allTags;
-        public TermObject[] AnyTags { get; } = anyTags;
+        public long[] AdditionalTagIds { get; } = additionalTagIds;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
         public int PageNumber { get; } = pageNumber;
         public int PostsPerPage { get; } = postsPerPage;
@@ -31,14 +31,16 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
         public override string ToString() {
             return "Prioritized Posts Params: "
+                +this.UserContextId+", "
                 +((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
-                +"["+string.Join(",", this.AllTags.Select(t=>t.Term))+"], "
-                +"["+string.Join(",", this.AnyTags.Select(t=>t.Term))+"], "
+                +"["+string.Join(",", this.AdditionalTagIds)+"], "
                 +this.SortAscendingByDate+", "
                 +this.PageNumber+", "
                 +this.PostsPerPage;
         }
     }
+
+    
 
     public const string GetByCriteria_Path = "PrioritizedPosts";
     public const string GetByCriteria_Route = "GetByCriteria";
@@ -57,5 +59,28 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
         }
 
         return ret;
+    }
+    
+    public const string GetCountByCriteria_Path = "PrioritizedPosts";
+    public const string GetCountByCriteria_Route = "GetCountByCriteria";
+
+    public async Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters ) {
+		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
+        
+        //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
+        HttpResponseMessage msg = await this.Http.PostAsync(
+            requestUri: $"{GetCountByCriteria_Path}/{GetCountByCriteria_Route}",
+            content: content,
+            cancellationToken: default
+        );
+
+		msg.EnsureSuccessStatusCode();
+
+        int? ret = await msg.Content.ReadFromJsonAsync<int>();
+        if( ret is null ) {
+            throw new InvalidDataException( "Could not deserialize int" );
+        }
+
+        return ret.Value;
     }
 }

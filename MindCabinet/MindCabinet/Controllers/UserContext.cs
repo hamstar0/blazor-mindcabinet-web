@@ -8,7 +8,7 @@ using MindCabinet.Shared.DataObjects.UserContext;
 using System.Data;
 
 
-namespace MindCabinet;
+namespace MindCabinet.Controllers;
 
 
 [ApiController]

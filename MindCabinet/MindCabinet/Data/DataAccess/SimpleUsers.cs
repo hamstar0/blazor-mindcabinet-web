@@ -38,14 +38,14 @@ public partial class ServerDataAccess_SimpleUsers {
 
     public async Task<(bool success, long defaultUserId)> Install_Async(
                 IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Created DATETIME(2) NOT NULL,
                 Name VARCHAR(128) NOT NULL,
                 Email VARCHAR(320) NOT NULL,
-                PwHash BINARY("+SimpleUserObject.PasswordHashLength+@") NOT NULL,
-                PwSalt BINARY("+SimpleUserObject.PasswordSaltLength+@") NOT NULL,
+                PwHash BINARY({SimpleUserObject.PasswordHashLength}) NOT NULL,
+                PwSalt BINARY({SimpleUserObject.PasswordSaltLength}) NOT NULL,
                 IsValidated BOOLEAN NOT NULL
             );"
         //    ON DELETE CASCADE
@@ -53,7 +53,7 @@ public partial class ServerDataAccess_SimpleUsers {
         );
         
         long defaultUserId = await dbConnection.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            @"INSERT INTO "+TableName+@" (Created, Name, Email, PwHash, PwSalt, IsValidated) 
+            $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 
                 VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
             SELECT LAST_INSERT_ID();",
             new {
@@ -89,8 +89,8 @@ public partial class ServerDataAccess_SimpleUsers {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserObject.SimpleUser_DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.SimpleUser_DbData?>(
-            "SELECT * FROM "+TableName+@" WHERE Id = @Id",
+        SimpleUserObject.User_DatabaseEntry? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+            $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = id }
         );
 
@@ -107,8 +107,8 @@ public partial class ServerDataAccess_SimpleUsers {
 
 
     public async Task<SimpleUserObject?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
-        SimpleUserObject.SimpleUser_DbData? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.SimpleUser_DbData?>(
-            "SELECT * FROM "+TableName+@" WHERE Name = @Name",
+        SimpleUserObject.User_DatabaseEntry? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+            $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
         );
 
@@ -127,9 +127,9 @@ public partial class ServerDataAccess_SimpleUsers {
                 IDbConnection dbCon,
                 string sessionId,
                 string ipAddress ) {
-        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.SimpleUserAndSession_DbData?>(
-            @"SELECT * FROM "+TableName+@" AS MyUsers
-                INNER JOIN "+ServerDataAccess_SimpleUsers_Sessions.TableName+@" AS MySessions
+        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry?>(
+            $@"SELECT * FROM {TableName} AS MyUsers
+                INNER JOIN {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
                     ON (MyUsers.Id = MySessions.SimpleUserId) 
                 WHERE MySessions.SessionId = @SessionId",
             new { SessionId = sessionId }
@@ -169,8 +169,8 @@ public partial class ServerDataAccess_SimpleUsers {
                 IDbConnection dbCon,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 byte[] pwSalt ) {
-        var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.SimpleUser_DbData?>(
-            "SELECT * FROM "+TableName+@" WHERE Name = @Name",
+        var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+            $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = parameters.Name }
         );
         if( userByName is not null ) {
@@ -182,7 +182,7 @@ public partial class ServerDataAccess_SimpleUsers {
         byte[] pwHash = ServerDataAccess_SimpleUsers.GetPasswordHash( parameters.Password, pwSalt );
 
         long newUserId = await dbCon.ExecuteScalarAsync<long>(   //QuerySingleAsync
-            @"INSERT INTO "+TableName+@" (Created, Name, Email, PwHash, PwSalt, IsValidated) 
+            $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 
                 VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
             SELECT LAST_INSERT_ID();",  //OUTPUT INSERTED.Id 
             new {

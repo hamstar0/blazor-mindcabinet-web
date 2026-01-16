@@ -16,14 +16,17 @@ public partial class ServerDataAccess_SimplePosts {
                 long defaultUserId ) {
         ClientDataAccess_Terms.Create_Return term1 = await termsData.Create_Async(
             dbConnection,
+            termsData,
             new ClientDataAccess_Terms.Create_Params("Term1", null, null)
         );
         ClientDataAccess_Terms.Create_Return term2 = await termsData.Create_Async(
             dbConnection,
+            termsData,
             new ClientDataAccess_Terms.Create_Params("Term2", null, null)
         );
         ClientDataAccess_Terms.Create_Return term3 = await termsData.Create_Async(
             dbConnection,
+            termsData,
             new ClientDataAccess_Terms.Create_Params("Term3", null, null)
         );
 
@@ -128,7 +131,7 @@ public partial class ServerDataAccess_SimplePosts {
             },
         };
 
-        string sql = @"INSERT INTO "+ServerDataAccess_SimplePosts.TableName+@"
+        string sql = $@"INSERT INTO {ServerDataAccess_SimplePosts.TableName}
                     (Body, Created, Modified, SimpleUserId, TermSetId)
                     VALUES (@Body, @Created, @Modified, @SimpleUserId, @TermSetId)";
         int rowsAffected = await dbConnection.ExecuteAsync( sql, fillerPosts );

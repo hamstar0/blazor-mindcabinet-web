@@ -36,6 +36,7 @@ v0.6
 	-	On picking or editing a context, update the main posts view of that context
 		-	Implement custom posts sorting (via hook?)
 		-	Implement pipe from current context to posts view filter tags
+		-	@Ensure app runs
 
 
 		-	@Plan

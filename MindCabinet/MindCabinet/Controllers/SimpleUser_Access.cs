@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MindCabinet;
+namespace MindCabinet.Controllers;
 
 
 public partial class SimpleUserController : ControllerBase {

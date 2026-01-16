@@ -17,15 +17,15 @@ public partial class ServerDataAccess_UserTermsHistory {
     public const string TableName = "UserTermsHistory";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Created DATETIME(2) NOT NULL,
                 CONSTRAINT FK_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id),
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
                 CONSTRAINT FK_TermId FOREIGN KEY (TermId)
-                    REFERENCES "+ServerDataAccess_Terms.TableName+@"(Id),
+                    REFERENCES {ServerDataAccess_Terms.TableName}(Id),
                 INDEX IDX_User (SimpleUserId),
                 INDEX IDX_UserCreated (SimpleUserId, Created)
             );"
@@ -53,7 +53,7 @@ public partial class ServerDataAccess_UserTermsHistory {
                 long simpleUserId,
                 ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
-            @"INSERT INTO "+TableName+@" (SimpleUserId, TermId, Created) 
+            $@"INSERT INTO {TableName} (SimpleUserId, TermId, Created) 
                 VALUES (@SimpleUserId, @TermId, @Created);",
             new {
                 SimpleUserId = simpleUserId,
@@ -72,10 +72,10 @@ public partial class ServerDataAccess_UserTermsHistory {
         // if( count > ServerDataAccess_UserTermsHistory.HistoryMaxEntries ) {
 
         await dbCon.ExecuteAsync(
-            @"DELETE FROM "+TableName+@" AS Trimmed
+            $@"DELETE FROM {TableName} AS Trimmed
                 WHERE Trimmed.SimpleUserId = @SimpleUserId
                 AND Trimmed.Created NOT IN (
-                    SELECT Kept.Created FROM "+TableName+@" AS Kept
+                    SELECT Kept.Created FROM {TableName} AS Kept
                     WHERE Kept.SimpleUserId = @SimpleUserId
                     ORDER BY Kept.Created ASC
                     LIMIT @AllowedCount

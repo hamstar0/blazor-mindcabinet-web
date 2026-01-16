@@ -7,7 +7,7 @@ using MindCabinet.Shared.DataObjects;
 using System.Data;
 
 
-namespace MindCabinet;
+namespace MindCabinet.Controllers;
 
 
 [ApiController]

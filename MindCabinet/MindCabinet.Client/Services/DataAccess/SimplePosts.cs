@@ -16,12 +16,12 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
     public class GetByCriteria_Params(
                 string? bodyPattern,
-                ISet<TermObject> tags,
+                ISet<TermObject> allTags,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
         public string? BodyPattern { get; } = bodyPattern;
-        public ISet<TermObject> Tags { get; } = tags;
+        public ISet<TermObject> AllTags { get; } = allTags;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
         public int PageNumber { get; } = pageNumber;
         public int PostsPerPage { get; } = postsPerPage;
@@ -29,7 +29,8 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
         public override string ToString() {
             return ((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
-                +($"({string.Join(",", this.Tags.Select(t=>t.Term))}), ")
+                // +($"({string.Join(",", this.Tags.Select(t=>t.Term))}), ")
+                +($"({string.Join(",", this.AllTags.Select(t=>t.Term))}), ")
                 +($"{this.SortAscendingByDate}, ")
                 +($"{this.PageNumber}, ")
                 +($"{this.PostsPerPage}]");

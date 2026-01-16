@@ -14,15 +14,15 @@ public partial class ServerDataAccess_UserFavoriteTerms {
     public const string TableName = "UserFavoriteTerms";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL,
                 FavTermId BIGINT NOT NULL,
                 PRIMARY KEY (SimpleUserId, FavTermId),
                 CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id),
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
                 CONSTRAINT FK_FavTermId FOREIGN KEY (FavTermId)
-                    REFERENCES "+ServerDataAccess_Terms.TableName+@"(Id)
+                    REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
@@ -68,9 +68,9 @@ public partial class ServerDataAccess_UserFavoriteTerms {
                 long simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
-            "DELETE FROM "+TableName
-                +" WHERE SimpleUserId = @SimpleUserId"
-                +" AND FavTermId IN @TermIds",
+            $@"DELETE FROM {TableName}
+                WHERE SimpleUserId = @SimpleUserId
+                AND FavTermId IN @TermIds",
             new {
                 SimpleUserId = simpleUserId,
                 TermIds = parameters.TermIds

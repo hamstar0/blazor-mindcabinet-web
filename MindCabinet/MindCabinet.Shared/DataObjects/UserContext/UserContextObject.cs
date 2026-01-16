@@ -14,7 +14,16 @@ public partial class UserContextObject( long id, string name, string? descriptio
 
 
 
+    public IEnumerable<UserContextTermEntryObject> GetRequiredEntries() {
+        return this.Entries.Where( entry => entry.IsRequired );
+    }
+
+    public IEnumerable<UserContextTermEntryObject> GetOptionalEntries() {
+        return this.Entries.Where( entry => entry.IsRequired );
+    }
+    
+
     public override string ToString() {
-		  return $"{this.Name}: {string.Join(", ", this.Entries)}";
+		return $"{this.Name}: {string.Join(", ", this.Entries)}";
     }
 }

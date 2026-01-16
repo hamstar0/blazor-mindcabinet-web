@@ -8,28 +8,22 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
+
 public partial class ServerDataAccess_SimplePosts {
-    public class SimplePostEntryData {
-        public long Id;
-        public DateTime Created;
-        public string Body = "";
-        public int TermSetId;
-
-
-        public async Task<SimplePostObject> CreateSimplePost_Async(
-                    IDbConnection dbCon,
-                    ServerDataAccess_Terms termsData,
-                    ServerDataAccess_Terms_Sets termSetsData ) {
-            return new SimplePostObject(
-                id: this.Id,
-                created: this.Created,
-                body: this.Body,
-                tags: (await termSetsData.GetTermSet_Async(dbCon, termsData, this.TermSetId)).ToList()
-            );
-        }
+    private static async Task<SimplePostObject> CreateSimplePost_Async(
+    // public static class DatabaseEntry_Extensions {
+                // this SimplePostObject.DatabaseEntry entry,
+                SimplePostObject.DatabaseEntry entry,
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms_Sets termSetsData ) {
+        return new SimplePostObject(
+            id: entry.Id,
+            created: entry.Created,
+            body: entry.Body,
+            tags: (await termSetsData.GetTermSet_Async(dbCon, termsData, entry.TermSetId)).ToList()
+        );
     }
-
-    //
 
 
 
@@ -40,8 +34,8 @@ public partial class ServerDataAccess_SimplePosts {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 long defaultUserId ) {
-        await dbConnection.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Created DATETIME(2) NOT NULL,
                 Modified DATETIME(2) NOT NULL,
@@ -49,7 +43,7 @@ public partial class ServerDataAccess_SimplePosts {
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 TermSetId INT NOT NULL,
                 CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES "+ServerDataAccess_SimpleUsers.TableName+@"(Id)
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
             //    ON DELETE CASCADE
             //    ON UPDATE CASCADE
@@ -66,11 +60,30 @@ public partial class ServerDataAccess_SimplePosts {
 
 
 
+    public async Task<SimplePostObject?> GetById_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms_Sets termSetsData,
+                long id ) {
+        SimplePostObject.DatabaseEntry? postRaw = await dbCon.QuerySingleAsync<SimplePostObject.DatabaseEntry?>(
+            $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
+            new { Id = id }
+        );
+
+        if( postRaw is null ) {
+            return null;
+        }
+
+        SimplePostObject post = await ServerDataAccess_SimplePosts.CreateSimplePost_Async( postRaw, dbCon, termsData, termSetsData );
+        return post;
+    }
+
+
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters,
                 bool countOnly ) {
         bool hasWhere = false;
-        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM "+TableName+@" AS MyPosts ";
+        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM {TableName} AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
         if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
@@ -79,24 +92,23 @@ public partial class ServerDataAccess_SimplePosts {
             //body = body.Replace( "[", "\\[" );
 
             // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\'";
+            sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\' ";
             sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
             hasWhere = true;
         }
 
-        if( parameters.Tags.Count > 0 ) {
+        if( parameters.AllTags.Count > 0 ) {
             sql += hasWhere ? "AND" : "WHERE";
-            sql += @"
-            (
+            sql += $@" (
                 (
                     (SELECT (@Tags)) EXCEPT (
-                        SELECT MyTerms.Id FROM "+ServerDataAccess_Terms.TableName+@" AS MyTerms
-                        INNER JOIN "+ServerDataAccess_Terms_Sets.TableName+@" AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
+                        INNER JOIN {ServerDataAccess_Terms_Sets.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
-            )";
-            sqlParams["@Tags"] = parameters.Tags
+            ) ";
+            sqlParams["@Tags"] = parameters.AllTags
                 .Select( t => t.Id )
                 .ToList();
             //      ) ALL (";
@@ -112,7 +124,7 @@ public partial class ServerDataAccess_SimplePosts {
         }
 
         if( !countOnly ) {
-            sql += $"\n ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
+            sql += $"\n ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")} ";
         }
 
         if( parameters.PostsPerPage > 0 ) {
@@ -127,6 +139,7 @@ public partial class ServerDataAccess_SimplePosts {
         return (sql, sqlParams);
     }
 
+
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
@@ -139,14 +152,14 @@ public partial class ServerDataAccess_SimplePosts {
         (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, false );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<SimplePostEntryData> posts = await dbCon.QueryAsync<SimplePostEntryData>(
+        IEnumerable<SimplePostObject.DatabaseEntry> postsRaw = await dbCon.QueryAsync<SimplePostObject.DatabaseEntry>(
             sql, new DynamicParameters( sqlParams )
         );
 
-        var postList = new List<SimplePostObject>( posts.Count() );
+        var postList = new List<SimplePostObject>( postsRaw.Count() );
 
-        foreach( SimplePostEntryData post in posts ) {
-            postList.Add( await post.CreateSimplePost_Async(dbCon, termsData, termSetsData) );
+        foreach( SimplePostObject.DatabaseEntry postRaw in postsRaw ) {
+            postList.Add( await ServerDataAccess_SimplePosts.CreateSimplePost_Async(postRaw, dbCon, termsData, termSetsData) );
         }
 
         return postList;
@@ -202,7 +215,7 @@ public partial class ServerDataAccess_SimplePosts {
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            @"INSERT INTO "+TableName+@" (Created, Modified, Body, TermSetId) 
+            $@"INSERT INTO {TableName} (Created, Modified, Body, TermSetId) 
                 VALUES (@Created, @Created, @Body, @TermSetId);
             SELECT LAST_INSERT_ID();",
             new {

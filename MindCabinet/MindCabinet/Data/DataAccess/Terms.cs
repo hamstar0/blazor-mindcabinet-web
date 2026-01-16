@@ -10,25 +10,20 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_Terms {
-    public class TermObjectDbData {
-        public long Id = default;
-        public string Term = "";
-        public long? ContextId = null;
-        public long? AliasId = null;
-        
-
-        public async Task<TermObject> Create_Async( IDbConnection dbCon, ServerDataAccess_Terms termData ) {
-            return new TermObject(
-                id: this.Id,
-                term: this.Term,
-                context: this.ContextId is not null
-                    ? await termData.GetById_Async(dbCon, this.ContextId.Value)
-                    : null,
-                alias: this.AliasId is not null
-                    ? await termData.GetById_Async(dbCon, this.AliasId.Value)
-                    : null
-            );
-        }
+    public static async Task<TermObject> CreateTermObject_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                TermObject.DatabaseEntry entry ) {
+        return new TermObject(
+            id: entry.Id,
+            term: entry.Term,
+            context: entry.ContextId is not null
+                ? await termsData.GetById_Async(dbCon, termsData, entry.ContextId.Value)
+                : null,
+            alias: entry.AliasId is not null
+                ? await termsData.GetById_Async(dbCon, termsData, entry.AliasId.Value)
+                : null
+        );
     }
 
     //
@@ -39,16 +34,16 @@ public partial class ServerDataAccess_Terms {
 
 	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_Terms_Sets termsSetsData ) {
         // todo: fulltext index on 'Term'
-        await dbCon.ExecuteAsync( @"
-            CREATE TABLE "+TableName+@" (
+        await dbCon.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
                 CONSTRAINT FK_ContextTermId FOREIGN KEY (ContextId)
-                    REFERENCES "+TableName+@"(Id),
+                    REFERENCES {TableName}(Id),
                 CONSTRAINT FK_AliasTermId FOREIGN KEY (AliasId)
-                    REFERENCES "+TableName+@"(Id)
+                    REFERENCES {TableName}(Id)
             );"
         );
         
@@ -63,12 +58,15 @@ public partial class ServerDataAccess_Terms {
 
 
 
-    public async Task<TermObject?> GetById_Async( IDbConnection dbCon, long id ) {
+    public async Task<TermObject?> GetById_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                long id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
 
-        TermObjectDbData? termRaw = await dbCon.QuerySingleAsync<TermObjectDbData?>(
+        TermObject.DatabaseEntry? termRaw = await dbCon.QuerySingleAsync<TermObject.DatabaseEntry?>(
             $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
@@ -77,7 +75,7 @@ public partial class ServerDataAccess_Terms {
             return null;
         }
 
-        TermObject term = await termRaw.Create_Async( dbCon, this );
+        TermObject term = await ServerDataAccess_Terms.CreateTermObject_Async( dbCon, termsData, termRaw );
 
         this.TermsById_Cache.Add( id, term );
 
@@ -86,30 +84,32 @@ public partial class ServerDataAccess_Terms {
 
     public async Task<IEnumerable<TermObject>> GetByIds_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
                 IEnumerable<long> ids ) {
         if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
             return ids.Select( id => this.TermsById_Cache[id] );
         }
         // todo: optimize query to fetch only remaining uncached terms
 
-        string sql = @"SELECT * FROM "+TableName+@" AS MyTerms
+        string sql = $@"SELECT * FROM {TableName} AS MyTerms
             WHERE MyTerms.Id IN @Ids";
         var sqlParams = new Dictionary<string, object> { { "@Ids", ids } };
 
-        IEnumerable<TermObjectDbData> terms = await dbCon.QueryAsync<TermObjectDbData>(
+        IEnumerable<TermObject.DatabaseEntry> termsRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
             sql, new DynamicParameters(sqlParams) );
 
-        var termList = new List<TermObject>( terms.Count() );
+        var termList = new List<TermObject>( termsRaw.Count() );
 
-        foreach( TermObjectDbData term in terms ) {
-            termList.Add( await term.Create_Async(dbCon, this) );
+        foreach( TermObject.DatabaseEntry termRaw in termsRaw ) {
+            termList.Add( await ServerDataAccess_Terms.CreateTermObject_Async(dbCon, termsData, termRaw) );
         }
 
         return termList;
     }
-
+    
     public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
@@ -119,12 +119,12 @@ public partial class ServerDataAccess_Terms {
 
         if( parameters.Context is not null ) {
             if( parameters.Context.Id is null ) {
-                sql += @" INNER JOIN "+TableName+@" AS CtxTerms
+                sql += $@" INNER JOIN {TableName} AS CtxTerms
                     ON (MyTerms.Context.Id = CtxTerms.Id)
                     WHERE CtxTerms.Term = @ContextTerm";
                 sqlParams["@ContextTerm"] = parameters.Context.Term!;
             } else {
-                sql += @" WHERE MyTerms.ContextId = @ContextId";
+                sql += $@" WHERE MyTerms.ContextId = @ContextId";
                 sqlParams["@ContextId"] = parameters.Context.Id!;
             }
 
@@ -141,14 +141,14 @@ public partial class ServerDataAccess_Terms {
         //sqlParams["@Quantity"] = parameters.Quantity;
 
 //this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<TermObjectDbData> terms = await dbCon.QueryAsync<TermObjectDbData>(
+        IEnumerable<TermObject.DatabaseEntry> termsRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
             sql, new DynamicParameters(sqlParams) );
 //this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
-        var termList = new List<TermObject>( terms.Count() );
+        var termList = new List<TermObject>( termsRaw.Count() );
 
-        foreach( TermObjectDbData term in terms ) {
-            termList.Add( await term.Create_Async(dbCon, this) );
+        foreach( TermObject.DatabaseEntry termRaw in termsRaw ) {
+            termList.Add( await ServerDataAccess_Terms.CreateTermObject_Async(dbCon, termsData, termRaw) );
         }
 
         return termList;
@@ -157,10 +157,12 @@ public partial class ServerDataAccess_Terms {
 
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
                 ClientDataAccess_Terms.Create_Params parameters ) {
 		IEnumerable<TermObject> terms = await this.GetTermsByCriteria_Async(
-            dbCon,
-			new ClientDataAccess_Terms.GetByCriteria_Params(
+            dbCon: dbCon,
+            termsData: termsData,
+			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
 				context: parameters.Context?.ToPrototype() ?? null
 			)
@@ -170,7 +172,7 @@ public partial class ServerDataAccess_Terms {
 		}
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
-            @"INSERT INTO "+TableName+@" (Term, ContextId, AliasId) 
+            $@"INSERT INTO {TableName} (Term, ContextId, AliasId) 
                 VALUES (@Term, @ContextId, @AliasId);
             SELECT LAST_INSERT_ID();",
             //SELECT SCOPE_IDENTITY()
