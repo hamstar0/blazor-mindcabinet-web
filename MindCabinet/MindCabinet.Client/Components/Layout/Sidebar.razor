@@ -1,0 +1,7 @@
+﻿@using MindCabinet.Client.Components.Site;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Pickers;
+
+
+<UserContextPicker OnContextSelect_Async=@this.OnContextSelect_Async />
+<UserContextEditor InitialContext=@this.CurrentContext />

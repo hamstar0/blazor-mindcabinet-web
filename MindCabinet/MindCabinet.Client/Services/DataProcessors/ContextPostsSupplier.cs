@@ -13,29 +13,25 @@ namespace MindCabinet.Client.Services.DataProcessors;
 
 
 
-public class ContextPostsSupplier {
-    [Inject]
-    private ILogger<ContextPostsSupplier> Logger { get; set; } = null!;
+public class ContextPostsSupplier(
+            ILogger<ContextPostsSupplier> logger,
+            ClientSessionData sessionData,
+            ClientDataAccess_UserContext userContextsData,
+            ClientDataAccess_PrioritizedPosts postsData
+        ) : IClientDataProcessors {
+    private ILogger<ContextPostsSupplier> Logger = logger;
 
-    [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionData SessionData = sessionData;
 
-
-    [Inject]
-    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+    private ClientDataAccess_UserContext UserContextsData = userContextsData;
     
-    [Inject]
-    private ClientDataAccess_PrioritizedPosts PostsData { get; set; } = null!;
+    private ClientDataAccess_PrioritizedPosts PostsData = postsData;
+
 
     private int CurrentPostsPage = 0;
 
     private int CurrentPostsPerPage = 10;
 
-
-
-    public ContextPostsSupplier( ClientDataAccess_PrioritizedPosts postsData ) {
-        this.PostsData = postsData;
-    }
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPosts_Async(

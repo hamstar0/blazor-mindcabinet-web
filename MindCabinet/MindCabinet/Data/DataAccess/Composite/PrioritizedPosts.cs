@@ -11,7 +11,7 @@ using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
 namespace MindCabinet.Data.DataAccess.Composite;
 
 
-public partial class ServerDataAccess_PrioritizedPosts {
+public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     public class SimplePostWithPriorityEntryData( SimplePostObject.DatabaseEntry post, double  computedPriority) {
         public SimplePostObject.DatabaseEntry Post = post;
         

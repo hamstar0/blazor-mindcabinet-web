@@ -1,8 +1,13 @@
 using System.Data;
 using MindCabinet.Client.Pages;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DataAccess;
+using MindCabinet.Client.Services.DataProcessors;
 using MindCabinet.Components;
 using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
+using MindCabinet.Shared.Utility;
 
 
 namespace MindCabinet;
@@ -10,8 +15,19 @@ namespace MindCabinet;
 
 
 public class Program {
+    private static IEnumerable<Type> GetInterfaceImplementations( Type interfaceType ) {
+        IEnumerable<Type> implementations = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany( a => a.GetTypes() )
+            .Where( t => interfaceType.IsAssignableFrom(t) && !t.IsInterface && !t.IsAbstract );
+
+        return implementations;
+    }
+
+
     public static void Main( string[] args ) {
         var builder = WebApplication.CreateBuilder( args );
+
+        builder.Services.AddSingleton<INetMode, NetModeServer>();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
@@ -38,11 +54,16 @@ public class Program {
         builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection(conn) );
         builder.Services.AddTransient<DbAccess>();  // not AddSingleton
 
+        IEnumerable<Type> serverDataAccessServiceTypes = Program.GetInterfaceImplementations( typeof(IServerDataAccess) );
+        foreach( Type implementation in serverDataAccessServiceTypes ) {
+            builder.Services.AddScoped( implementation );
+        }
+
         builder.Services.AddScoped<ServerSessionData>();
         builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
-
+        
         //
         
         WebApplication app = builder.Build();
@@ -73,8 +94,7 @@ public class Program {
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies( typeof(Home).Assembly );
 
-
-        //var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        // var logger = app.Services.GetRequiredService<ILogger<Program>>();
         //app.Lifetime.ApplicationStarted.Register( () => {
         //    logger.LogInformation("=== Starting Endpoint Inspection ===");
 

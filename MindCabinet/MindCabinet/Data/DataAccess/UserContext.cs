@@ -12,7 +12,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContext {
+public partial class ServerDataAccess_UserContext : IServerDataAccess {
     public static async Task<UserContextObject> CreateUserContext_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
@@ -123,7 +123,7 @@ public partial class ServerDataAccess_UserContext {
                 sql2, new DynamicParameters(sqlParams2) );
         }
 
-        return new ClientDataAccess_UserContext.Get_Return( contexts );
+        return new ClientDataAccess_UserContext.Get_Return( contexts.ToArray() );
     }
 
 

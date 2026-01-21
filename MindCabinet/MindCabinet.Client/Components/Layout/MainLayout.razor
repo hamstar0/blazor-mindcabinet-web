@@ -11,8 +11,11 @@
 
 <div class="page">
     <div class="sidebar">
-        <UserContextPicker OnContextSelect_Async=@this.OnContextSelect_Async />
-        <UserContextEditor InitialContext=@this.CurrentContext />
+        @if( this.NetMode.IsClientSide ) {
+            <Sidebar />
+        } else {
+            <h3 style="color:white;">Loading...</h3>
+        }
     </div>
     
     <main>
@@ -27,6 +30,8 @@
                     <a data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
                     <a data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a>
                 }
+            } else {
+                <span>Loading...</span>
             }
         </div>
 

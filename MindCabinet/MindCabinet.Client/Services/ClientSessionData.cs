@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData( HttpClient http ) {
+public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory ) {
     public class SessionDataJson(
                 string sessionId,
                 SimpleUserObject.ClientData? userData ) {
@@ -17,8 +17,7 @@ public partial class ClientSessionData( HttpClient http ) {
 
 
 
-    private HttpClient Http = http;
-    
+    private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory; 
 
     public bool IsLoaded { get; private set; } = false;
 
@@ -41,9 +40,15 @@ public partial class ClientSessionData( HttpClient http ) {
             return;
         }
         this.IsLoading = true;
+        
+        using var scope = this.ServiceScopeFactory.CreateScope();
+        HttpClient? httpClient = scope.ServiceProvider.GetService<HttpClient>();
+        if( httpClient is null ) {
+            throw new InvalidOperationException( "HttpClient service not available in ClientSessionData." );
+        }
 
         //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
-        HttpResponseMessage msg = await this.Http.GetAsync(
+        HttpResponseMessage msg = await httpClient.GetAsync(
             $"{Get_Path}/{Get_Route}"
         );
 

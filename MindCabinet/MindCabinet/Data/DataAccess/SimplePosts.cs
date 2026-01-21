@@ -9,7 +9,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 
-public partial class ServerDataAccess_SimplePosts {
+public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     private static async Task<SimplePostObject> CreateSimplePost_Async(
     // public static class DatabaseEntry_Extensions {
                 // this SimplePostObject.DatabaseEntry entry,

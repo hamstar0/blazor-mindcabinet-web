@@ -10,7 +10,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserFavoriteTerms {
+public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     public const string TableName = "UserFavoriteTerms";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {

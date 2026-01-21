@@ -10,7 +10,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserTermsHistory {
+public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     public const int HistoryMaxEntries = 100;
 
 

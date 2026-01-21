@@ -6,7 +6,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_SimpleUsers_Sessions {
+public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
     public const string TableName = "SimpleUserSessions";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {

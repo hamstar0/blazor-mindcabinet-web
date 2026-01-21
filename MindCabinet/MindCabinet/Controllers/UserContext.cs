@@ -22,7 +22,10 @@ public class UserContextController : ControllerBase {
 
 
 
-    public UserContextController( DbAccess dbAccess, ServerDataAccess_UserContext userContextsData, ServerSessionData sessionData ) {
+    public UserContextController(
+                DbAccess dbAccess,
+                ServerDataAccess_UserContext userContextsData,
+                ServerSessionData sessionData ) {
         this.DbAccess = dbAccess;
         this.UserContextsData = userContextsData;
         this.SessionData = sessionData;

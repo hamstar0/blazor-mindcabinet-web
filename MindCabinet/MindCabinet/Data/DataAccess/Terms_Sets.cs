@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_Terms_Sets {
+public partial class ServerDataAccess_Terms_Sets : IServerDataAccess {
     public const string TableName = "TermSet";
     public const string IdSupplierTableName = "TermSetIdSupplier";
 

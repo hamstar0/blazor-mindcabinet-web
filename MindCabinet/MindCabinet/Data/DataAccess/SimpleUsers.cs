@@ -10,7 +10,7 @@ using System.Text;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_SimpleUsers {
+public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     public static byte[] GetPasswordHash( string password, byte[] pwSalt ) {
         var argon2id = new Argon2id( Encoding.UTF8.GetBytes( password ) );
         argon2id.Salt = pwSalt;

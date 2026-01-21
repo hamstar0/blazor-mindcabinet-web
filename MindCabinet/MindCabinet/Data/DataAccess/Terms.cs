@@ -9,7 +9,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_Terms {
+public partial class ServerDataAccess_Terms : IServerDataAccess {
     public static async Task<TermObject> CreateTermObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,

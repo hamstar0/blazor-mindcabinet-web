@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_SimplePosts {
+public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     private async Task InstallSamples_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
