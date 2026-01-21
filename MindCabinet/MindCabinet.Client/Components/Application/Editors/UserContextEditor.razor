@@ -16,25 +16,25 @@
 			@bind:event="oninput"
             @bind:get=@this.CurrentContextPrototype.Name
             @bind:set=@this.OnInputName_UI_Async />
-	<TagSetEditor Label="Enter tags (at least 1 required)"
+	<TermSetEditor Label="Enter tags (at least 1 required)"
 				InitialTags=@( this.InitialContext?.Entries
 						.Select( e => e.Term )
 						.ToList()
 					?? new List<TermObject>() )
 				AllowFavoritingTerms=@false
-				OnTagsChange_Async=@this.OnTagsChanged_UI_Async>
-		<PerTagAffix Context="tag">
+				OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
+		<PerTermAffix Context="term">
 			<SliderNumberInput
-					InitialValue=@this.GetTagPriorityValue(tag)
-					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(tag, val) ) />
+					InitialValue=@this.GetTagPriorityValue(term)
+					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(term, val) ) />
 			<input type="checkbox"
 					checked=@(this.CurrentContextPrototype
 						.Entries
-						.First(t => t.TermId == tag.Id)
+						.First(t => t.TermId == term.Id)
 						.IsRequired)
-					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(tag, (bool)e.Value!) ) />
-		</PerTagAffix>
-	</TagSetEditor>
+					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(term, (bool)e.Value!) ) />
+		</PerTermAffix>
+	</TermSetEditor>
 	<div>
 		<button @onclick=@(async () => await this.NewContext_UI_Async(false))>
 			New

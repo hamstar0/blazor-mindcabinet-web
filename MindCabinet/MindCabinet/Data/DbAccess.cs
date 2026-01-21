@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Dapper;
 using static MindCabinet.Program;
+using MindCabinet.Data.DataAccess;
 
 
 namespace MindCabinet.Data;
@@ -44,7 +45,7 @@ public partial class DbAccess {
         this.DbConnectionCache.Open();
 
         if( validateInstall ) {
-            dynamic? result = await this.DbConnectionCache.QueryFirstOrDefaultAsync( @"SHOW TABLES LIKE 'Posts';" );
+            dynamic? result = await this.DbConnectionCache.QueryFirstOrDefaultAsync( $"SHOW TABLES LIKE '{ServerDataAccess_SimplePosts.TableName}';" );
             // int count = await dbCon.QuerySingleAsync<int>( @"
             //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
             //  WHERE TABLE_NAME = 'Posts'"

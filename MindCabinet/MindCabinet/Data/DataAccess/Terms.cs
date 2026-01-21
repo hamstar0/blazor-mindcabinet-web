@@ -40,9 +40,9 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
-                CONSTRAINT FK_ContextTermId FOREIGN KEY (ContextId)
+                CONSTRAINT FK_Terms_ContextTermId FOREIGN KEY (ContextId)
                     REFERENCES {TableName}(Id),
-                CONSTRAINT FK_AliasTermId FOREIGN KEY (AliasId)
+                CONSTRAINT FK_Terms_AliasTermId FOREIGN KEY (AliasId)
                     REFERENCES {TableName}(Id)
             );"
         );

@@ -7,8 +7,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermsHistory( HttpClient http ) : IClientDataAccess {
+public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientSessionData sessionData ) : IClientDataAccess {
     private HttpClient Http = http;
+
+    private ClientSessionData SessionData = sessionData;
 
 
     public class GetTermIdsForCurrentUser_Params { //( long userId ) {
@@ -24,6 +26,10 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http ) : ICli
     public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
 
     public async Task<IEnumerable<GetTermIdsForCurrentUser_Return>> GetTermIdsForCurrentUser_Async() {
+        if( this.SessionData.UserId is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
             new GetTermIdsForCurrentUser_Params()  //parameters
@@ -51,6 +57,10 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http ) : ICli
     public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
 
     public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
+        if( this.SessionData.UserId is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
             parameters

@@ -22,9 +22,9 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Created DATETIME(2) NOT NULL,
-                CONSTRAINT FK_SimpleUserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_UserTermsHistory_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                CONSTRAINT FK_TermId FOREIGN KEY (TermId)
+                CONSTRAINT FK_UserTermsHistory_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id),
                 INDEX IDX_User (SimpleUserId),
                 INDEX IDX_UserCreated (SimpleUserId, Created)

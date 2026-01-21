@@ -17,7 +17,7 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
 
 
 
-    private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory; 
+    private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory;
 
     public bool IsLoaded { get; private set; } = false;
 
@@ -27,6 +27,8 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
     private SessionDataJson? ServerData;
 
     public string? SessionId { get => this.ServerData?.SessionId; }
+
+    public long? UserId { get => this.ServerData?.UserData?.Id; }
 
     public string? UserName { get => this.ServerData?.UserData?.Name; }
 

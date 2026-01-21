@@ -42,7 +42,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 TermSetId INT NOT NULL,
-                CONSTRAINT FK_PostsUserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_SimplePosts_PostsUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
             //    ON DELETE CASCADE

@@ -18,8 +18,8 @@ public partial class ServerDataAccess_Terms_Sets : IServerDataAccess {
             CREATE TABLE {TableName} (
                 SetId INT NOT NULL,
                 TermId BIGINT NOT NULL,
-                CONSTRAINT PK_Id PRIMARY KEY (SetId, TermId),
-                CONSTRAINT FK_TermSetTermId FOREIGN KEY (TermId)
+                CONSTRAINT PK_TermSet_SetAndTermId PRIMARY KEY (SetId, TermId),
+                CONSTRAINT FK_TermSet_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             )"
             //    ON DELETE CASCADE

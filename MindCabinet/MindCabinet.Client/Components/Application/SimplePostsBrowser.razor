@@ -38,7 +38,7 @@
                     OnPageChange_Async=@this.ChangePage_UI_Async />
         <div style="margin-left: auto; margin-right: 0;">
             <span>Filter by tags</span>
-            <TagSetEditor AddedClasses="ib" OnTagsChange_Async=@this.SetFilterTags_UI_Async />
+            <TermSetEditor AddedClasses="ib" OnTermsChange_Async=@this.SetFilterTags_UI_Async />
         </div>
     </div>
 </div>
@@ -47,7 +47,7 @@
 
 @code {
     private async Task SetFilterTags_UI_Async( IEnumerable<TermObject> tags, TermObject tag, bool isAdded ) {
-//Console.WriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
+//ConsoleermriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
         await this.SetFilterTags_Async( tags );
     }
 

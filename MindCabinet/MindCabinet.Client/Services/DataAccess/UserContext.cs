@@ -8,8 +8,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDataAccess {
+public partial class ClientDataAccess_UserContext( HttpClient http, ClientSessionData sessionData ) : IClientDataAccess {
     private HttpClient Http = http;
+
+    private ClientSessionData SessionData = sessionData;
 
 
     public class GetForCurrentUserByCriteria_Params {
@@ -27,6 +29,10 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
 
     public async Task<IEnumerable<UserContextObject>> GetForCurrentUserByCriteria_Async(
                 GetForCurrentUserByCriteria_Params parameters ) {
+        if( this.SessionData.UserId is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{GetForCurrentUserByCriteria_Path}/{GetForCurrentUserByCriteria_Route}",
             parameters
@@ -79,6 +85,10 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
     public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
+        if( this.SessionData.UserId is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{CreateForCurrentUser_Path}/{CreateForCurrentUser_Route}",
             parameter
@@ -99,6 +109,10 @@ public partial class ClientDataAccess_UserContext( HttpClient http ) : IClientDa
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
     public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
+        if( this.SessionData.UserId is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             $"{UpdateForCurrentUser_Path}/{UpdateForCurrentUser_Route}",
             parameter

@@ -19,7 +19,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
                 LatestVisit DATETIME(2) NOT NULL,
                 Visits INT NOT NULL,
                 PRIMARY KEY (SessionId),
-                CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_SimpleUserSessions_UserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         //    ON DELETE CASCADE

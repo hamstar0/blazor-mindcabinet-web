@@ -49,7 +49,7 @@ public partial class ServerDataAccess_UserContext : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 Name VARCHAR(256) NOT NULL,
                 PRIMARY KEY (ContextId),
-                CONSTRAINT FK_SessUserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_UserContextEntries_SessUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         );
@@ -60,7 +60,7 @@ public partial class ServerDataAccess_UserContext : IServerDataAccess {
                 Priority DOUBLE NOT NULL,
                 IsRequired BOOLEAN NOT NULL,
                 PRIMARY KEY (ContextId, TermId),
-                CONSTRAINT FK_TermId FOREIGN KEY (TermId)
+                CONSTRAINT FK_UserContextEntries_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             );"
         );

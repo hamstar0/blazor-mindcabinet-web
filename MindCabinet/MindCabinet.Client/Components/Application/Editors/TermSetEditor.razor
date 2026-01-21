@@ -1,0 +1,68 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
+
+
+
+<div component-name="TermSetEditor" class=@this.AddedClasses>
+    @* data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip on top"> *@
+    @if( this.Label is not null ) {
+        <span>@this.Label</span>
+    }
+    @foreach( TermObject term in this.Terms ) {
+        <TermRender AddedClasses="ib" Term=@term HasFavoriteButton=@this.AllowFavoritingTerms>
+            @this.PerTermAffix?.Invoke( term )
+            <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(term) )>X</a>
+        </TermRender>
+    }
+    <TermEditor AddedClasses="ib"
+            OnTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+            OnTermConfirm_Async=@this.AddTerm_UI_Async />
+</div>
+
+
+
+@code {
+    [Parameter]
+    public RenderFragment<TermObject>? PerTermAffix  { get; set; }
+
+
+    private async Task<TermObject?> AddTerm_UI_Async( TermObject term, bool isNew ) {
+        if( this.Terms.Any(t => t.Equals(term)) ) {
+            return null;
+        }
+
+        await this.AddTerm_Async( term );
+
+        this.StateHasChanged();
+
+        return null;
+        //return tag;
+    }
+
+
+    public async Task<(string termText, bool isSubmit)> OnTermEditConfirmSubmit_UI_Async( string term ) {
+        return term.Contains(",")
+            ? (term.Split(",")[0], true)
+            : (term, false);
+    }
+
+
+    private async Task<bool> RemoveTerm_UI_Async( TermObject term ) {
+        if( !this.Terms.Any(t => t.Equals(term)) ) {
+            return false;
+        }
+
+        bool ret = await this.RemoveTerm_Async( term );
+
+        if( ret ) {
+            this.StateHasChanged();
+        }
+
+        return ret;
+    }
+}

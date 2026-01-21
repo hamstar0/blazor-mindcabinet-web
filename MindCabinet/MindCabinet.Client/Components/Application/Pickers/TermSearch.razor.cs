@@ -9,7 +9,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Client.Components.Application.Pickers;
 
 
-public partial class TermPicker : ComponentBase {
+public partial class TermSearch : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
