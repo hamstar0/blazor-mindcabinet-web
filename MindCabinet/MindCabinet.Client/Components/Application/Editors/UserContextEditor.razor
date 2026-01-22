@@ -17,7 +17,7 @@
             @bind:get=@this.CurrentContextPrototype.Name
             @bind:set=@this.OnInputName_UI_Async />
 	<TermSetEditor Label="Enter tags (at least 1 required)"
-				InitialTags=@( this.InitialContext?.Entries
+				InitialTerms=@( this.InitialContext?.Entries
 						.Select( e => e.Term )
 						.ToList()
 					?? new List<TermObject>() )

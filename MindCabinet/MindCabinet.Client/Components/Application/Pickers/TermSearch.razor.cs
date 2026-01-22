@@ -54,6 +54,12 @@ public partial class TermSearch : ComponentBase {
 
 
     protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        if( this.Session.UserId is null ) {
+            return;
+        }
+
         IEnumerable<long> favTermIds
             = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
         IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return> histTermIds

@@ -15,6 +15,9 @@ public partial class TermRender : ComponentBase {
     [Inject]
     private ClientDataAccess_UserFavoriteTerms UserFavoriteTermsData { get; set; } = null!;
 
+    [Inject]
+    private ClientSessionData Session { get; set; } = null!;
+
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -36,6 +39,10 @@ public partial class TermRender : ComponentBase {
     
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
+        if( this.Session.UserId is null ) {
+            return false;
+        }
+
         // TODO: Add caching
         IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
         return termIds.Contains( this.Term.Id );
@@ -43,6 +50,10 @@ public partial class TermRender : ComponentBase {
 
 
     private async Task ToggleFavoriteTerm_Async() {
+        if( this.Session.UserId is null ) {
+            return;
+        }
+
         IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
 
         if( termIds.Contains(this.Term.Id) ) {

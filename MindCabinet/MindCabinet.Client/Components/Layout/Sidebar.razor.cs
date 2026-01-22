@@ -33,6 +33,10 @@ public partial class Sidebar {
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
 
+        if( this.SessionData.UserId is null ) {
+            return;
+        }
+
         this.Contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params()
         );
