@@ -1,5 +1,4 @@
 using System.Data;
-using MindCabinet.Client.Pages;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Client.Services.DataProcessors;
@@ -92,7 +91,7 @@ public class Program {
 
         app.MapRazorComponents<App>()
             .AddInteractiveWebAssemblyRenderMode()
-            .AddAdditionalAssemblies( typeof(Home).Assembly );
+            .AddAdditionalAssemblies( typeof(Client.Site.Pages.Home).Assembly );
 
         // var logger = app.Services.GetRequiredService<ILogger<Program>>();
         //app.Lifetime.ApplicationStarted.Register( () => {

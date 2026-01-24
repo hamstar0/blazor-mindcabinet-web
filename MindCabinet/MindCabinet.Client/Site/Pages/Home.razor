@@ -2,7 +2,7 @@
 
 
 @using MindCabinet.Client.Components.Layout;
-@using MindCabinet.Client.Components.Site;
+@using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Components.Application;
 
 
@@ -46,7 +46,7 @@
 
         <div>
             @if( this.Http.BaseAddress is not null ) {
-                <PostsInterface />
+                <Main />
             } else {
                 <span>Loading...</span>
             }

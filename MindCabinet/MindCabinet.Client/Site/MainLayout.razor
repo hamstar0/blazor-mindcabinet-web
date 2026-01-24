@@ -1,4 +1,4 @@
-﻿@using MindCabinet.Client.Components.Site;
+﻿@using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
 
@@ -10,14 +10,16 @@
 
 
 <div class="page">
-    @this.Body
+    @this.Body      @* Routed page is rendered here. *@
 </div>
+
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
 
 @if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
     <UserLoginForm ModalId="loginModal" OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />

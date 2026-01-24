@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Components;
-using MindCabinet.Client.Services;
-using MindCabinet.Shared.DataObjects;
+﻿using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Components.Application;
+using System.Text;
 
-namespace MindCabinet.Client.Components.Application;
+namespace MindCabinet.Client.Components.Layout;
 
 
-public partial class PostsInterface : ComponentBase {
+public partial class Main : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 

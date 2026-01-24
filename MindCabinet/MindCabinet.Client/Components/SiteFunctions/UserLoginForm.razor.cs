@@ -5,7 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace MindCabinet.Client.Components.Site;
+namespace MindCabinet.Client.Components.SiteFunctions;
 
 
 public partial class UserLoginForm : ComponentBase {

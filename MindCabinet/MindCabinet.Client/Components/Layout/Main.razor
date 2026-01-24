@@ -1,13 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Components.Standard;
-@using MindCabinet.Client.Services
-@using MindCabinet.Shared.DataObjects
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
 
 
-
-<div component-name="PostsInterface" class=@this.AddedClasses>
+<div component-name="Main" class=@this.AddedClasses>
 	<SimplePostsBrowser @ref=this.BrowserComponent />
 	<SimplePostEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
 </div>
@@ -29,3 +30,4 @@
         await this.BrowserComponent.RefreshPosts_Async();
     }
 }
+

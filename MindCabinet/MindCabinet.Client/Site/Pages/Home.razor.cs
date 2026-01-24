@@ -8,7 +8,7 @@ using MindCabinet.Shared.DataObjects.UserContext;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 
-namespace MindCabinet.Client.Pages;
+namespace MindCabinet.Client.Site.Pages;
 
 
 

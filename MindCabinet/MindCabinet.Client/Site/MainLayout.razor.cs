@@ -7,7 +7,7 @@ using MindCabinet.Shared.Utility;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace MindCabinet.Client.Components.Layout;
+namespace MindCabinet.Client.Site;
 
 
 public partial class MainLayout : LayoutComponentBase {
