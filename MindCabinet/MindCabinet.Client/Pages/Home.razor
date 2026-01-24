@@ -1,6 +1,8 @@
 ﻿@page "/";
 
 
+@using MindCabinet.Client.Components.Layout;
+@using MindCabinet.Client.Components.Site;
 @using MindCabinet.Client.Components.Application;
 
 
@@ -14,13 +16,41 @@
 </HeadContent> *@
 
 
-<h4>Mind Cabinet</h4>
-
-<div>
-    @if( this.Http.BaseAddress is not null ) {
-        <PostsInterface />
+<div class="sidebar">
+    @if( this.NetMode.IsClientSide ) {
+        <Sidebar />
     } else {
-        <span>Loading...</span>
+        <h3 style="color:white;">Loading...</h3>
     }
-    @* <GoalEditor OnGoalSelect="async e => {}" /> *@
 </div>
+
+<main>
+    <div class="top-row px-4">
+        <a href="/">Home</a>
+        <a href="about">About</a>
+        <div class="vr"></div>
+        @if( this.SessionData.IsLoaded ) {
+            @if( this.SessionData.UserName is not null ) {
+                <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
+            } else {
+                <a data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                <a data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a>
+            }
+        } else {
+            <span>Loading...</span>
+        }
+    </div>
+
+    <article class="content px-4">
+        <h4>Mind Cabinet</h4>
+
+        <div>
+            @if( this.Http.BaseAddress is not null ) {
+                <PostsInterface />
+            } else {
+                <span>Loading...</span>
+            }
+            @* <GoalEditor OnGoalSelect="async e => {}" /> *@
+        </div>
+    </article>
+</main>

@@ -5,26 +5,28 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
-using static MindCabinet.Client.Services.ClientSessionData;
-using static System.Net.WebRequestMethods;
 
 namespace MindCabinet.Client.Pages;
 
 
 
 public partial class Home : ComponentBase {
+    [Inject]
+    private INetMode NetMode { get; set; } = null!;
+    
     //[Inject]
-    //private IJSRuntime Js { get; set; } = null!;
-
-    //[Inject]
-    //private IServiceProvider ServiceProvider { get; set; } = null!;
+    //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
     private HttpClient Http { get; set; } = null!;
 
     //[Inject]
-    //private ClientDbAccess DbAccess { get; set; } = null!;;
+    //public ClientDbAccess DbAccess { get; set; } = null!;
+
+    [Inject]
+    private ClientSessionData SessionData { get; set; } = null!;
 
 
 

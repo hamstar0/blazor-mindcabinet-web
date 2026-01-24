@@ -12,17 +12,5 @@ namespace MindCabinet.Client.Components.Layout;
 
 public partial class MainLayout : LayoutComponentBase {
     [Inject]
-    private INetMode NetMode { get; set; } = null!;
-    
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
-
-    //[Inject]
-    //public HttpClient Http { get; set; } = null!;
-
-    //[Inject]
-    //public ClientDbAccess DbAccess { get; set; } = null!;
-
-    [Inject]
     private ClientSessionData SessionData { get; set; } = null!;
 }

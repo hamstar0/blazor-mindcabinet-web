@@ -10,35 +10,7 @@
 
 
 <div class="page">
-    <div class="sidebar">
-        @if( this.NetMode.IsClientSide ) {
-            <Sidebar />
-        } else {
-            <h3 style="color:white;">Loading...</h3>
-        }
-    </div>
-    
-    <main>
-        <div class="top-row px-4">
-            <a href="/">Home</a>
-            <a href="about">About</a>
-            <div class="vr"></div>
-            @if( this.SessionData.IsLoaded ) {
-                @if( this.SessionData.UserName is not null ) {
-                    <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
-                } else {
-                    <a data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
-                    <a data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a>
-                }
-            } else {
-                <span>Loading...</span>
-            }
-        </div>
-
-        <article class="content px-4">
-            @this.Body
-        </article>
-    </main>
+    @this.Body
 </div>
 
 <div id="blazor-error-ui">
@@ -47,7 +19,7 @@
     <a class="dismiss">🗙</a>
 </div>
 
-@if( this.SessionData.IsLoaded && this.SessionData.UserName is null ) {
+@if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
     <UserLoginForm ModalId="loginModal" OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
     <UserRegistrationForm ModalId="signupModal" OnUserCreate_Async=@(async user => this.SessionData.Login(user)) />
 }
