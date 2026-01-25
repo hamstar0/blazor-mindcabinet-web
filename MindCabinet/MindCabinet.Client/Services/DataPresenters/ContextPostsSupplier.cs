@@ -9,7 +9,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 
-namespace MindCabinet.Client.Services.DataProcessors;
+namespace MindCabinet.Client.Services.DataPresenters;
 
 
 
@@ -84,6 +84,7 @@ public class ContextPostsSupplier(
             .Where( post => postPriorities[post.Id] is not null )
             .OrderBy( post => postPriorities[post.Id] );
     }
+
 
     public double? GetPriority( UserContextObject ctx, SimplePostObject post ) {
         double totalPriority = 0;

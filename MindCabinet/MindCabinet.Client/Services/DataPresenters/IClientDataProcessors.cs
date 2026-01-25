@@ -5,7 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
 
-namespace MindCabinet.Client.Services.DataProcessors;
+namespace MindCabinet.Client.Services.DataPresenters;
 
 
 

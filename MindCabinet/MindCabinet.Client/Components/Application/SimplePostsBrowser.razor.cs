@@ -3,6 +3,7 @@ using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -14,7 +15,7 @@ public partial class SimplePostsBrowser : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess_SimplePosts SimplePostsData { get; set; } = null!;
+    public ClientDataAccess_PrioritizedPosts PostsData { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -37,7 +38,7 @@ public partial class SimplePostsBrowser : ComponentBase {
 
     private string SearchTerm = "";
 
-	private List<TermObject> FilterTags = new List<TermObject>();
+	private List<TermObject> AddedFilterTags = new List<TermObject>();
 
 
     private IEnumerable<SimplePostObject> CurrentPagePosts_Cache = [];
@@ -69,25 +70,26 @@ public partial class SimplePostsBrowser : ComponentBase {
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
         var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
-            allTags: new HashSet<TermObject>( this.FilterTags ),
+            allTags: new HashSet<TermObject>( this.AddedFilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: this.CurrentPageNumber,
             postsPerPage: this.MaxPostsPerPage
         );
-        IEnumerable<SimplePostObject> posts = await this.SimplePostsData.GetByCriteria_Async( search );
+        IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        int totalPosts = await this.SimplePostsData.GetCountByCriteria_Async( new ClientDataAccess_SimplePosts.GetByCriteria_Params(
+        var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
             bodyPattern: this.SearchTerm,
-            allTags: new HashSet<TermObject>( this.FilterTags ),
+            allTags: new HashSet<TermObject>( this.AddedFilterTags ),
             sortAscendingByDate: this.SortAscendingByDate,
             pageNumber: 0,
             postsPerPage: -1
-        ) );
+        );
+        int totalPosts = await this.PostsData.GetCountByCriteria_Async( search );
 
         return (totalPosts, ( int)Math.Ceiling( (float)totalPosts / (float)this.MaxPostsPerPage ));
     }
@@ -129,7 +131,7 @@ public partial class SimplePostsBrowser : ComponentBase {
     }
 
     public async Task SetFilterTags_Async( IEnumerable<TermObject> changedTags ) {
-        var currentTagStrings = new HashSet<string>( this.FilterTags.Select(t=>t.ToString()) );
+        var currentTagStrings = new HashSet<string>( this.AddedFilterTags.Select(t=>t.ToString()) );
         var changedTagStrings = new HashSet<string>( changedTags.Select(t=>t.ToString()) );
 
 // Console.WriteLine( "Console: SetFilterTags_Async"
@@ -144,7 +146,7 @@ public partial class SimplePostsBrowser : ComponentBase {
         }
 
         this.CurrentPageNumber = 0;
-        this.FilterTags = changedTags.ToList();
+        this.AddedFilterTags = changedTags.ToList();
 
         await this.RefreshPosts_Async();
     }
