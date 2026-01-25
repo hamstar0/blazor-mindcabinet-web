@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DataPresenters;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserContext;
 
 namespace MindCabinet.Client.Components.Application;
 
@@ -15,10 +17,13 @@ public partial class ContextPostsBrowser : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess_PrioritizedPosts PostsData { get; set; } = null!;
+    public ContextPostsSupplier PostsData { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
+
+    [Inject]
+    public ClientSessionData SessionData { get; set; } = null!;
 
 
     [Parameter]
@@ -26,15 +31,8 @@ public partial class ContextPostsBrowser : ComponentBase {
 
 
     [Parameter]
-    public int MaxPostsPerPage { get; set; } = 5;
-
-    [Parameter]
     public int MaxPagesToDisplay { get; set; } = 10;
 
-
-    private int CurrentPageNumber = 0;
-
-    private bool SortAscendingByDate = false;
 
     private string SearchTerm = "";
 
@@ -59,39 +57,36 @@ public partial class ContextPostsBrowser : ComponentBase {
         this.CurrentPagePosts_Cache = await task1;
         (this.TotalPosts_Cache, this.TotalPages_Cache) = await task2;
 
-        if( this.CurrentPageNumber >= this.TotalPages_Cache ) {
-            this.CurrentPageNumber = this.TotalPages_Cache - 1;
+        int currPage = this.PostsData.GetCurrentPage();
+        if( currPage >= this.TotalPages_Cache ) {
+            this.PostsData.SetCurrentPage( this.TotalPages_Cache - 1 );
         }
 
         this.StateHasChanged();
     }
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() { //todo: remove async/await?
-        var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
-            bodyPattern: this.SearchTerm,
-            allTags: new HashSet<TermObject>( this.AddedFilterTags ),
-            sortAscendingByDate: this.SortAscendingByDate,
-            pageNumber: this.CurrentPageNumber,
-            postsPerPage: this.MaxPostsPerPage
+    public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() {
+        UserContextObject? context = this.SessionData.GetCurrentContext();
+        if( context is null ) {
+            return [];
+        }
+
+        IEnumerable<SimplePostObject> posts = await this.PostsData.GetCurrentContextPosts_Async(
+            searchTerm: this.SearchTerm,
+            addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
-        IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async( search );
 
 //Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        var search = new ClientDataAccess_SimplePosts.GetByCriteria_Params(
-            bodyPattern: this.SearchTerm,
-            allTags: new HashSet<TermObject>( this.AddedFilterTags ),
-            sortAscendingByDate: this.SortAscendingByDate,
-            pageNumber: 0,
-            postsPerPage: -1
+        int totalPosts = await this.PostsData.GetCurrentContextPostCount_Async(
+            this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
-        int totalPosts = await this.PostsData.GetCountByCriteria_Async( search );
 
-        return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.MaxPostsPerPage ));
+        return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.PostsData.GetMaxPostsPerPage() ) );
     }
 
 
@@ -99,22 +94,22 @@ public partial class ContextPostsBrowser : ComponentBase {
         int maxPages = this.TotalPages_Cache > 0 ? this.TotalPages_Cache - 1 : 0;
         page = Math.Clamp( page, 0, maxPages );
 
-        if( page == this.CurrentPageNumber ) {
+        if( page == this.PostsData.GetCurrentPage() ) {
             return;
         }
 
-        this.CurrentPageNumber = page;
+        this.PostsData.SetCurrentPage( page );
 
         await this.RefreshPosts_Async();
     }
 
     public async Task SetCreateDateSort_Async( bool isAscending ) {
-        if( isAscending == this.SortAscendingByDate ) {
+        if( isAscending == this.PostsData.GetSortOrder() ) {
             return;
         }
 
-        this.CurrentPageNumber = 0;
-        this.SortAscendingByDate = isAscending;
+        this.PostsData.SetCurrentPage( 0 );
+        this.PostsData.SetSortOrder( isAscending );
 
         await this.RefreshPosts_Async();
     }
@@ -124,7 +119,7 @@ public partial class ContextPostsBrowser : ComponentBase {
             return;
         }
 
-        this.CurrentPageNumber = 0;
+        this.PostsData.SetCurrentPage( 0 );
         this.SearchTerm = term;
 
         await this.RefreshPosts_Async();
@@ -145,7 +140,7 @@ public partial class ContextPostsBrowser : ComponentBase {
             return;
         }
 
-        this.CurrentPageNumber = 0;
+        this.PostsData.SetCurrentPage( 0 );
         this.AddedFilterTags = changedTags.ToList();
 
         await this.RefreshPosts_Async();

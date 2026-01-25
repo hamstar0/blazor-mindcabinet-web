@@ -9,14 +9,14 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientSessionData {
-    private long? CurrentContextId;
+    private UserContextObject? CurrentContext;
 
 
-    public long? GetCurrentContextById() {
-        return this.CurrentContextId;
+    public UserContextObject? GetCurrentContext() {
+        return this.CurrentContext;
     }
 
-    public void SetCurrentContextById( long contextId ) {
-        this.CurrentContextId = contextId;
+    public void SetCurrentContext( UserContextObject context ) {
+        this.CurrentContext = context;
     }
 }

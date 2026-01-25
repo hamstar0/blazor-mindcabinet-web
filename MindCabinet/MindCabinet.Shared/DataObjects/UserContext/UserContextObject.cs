@@ -26,4 +26,14 @@ public partial class UserContextObject( long id, string name, string? descriptio
     public override string ToString() {
 		return $"{this.Name}: {string.Join(", ", this.Entries)}";
     }
+
+    public string ToFullString( bool includeId ) {
+		string output = this.Name;
+        if( includeId ) {
+            output += $" (Id: {this.Id})";
+        }
+        output += $": {string.Join(", ", this.Entries)}";
+
+        return output;
+    }
 }

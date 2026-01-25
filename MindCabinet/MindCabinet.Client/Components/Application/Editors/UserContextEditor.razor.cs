@@ -78,9 +78,9 @@ public partial class UserContextEditor : ComponentBase {
 
     
 	private async Task<bool> HasUnsavedChanges() {
-        long? currentContextId = this.SessionsData.GetCurrentContextById();
+        UserContextObject? currentCtx = this.SessionsData.GetCurrentContext();
         
-        if( currentContextId is null ) {
+        if( currentCtx is null ) {
             return this.CurrentContextPrototype.Name is not null
                 || this.CurrentContextPrototype.Description is not null
                 || this.CurrentContextPrototype.Entries.Any();
@@ -88,11 +88,11 @@ public partial class UserContextEditor : ComponentBase {
 
         IEnumerable<UserContextObject> contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
-                Ids = [ currentContextId.Value ]
+                Ids = [ currentCtx.Id ]
             }
         );
 
-        UserContextObject currentContext = contexts.First( ctx => ctx.Id == currentContextId );
+        UserContextObject currentContext = contexts.First( ctx => ctx.Id == currentCtx.Id );
 
 		return !this.CurrentContextPrototype
 			.Matches( currentContext );

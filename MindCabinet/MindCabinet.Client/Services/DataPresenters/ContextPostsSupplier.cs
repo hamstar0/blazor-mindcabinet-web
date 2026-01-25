@@ -13,7 +13,7 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 
 
-public class ContextPostsSupplier(
+public partial class ContextPostsSupplier(
             ILogger<ContextPostsSupplier> logger,
             ClientSessionData sessionData,
             ClientDataAccess_UserContext userContextsData,
@@ -28,61 +28,68 @@ public class ContextPostsSupplier(
     private ClientDataAccess_PrioritizedPosts PostsData = postsData;
 
 
-    private int CurrentPostsPage = 0;
+    private int CurrentPage = 0;
 
-    private int CurrentPostsPerPage = 10;
+    private int MaxPostsPerPage = 10;
+
+    private bool SortAscendingByDate = false;
 
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetPosts_Async(
-                long userContextId,
-                long[] additionalTagIds ) {
-        IEnumerable<UserContextObject> ctxs = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params{
-                Ids = [ userContextId ]
-            }
-        );
-        UserContextObject? currCtx = ctxs.FirstOrDefault();
-        if( currCtx is null ) {
-            // TODO log missing current context
-            throw new Exception( "Missing current context from server" );
-            //return [];
+    public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
+                string? searchTerm,
+                long[] addedFilterTagIds ) {
+        UserContextObject? userContext = this.SessionData.GetCurrentContext();
+        if( userContext is null ) {
+            return [];
         }
-
-        // long[] anyTagsIds = currCtx.Entries
-        //     .Where( e => !e.IsRequired )
-        //     .Select( e => e.Term.Id )
-        //     .ToArray();
-        // long[] allTagsIds = currCtx.Entries
-        //     .Where( e => e.IsRequired )
-        //     .Select( e => e.Term.Id )
-        //     .ToArray();
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
-                userContextId: userContextId,
-                bodyPattern: null,
-                additionalTagIds: additionalTagIds,
+                userContextId: userContext.Id,
+                bodyPattern: searchTerm,
+                additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: true,
-                pageNumber: this.CurrentPostsPage,
-                postsPerPage: this.CurrentPostsPerPage
+                pageNumber: this.CurrentPage,
+                postsPerPage: this.MaxPostsPerPage
             )
         );
 
         var postPriorities = posts.Select( post => new KeyValuePair<long, double?>(
-            post.Id,
-            this.GetPriority( currCtx!, post )
+            key: post.Id,
+            value: this.GetPriority(userContext, post)
         ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
 
         if( postPriorities.ContainsValue(null) ) {
             this.Logger.LogWarning(
-                $"Some posts returned for context {userContextId} have null priority."
+                $"Some posts returned for context {userContext.ToString()} have null priority."
             );
         }
         
         return posts
             .Where( post => postPriorities[post.Id] is not null )
             .OrderBy( post => postPriorities[post.Id] );
+    }
+
+    public async Task<int> GetCurrentContextPostCount_Async(
+                long[] addedFilterTagIds ) {
+        UserContextObject? currCtx = this.SessionData.GetCurrentContext();
+        if( currCtx is null ) {
+            return 0;
+        }
+
+        int totalPosts = await this.PostsData.GetCountByCriteria_Async(
+            new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
+                userContextId: currCtx.Id,
+                bodyPattern: null,
+                additionalTagIds: addedFilterTagIds,
+                sortAscendingByDate: true,
+                pageNumber: 0,
+                postsPerPage: -1
+            )
+        );
+
+        return totalPosts;
     }
 
 

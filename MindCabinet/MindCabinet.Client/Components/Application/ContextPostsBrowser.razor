@@ -33,7 +33,7 @@
     <MultiSimplePostRender Posts=@this.CurrentPagePosts_Cache />
     
     <div style="display: grid; grid-template-columns: auto auto;">
-        <Pagination CurrentPage=@this.CurrentPageNumber
+        <Pagination CurrentPage=@this.PostsData.GetCurrentPage()
                     TotalPages=@this.TotalPages_Cache
                     OnPageChange_Async=@this.ChangePage_UI_Async />
         <div style="margin-left: auto; margin-right: 0;">

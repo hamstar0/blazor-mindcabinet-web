@@ -123,7 +123,7 @@
 	}
 
 	private async Task SaveContext_UI_Async() {
-		if( this.SessionsData.GetCurrentContextById() is null ) {
+		if( this.SessionsData.GetCurrentContext() is null ) {
 			await this.Create_Async();
 		} else {
 			await this.Update_Async();

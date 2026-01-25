@@ -26,12 +26,6 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
 
     private SessionDataJson? ServerData;
 
-    public string? SessionId { get => this.ServerData?.SessionId; }
-
-    public long? UserId { get => this.ServerData?.UserData?.Id; }
-
-    public string? UserName { get => this.ServerData?.UserData?.Name; }
-
 
 
     public const string Get_Path = "Session";
@@ -43,7 +37,7 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
         }
         this.IsLoading = true;
         
-        using var scope = this.ServiceScopeFactory.CreateScope();
+        using IServiceScope scope = this.ServiceScopeFactory.CreateScope();
         HttpClient? httpClient = scope.ServiceProvider.GetService<HttpClient>();
         if( httpClient is null ) {
             throw new InvalidOperationException( "HttpClient service not available in ClientSessionData." );
@@ -66,18 +60,5 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
 
         this.IsLoading = false;
         this.IsLoaded = true;
-    }
-
-
-    public void Login( SimpleUserObject.ClientData user ) {
-        if( this.ServerData is not null ) {
-            this.ServerData.UserData = user;
-        }
-    }
-
-    public void Logout() {
-        if( this.ServerData is not null ) {
-            this.ServerData.UserData = null;
-        }
     }
 }
