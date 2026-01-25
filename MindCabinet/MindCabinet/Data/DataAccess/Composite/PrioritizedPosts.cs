@@ -12,30 +12,6 @@ namespace MindCabinet.Data.DataAccess.Composite;
 
 
 public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
-    public class SimplePostWithPriorityEntryData( SimplePostObject.DatabaseEntry post, double  computedPriority) {
-        public SimplePostObject.DatabaseEntry Post = post;
-        
-        public double ComputedPriority = computedPriority;
-
-
-
-        public async Task<SimplePostObject> CreateSimplePost_Async(
-                    IDbConnection dbCon,
-                    ServerDataAccess_Terms termsData,
-                    ServerDataAccess_Terms_Sets termSetsData ) {
-            return new SimplePostObject(
-                id: this.Post.Id,
-                created: this.Post.Created,
-                body: this.Post.Body,
-                tags: (await termSetsData.GetTermSet_Async(dbCon, termsData, this.Post.TermSetId)).ToList()
-            );
-        }
-    }
-
-    //
-
-
-
     public string TableName => ServerDataAccess_SimplePosts.TableName;
     
 
@@ -48,9 +24,13 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 int pageNumber,
                 long[] additionalTagIds,
                 bool countOnly ) {
-        bool hasWhere = false;
-        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM {TableName} AS MyPosts ";
+        string sqlColumns = countOnly
+            ? "COUNT(*)"
+            : "*";  //"MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body, MyPosts.TermSetId";
+        string sql = $"SELECT {sqlColumns} FROM {TableName} AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
+
+        bool hasWhere = false;
 
         if( !string.IsNullOrEmpty(bodyPattern) ) {
             string body = bodyPattern.Replace( "%", "\\%" );
@@ -120,7 +100,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     }
 
 
-    public async Task<SimplePostWithPriorityEntryData[]> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_UserContext userContextData,
                 ServerDataAccess_Terms termsData,
@@ -146,20 +126,11 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
         );
 
         // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<SimplePostWithPriorityEntryData> posts = await dbCon.QueryAsync<SimplePostWithPriorityEntryData>(
+        IEnumerable<SimplePostObject.DatabaseEntry> posts = await dbCon.QueryAsync<SimplePostObject.DatabaseEntry>(
             sql, new DynamicParameters( sqlParams )
         );
 
-        var postList = new List<SimplePostWithPriorityEntryData>( posts.Count() );
-
-        foreach( SimplePostWithPriorityEntryData post in posts ) {
-            postList.Add( new SimplePostWithPriorityEntryData(
-                post.Post,
-                post.ComputedPriority
-            ) );
-        }
-
-        return postList.ToArray();
+        return posts;
 	}
 
 

@@ -52,7 +52,7 @@ public class PrioritizedPostController : ControllerBase {
 
 
     [HttpPost(ClientDataAccess_PrioritizedPosts.GetByCriteria_Route)]
-    public async Task<SimplePostWithPriorityEntryData[]> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
