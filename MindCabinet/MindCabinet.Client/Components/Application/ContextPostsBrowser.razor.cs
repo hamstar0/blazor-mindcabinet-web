@@ -10,7 +10,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Client.Components.Application;
 
 
-public partial class SimplePostsBrowser : ComponentBase {
+public partial class ContextPostsBrowser : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -91,7 +91,7 @@ public partial class SimplePostsBrowser : ComponentBase {
         );
         int totalPosts = await this.PostsData.GetCountByCriteria_Async( search );
 
-        return (totalPosts, ( int)Math.Ceiling( (float)totalPosts / (float)this.MaxPostsPerPage ));
+        return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.MaxPostsPerPage ));
     }
 
 

@@ -24,5 +24,5 @@ public partial class Main : ComponentBase {
     public string? Source { get; set; } = null;
 
 
-    private SimplePostsBrowser BrowserComponent = null!;
+    private ContextPostsBrowser BrowserComponent = null!;
 }
