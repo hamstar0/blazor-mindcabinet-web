@@ -4,8 +4,8 @@
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.Term
-@using MindCabinet.Shared.DataObjects.UserContext
+@using MindCabinet.Shared.DataObjects.Term;
+@using MindCabinet.Shared.DataObjects.UserContext;
 
 
 
@@ -47,16 +47,20 @@
 </div>
 
 
-<Modal @ref=@this.ResetPromptDialog Title="Confirm Context Creation">
-	<i>You have unsaved changes. Remove all changes?</i>
-	<div>
-		<button @onclick=@(this.ResetPromptDialog.Close)>
-			Cancel
-		</button>
-		<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
-			Confirm
-		</button>
-	</div>
+<Modal @ref=@this.ResetPromptDialog
+		ModalId="resetContextPrompt"
+		Title="Confirm Context Creation">
+	<BodyContent>
+		<i>You have unsaved changes. Remove all changes?</i>
+		<div>
+			<button @onclick=@(this.ResetPromptDialog.Close)>
+				Cancel
+			</button>
+			<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
+				Confirm
+			</button>
+		</div>
+	</BodyContent>
 </Modal>
 
 

@@ -29,18 +29,20 @@ v0.7
 -	Save tab state with user session data
 -	Implement tabs of posts views
 v0.6
+-	@Ensure singleton services are thread safe
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
--	Set all components that use ClientSessionData to call its Load_Async in their OnInitializationAsync methods
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	Implement custom posts sorting (via hook?)
 		-	Implement pipe from current context to posts view filter tags
-		-	Set context tag priority values to exist in a database
-		-	@Ensure singleton services are thread safe
+		-	Finish implementing SQL for querying by priority (sort by priority order)
+		-	Set context tag priority values to exist as a database table (not just session data)
+		-	@Ensure functionality (post create, user register, user login)
+		-	@Add a default tag to sample posts and to a default context
+
+
 		-	@Ensure app runs
-
-
 		-	@Plan
 			-	Posts are queried as ANY of the context's view (except 'is required' tags)
 			-	Posts are sorted by sum of their context tags' priority metrics

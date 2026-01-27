@@ -7,10 +7,19 @@ namespace MindCabinet.Client.Components.Standard;
 
 public partial class Modal : ComponentBase {
     [Parameter, EditorRequired]
-    public string Title { get; set; } = null!;
+    public string ModalId { get; set; } = null!;
 
     [Parameter, EditorRequired]
-    public RenderFragment? ChildContent { get; set; } = null!;
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment? BodyContent { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; } = null!;
     
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -30,6 +39,20 @@ public partial class Modal : ComponentBase {
     private string ModalClass = "";
     private bool ShowBackdrop = false;
 
+
+
+    public RenderFragment GenerateDialogOpener( string buttonLabel ) {
+        return builder => {
+            int seq = 0;
+            builder.OpenElement( seq++, "button" );
+            builder.AddAttribute( seq++, "class", "btn btn-primary" );
+            builder.AddAttribute( seq++, "type", "button" );
+            builder.AddAttribute( seq++, "data-bs-toggle", "modal" );
+            builder.AddAttribute( seq++, "data-bs-target", $"#{this.ModalId}" );
+            builder.AddContent( seq++, buttonLabel );
+            builder.CloseElement();
+        };
+    }
 
 
     public void Open() {

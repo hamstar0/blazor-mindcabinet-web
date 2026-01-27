@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
+using MindCabinet.Client.Components.SiteFunctions;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
@@ -13,6 +14,9 @@ namespace MindCabinet.Client.Site.Pages;
 
 
 public partial class Home : ComponentBase {
+    private UserLoginForm? LoginFormElement = null;
+
+    
     [Inject]
     private INetMode NetMode { get; set; } = null!;
     

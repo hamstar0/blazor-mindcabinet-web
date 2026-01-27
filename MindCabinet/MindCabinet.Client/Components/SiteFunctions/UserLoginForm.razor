@@ -1,38 +1,37 @@
 ﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Standard;
 
 
 
-<div component-name="UserLoginForm" class=@this.GetClasses id=@this.ModalId>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Login as user</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <input type="text"
-                        title="User name:"
-                        @bind:event="oninput"
-                        @bind:get=@this.UserName
-                        @bind:set=@this.OnInputUserName_UI_Async />
-                <br />
-                <input type="text"
-                       title="Password:"
-                       @bind:event="oninput"
-                       @bind:get=@this.PasswordFiltered
-                       @bind:set=@this.OnInputPassword_UI_Async />
-                @* @bind:set=this.OnInputPassword_UI_Async /> *@
-                <br />
-                <button disabled=@( () => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
-            </div>
-
-            @if( this.LoginStatus is not null ) {
-                <div class="modal-footer">@this.LoginStatus</div>
-            }
-        </div>
-    </div>
-</div>
+<Modal @ref=this.ModalElement
+        ModalId=@this.ModalId
+        Title="User Login"
+        AddedClasses=@this.AddedClasses
+        AddedStyles=@this.AddedStyles>
+    <HeaderContent>
+        <h4 class="modal-title">Login as user</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </HeaderContent>
+    <BodyContent>
+        <input type="text"
+                title="User name:"
+                @bind:event="oninput"
+                @bind:get=@this.UserName
+                @bind:set=@this.OnInputUserName_UI_Async />
+        <br />
+        <input type="text"
+                title="Password:"
+                @bind:event="oninput"
+                @bind:get=@this.PasswordFiltered
+                @bind:set=@this.OnInputPassword_UI_Async />
+        @* @bind:set=this.OnInputPassword_UI_Async /> *@
+        <br />
+        <button disabled=@( () => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+    </BodyContent>
+    <FooterContent>
+        @this.LoginStatus
+    </FooterContent>
+</Modal>
 
 
 
@@ -41,19 +40,15 @@
 
 
 
-    public string GetClasses() {
-        string classes = "modal";
-        if( this.AddedClasses is not null ) {
-            classes += " " + this.AddedClasses;
-        }
-        return classes;
+    public RenderFragment GenerateDialogOpener() {
+        return this.ModalElement.GenerateDialogOpener( buttonLabel: "Login" );
     }
 
     private async Task OnInputUserName_UI_Async( string? val ) {
-        this.UserName = val;
+        this.UserName = val ?? "";
     }
 
     private async Task OnInputPassword_UI_Async( string? src ) {
-        this.Password = src;
+        this.Password = src ?? "";
     }
 }
