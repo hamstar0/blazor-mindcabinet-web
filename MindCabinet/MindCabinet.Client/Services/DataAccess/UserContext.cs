@@ -38,8 +38,8 @@ public partial class ClientDataAccess_UserContext(
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetForCurrentUserByCriteria_Path}/{GetForCurrentUserByCriteria_Route}",
-            parameters
+            requestUri: $"{GetForCurrentUserByCriteria_Path}/{GetForCurrentUserByCriteria_Route}",
+            value: parameters
         );
         
         msg.EnsureSuccessStatusCode();
@@ -88,14 +88,14 @@ public partial class ClientDataAccess_UserContext(
     public const string CreateForCurrentUser_Path = "UserContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
+    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.DatabaseEntry parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{CreateForCurrentUser_Path}/{CreateForCurrentUser_Route}",
-            parameter
+            requestUri: $"{CreateForCurrentUser_Path}/{CreateForCurrentUser_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();
@@ -112,14 +112,14 @@ public partial class ClientDataAccess_UserContext(
     public const string UpdateForCurrentUser_Path = "UserContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.DatabaseEntry parameter ) {
+    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.DatabaseEntry parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{UpdateForCurrentUser_Path}/{UpdateForCurrentUser_Route}",
-            parameter
+            requestUri: $"{UpdateForCurrentUser_Path}/{UpdateForCurrentUser_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();

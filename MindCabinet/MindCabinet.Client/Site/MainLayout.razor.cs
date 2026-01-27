@@ -11,6 +11,4 @@ namespace MindCabinet.Client.Site;
 
 
 public partial class MainLayout : LayoutComponentBase {
-    [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
 }

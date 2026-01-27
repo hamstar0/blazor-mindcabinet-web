@@ -19,8 +19,8 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
 
     public async Task<IEnumerable<TermObject>> GetByIds_Async( IEnumerable<long> termIds ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetByIds_Path}/{GetByIds_Route}",
-            termIds
+            requestUri: $"{GetByIds_Path}/{GetByIds_Route}",
+            value: termIds
         );
         
         msg.EnsureSuccessStatusCode();
@@ -47,8 +47,8 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
 //Console.WriteLine( "GetTermsByCriteria_Async "+JsonSerializer.Serialize(parameters) );
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetByCriteria_Path}/{GetByCriteria_Route}",
-            parameters
+            requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();
@@ -90,8 +90,8 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
     
     public async Task<Create_Return> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{Create_Path}/{Create_Route}",
-            parameters
+            requestUri: $"{Create_Path}/{Create_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();

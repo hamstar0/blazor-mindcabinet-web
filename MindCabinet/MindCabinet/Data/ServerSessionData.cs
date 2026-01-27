@@ -8,12 +8,15 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerSessionData {
-    private readonly IHttpContextAccessor Http;
-    
-    private readonly DbAccess Db;
+    private readonly ILogger<ServerSessionData> Logger;
 
-    private IRequestCookieCollection? ReqCookies => this.Http.HttpContext?.Request.Cookies;
-    private IResponseCookies? RespCookies => this.Http.HttpContext?.Response.Cookies;
+    private readonly IHttpContextAccessor HttpContext;
+
+    private readonly ServerDataAccess_SimpleUsers UserData;
+
+    
+    private IRequestCookieCollection? ReqCookies => this.HttpContext.HttpContext?.Request.Cookies;
+    private IResponseCookies? RespCookies => this.HttpContext.HttpContext?.Response.Cookies;
 
 
     public string? SessionId { get; private set; }
@@ -23,20 +26,19 @@ public partial class ServerSessionData {
     //public IReadOnlyList<string> RenderScripts { get; private set; }
     //
     //private IList<string> _RenderScripts = new List<string>();
+    //this.RenderScripts = this._RenderScripts.AsReadOnly();
 
     public bool IsLoaded { get; private set; } = false;
 
 
 
-    public ServerSessionData( IHttpContextAccessor http, DbAccess db ) {
-        this.Http = http;
-        this.Db = db;
-        //this.RenderScripts = this._RenderScripts.AsReadOnly();
+    public ServerSessionData( ILogger<ServerSessionData> logger, IHttpContextAccessor httpContext, ServerDataAccess_SimpleUsers userData ) {
+        this.Logger = logger;
+        this.HttpContext = httpContext;
+        this.UserData = userData;
     }
 
-
-
-    public async Task<bool> Load_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers userData ) {
+    public async Task<bool> Load_Async( IDbConnection dbCon ) {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
             return false;
         }
@@ -44,16 +46,13 @@ public partial class ServerSessionData {
         string? sessId = null;
         this.ReqCookies?.TryGetValue( "sessionid", out sessId );
 
-        bool isLoggedIn = sessId is not null;
 
-        if( isLoggedIn ) {
-            isLoggedIn = await this.LoadCurrentSessionUser_Async( dbCon, userData, sessId! );
-        }
+        bool isLoggedIn = false;
 
-        if( !isLoggedIn ) {
-            sessId = Guid.NewGuid().ToString();
-
-            this.LoadNewSession( sessId );
+        if( sessId is null ) {
+            this.LoadNewSession();
+        } else {
+            isLoggedIn = await this.LoadExistingSession( dbCon, sessId! );
         }
 
         this.IsLoaded = true;
@@ -62,9 +61,9 @@ public partial class ServerSessionData {
     }
 
 
-    private void LoadNewSession( string sessId ) {
-        this.SessionId = sessId;
-        this.IpAddress = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString();
+    private void LoadNewSession() {
+        this.SessionId = Guid.NewGuid().ToString();
+        this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
         this.PwSalt = new byte[16]; // 128 bits
 
@@ -73,12 +72,11 @@ public partial class ServerSessionData {
         }
 
         this.RespCookies?.Append( "sessionid", this.SessionId );
-//        this._RenderScripts.Add(
-//@"window.SessionDataFromServer = {
-//    CurrentSalt: """+this.PwSalt+@""",
-//    GetSessionData = function() {
-//        return { CurrentSalt: window.SessionDataFromServer.CurrentSalt };
-//    }
-//}" );
+    }
+
+    private async Task<bool> LoadExistingSession( IDbConnection dbCon, string sessId ) {
+        this.SessionId = sessId;
+            
+        return await this.LoadUserOfSession_Async( dbCon, this.UserData, sessId! );
     }
 }

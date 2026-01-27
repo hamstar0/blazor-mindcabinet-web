@@ -47,10 +47,9 @@ public class Program {
         builder.Services.AddHttpContextAccessor();
 
         builder.Services.AddSingleton<ServerSettings>();
-        //////////builder.Services.AddScoped<ClientDbAccess>();  // not AddSingleton?
 
         builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection(conn) );
-        builder.Services.AddTransient<DbAccess>();  // not AddSingleton
+        builder.Services.AddTransient<DbAccess>();  // not AddSingleton, not AddScoped; IDbConnections should be short-lived?
 
         IEnumerable<Type> serverDataAccessServiceTypes = Program.GetInterfaceImplementations( typeof(IServerDataAccess) );
         foreach( Type implementation in serverDataAccessServiceTypes ) {
@@ -58,7 +57,7 @@ public class Program {
         }
 
         builder.Services.AddScoped<ServerSessionData>();
-        builder.Services.AddTransient<ClientSessionData>(); // Unused, but needed for components
+        builder.Services.AddTransient<ClientSessionData>(); // not intended for use on server, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
         
@@ -69,7 +68,7 @@ public class Program {
         app.UseStatusCodePagesWithReExecute( "/StatusCode/{0}" );
 
         // Configure the HTTP request pipeline.
-        if ( app.Environment.IsDevelopment() ) {
+        if( app.Environment.IsDevelopment() ) {
             app.UseWebAssemblyDebugging();
         } else {
             app.UseExceptionHandler( "/Error" );
@@ -83,6 +82,14 @@ public class Program {
         app.UseAntiforgery();
 
         //app.UseSession();
+
+        app.Use( async (HttpContext context, Func<Task> next ) => {
+            var sessionData = context.RequestServices.GetRequiredService<ServerSessionData>();
+            var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
+            using var dbCon = await dbAccess.GetDbConnection_Async();
+            await sessionData.Load_Async( dbCon );
+            await next();
+        } );
 
         app.MapControllers();
         //app.MapFallbackToPage("");

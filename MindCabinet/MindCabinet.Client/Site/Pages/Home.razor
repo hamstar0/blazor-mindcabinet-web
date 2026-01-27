@@ -29,6 +29,7 @@
         <a href="/">Home</a>
         <a href="about">About</a>
         <div class="vr"></div>
+        
         @if( this.SessionData.IsLoaded ) {
             @if( this.SessionData.UserName is not null ) {
                 <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
@@ -54,3 +55,9 @@
         </div>
     </article>
 </main>
+
+
+@if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
+    <UserLoginForm ModalId="loginModal" OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
+    <UserRegistrationForm ModalId="signupModal" OnUserCreate_Async=@(async user => this.SessionData.Login(user)) />
+}

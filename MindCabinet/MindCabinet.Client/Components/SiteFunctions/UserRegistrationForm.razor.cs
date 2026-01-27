@@ -17,9 +17,6 @@ public partial class UserRegistrationForm : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private HttpClient Http { get; set; } = null!;
-
-    [Inject]
     private ClientDataAccess_SimpleUsers SimpleUsersData {get; set; } = null!;
 
     [Inject]
@@ -41,26 +38,6 @@ public partial class UserRegistrationForm : ComponentBase {
     [Parameter, EditorRequired]
     public OnUserCreateFunc_Async OnUserCreate_Async { get; set; } = null!;
 
-
-
-    protected async override Task OnParametersSetAsync() {
-        await base.OnParametersSetAsync();
-
-        await this.SessionData.Load_Async();
-    }
-    
-
-    private async Task OnInputUserName_UI_Async( string val ) {
-        this.UserName = val;
-    }
-
-    private async Task OnInputEmail_UI_Async( string val ) {
-        this.Email = val;
-    }
-
-    private async Task OnInputPassword_UI_Async( string val ) {
-        this.Password = val;
-    }
 
 
     public enum StatusCode {

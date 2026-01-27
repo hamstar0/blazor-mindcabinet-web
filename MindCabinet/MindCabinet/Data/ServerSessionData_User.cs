@@ -17,11 +17,11 @@ public partial class ServerSessionData {
     /**
      * @return `true` if session is a valid user.
      */
-    private async Task<bool> LoadCurrentSessionUser_Async(
+    private async Task<bool> LoadUserOfSession_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 string sessId ) {
-        string ip = this.Http.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
+        string ip = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
         if( string.IsNullOrEmpty(ip) ) {
             throw new Exception( "Who are you?" );
         }
@@ -30,20 +30,14 @@ public partial class ServerSessionData {
             if( this.IpAddress != ip ) {
                 throw new Exception( "Hax!" );  //TODO
             }
-
             if( this.SessionId != sessId ) {
-                throw new Exception( "shit be whack, yo" );
+                throw new Exception( "shit be whack, yo" ); //TODO
             }
+            
             return true;
         }
 
         this.User = await simpleUsersData.GetSimpleUserBySession_Async( dbCon, sessId, ip );
-
-        if( this.User is not null ) {
-            this.SessionId = sessId;
-        } else {
-            this.SessionId = null;
-        }
 
         return this.User is not null;
     }

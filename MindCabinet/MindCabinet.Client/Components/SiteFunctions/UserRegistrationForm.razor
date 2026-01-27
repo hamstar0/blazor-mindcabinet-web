@@ -12,25 +12,25 @@
 
             <div class="modal-body">
                 <input type="text"
-                       title="User name:"
-                       @bind:event="oninput"
-                       @bind:get=@this.UserName
-                       @bind:set=@this.OnInputUserName_UI_Async />
+                        title="User name:"
+                        @bind:event="oninput"
+                        @bind:get=@this.UserName
+                        @bind:set=@this.OnInputUserName_UI_Async />
                 <br />
                 <input type="text"
-                       title="Email:"
-                       @bind:event="oninput"
-                       @bind:get=@this.Email
-                       @bind:set=@this.OnInputEmail_UI_Async />
+                        title="Email:"
+                        @bind:event="oninput"
+                        @bind:get=@this.Email
+                        @bind:set=@this.OnInputEmail_UI_Async />
                 <br />
                 <input type="text"
-                       title="Password:"
-                       @bind:event="oninput"
-                       @bind:get=@( () => new string('*', this.Password.Length) )
-                       @bind:set=@( async (src) => await this.OnInputPassword_UI_Async( src.Invoke() ) ) />
-                @* @bind:set=this.OnInputPassword_UI_Async /> *@
+                        title="Password:"
+                        @bind:event="oninput"
+                        @bind:get=@this.PasswordFiltered
+                        @bind:set=@this.OnInputPassword_UI_Async />
+                        @* @bind:set=this.OnInputPassword_UI_Async /> *@
                 <br />
-                <div>@(this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " ")</div>
+                <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
                 <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
             </div>
         </div>
@@ -40,11 +40,27 @@
 
 
 @code {
+    public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
+
+
+
     public string GetClasses() {
         string classes = "modal";
         if( this.AddedClasses is not null ) {
             classes += " " + this.AddedClasses;
         }
         return classes;
+    }
+
+    private async Task OnInputUserName_UI_Async( string val ) {
+        this.UserName = val;
+    }
+
+    private async Task OnInputEmail_UI_Async( string val ) {
+        this.Email = val;
+    }
+
+    private async Task OnInputPassword_UI_Async( string val ) {
+        this.Password = val;
     }
 }

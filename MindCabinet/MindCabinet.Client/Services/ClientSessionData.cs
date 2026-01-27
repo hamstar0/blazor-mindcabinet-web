@@ -2,26 +2,28 @@
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory ) {
-    public class SessionDataJson(
-                string sessionId,
-                SimpleUserObject.ClientData? userData ) {
-        public string SessionId = sessionId;
-        public SimpleUserObject.ClientData? UserData = userData;
+public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory serviceScopeFactory ) {
+    public class SessionDataJson {
+        public string SessionId { get; set; } = "";
+        public SimpleUserObject.ClientData? UserData { get; set; }
     }
 
 
+
+    private readonly INetMode NetMode = netMode;
 
     private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory;
 
     public bool IsLoaded { get; private set; } = false;
 
-    private bool IsLoading = false;
+    public bool IsLoading { get; private set; } = false;
 
 
     private SessionDataJson? ServerData;
@@ -29,11 +31,15 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
 
 
     public const string Get_Path = "Session";
-    public const string Get_Route = "Get";
+    public const string Get_Route = "GetSession";
 
-    internal async Task Load_Async() {
+    internal async Task<bool> Load_Async() {
+        if( !this.NetMode.IsClientSide ) {
+            return false;
+        }
+
         if( this.IsLoaded || this.IsLoading ) {
-            return;
+            return false;
         }
         this.IsLoading = true;
         
@@ -44,21 +50,34 @@ public partial class ClientSessionData( IServiceScopeFactory serviceScopeFactory
         }
 
         //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
-        HttpResponseMessage msg = await httpClient.GetAsync(
-            $"{Get_Path}/{Get_Route}"
+        HttpResponseMessage msg = await httpClient.PostAsJsonAsync(
+            $"{Get_Path}/{Get_Route}",
+            new object()
         );
 
         msg.EnsureSuccessStatusCode();
 
-        ClientSessionData.SessionDataJson? data = await msg.Content
-            .ReadFromJsonAsync<ClientSessionData.SessionDataJson>();
+        string rawData = await msg.Content.ReadAsStringAsync();
+        if( string.IsNullOrWhiteSpace(rawData) || rawData == "{}" ) {
+            throw new InvalidDataException( "Could not deserialize raw ClientSessionData.SessionDataJson" );
+        }
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        ClientSessionData.SessionDataJson? data = JsonSerializer.Deserialize<ClientSessionData.SessionDataJson>(
+            json: rawData,
+            options: options
+        );
+        // ClientSessionData.SessionDataJson? data = await msg.Content
+        //     .ReadFromJsonAsync<ClientSessionData.SessionDataJson>();
         if( data is null ) {
-            throw new InvalidDataException( "Could not deserialize ClientSessionData.RawServerData" );
+            throw new InvalidDataException( "Could not deserialize ClientSessionData.SessionDataJson" );
         }
 
         this.ServerData = data;
 
         this.IsLoading = false;
         this.IsLoaded = true;
+
+        return true;
     }
 }

@@ -30,7 +30,11 @@ public partial class Home : ComponentBase {
 
 
 
-    //protected async override Task OnParametersSetAsync() {
-    //    await this.SessionData.Load_Async( this.Http );
-    //}
+    protected async override Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        if( await this.SessionData.Load_Async() ) {
+            this.StateHasChanged();
+        }
+    }
 }

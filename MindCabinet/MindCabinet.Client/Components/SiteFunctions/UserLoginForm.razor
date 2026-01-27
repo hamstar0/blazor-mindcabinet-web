@@ -12,16 +12,16 @@
 
             <div class="modal-body">
                 <input type="text"
-                       title="User name:"
-                       @bind:event="oninput"
-                       @bind:get=@this.UserName
-                       @bind:set=@this.OnInputUserName_UI_Async />
+                        title="User name:"
+                        @bind:event="oninput"
+                        @bind:get=@this.UserName
+                        @bind:set=@this.OnInputUserName_UI_Async />
                 <br />
                 <input type="text"
                        title="Password:"
                        @bind:event="oninput"
-                       @bind:get=@( () => new string('*', this.Password.Length) )
-                       @bind:set=@( async (src) => await this.OnInputPassword_UI_Async( src.Invoke() ) ) />
+                       @bind:get=@this.PasswordFiltered
+                       @bind:set=@this.OnInputPassword_UI_Async />
                 @* @bind:set=this.OnInputPassword_UI_Async /> *@
                 <br />
                 <button disabled=@( () => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
@@ -37,11 +37,23 @@
 
 
 @code {
+    public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
+
+
+
     public string GetClasses() {
         string classes = "modal";
         if( this.AddedClasses is not null ) {
             classes += " " + this.AddedClasses;
         }
         return classes;
+    }
+
+    private async Task OnInputUserName_UI_Async( string? val ) {
+        this.UserName = val;
+    }
+
+    private async Task OnInputPassword_UI_Async( string? src ) {
+        this.Password = src;
     }
 }

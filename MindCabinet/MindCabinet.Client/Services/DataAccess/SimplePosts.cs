@@ -42,8 +42,8 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetByCriteria_Path}/{GetByCriteria_Route}",
-            parameters
+            requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();

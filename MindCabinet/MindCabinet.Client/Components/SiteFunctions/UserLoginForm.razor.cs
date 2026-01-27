@@ -17,13 +17,7 @@ public partial class UserLoginForm : ComponentBase {
     //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private HttpClient Http { get; set; } = null!;
-
-    [Inject]
     private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
-
-    [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
 
 
     [Parameter]
@@ -41,22 +35,6 @@ public partial class UserLoginForm : ComponentBase {
 
     public string? LoginStatus = null;
 
-
-
-    protected async override Task OnParametersSetAsync() {
-        await base.OnParametersSetAsync();
-
-        await this.SessionData.Load_Async();
-    }
-    
-
-    private async Task OnInputUserName_UI_Async( string val ) {
-        this.UserName = val;
-    }
-
-    private async Task OnInputPassword_UI_Async( string val ) {
-        this.Password = val;
-    }
 
 
     public bool CanSubmit() {

@@ -14,29 +14,28 @@ namespace MindCabinet.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SessionController : ControllerBase {
-    private DbAccess DbAccess;
-    private ServerDataAccess_Terms TermsData;
-    private ServerSessionData SessData;
+public class SessionController(
+            ILogger<SessionController> logger,
+            ServerDataAccess_Terms termsData,
+            ServerSessionData sessData
+        ) : ControllerBase {
+    private readonly ILogger<SessionController> Logger = logger;
 
+    private readonly ServerDataAccess_Terms TermsData = termsData;
+    private readonly ServerSessionData SessData = sessData;
 
-
-    public SessionController( DbAccess dbAccess, ServerDataAccess_Terms termsData, ServerSessionData sessData ) {
-        this.DbAccess = dbAccess;
-        this.TermsData = termsData;
-        this.SessData = sessData;
-    }
+    
 
     // [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_GetSessionData.route))]
-    [HttpGet(ClientSessionData.Get_Route)]
-    public async Task<ClientSessionData.SessionDataJson> Get_Async() {
+    [HttpPost(ClientSessionData.Get_Route)]
+    public async Task<ClientSessionData.SessionDataJson> Get_Async( object parameters ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        return new ClientSessionData.SessionDataJson(
-            sessionId: this.SessData.SessionId!,
-            userData: this.SessData.User?.GetClientOnlyData()
-        );
+        return new ClientSessionData.SessionDataJson {
+            SessionId = this.SessData.SessionId!,
+            UserData = this.SessData.User?.GetClientOnlyData()
+        };
     }
 }

@@ -37,7 +37,7 @@ public partial class DbAccess {
     }
 
     public async Task<IDbConnection> GetDbConnection_Async( bool validateInstall=true ) {
-        if( this.DbConnectionCache is not null ) {
+        if( this.DbConnectionCache?.State == ConnectionState.Open ) {
             return this.DbConnectionCache;
         }
 
@@ -45,7 +45,8 @@ public partial class DbAccess {
         this.DbConnectionCache.Open();
 
         if( validateInstall ) {
-            dynamic? result = await this.DbConnectionCache.QueryFirstOrDefaultAsync( $"SHOW TABLES LIKE '{ServerDataAccess_SimplePosts.TableName}';" );
+            dynamic? result = await this.DbConnectionCache
+                .QueryFirstOrDefaultAsync( $"SHOW TABLES LIKE '{ServerDataAccess_SimplePosts.TableName}';" );
             // int count = await dbCon.QuerySingleAsync<int>( @"
             //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
             //  WHERE TABLE_NAME = 'Posts'"

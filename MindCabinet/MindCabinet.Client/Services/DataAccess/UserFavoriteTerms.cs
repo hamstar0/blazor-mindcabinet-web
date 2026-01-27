@@ -26,8 +26,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
-            new GetTermIdsForCurrentUser_Params()    //parameters
+            requestUri: $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
+            value: new GetTermIdsForCurrentUser_Params()    //parameters
         );
 
         msg.EnsureSuccessStatusCode();
@@ -55,8 +55,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
-            parameters
+            requestUri: $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();
@@ -77,8 +77,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{RemoveTermsForCurrentUser_Path}/{RemoveTermsForCurrentUser_Route}",
-            parameters
+            requestUri: $"{RemoveTermsForCurrentUser_Path}/{RemoveTermsForCurrentUser_Route}",
+            value: parameters
         );
 
         msg.EnsureSuccessStatusCode();
