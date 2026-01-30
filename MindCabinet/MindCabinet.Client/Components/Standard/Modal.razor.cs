@@ -9,13 +9,13 @@ public partial class Modal : ComponentBase {
     [Parameter, EditorRequired]
     public string ModalId { get; set; } = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter]
     public string Title { get; set; } = null!;
 
     [Parameter]
     public RenderFragment? HeaderContent { get; set; } = null!;
 
-    [Parameter, EditorRequired]
+    [Parameter]
     public RenderFragment? BodyContent { get; set; } = null!;
 
     [Parameter]

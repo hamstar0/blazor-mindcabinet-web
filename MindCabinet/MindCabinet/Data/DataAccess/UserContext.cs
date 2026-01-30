@@ -13,36 +13,15 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserContext : IServerDataAccess {
-    public static async Task<UserContextObject> CreateUserContext_Async(
-                IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                UserContextObject.DatabaseEntry entry ) {
-        IEnumerable<TermObject> entries = await termsData.GetByIds_Async(
-            dbCon: dbCon,
-            termsData: termsData,
-            ids: entry.Entries.Select( e => e.TermId )
-        );
-
-        return new UserContextObject(
-            id: entry.ContextId,
-            name: entry.Name,
-            description: entry.Description,
-            entries: entries.Select( e => new UserContextTermEntryObject(
-                term: e,
-                priority: entry.Entries.First( en => en.TermId == e.Id ).Priority,
-                isRequired: entry.Entries.First( en => en.TermId == e.Id ).IsRequired
-            ) ).ToList()
-        );
-    }
-
-
-
     public const string TableName = "UserContexts";
     public const string EntriesTableName = "UserContextEntries";
 
 
 
-    public async Task<bool> InstallUserContext_Async( IDbConnection dbConnection ) {
+    public async Task<bool> Install_Async(
+                IDbConnection dbConnection,
+                TermObject sampleTerm,
+                long defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 ContextId BIGINT NOT NULL,
@@ -65,24 +44,26 @@ public partial class ServerDataAccess_UserContext : IServerDataAccess {
             );"
         );
 
-        return true;
+        return await this.InstallSamples_Async( dbConnection, sampleTerm, defaultUserId );
     }
     
 
     public async Task<UserContextObject?> GetById_Async( IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
-                long id ) {
+                long contextId ) {
         UserContextObject.DatabaseEntry? usrCtxRaw = await dbCon.QuerySingleAsync<UserContextObject.DatabaseEntry?>(
-            $"SELECT * FROM {TableName} WHERE Id = @Id",
-            new { Id = id }
+            $"SELECT * FROM {TableName} WHERE ContextId = @ContextId",
+            new { ContextId = contextId }
         );
 
         if( usrCtxRaw is null ) {
             return null;
         }
 
-        return await ServerDataAccess_UserContext.CreateUserContext_Async( dbCon, termsData, usrCtxRaw );
+        return await usrCtxRaw.CreateUserContext_Async( async (ids) => {
+            return await termsData.GetByIds_Async( dbCon, termsData, ids );
+        } );
     }
 
 

@@ -1,46 +1,52 @@
 ﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Standard;
 
 
 
-<div component-name="UserRegistrationForm" class=@this.GetClasses id=@this.ModalId>
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Create new user</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body">
-                <input type="text"
-                        title="User name:"
-                        @bind:event="oninput"
-                        @bind:get=@this.UserName
-                        @bind:set=@this.OnInputUserName_UI_Async />
-                <br />
-                <input type="text"
-                        title="Email:"
-                        @bind:event="oninput"
-                        @bind:get=@this.Email
-                        @bind:set=@this.OnInputEmail_UI_Async />
-                <br />
-                <input type="text"
-                        title="Password:"
-                        @bind:event="oninput"
-                        @bind:get=@this.PasswordFiltered
-                        @bind:set=@this.OnInputPassword_UI_Async />
-                        @* @bind:set=this.OnInputPassword_UI_Async /> *@
-                <br />
-                <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
-                <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
-            </div>
-        </div>
-    </div>
-</div>
+<Modal @ref=this.ModalElement
+        ModalId=@this.MyModalId
+        Title="Create new user"
+        AddedClasses=@this.AddedClasses
+        AddedStyles=@this.AddedStyles>
+    <HeaderContent>
+        @* <h4 class="modal-title">Login as user</h4> *@
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </HeaderContent>
+    <BodyContent>
+        <input type="text"
+                title="User name:"
+                @bind:event="oninput"
+                @bind:get=@this.UserName
+                @bind:set=@this.OnInputUserName_UI_Async />
+        <br />
+        <input type="text"
+                title="Email:"
+                @bind:event="oninput"
+                @bind:get=@this.Email
+                @bind:set=@this.OnInputEmail_UI_Async />
+        <br />
+        <input type="text"
+                title="Password:"
+                @bind:event="oninput"
+                @bind:get=@this.PasswordFiltered
+                @bind:set=@this.OnInputPassword_UI_Async />
+                @* @bind:set=this.OnInputPassword_UI_Async /> *@
+        <br />
+        <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
+        <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
+    </BodyContent>
+</Modal>
 
 
 
 @code {
     public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
+
+
+
+    public RenderFragment GenerateDialogOpener() {
+        return this.ModalElement.GenerateDialogOpener( buttonLabel: "Sign Up" );
+    }
 
 
 

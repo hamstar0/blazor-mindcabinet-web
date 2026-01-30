@@ -23,8 +23,7 @@ public partial class UserLoginForm : ComponentBase {
 
     private Modal ModalElement = null!;
 
-    [Parameter, EditorRequired]
-    public string ModalId { get; set; } = null!;
+    private string MyModalId = "UserLoginForm_"+Guid.NewGuid().ToString("N").Substring(0, 8);
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;

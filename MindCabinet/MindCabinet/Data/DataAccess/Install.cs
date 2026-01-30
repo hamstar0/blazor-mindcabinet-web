@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Dapper;
 using static MindCabinet.Program;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -16,9 +17,11 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTermsData ) {
+                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
+                ServerDataAccess_UserContext userContextData ) {
         bool success;
         long defaultUserId;
+        TermObject sampleTerm;
 
         (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
@@ -32,7 +35,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        success = await simplePostsData.Install_Async( dbCon, termsData, termSetsData, defaultUserId );
+        (success, sampleTerm) = await simplePostsData.Install_Async( dbCon, termsData, termSetsData, defaultUserId );
         if( !success ) {
             return false;
         }
@@ -40,7 +43,11 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
+        success = await userContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
+        if( !success ) {
+            return false;
+        }
 
-        return true;
+        return success;
     }
 }

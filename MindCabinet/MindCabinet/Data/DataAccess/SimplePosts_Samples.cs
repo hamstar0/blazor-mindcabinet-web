@@ -2,6 +2,7 @@
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 
 
@@ -9,7 +10,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
-    private async Task InstallSamples_Async(
+    private async Task<(bool success, TermObject sampleTerm)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
@@ -140,5 +141,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                     (Body, Created, Modified, SimpleUserId, TermSetId)
                     VALUES (@Body, @Created, @Modified, @SimpleUserId, @TermSetId)";
         int rowsAffected = await dbConnection.ExecuteAsync( sql, fillerPosts );
+        
+        return (rowsAffected == fillerPosts.Count(), sampleTerm.Term);
     }
 }

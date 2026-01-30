@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
@@ -23,11 +24,16 @@ public partial class UserRegistrationForm : ComponentBase {
     private ClientSessionData SessionData { get; set; } = null!;
 
 
+    private Modal ModalElement = null!;
+
+    private string MyModalId = "UserLoginForm_"+Guid.NewGuid().ToString("N").Substring(0, 8);
+
+
     [Parameter]
     public string? AddedClasses { get; set; } = null;
-
-    [Parameter, EditorRequired]
-    public string ModalId { get; set; } = null!;
+    
+    [Parameter]
+    public string? AddedStyles { get; set; } = null;
 
     private string UserName = "";
 
@@ -186,12 +192,14 @@ public partial class UserRegistrationForm : ComponentBase {
             return false;
         }
 
-        SimpleUserObject.ClientData user = await this.SimpleUsersData.Create_Async( new ClientDataAccess_SimpleUsers.Create_Params(
-            name: this.UserName,
-            email: this.Email,
-            password: this.Password,
-            isValidated: false
-        ) );
+        SimpleUserObject.ClientData user = await this.SimpleUsersData.Create_Async(
+            new ClientDataAccess_SimpleUsers.Create_Params(
+                name: this.UserName,
+                email: this.Email,
+                password: this.Password,
+                isValidated: false
+            )
+        );
 
         await this.OnUserCreate_Async( user );
 

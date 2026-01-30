@@ -11,5 +11,25 @@ public partial class UserContextObject {
         public string? Description;
 
         public IEnumerable<UserContextTermEntryObject.DatabaseEntry> Entries = default!;
+
+
+
+        public async Task<UserContextObject> CreateUserContext_Async( Func<IEnumerable<long>, Task<IEnumerable<TermObject>>> termFactory ) {
+            IEnumerable<TermObject> entries = await termFactory(
+                this.Entries.Select( e => e.TermId )
+            );
+
+            return new UserContextObject(
+                id: this.ContextId,
+                name: this.Name,
+                description: this.Description,
+                entries: entries.Select( t =>
+                    new UserContextTermEntryObject(
+                        term: t,
+                        priority: this.Entries.First( en => en.TermId == t.Id ).Priority,
+                        isRequired: this.Entries.First( en => en.TermId == t.Id ).IsRequired
+                    ) ).ToList()
+            );
+        }
     }
 }

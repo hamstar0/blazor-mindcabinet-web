@@ -15,6 +15,7 @@ namespace MindCabinet.Client.Site.Pages;
 
 public partial class Home : ComponentBase {
     private UserLoginForm? LoginFormElement = null;
+    private UserRegistrationForm? RegistrationFormElement = null;
 
     
     [Inject]

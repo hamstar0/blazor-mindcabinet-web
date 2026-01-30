@@ -13,7 +13,7 @@ v1
 -	Implement admin features
 -	Implement invalid session ip handling
 -	Implement email validation on registration
--	Ensure user is validated before using write or sensitive read API calls
+-	Ensure user is validated before using write or sensitive read API calls (including user API itself)
 v0.9
 -	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
 -	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
@@ -29,6 +29,7 @@ v0.7
 -	Save tab state with user session data
 -	Implement tabs of posts views
 v0.6
+-	@Ensure user registration input data is valid on server
 -	@Ensure singleton services are thread safe
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
@@ -39,9 +40,9 @@ v0.6
 		-	Finish implementing SQL for querying by priority (sort by priority order)
 		-	Set context tag priority values to exist as a database table (not just session data)
 		-	@Ensure functionality (post create, user register, user login)
+
+
 		-	@Add a default tag to sample posts and to a default context
-
-
 		-	@Ensure app runs
 		-	@Plan
 			-	Posts are queried as ANY of the context's view (except 'is required' tags)

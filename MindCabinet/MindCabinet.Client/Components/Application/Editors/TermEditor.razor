@@ -34,8 +34,12 @@
 </div>
 
 
-<Modal @ref=@this.ModalDialog Title="Specify Context">
-    <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_Async />
+<Modal @ref=@this.ModalDialog
+        ModalId=@("termContextSelectorModal_"+Guid.NewGuid().ToString("N").Substring(0, 8))
+        Title="Specify Context">
+    <BodyContent>
+        <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_Async />
+    </BodyContent>
 </Modal>
 
 

@@ -35,6 +35,7 @@
                 <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
             } else {
                 @this.LoginFormElement?.GenerateDialogOpener();
+                @this.RegistrationFormElement?.GenerateDialogOpener();
                 @* <a data-bs-toggle="modal" data-bs-target="#loginModal">Login</a> *@
                 @* <a data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a> *@
             }
@@ -59,8 +60,6 @@
 
 
 @if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
-    <UserLoginForm @ref=this.LoginFormElement
-            ModalId="loginModal"
-            OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
-    @* <UserRegistrationForm ModalId="signupModal" OnUserCreate_Async=@(async user => this.SessionData.Login(user)) /> *@
+    <UserLoginForm @ref=this.LoginFormElement OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
+    <UserRegistrationForm @ref=this.RegistrationFormElement OnUserCreate_Async=@(async user => this.SessionData.Login(user)) />
 }
