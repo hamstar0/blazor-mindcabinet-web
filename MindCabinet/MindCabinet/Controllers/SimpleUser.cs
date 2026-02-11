@@ -16,6 +16,8 @@ namespace MindCabinet.Controllers;
 [ApiController]
 [Route("[controller]")]
 public partial class SimpleUserController : ControllerBase {
+    private readonly ILogger<SimpleUserController> Logger;
+
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
@@ -29,11 +31,13 @@ public partial class SimpleUserController : ControllerBase {
 
 
     public SimpleUserController(
+                ILogger<SimpleUserController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUsers_Sessions sessionsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerSessionData sessData ) {
+        this.Logger = logger;
         this.DbAccess = dbAccess;
         this.SimpleUsersData = simpleUsersData;
         this.SessionsData = sessionsData;
@@ -52,8 +56,7 @@ public partial class SimpleUserController : ControllerBase {
 
         ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersData.CreateSimpleUser_Async(
             dbCon: dbCon,
-            parameters: parameters,
-            pwSalt: this.ServerSessionData.PwSalt!
+            parameters: parameters
         );
 
         if( result.User is not null ) {

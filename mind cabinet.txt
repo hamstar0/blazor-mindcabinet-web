@@ -39,7 +39,10 @@ v0.6
 		-	Implement pipe from current context to posts view filter tags
 		-	Finish implementing SQL for querying by priority (sort by priority order)
 		-	Set context tag priority values to exist as a database table (not just session data)
-		-	@Ensure functionality (post create, user register, user login)
+		-	@Fixes
+			-	Disable tag entry if no user
+			-	Disable post create if no user
+		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 
 
 		-	@Add a default tag to sample posts and to a default context

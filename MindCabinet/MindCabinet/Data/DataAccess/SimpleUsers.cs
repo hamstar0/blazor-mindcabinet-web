@@ -4,6 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
+using System.Security.Cryptography;
 using System.Text;
 
 
@@ -11,7 +12,17 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
-    public static byte[] GetPasswordHash( string password, byte[] pwSalt ) {
+    public static byte[] GeneratePasswordSalt() {
+        byte[] pwSalt = new byte[ SimpleUserObject.PasswordSaltLength ];
+
+        using( var rng = RandomNumberGenerator.Create() ) {
+            rng.GetBytes( pwSalt );
+        }
+
+        return pwSalt;
+    }
+
+    public static byte[] GeneratePasswordHash( string password, byte[] pwSalt ) {
         var argon2id = new Argon2id( Encoding.UTF8.GetBytes( password ) );
         argon2id.Salt = pwSalt;
         argon2id.MemorySize = 12288;
@@ -52,17 +63,20 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //    ON UPDATE CASCADE
         );
         
+        byte[] pwSalt = ServerDataAccess_SimpleUsers.GeneratePasswordSalt();
+        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( "12345", pwSalt );
+
         long defaultUserId = await dbConnection.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
             $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 
                 VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
             SELECT LAST_INSERT_ID();",
             new {
                 Created = DateTime.UtcNow,
-                Name = "hamstar",
+                Name = "hamstar",   // temporary!!!!!
                 Email = "hamstarhelper@gmail.com",
-                PwHash = new byte[SimpleUserObject.PasswordHashLength],
-                PwSalt = new byte[SimpleUserObject.PasswordSaltLength],
-                IsValidated = false,
+                PwHash = pwHash,
+                PwSalt = pwSalt,
+                IsValidated = true,
             }
         );
         //throw new Exception( JsonSerializer.Serialize(obj) );
@@ -72,11 +86,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     //
 
+    private ServerSessionData SessionData;
+    
     private ServerSettings ServerSettings;
 
 
 
-    public ServerDataAccess_SimpleUsers( ServerSettings serverSettings ) {
+    public ServerDataAccess_SimpleUsers( ServerSessionData sessionData, ServerSettings serverSettings ) {
+        this.SessionData = sessionData;
         this.ServerSettings = serverSettings;
     }
 
@@ -167,8 +184,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimpleUsers.Create_Params parameters,
-                byte[] pwSalt ) {
+                ClientDataAccess_SimpleUsers.Create_Params parameters ) {
         var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = parameters.Name }
@@ -179,7 +195,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         DateTime now = DateTime.UtcNow;
 
-        byte[] pwHash = ServerDataAccess_SimpleUsers.GetPasswordHash( parameters.Password, pwSalt );
+        byte[] pwSalt = ServerDataAccess_SimpleUsers.GeneratePasswordSalt();
+        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, pwSalt );
 
         long newUserId = await dbCon.ExecuteScalarAsync<long>(   //QuerySingleAsync
             $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 

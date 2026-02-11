@@ -84,10 +84,15 @@ public class Program {
         //app.UseSession();
 
         app.Use( async (HttpContext context, Func<Task> next ) => {
+            bool isInstall = context.Request.Path.StartsWithSegments( "/Setup/Install", StringComparison.OrdinalIgnoreCase );
+
             var sessionData = context.RequestServices.GetRequiredService<ServerSessionData>();
             var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
-            using var dbCon = await dbAccess.GetDbConnection_Async();
-            await sessionData.Load_Async( dbCon );
+            var users = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
+            using var dbCon = await dbAccess.GetDbConnection_Async( !isInstall );
+
+            await sessionData.Load_Async( dbCon, users, isInstall );
+
             await next();
         } );
 

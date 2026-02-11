@@ -24,10 +24,10 @@ public partial class ServerDataAccess_UserContext : IServerDataAccess {
                 long defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                ContextId BIGINT NOT NULL,
+                ContextId BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 SimpleUserId BIGINT NOT NULL,
                 Name VARCHAR(256) NOT NULL,
-                PRIMARY KEY (ContextId),
+                Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
                 CONSTRAINT FK_UserContextEntries_SessUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"

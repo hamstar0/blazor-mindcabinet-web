@@ -23,12 +23,12 @@ public partial class SimpleUserController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
 
-        var user = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
+        SimpleUserObject? user = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
         if( user is null ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "User not found by name: "+parameters.Name );
         }
 
-        byte[] pwHash = ServerDataAccess_SimpleUsers.GetPasswordHash( parameters.Password, this.ServerSessionData.PwSalt );
+        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, user.PwSalt );
 
         if( !CryptographicOperations.FixedTimeEquals(user.PwHash, pwHash) ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "Invalid password." );

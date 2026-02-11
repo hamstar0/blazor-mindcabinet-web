@@ -9,12 +9,12 @@ namespace MindCabinet.Shared.DataObjects;
 
 public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 	public const int PasswordHashLength = 32;
-	public const int PasswordSaltLength = 16;
+	public const int PasswordSaltLength = 32;	//16;
 
 
 
 	public static string GeneratePwSalt() {
-		return Misc.GetRandomString( 32 );
+		return Misc.GetRandomString( SimpleUserObject.PasswordSaltLength );
 	}
 
     //public static byte[] GetPasswordHash( string password, byte[] pwSalt ) {

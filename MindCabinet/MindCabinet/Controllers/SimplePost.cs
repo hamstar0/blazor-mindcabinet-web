@@ -13,6 +13,8 @@ namespace MindCabinet.Controllers;
 [ApiController]
 [Route("[controller]")]
 public class SimplePostController : ControllerBase {
+    private readonly ILogger<SimplePostController> Logger;
+
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
@@ -28,13 +30,14 @@ public class SimplePostController : ControllerBase {
 
 
     public SimplePostController(
+                ILogger<SimplePostController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_Terms_Sets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerSessionData sessData ) {
-        //this.HttpContext
+        this.Logger = logger;
         this.DbAccess = dbAccess;
         this.SimplePostsData = simplePostsData;
         this.TermsData = termsData;

@@ -20,6 +20,9 @@ public partial class UserLoginForm : ComponentBase {
     [Inject]
     private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
 
+    [Inject]
+    private ClientSessionData SessionData { get; set; } = null!;
+
 
     private Modal ModalElement = null!;
 

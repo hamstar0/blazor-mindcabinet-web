@@ -1,18 +1,20 @@
 ﻿using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace MindCabinet.Data;
 
 
 
-public partial class ServerSessionData {
-    private readonly ILogger<ServerSessionData> Logger;
+public partial class ServerSessionData(
+            ILogger<ServerSessionData> logger,
+            IHttpContextAccessor httpContext ) {
+    private readonly ILogger<ServerSessionData> Logger = logger;
 
-    private readonly IHttpContextAccessor HttpContext;
-
-    private readonly ServerDataAccess_SimpleUsers UserData;
+    private readonly IHttpContextAccessor HttpContext = httpContext;
 
     
     private IRequestCookieCollection? ReqCookies => this.HttpContext.HttpContext?.Request.Cookies;
@@ -32,13 +34,7 @@ public partial class ServerSessionData {
 
 
 
-    public ServerSessionData( ILogger<ServerSessionData> logger, IHttpContextAccessor httpContext, ServerDataAccess_SimpleUsers userData ) {
-        this.Logger = logger;
-        this.HttpContext = httpContext;
-        this.UserData = userData;
-    }
-
-    public async Task<bool> Load_Async( IDbConnection dbCon ) {
+    public async Task<bool> Load_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers userData, bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
             return false;
         }
@@ -46,13 +42,12 @@ public partial class ServerSessionData {
         string? sessId = null;
         this.ReqCookies?.TryGetValue( "sessionid", out sessId );
 
-
         bool isLoggedIn = false;
 
         if( sessId is null ) {
-            this.LoadNewSession();
+            this.LoadNewSession( isInstalling );
         } else {
-            isLoggedIn = await this.LoadExistingSession( dbCon, sessId! );
+            isLoggedIn = await this.LoadExistingSession( dbCon, userData, sessId, isInstalling );
         }
 
         this.IsLoaded = true;
@@ -61,22 +56,23 @@ public partial class ServerSessionData {
     }
 
 
-    private void LoadNewSession() {
+    private void LoadNewSession( bool isInstalling ) {
         this.SessionId = Guid.NewGuid().ToString();
         this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
-
-        this.PwSalt = new byte[16]; // 128 bits
-
-        using( var rng = RandomNumberGenerator.Create() ) {
-            rng.GetBytes( this.PwSalt );
-        }
 
         this.RespCookies?.Append( "sessionid", this.SessionId );
     }
 
-    private async Task<bool> LoadExistingSession( IDbConnection dbCon, string sessId ) {
+    private async Task<bool> LoadExistingSession(
+                IDbConnection dbCon,
+                ServerDataAccess_SimpleUsers userData,
+                string sessId,
+                bool isInstalling ) {
         this.SessionId = sessId;
-            
-        return await this.LoadUserOfSession_Async( dbCon, this.UserData, sessId! );
+        this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
+
+        return isInstalling
+            ? false
+            : await this.LoadUserOfSession_Async( dbCon, userData, sessId! );
     }
 }

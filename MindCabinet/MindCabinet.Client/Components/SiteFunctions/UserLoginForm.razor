@@ -15,18 +15,20 @@
     <BodyContent>
         <input type="text"
                 title="User name:"
+                @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.UserName
                 @bind:set=@this.OnInputUserName_UI_Async />
         <br />
         <input type="text"
                 title="Password:"
+                @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.PasswordFiltered
                 @bind:set=@this.OnInputPassword_UI_Async />
         @* @bind:set=this.OnInputPassword_UI_Async /> *@
         <br />
-        <button disabled=@( () => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
     </BodyContent>
     <FooterContent>
         @this.LoginStatus
@@ -38,17 +40,41 @@
 @code {
     public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
 
+    public bool SubmitDisabled => !this.CanSubmit();
+
 
 
     public RenderFragment GenerateDialogOpener() {
         return this.ModalElement.GenerateDialogOpener( buttonLabel: "Login" );
     }
 
-    private async Task OnInputUserName_UI_Async( string? val ) {
-        this.UserName = val ?? "";
+    private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
+        if( arg.Code == "Enter" || arg.Code == "NumpadEnter" ) {
+            if( this.CanSubmit() ) {
+                await this.Submit_UI_Async();
+            }
+
+            return;
+        }
     }
 
-    private async Task OnInputPassword_UI_Async( string? src ) {
-        this.Password = src ?? "";
+    private async Task OnInputUserName_UI_Async( string? val ) {
+        bool hasChanged = this.UserName != val;
+
+        this.UserName = val ?? "";
+
+        if( hasChanged ) {
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task OnInputPassword_UI_Async( string? val ) {
+        bool hasChanged = this.Password != val;
+        
+        this.Password = val ?? "";
+
+        if( hasChanged ) {
+            this.StateHasChanged();
+        }
     }
 }

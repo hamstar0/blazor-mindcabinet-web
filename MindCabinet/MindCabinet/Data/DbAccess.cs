@@ -10,6 +10,28 @@ namespace MindCabinet.Data;
 
 
 public partial class DbAccess {
+    public static async Task<bool> IsInstalled( IDbConnection dbCon ) {
+        dynamic? result = await dbCon
+            .QueryFirstOrDefaultAsync( $"SHOW TABLES LIKE '{ServerDataAccess_SimplePosts.TableName}';" );
+        // int count = await dbCon.QuerySingleAsync<int>( @"
+        //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
+        //  WHERE TABLE_NAME = 'Posts'"
+        //int count = await dbCon.ExecuteAsync( @"
+        //    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Posts')
+        //    BEGIN
+        //        RETURN 1;
+        //    END
+        //    ELSE
+        //    BEGIN
+        //        RETURN 0;
+        //    END" );
+        // if( count == 0 ) {
+        
+        return result is not null;
+    }
+
+
+
     private readonly ILogger<DbAccess> Logger;
 
     //private SingletonCache Cache;
@@ -45,22 +67,7 @@ public partial class DbAccess {
         this.DbConnectionCache.Open();
 
         if( validateInstall ) {
-            dynamic? result = await this.DbConnectionCache
-                .QueryFirstOrDefaultAsync( $"SHOW TABLES LIKE '{ServerDataAccess_SimplePosts.TableName}';" );
-            // int count = await dbCon.QuerySingleAsync<int>( @"
-            //  SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES
-            //  WHERE TABLE_NAME = 'Posts'"
-            //int count = await dbCon.ExecuteAsync( @"
-            //    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = N'Posts')
-            //    BEGIN
-            //        RETURN 1;
-            //    END
-            //    ELSE
-            //    BEGIN
-            //        RETURN 0;
-            //    END" );
-            // if( count == 0 ) {
-            if( result is null ) {
+            if( !await DbAccess.IsInstalled(this.DbConnectionCache) ) {
                 throw new DataException( "Database not installed." );
             }
         }
