@@ -28,7 +28,7 @@ public class TermController : ControllerBase {
     [HttpPost(ClientDataAccess_Terms.GetByCriteria_Route)]
     public async Task<IEnumerable<TermObject>> GetByCriteria_Async(
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.TermsData.GetTermsByCriteria_Async( dbCon, this.TermsData, parameters );
     }
@@ -36,7 +36,7 @@ public class TermController : ControllerBase {
     [HttpPost(ClientDataAccess_Terms.GetByIds_Route)]
     public async Task<IEnumerable<TermObject>> GetByIds_Async(
                 IEnumerable<long> termIds ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.TermsData.GetByIds_Async( dbCon, this.TermsData, termIds );
     }
@@ -44,7 +44,7 @@ public class TermController : ControllerBase {
     [HttpPost(ClientDataAccess_Terms.Create_Route)]
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 ClientDataAccess_Terms.Create_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.TermsData.Create_Async( dbCon, this.TermsData, parameters );
     }

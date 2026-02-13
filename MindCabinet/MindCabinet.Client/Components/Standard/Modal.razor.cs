@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System.Collections;
 
 namespace MindCabinet.Client.Components.Standard;
 
 
 public partial class Modal : ComponentBase {
+    [Inject]
+    public IJSRuntime Js { get; set; } = null!;
+
     [Parameter, EditorRequired]
     public string ModalId { get; set; } = null!;
 
@@ -37,7 +41,7 @@ public partial class Modal : ComponentBase {
     //private Guid Guid = Guid.NewGuid();
     private string ModalDisplay = "display: none;";
     private string ModalClass = "";
-    private bool ShowBackdrop = false;
+    // private bool ShowBackdrop = false;
 
 
 
@@ -56,16 +60,22 @@ public partial class Modal : ComponentBase {
 
 
     public void Open() {
-        this.ModalDisplay = "display: block;";
-        this.ModalClass = "Show";
-        this.ShowBackdrop = true;
-        this.StateHasChanged();
+        // this.ModalDisplay = "display: block;";
+        // this.ModalClass = "Show";
+        // this.ShowBackdrop = true;
+
+        this.Js.InvokeVoidAsync( "bootstrapOpenModal", this.ModalId );
+
+        // this.StateHasChanged();
     }
 
     public void Close() {
-        this.ModalDisplay = "display: none";
-        this.ModalClass = "";
-        this.ShowBackdrop = false;
-        this.StateHasChanged();
+        // this.ModalDisplay = "display: none";
+        // this.ModalClass = "";
+        // this.ShowBackdrop = false;
+
+        this.Js.InvokeVoidAsync( "bootstrapCloseModal", this.ModalId );
+        
+        // this.StateHasChanged();
     }
 }

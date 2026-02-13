@@ -48,15 +48,19 @@ public partial class SimpleUserController : ControllerBase {
     [HttpPost(ClientDataAccess_SimpleUsers.Create_Route)]
     public async Task<ClientDataAccess_SimpleUsers.Login_Return> Create_Async(
                 ClientDataAccess_SimpleUsers.Create_Params parameters ) {
+        if( parameters.IsValidated ) {
+            return new ClientDataAccess_SimpleUsers.Login_Return( null, "Not permitted." );
+        }
         if( !this.ServerSessionData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersData.CreateSimpleUser_Async(
             dbCon: dbCon,
-            parameters: parameters
+            parameters: parameters,
+            detectCollision: true
         );
 
         if( result.User is not null ) {

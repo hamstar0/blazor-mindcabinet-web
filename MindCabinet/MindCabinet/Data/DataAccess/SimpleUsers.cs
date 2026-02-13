@@ -63,38 +63,42 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //    ON UPDATE CASCADE
         );
         
-        byte[] pwSalt = ServerDataAccess_SimpleUsers.GeneratePasswordSalt();
-        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( "12345", pwSalt );
-
-        long defaultUserId = await dbConnection.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 
-                VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
-            SELECT LAST_INSERT_ID();",
-            new {
-                Created = DateTime.UtcNow,
-                Name = "hamstar",   // temporary!!!!!
-                Email = "hamstarhelper@gmail.com",
-                PwHash = pwHash,
-                PwSalt = pwSalt,
-                IsValidated = true,
-            }
+        SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
+            dbCon: dbConnection,
+            parameters: new ClientDataAccess_SimpleUsers.Create_Params(
+                name: "hamstar",   // temporary!!!!!
+                email: "hamstarhelper@gmail.com",
+                password: "12345",
+                isValidated: true
+            ),
+            detectCollision: false
         );
         //throw new Exception( JsonSerializer.Serialize(obj) );
 
-        return (true, defaultUserId);
+        if( result.User is null ) {
+            throw new Exception( "Failed to create default user: "+result.Status );
+        }
+
+        return (true, result.User.Id);
     }
 
     //
 
-    private ServerSessionData SessionData;
+    private readonly ServerSessionData SessionData;
     
-    private ServerSettings ServerSettings;
+    private readonly ServerSettings ServerSettings;
+
+    private readonly ILogger<ServerDataAccess_SimpleUsers> Logger;
 
 
 
-    public ServerDataAccess_SimpleUsers( ServerSessionData sessionData, ServerSettings serverSettings ) {
+    public ServerDataAccess_SimpleUsers(
+                ServerSessionData sessionData,
+                ServerSettings serverSettings,
+                ILogger<ServerDataAccess_SimpleUsers> logger ) {
         this.SessionData = sessionData;
         this.ServerSettings = serverSettings;
+        this.Logger = logger;
     }
 
     private IDictionary<long, SimpleUserObject> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject>();
@@ -145,10 +149,18 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 string sessionId,
                 string ipAddress ) {
         var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry?>(
-            $@"SELECT * FROM {TableName} AS MyUsers
+            $@"SELECT
+                    MyUsers.*,
+                    MySessions.Id AS SessionId,
+                    MySessions.IpAddress AS IpAddress,
+                    MySessions.SimpleUserId AS SimpleUserId,
+                    MySessions.FirstVisit AS FirstVisit,
+                    MySessions.LatestVisit AS LatestVisit,
+                    MySessions.Visits AS Visits
+                FROM {TableName} AS MyUsers
                 INNER JOIN {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
                     ON (MyUsers.Id = MySessions.SimpleUserId) 
-                WHERE MySessions.SessionId = @SessionId",
+                WHERE MySessions.Id = @SessionId",
             new { SessionId = sessionId }
         );
 
@@ -164,10 +176,17 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         if( !isValidIp || !isNotExpired ) {
+            // SimpleUserObject.UserAndSession_DatabaseEntry? entry =
+            //     await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry>(
+            //         $@"SELECT MySessions.Id FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
+            //             WHERE MySessions.Id = @Id",
+            //         new { Id = sessionId }
+            //     );
+            // if( entry is not null ) {
             await dbCon.ExecuteAsync(
-                $"DELETE FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} WHERE Id = @SessionId",
+                $"DELETE FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} WHERE Id = @Id",
                 new {
-                    SessionId = sessionId
+                    Id = sessionId
                 }
             );
 
@@ -184,13 +203,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimpleUsers.Create_Params parameters ) {
-        var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
-            $"SELECT * FROM {TableName} WHERE Name = @Name",
-            new { Name = parameters.Name }
-        );
-        if( userByName is not null ) {
-            return new SimpleUserQueryResult( null, $"User {parameters.Name} already exists" );
+                ClientDataAccess_SimpleUsers.Create_Params parameters,
+                bool detectCollision ) {
+        if( detectCollision ) {
+            var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+                $"SELECT * FROM {TableName} WHERE Name = @Name",
+                new { Name = parameters.Name }
+            );
+            if( userByName is not null ) {
+                return new SimpleUserQueryResult( null, $"User {parameters.Name} already exists" );
+            }
         }
 
         DateTime now = DateTime.UtcNow;
@@ -208,7 +230,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 Email = parameters.Email,
                 PwHash = pwHash,
                 PwSalt = pwSalt,
-                IsValidated = false
+                IsValidated = parameters.IsValidated
             }
         );
 
@@ -219,7 +241,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             email: parameters.Email,
             pwHash: pwHash,
             pwSalt: pwSalt,
-            isValidated: false
+            isValidated: parameters.IsValidated
         );
 
         return new SimpleUserQueryResult( newUser, $"User {parameters.Name} successfully created." );

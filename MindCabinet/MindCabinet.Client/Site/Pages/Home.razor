@@ -4,6 +4,7 @@
 @using MindCabinet.Client.Components.Layout;
 @using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Components.Application;
+@using MindCabinet.Shared.DataObjects;
 
 
 
@@ -60,6 +61,15 @@
 
 
 @if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
-    <UserLoginForm @ref=this.LoginFormElement OnUserLogin_Async=@(async user => this.SessionData.Login(user)) />
-    <UserRegistrationForm @ref=this.RegistrationFormElement OnUserCreate_Async=@(async user => this.SessionData.Login(user)) />
+    <UserLoginForm @ref=this.LoginFormElement Id="MainLogin" OnUserLogin_Async=@this.OnLogin_UI_Async />
+    <UserRegistrationForm @ref=this.RegistrationFormElement Id="MainRegistration" OnUserCreate_Async=@this.OnLogin_UI_Async />
+}
+
+
+@code {
+    private async Task OnLogin_UI_Async( SimpleUserObject.ClientData user ) {
+        this.SessionData.Login(user);
+
+        this.StateHasChanged();
+    }
 }

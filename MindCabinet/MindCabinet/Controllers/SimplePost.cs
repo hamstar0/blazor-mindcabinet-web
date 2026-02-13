@@ -50,7 +50,7 @@ public class SimplePostController : ControllerBase {
     [HttpPost(ClientDataAccess_SimplePosts.GetByCriteria_Route)]
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
     }
@@ -58,7 +58,7 @@ public class SimplePostController : ControllerBase {
     [HttpPost(ClientDataAccess_SimplePosts.GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsData.GetCountByCriteria_Async( dbCon, parameters );
     }
@@ -69,7 +69,7 @@ public class SimplePostController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsData.Create_Async(
             dbCon: dbCon,

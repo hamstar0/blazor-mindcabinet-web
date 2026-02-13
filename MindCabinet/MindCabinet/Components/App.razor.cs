@@ -23,7 +23,7 @@ public partial class App : ComponentBase {
     protected async override Task OnInitializedAsync() {
         await base.OnInitializedAsync();
 
-        using IDbConnection dbCon = await this.Db.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.Db.GetDbConnection_Async( true );
 
         if( this.ServerSessionData.User is not null ) {
             await this.ServerSessionData.Visit_Async( dbCon, this.UserSessionsData );

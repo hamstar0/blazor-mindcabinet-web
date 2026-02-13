@@ -19,6 +19,10 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerDataAccess_UserContext userContextData ) {
+        if( await DbAccess.IsInstalled(dbCon) ) {
+            return true;
+        }
+        
         bool success;
         long defaultUserId;
         TermObject sampleTerm;

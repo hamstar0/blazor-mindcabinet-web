@@ -26,8 +26,10 @@ public partial class UserRegistrationForm : ComponentBase {
 
     private Modal ModalElement = null!;
 
-    private string MyModalId = "UserLoginForm_"+Guid.NewGuid().ToString("N").Substring(0, 8);
+    private string MyModalId => "UserRegistrationForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
 
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = null!;
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;

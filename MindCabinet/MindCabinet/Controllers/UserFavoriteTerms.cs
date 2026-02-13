@@ -43,7 +43,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.FavoriteTermsData.GetTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
     }
@@ -56,7 +56,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.FavoriteTermsData.AddTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
     }
@@ -69,7 +69,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.FavoriteTermsData.RemoveTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
     }

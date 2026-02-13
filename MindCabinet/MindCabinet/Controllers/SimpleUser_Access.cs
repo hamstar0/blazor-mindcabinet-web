@@ -21,7 +21,7 @@ public partial class SimpleUserController : ControllerBase {
             throw new NullReferenceException( "Session not loaded." );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         SimpleUserObject? user = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
         if( user is null ) {
@@ -30,11 +30,15 @@ public partial class SimpleUserController : ControllerBase {
 
         byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, user.PwSalt );
 
+// this.Logger.LogInformation( "pw: "+parameters.Password
+// +", user.PwHash: "+Encoding.UTF8.GetString(user.PwHash)
+// +", pwHash: "+Encoding.UTF8.GetString(pwHash) );
         if( !CryptographicOperations.FixedTimeEquals(user.PwHash, pwHash) ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "Invalid password." );
         }
 
-        await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
+        await this.SessionsData.CreateSimpleUserSession_Async( dbCon, user, this.ServerSessionData );
+        //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.Login_Return( user.GetClientOnlyData(), "User validated." );
     }
@@ -45,7 +49,7 @@ public partial class SimpleUserController : ControllerBase {
             return;
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
     }

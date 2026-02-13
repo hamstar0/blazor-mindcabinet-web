@@ -58,7 +58,7 @@ public partial class DbAccess {
         this.ConnFactory = connFactory;
     }
 
-    public async Task<IDbConnection> GetDbConnection_Async( bool validateInstall=true ) {
+    public async Task<IDbConnection> GetDbConnection_Async( bool validateInstall ) {
         if( this.DbConnectionCache?.State == ConnectionState.Open ) {
             return this.DbConnectionCache;
         }

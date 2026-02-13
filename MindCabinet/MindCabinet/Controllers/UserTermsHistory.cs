@@ -41,7 +41,7 @@ public partial class UserTermsHistoryController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionData.User.Id, parameters );
     }
@@ -54,7 +54,7 @@ public partial class UserTermsHistoryController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.UserTermsHistoryData.AddTerm_Async( dbCon, this.SessionData.User.Id, parameters );
     }

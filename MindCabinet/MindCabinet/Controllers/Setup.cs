@@ -48,6 +48,11 @@ public class SetupController : ControllerBase {
     [HttpGet("Install")]
     public async Task<string> Install_Async() {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( false );
+
+        if( await DbAccess.IsInstalled(dbCon) ) {
+            return "Already installed.";
+        }
+        
         bool isInstalled = await this.InstallData.Install_Async(
             dbCon,
             this.SimpleUsersData,

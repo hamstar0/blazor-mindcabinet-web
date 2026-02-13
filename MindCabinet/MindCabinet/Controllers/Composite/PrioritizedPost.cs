@@ -54,7 +54,7 @@ public class PrioritizedPostController : ControllerBase {
     [HttpPost(ClientDataAccess_PrioritizedPosts.GetByCriteria_Route)]
     public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetByCriteria_Async(
             dbCon: dbCon,
@@ -68,7 +68,7 @@ public class PrioritizedPostController : ControllerBase {
     [HttpPost(ClientDataAccess_PrioritizedPosts.GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetCountByCriteria_Async(
             dbCon: dbCon,

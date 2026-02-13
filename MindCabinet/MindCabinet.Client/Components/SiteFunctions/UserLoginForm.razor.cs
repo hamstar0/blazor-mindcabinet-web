@@ -3,6 +3,7 @@ using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -26,7 +27,10 @@ public partial class UserLoginForm : ComponentBase {
 
     private Modal ModalElement = null!;
 
-    private string MyModalId = "UserLoginForm_"+Guid.NewGuid().ToString("N").Substring(0, 8);
+    private string MyModalId => "UserLoginForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
+
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = null!;
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -51,21 +55,24 @@ public partial class UserLoginForm : ComponentBase {
         return this.UserName.Length > 0 && this.Password.Length > 0;
     }
 
-    private async Task<bool> Submit_UI_Async() {
+
+    private async Task<(bool success, string status)> Submit_Async( string userName, string password ) {
         ClientDataAccess_SimpleUsers.Login_Return reply = await this.UsersData.Login_Async(
             new ClientDataAccess_SimpleUsers.Login_Params(
-                name: this.UserName,
-                password: this.Password
+                name: userName,
+                password: password
             )
         );
 
+        string status;
+
         if( reply.User is not null ) {
             await this.OnUserLogin_Async( reply.User );
-            this.LoginStatus = null;
+            status = $"Welcome back, {reply.User.Name}!";
         } else {
-            this.LoginStatus = reply.Status;
+            status = reply.Status;
         }
 
-        return reply.User is not null;
+        return (reply.User is not null, status);
     }
 }

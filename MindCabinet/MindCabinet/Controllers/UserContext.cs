@@ -35,7 +35,7 @@ public class UserContextController : ControllerBase {
     [HttpPost(ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Route)]
     public async Task<ClientDataAccess_UserContext.Get_Return> GetForCurrentUserByCriteria_Async(
                 ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters ) {
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.UserContextsData.GetByCriteria_Async( dbCon, this.SessionData.User!.Id, parameters );
     }
@@ -47,7 +47,7 @@ public class UserContextController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.UserContextsData.Create_Async( dbCon, this.SessionData.User.Id, parameters );
     }
@@ -59,7 +59,7 @@ public class UserContextController : ControllerBase {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async();
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.UserContextsData.Update_Async( dbCon, this.SessionData.User.Id, parameters );
     }

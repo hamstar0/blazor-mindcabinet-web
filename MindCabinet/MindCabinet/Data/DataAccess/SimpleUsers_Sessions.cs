@@ -12,13 +12,13 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                SessionId VARCHAR(36) NOT NULL,
+                Id VARCHAR(36) NOT NULL,
                 IpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 FirstVisit DATETIME(2) NOT NULL,
                 LatestVisit DATETIME(2) NOT NULL,
                 Visits INT NOT NULL,
-                PRIMARY KEY (SessionId),
+                PRIMARY KEY (Id),
                 CONSTRAINT FK_SimpleUserSessions_UserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
@@ -53,10 +53,10 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
 
         int rows = await dbCon.ExecuteAsync(
             $@"INSERT INTO {TableName}
-                (SessionId, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
-                VALUES (@SessionId, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
+                (Id, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
+                VALUES (@Id, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
-                SessionId = session.SessionId,
+                Id = session.SessionId,
                 IpAddress = session.IpAddress,
                 SimpleUserId = user.Id,
                 FirstVisit = now,
@@ -80,10 +80,10 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
         int rows = await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
                 SET Visits = Visits + 1, LatestVisit = @Now
-                WHERE SessionId = @SessionId",
+                WHERE Id = @Id",
             new {
                 Now = DateTime.UtcNow,
-                SessionId = session.SessionId
+                Id = session.SessionId
             }
         );
         if( rows == 0 ) {

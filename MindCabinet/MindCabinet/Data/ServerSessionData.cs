@@ -45,7 +45,7 @@ public partial class ServerSessionData(
         bool isLoggedIn = false;
 
         if( sessId is null ) {
-            this.LoadNewSession( isInstalling );
+            await this.LoadNewSession( isInstalling );
         } else {
             isLoggedIn = await this.LoadExistingSession( dbCon, userData, sessId, isInstalling );
         }
@@ -56,7 +56,7 @@ public partial class ServerSessionData(
     }
 
 
-    private void LoadNewSession( bool isInstalling ) {
+    private async Task LoadNewSession( bool isInstalling ) {
         this.SessionId = Guid.NewGuid().ToString();
         this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
