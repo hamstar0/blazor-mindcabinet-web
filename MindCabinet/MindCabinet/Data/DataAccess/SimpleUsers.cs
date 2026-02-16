@@ -206,7 +206,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
         if( detectCollision ) {
-            var userByName = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+            var userByName = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_DatabaseEntry?>(
                 $"SELECT * FROM {TableName} WHERE Name = @Name",
                 new { Name = parameters.Name }
             );

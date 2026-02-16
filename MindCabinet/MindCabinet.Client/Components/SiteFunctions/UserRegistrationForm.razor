@@ -14,33 +14,44 @@
     </HeaderContent>
     <BodyContent>
         <input type="text"
-                title="User name:"
+                title="Enter user name"
+                placeholder="User name"
+                @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.UserName
                 @bind:set=@this.OnInputUserName_UI_Async />
         <br />
-        <input type="text"
-                title="Email:"
+        <input type="email"
+                title="Enter email"
+                placeholder="Email"
+                @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.Email
                 @bind:set=@this.OnInputEmail_UI_Async />
         <br />
-        <input type="text"
-                title="Password:"
+        <input type="password"
+                title="Enter password"
+                placeholder="Password"
+                @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
-                @bind:get=@this.PasswordFiltered
+                @bind:get=@this.Password
                 @bind:set=@this.OnInputPassword_UI_Async />
                 @* @bind:set=this.OnInputPassword_UI_Async /> *@
         <br />
         <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
-        <button disabled=@(this.GetSubmitStatusCode() == 0 ? false : true) @onclick=@this.Submit_UI_Async>Submit</button>
+        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
     </BodyContent>
+    <FooterContent>
+        @this.RegistrationStatus
+    </FooterContent>
 </Modal>
 
 
 
 @code {
-    public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
+    @* public string PasswordFiltered => new string(c: '*', count: this.Password.Length); *@
+
+    public bool SubmitDisabled => !this.CanSubmit();
 
 
 
@@ -48,6 +59,15 @@
         return this.ModalElement.GenerateDialogOpener( buttonLabel: "Sign Up" );
     }
 
+    private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
+        if( arg.Code == "Enter" || arg.Code == "NumpadEnter" ) {
+            if( this.CanSubmit() ) {
+                await this.Submit_UI_Async();
+            }
+
+            return;
+        }
+    }
 
 
     public string GetClasses() {
@@ -59,14 +79,49 @@
     }
 
     private async Task OnInputUserName_UI_Async( string val ) {
-        this.UserName = val;
+        bool hasChanged = this.UserName != val;
+
+        this.UserName = val ?? "";
+
+        if( hasChanged ) {
+            this.StateHasChanged();
+        }
     }
 
     private async Task OnInputEmail_UI_Async( string val ) {
-        this.Email = val;
+        bool hasChanged = this.Email != val;
+
+        this.Email = val ?? "";
+
+        if( hasChanged ) {
+            this.StateHasChanged();
+        }
     }
 
     private async Task OnInputPassword_UI_Async( string val ) {
-        this.Password = val;
+        bool hasChanged = this.Password != val;
+
+        this.Password = val ?? "";
+
+        if( hasChanged ) {
+            this.StateHasChanged();
+        }
+    }
+
+
+    private async Task<bool> Submit_UI_Async() {
+        this.ModalElement.Close();
+
+        bool success = await this.Submit_Async( this.UserName, this.Email, this.Password );
+
+        if( success ) {
+            this.UserName = "";
+            this.Email = "";
+            this.Password = "";
+
+            this.RegistrationStatus = "Registration successful! Please check your email to validate your account.";
+        }
+
+        return success;
     }
 }

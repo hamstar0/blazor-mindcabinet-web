@@ -44,9 +44,16 @@ v0.6
 			-	Disable login form when logged in
 			-	Disable tag entry if no user
 			-	Disable post create if no user
+			-	Change Id back into SessionId
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
+			-	Context entry
+			-	Context tag entry
+			-	Content posting
+			-	User Register
 
 
+			-	User Login
+			-	Install
 		-	@Add a default tag to sample posts and to a default context
 		-	@Ensure app runs
 		-	@Plan

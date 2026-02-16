@@ -38,10 +38,9 @@ public partial class Modal : ComponentBase {
     public bool IsOpen => this.ModalClass == "Show";
 
 
-    //private Guid Guid = Guid.NewGuid();
     private string ModalDisplay = "display: none;";
     private string ModalClass = "";
-    // private bool ShowBackdrop = false;
+    private bool ShowBackdrop = false;
 
 
 
@@ -51,8 +50,9 @@ public partial class Modal : ComponentBase {
             builder.OpenElement( seq++, "button" );
             builder.AddAttribute( seq++, "class", "btn btn-primary" );
             builder.AddAttribute( seq++, "type", "button" );
-            builder.AddAttribute( seq++, "data-bs-toggle", "modal" );
-            builder.AddAttribute( seq++, "data-bs-target", $"#{this.ModalId}" );
+            //builder.AddAttribute( seq++, "data-bs-toggle", "modal" );     <-- These don't like Blazor, it seems
+            //builder.AddAttribute( seq++, "data-bs-target", $"#{this.ModalId}" );
+            builder.AddAttribute( seq++, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, this.Open) );
             builder.AddContent( seq++, buttonLabel );
             builder.CloseElement();
         };
@@ -60,22 +60,22 @@ public partial class Modal : ComponentBase {
 
 
     public void Open() {
-        // this.ModalDisplay = "display: block;";
-        // this.ModalClass = "Show";
-        // this.ShowBackdrop = true;
+        this.ModalDisplay = "display: block;";
+        this.ModalClass = "Show";
+        this.ShowBackdrop = true;
 
-        this.Js.InvokeVoidAsync( "bootstrapOpenModal", this.ModalId );
+        // this.Js.InvokeVoidAsync( "bootstrapOpenModal", this.ModalId );
 
-        // this.StateHasChanged();
+        this.StateHasChanged();
     }
 
     public void Close() {
-        // this.ModalDisplay = "display: none";
-        // this.ModalClass = "";
-        // this.ShowBackdrop = false;
+        this.ModalDisplay = "display: none";
+        this.ModalClass = "";
+        this.ShowBackdrop = false;
 
-        this.Js.InvokeVoidAsync( "bootstrapCloseModal", this.ModalId );
+        // this.Js.InvokeVoidAsync( "bootstrapCloseModal", this.ModalId );
         
-        // this.StateHasChanged();
+        this.StateHasChanged();
     }
 }

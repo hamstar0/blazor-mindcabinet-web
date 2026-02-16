@@ -37,22 +37,3 @@ window.PopupTooltipAtMouseElement_Clear = function( mouseEvt ) {
 };
 */
 
-/**
- * @param {string} id Modal element's id.
- * @returns {void}
- */
-window.bootstrapOpenModal = (id) => {
-  const el = document.getElementById(id);
-  const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
-  modal.show();
-};
-
-/**
- * @param {string} id Modal element's id.
- * @returns {void}
- */
-window.bootstrapCloseModal = (id) => {
-  const el = document.getElementById(id);
-  const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
-  modal.hide();
-};
