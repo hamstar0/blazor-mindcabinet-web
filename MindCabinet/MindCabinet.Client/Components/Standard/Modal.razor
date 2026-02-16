@@ -3,14 +3,16 @@
         id=@this.ModalId
         tabindex="-1"
         role="dialog"
+        @onclick=@this.Close
         style=@this.FullStyles>
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" @onclick:stopPropagation=@true>
         <div class="modal-content">
             <div class="modal-header">
                 @if( !string.IsNullOrWhiteSpace(this.Title) ) {
                     <h5 class="modal-title">@this.Title</h5>
                 }
                 @this.HeaderContent
+                <button type="button" class="btn-close" @onclick=@this.Close></button>
                 @* <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button> *@
@@ -34,7 +36,7 @@
 </div>
 
 @if( this.ShowBackdrop ) {
-    <div component-name="ModalBackdrop" class="modal-backdrop fade show"></div>
+    <div component-name="ModalBackdrop" class="modal-backdrop fade show" @onclick=@this.Close></div>
 }
 
 @* <button @onclick="() => Modal.Open()">Open Modal</button> *@

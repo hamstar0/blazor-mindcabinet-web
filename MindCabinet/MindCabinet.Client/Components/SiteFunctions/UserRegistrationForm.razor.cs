@@ -48,6 +48,8 @@ public partial class UserRegistrationForm : ComponentBase {
 
     private string RegistrationStatus = "";
 
+    private bool HasRegistered = false;
+
 
 
     public enum StatusCode {
@@ -193,16 +195,17 @@ public partial class UserRegistrationForm : ComponentBase {
 
     public bool CanSubmit() {
         //this.GetSubmitStatusCode() == 0 ? false : true
-        return this.GetSubmitStatusCode() == StatusCode.OK;
+        return this.GetSubmitStatusCode() == StatusCode.OK
+            && !this.HasRegistered;
     }
     
-    private async Task<bool> Submit_Async( string userName, string email, string password ) {
+    private async Task<(bool success, string status)> Submit_Async( string userName, string email, string password ) {
         StatusCode code = this.GetSubmitStatusCode();
         if( code != StatusCode.OK ) {
-            return false;
+            return (false, "Invalid input");
         }
 
-        SimpleUserObject.ClientData user = await this.SimpleUsersData.Create_Async(
+        ClientDataAccess_SimpleUsers.Create_Return ret = await this.SimpleUsersData.Create_Async(
             new ClientDataAccess_SimpleUsers.Create_Params(
                 name: userName,
                 email: email,
@@ -211,8 +214,10 @@ public partial class UserRegistrationForm : ComponentBase {
             )
         );
 
-        await this.OnUserCreate_Async( user );
+        if( ret.User is not null ) {
+            await this.OnUserCreate_Async( ret.User );
+        }
 
-        return true;
+        return (ret.User is not null, ret.Status);
     }
 }

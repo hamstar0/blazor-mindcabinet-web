@@ -31,11 +31,16 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
         public string Password { get; } = password;
         public bool IsValidated { get; } = isValidated;
     }
+    
+    public class Create_Return( SimpleUserObject.ClientData? user, string status ) {
+        public SimpleUserObject.ClientData? User { get; } = user;
+        public string Status { get; } = status;
+    }
 
     public const string Create_Path = "SimpleUser";
     public const string Create_Route = "Create";
 
-    public async Task<SimpleUserObject.ClientData> Create_Async( Create_Params parameters ) {
+    public async Task<Create_Return> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{Create_Path}/{Create_Route}",
             value: parameters
@@ -43,9 +48,9 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
 
         msg.EnsureSuccessStatusCode();
 
-        SimpleUserObject.ClientData? ret = await msg.Content.ReadFromJsonAsync<SimpleUserObject.ClientData>();
+        Create_Return? ret = await msg.Content.ReadFromJsonAsync<Create_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize SimpleUserEntry" );
+            throw new InvalidDataException( "Could not deserialize Create_Return" );
         }
 
         return ret;

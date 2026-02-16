@@ -10,7 +10,6 @@
         AddedStyles=@this.AddedStyles>
     <HeaderContent>
         @* <h4 class="modal-title">Login as user</h4> *@
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
     </HeaderContent>
     <BodyContent>
         <input type="text"
@@ -26,12 +25,11 @@
                 placeholder="Password"
                 @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
-                @bind:get=@this.Password    
+                @bind:get=@this.Password
                 @bind:set=@this.OnInputPassword_UI_Async />
-        @* @this.PasswordFiltered *@
-        @* @bind:set=this.OnInputPassword_UI_Async /> *@
+                @* @this.PasswordFiltered *@
         <br />
-        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
+        <button disabled=@(() => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
     </BodyContent>
     <FooterContent>
         @this.LoginStatus
@@ -42,10 +40,6 @@
 
 @code {
     // public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
-
-    public bool SubmitDisabled => !this.CanSubmit();
-
-
 
     public RenderFragment GenerateDialogOpener() {
         return this.ModalElement.GenerateDialogOpener( buttonLabel: "Login" );
@@ -83,14 +77,14 @@
 
 
     private async Task<bool> Submit_UI_Async() {
-        this.ModalElement.Close();
-
         (bool success, this.LoginStatus) = await this.Submit_Async( this.UserName, this.Password );
 
         if( success ) {
             this.UserName = "";
             this.Password = "";
         }
+
+        this.ModalElement.Close();
 
         return success;
     }

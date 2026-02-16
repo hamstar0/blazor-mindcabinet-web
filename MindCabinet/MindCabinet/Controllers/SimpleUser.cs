@@ -46,10 +46,10 @@ public partial class SimpleUserController : ControllerBase {
     }
 
     [HttpPost(ClientDataAccess_SimpleUsers.Create_Route)]
-    public async Task<ClientDataAccess_SimpleUsers.Login_Return> Create_Async(
+    public async Task<ClientDataAccess_SimpleUsers.Create_Return> Create_Async(
                 ClientDataAccess_SimpleUsers.Create_Params parameters ) {
         if( parameters.IsValidated ) {
-            return new ClientDataAccess_SimpleUsers.Login_Return( null, "Not permitted." );
+            return new ClientDataAccess_SimpleUsers.Create_Return( null, "Not permitted." );
         }
         if( !this.ServerSessionData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
@@ -63,17 +63,20 @@ public partial class SimpleUserController : ControllerBase {
             detectCollision: true
         );
 
-        if( result.User is not null ) {
-            await this.SessionsData.CreateSimpleUserSession_Async(
-                dbCon: dbCon,
-                user: result.User,
-                session: this.ServerSessionData
-            );
-        }
+        // if( result.User is not null ) {      <- Do not log in automatically!
+        //     await this.SessionsData.CreateSimpleUserSession_Async(
+        //         dbCon: dbCon,
+        //         user: result.User,
+        //         session: this.ServerSessionData
+        //     );
+        // }
+        this.Logger.LogInformation( "Create user result: {Status}", result.Status );
 
-        return new ClientDataAccess_SimpleUsers.Login_Return(
+        return new ClientDataAccess_SimpleUsers.Create_Return(
             result.User?.GetClientOnlyData(),
-            result.User is not null ? "User created." : "Could not create user."
+            result.User is not null
+                ? "User created. Validate email address and log in to complete registration."
+                : "Could not create user."
         );
     }
 }
