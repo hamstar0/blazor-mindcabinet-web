@@ -40,6 +40,7 @@ v0.6
 		-	Finish implementing SQL for querying by priority (sort by priority order)
 		-	Set context tag priority values to exist as a database table (not just session data)
 		-	@Fixes
+			-	Add login success message alert popup
 			-	Set modal dialogs to have default input focused onto when open
 			-	Disable login form when logged in
 			-	Disable tag entry if no user
@@ -49,9 +50,11 @@ v0.6
 			-	Context entry
 			-	Context tag entry
 			-	Content posting
+			-	New tag posting
+			-	Logout
+
+
 			-	User Register
-
-
 			-	User Login
 			-	Install
 		-	@Add a default tag to sample posts and to a default context

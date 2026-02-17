@@ -15,7 +15,7 @@
         <input type="text"
                 title="Enter user name"
                 placeholder="User name"
-                disabled=@(() => !this.HasRegistered)
+                disabled=@this.CanEditInputs
                 @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.UserName
@@ -24,7 +24,7 @@
         <input type="email"
                 title="Enter email"
                 placeholder="Email"
-                disabled=@(() => !this.HasRegistered)
+                disabled=@this.CanEditInputs
                 @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.Email
@@ -33,7 +33,7 @@
         <input type="password"
                 title="Enter password"
                 placeholder="Password"
-                disabled=@(() => !this.HasRegistered)
+                disabled=@this.CanEditInputs
                 @onkeydown=@this.OnInputKey_UI_Async
                 @bind:event="oninput"
                 @bind:get=@this.Password
@@ -41,7 +41,7 @@
                 @* @bind:set=this.OnInputPassword_UI_Async /> *@
         <br />
         <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
-        <button disabled=@(() => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
     </BodyContent>
     <FooterContent>
         @this.RegistrationStatus
@@ -51,6 +51,12 @@
 
 
 @code {
+    public bool SubmitDisabled => !this.CanSubmit();
+
+    public bool CanEditInputs => !this.HasRegistered;
+
+
+
     public RenderFragment GenerateDialogOpener() {
         return this.ModalElement.GenerateDialogOpener( buttonLabel: "Sign Up" );
     }

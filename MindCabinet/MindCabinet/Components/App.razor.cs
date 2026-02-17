@@ -25,7 +25,7 @@ public partial class App : ComponentBase {
 
         using IDbConnection dbCon = await this.Db.GetDbConnection_Async( true );
 
-        if( this.ServerSessionData.User is not null ) {
+        if( this.ServerSessionData.UserOfSession is not null ) {
             await this.ServerSessionData.Visit_Async( dbCon, this.UserSessionsData );
         }
     }

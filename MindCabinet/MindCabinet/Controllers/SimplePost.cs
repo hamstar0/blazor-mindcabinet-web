@@ -65,7 +65,7 @@ public class SimplePostController : ControllerBase {
 
     [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
     public async Task<SimplePostObject> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -73,7 +73,7 @@ public class SimplePostController : ControllerBase {
 
         return await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
-            simpleUserId: this.SessionData.User.Id,
+            simpleUserId: this.SessionData.UserOfSession.Id,
             termSetsData: this.TermSetsData,
             termHistoryData: this.UserTermsHistoryData,
             parameters: parameters,

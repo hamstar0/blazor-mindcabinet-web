@@ -70,6 +70,19 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
     }
 
 
+    public async Task RemoveSimpleUserBySession_Async( IDbConnection dbCon, string sessionId ) {
+        int rows = await dbCon.ExecuteAsync(
+            $@"DELETE FROM {TableName} WHERE Id = @Id",
+            new {
+                Id = sessionId
+            }
+        );
+        if( rows == 0 ) {
+            throw new Exception( "No session found to remove." );
+        }
+    }
+
+
     public async Task VisitSimpleUserSession_Async(
                 IDbConnection dbCon,
                 ServerSessionData session ) {

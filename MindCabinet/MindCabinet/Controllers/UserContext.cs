@@ -37,30 +37,30 @@ public class UserContextController : ControllerBase {
                 ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserContextsData.GetByCriteria_Async( dbCon, this.SessionData.User!.Id, parameters );
+        return await this.UserContextsData.GetByCriteria_Async( dbCon, this.SessionData.UserOfSession!.Id, parameters );
     }
 
     [HttpPost(ClientDataAccess_UserContext.CreateForCurrentUser_Route)]
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> CreateForCurrentUser_Async(
                 UserContextObject.DatabaseEntry parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserContextsData.Create_Async( dbCon, this.SessionData.User.Id, parameters );
+        return await this.UserContextsData.Create_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 
     [HttpPost(ClientDataAccess_UserContext.UpdateForCurrentUser_Route)]
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> UpdateForCurrentUser_Async(
                 UserContextObject.DatabaseEntry parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserContextsData.Update_Async( dbCon, this.SessionData.User.Id, parameters );
+        return await this.UserContextsData.Update_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 }

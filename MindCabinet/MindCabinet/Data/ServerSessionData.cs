@@ -39,16 +39,19 @@ public partial class ServerSessionData(
             return false;
         }
 
+        this.LoadIp();
+
         string? sessId = null;
         this.ReqCookies?.TryGetValue( "sessionid", out sessId );
 
         bool isLoggedIn = false;
 
         if( sessId is null ) {
-            await this.LoadNewSession( isInstalling );
+            this.LoadNewSessionAndNoUser();
         } else {
-            isLoggedIn = await this.LoadExistingSession( dbCon, userData, sessId, isInstalling );
+            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, userData, sessId, isInstalling );
         }
+// this.Logger.LogInformation( $"SESS: {sessId}, IP: {this.IpAddress}, User: {this.UserOfSession?.Name} ({isLoggedIn})" );
 
         this.IsLoaded = true;
 
@@ -56,23 +59,39 @@ public partial class ServerSessionData(
     }
 
 
-    private async Task LoadNewSession( bool isInstalling ) {
-        this.SessionId = Guid.NewGuid().ToString();
+    private void LoadIp() {
         this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
+        if( string.IsNullOrEmpty(this.IpAddress) ) {
+            throw new Exception( "Who are you?" );
+        }
+    }
+
+    private void LoadNewSessionAndNoUser() {
+        this.SessionId = Guid.NewGuid().ToString();
         this.RespCookies?.Append( "sessionid", this.SessionId );
     }
 
-    private async Task<bool> LoadExistingSession(
+    private async Task<bool> LoadExistingSessionAndItsUser_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers userData,
                 string sessId,
                 bool isInstalling ) {
         this.SessionId = sessId;
-        this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
-        return isInstalling
-            ? false
-            : await this.LoadUserOfSession_Async( dbCon, userData, sessId! );
+        if( isInstalling ) {
+            return false;
+        }
+
+        return await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
+    }
+
+    
+    public async Task LogoutSessionAndItsUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+        await this.LogoutUser_Async( dbCon, sessionsData );
+        
+        //this.RespCookies?.Delete( "sessionid" );
+
+        //this.SessionId = null;
     }
 }

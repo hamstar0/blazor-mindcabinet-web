@@ -16,12 +16,19 @@ namespace MindCabinet.Controllers;
 [Route("[controller]")]
 public class SessionController(
             ILogger<SessionController> logger,
+            DbAccess dbAccess,
+            ServerDataAccess_SimpleUsers_Sessions sessionsData,
             ServerDataAccess_Terms termsData,
             ServerSessionData sessData
         ) : ControllerBase {
     private readonly ILogger<SessionController> Logger = logger;
 
+    private readonly DbAccess DbAccess = dbAccess;
+
+    private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData = sessionsData;
+
     private readonly ServerDataAccess_Terms TermsData = termsData;
+
     private readonly ServerSessionData SessData = sessData;
 
     
@@ -35,7 +42,22 @@ public class SessionController(
 
         return new ClientSessionData.SessionDataJson {
             SessionId = this.SessData.SessionId!,
-            UserData = this.SessData.User?.GetClientOnlyData()
+            UserData = this.SessData.UserOfSession?.GetClientOnlyData()
         };
+    }
+
+
+
+    [HttpGet(ClientSessionData.Logout_Route)]
+    public async Task<string> Logout_Async() {
+        if( !this.SessData.IsLoaded ) {
+            throw new NullReferenceException( "Session not loaded." );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        await this.SessData.LogoutSessionAndItsUser_Async( dbCon, this.SessionsData );
+
+        return "Logout successful.";
     }
 }

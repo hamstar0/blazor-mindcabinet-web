@@ -45,7 +45,7 @@ public partial class SimpleUserController : ControllerBase {
 
     [HttpPost("Visit")]
     public async Task Visit_Async() {
-        if( !this.ServerSessionData.IsLoaded || this.ServerSessionData.User is null ) {
+        if( !this.ServerSessionData.IsLoaded || this.ServerSessionData.UserOfSession is null ) {
             return;
         }
 

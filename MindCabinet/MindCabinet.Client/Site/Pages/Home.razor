@@ -33,7 +33,7 @@
         
         @if( this.SessionData.IsLoaded ) {
             @if( this.SessionData.UserName is not null ) {
-                <a @onclick:preventDefault @onclick=@this.SessionData.Logout>Logout</a>
+                <a @onclick:preventDefault=@true @onclick=@this.Logout_Async>Logout</a>
             } else {
                 @this.LoginFormElement?.GenerateDialogOpener();
                 @this.RegistrationFormElement?.GenerateDialogOpener();
@@ -68,13 +68,19 @@
 
 @code {
     private async Task OnLogin_UI_Async( SimpleUserObject.ClientData user ) {
-        this.SessionData.Login( user );
+        this.SessionData.LocalLogin( user );
 
         this.StateHasChanged();
     }
 
     private async Task OnRegistration_UI_Async( SimpleUserObject.ClientData user ) {
         //this.SessionData.Login(user);     <- No automatic login
+
+        this.StateHasChanged();
+    }
+
+    private async Task Logout_Async() {
+        await this.SessionData.Logout_Async( this.Http );
 
         this.StateHasChanged();
     }

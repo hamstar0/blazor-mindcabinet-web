@@ -8,7 +8,7 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerSessionData {
-    public SimpleUserObject? User { get; private set; }
+    public SimpleUserObject? UserOfSession { get; private set; }
 
 
 
@@ -18,16 +18,9 @@ public partial class ServerSessionData {
     private async Task<bool> LoadUserOfSession_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers userData,
-                string sessId ) {
-        string ip = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
-        if( string.IsNullOrEmpty(ip) ) {
-            throw new Exception( "Who are you?" );
-        }
-
-        if( this.User is not null ) {
-            if( this.IpAddress != ip ) {
-                throw new Exception( "Hax!" );  //TODO
-            }
+                string sessId,
+                string ip ) {
+        if( this.UserOfSession is not null ) {
             if( this.SessionId != sessId ) {
                 throw new Exception( "shit be whack, yo" ); //TODO
             }
@@ -35,13 +28,26 @@ public partial class ServerSessionData {
             return true;
         }
 
-        this.User = await userData.GetSimpleUserBySession_Async( dbCon, sessId, ip );
+        this.UserOfSession = await userData.GetSimpleUserBySession_Async( dbCon, sessId, ip );
 
-        return this.User is not null;
+        return this.UserOfSession is not null;
     }
 
 
     public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
         await sessionsData.VisitSimpleUserSession_Async( dbCon, this );
+    }
+
+
+    public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+        this.UserOfSession = null;
+        
+        if( this.SessionId is null ) {
+            return;
+        }
+
+        await sessionsData.RemoveSimpleUserBySession_Async( dbCon, this.SessionId );
+        
+        //this.SessionId = null;
     }
 }

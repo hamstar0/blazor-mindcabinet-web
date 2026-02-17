@@ -29,7 +29,7 @@
                 @bind:set=@this.OnInputPassword_UI_Async />
                 @* @this.PasswordFiltered *@
         <br />
-        <button disabled=@(() => !this.CanSubmit()) @onclick=@this.Submit_UI_Async>Submit</button>
+        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
     </BodyContent>
     <FooterContent>
         @this.LoginStatus
@@ -40,6 +40,10 @@
 
 @code {
     // public string PasswordFiltered => new string(c: '*', count: this.Password.Length);
+
+    public bool SubmitDisabled => !this.CanSubmit();
+
+
 
     public RenderFragment GenerateDialogOpener() {
         return this.ModalElement.GenerateDialogOpener( buttonLabel: "Login" );

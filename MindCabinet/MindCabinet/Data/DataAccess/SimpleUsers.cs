@@ -169,13 +169,13 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         bool isValidIp = userRaw.IpAddress == ipAddress;
-        bool isNotExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
+        bool isExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
 
         if( !isValidIp ) {
             throw new Exception( "Hax!" );  //TODO
         }
 
-        if( !isValidIp || !isNotExpired ) {
+        if( !isValidIp || isExpired ) {
             // SimpleUserObject.UserAndSession_DatabaseEntry? entry =
             //     await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry>(
             //         $@"SELECT MySessions.Id FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions

@@ -39,38 +39,38 @@ public partial class UserFavoriteTermsController : ControllerBase {
     [HttpPost(ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Route)]
     public async Task<IEnumerable<long>> GetTermIdsForCurrentUserId_Async(
                 ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.FavoriteTermsData.GetTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
+        return await this.FavoriteTermsData.GetTermIds_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 
 
     [HttpPost(ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Route)]
     public async Task AddTermIdsForCurrentUser_Async(
                 ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.AddTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
+        await this.FavoriteTermsData.AddTermIds_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 
 
     [HttpPost(ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Route)]
     public async Task RemoveTermIdsForCurrentUser_Async(
                 ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.User is null ) {
+        if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.RemoveTermIds_Async( dbCon, this.SessionData.User.Id, parameters );
+        await this.FavoriteTermsData.RemoveTermIds_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 }
