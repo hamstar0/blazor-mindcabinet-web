@@ -47,26 +47,28 @@
 </div>
 
 
-<Modal @ref=@this.ResetPromptDialog
-		ModalId=@("UserContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8))
-		Title="Confirm Context Creation">
-	<BodyContent>
-		<i>You have unsaved changes. Remove all changes?</i>
-		<div>
-			<button @onclick=@(this.ResetPromptDialog.Close)>
-				Cancel
-			</button>
-			<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
-				Confirm
-			</button>
-		</div>
-	</BodyContent>
-</Modal>
+<RenderPortal TargetRegion="ModalDialogs">
+	<Modal @ref=@this.ResetPromptDialogComponent
+			ModalId=@("UserContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8))
+			Title="Confirm Context Creation">
+		<BodyContent>
+			<i>You have unsaved changes. Remove all changes?</i>
+			<div>
+				<button @onclick=@(this.ResetPromptDialogComponent.Close)>
+					Cancel
+				</button>
+				<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
+					Confirm
+				</button>
+			</div>
+		</BodyContent>
+	</Modal>
+</RenderPortal>
 
 
 
 @code {
-    private Modal ResetPromptDialog = null!;
+    private Modal ResetPromptDialogComponent = null!;
 
 
 
@@ -116,12 +118,12 @@
 
 	private async Task NewContext_UI_Async( bool forceReset ) {
 		if( await this.HasUnsavedChanges() && !forceReset ) {
-			this.ResetPromptDialog.Open();
+			this.ResetPromptDialogComponent.Open();
 		} else {
 			this.ResetCurrentContext();
 
 			@* if( this.ResetPromptDialog.IsOpen ) { *@
-			this.ResetPromptDialog.Close();
+			this.ResetPromptDialogComponent.Close();
 		}
 	}
 

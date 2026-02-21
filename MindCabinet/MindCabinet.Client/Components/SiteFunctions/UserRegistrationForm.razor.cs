@@ -24,8 +24,6 @@ public partial class UserRegistrationForm : ComponentBase {
     private ClientSessionData SessionData { get; set; } = null!;
 
 
-    private Modal ModalElement = null!;
-
     private string MyModalId => "UserRegistrationForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
 
     [Parameter, EditorRequired]
@@ -49,6 +47,9 @@ public partial class UserRegistrationForm : ComponentBase {
     private string RegistrationStatus = "";
 
     private bool HasRegistered = false;
+
+
+    private Modal? ModalDialogComponent = null;
 
 
 

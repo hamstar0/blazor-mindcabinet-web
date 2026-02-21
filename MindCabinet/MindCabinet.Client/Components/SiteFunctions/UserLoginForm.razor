@@ -3,38 +3,42 @@
 
 
 
-<Modal @ref=this.ModalElement
-        ModalId=@this.MyModalId
-        Title="Login as user"
-        AddedClasses=@this.AddedClasses
-        AddedStyles=@this.AddedStyles>
-    <HeaderContent>
-        @* <h4 class="modal-title">Login as user</h4> *@
-    </HeaderContent>
-    <BodyContent>
-        <input type="text"
-                title="Enter user name"
-                placeholder="User name"
-                @onkeydown=@this.OnInputKey_UI_Async
-                @bind:event="oninput"
-                @bind:get=@this.UserName
-                @bind:set=@this.OnInputUserName_UI_Async />
-        <br />
-        <input type="password"
-                title="Enter password"
-                placeholder="Password"
-                @onkeydown=@this.OnInputKey_UI_Async
-                @bind:event="oninput"
-                @bind:get=@this.Password
-                @bind:set=@this.OnInputPassword_UI_Async />
-                @* @this.PasswordFiltered *@
-        <br />
-        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
-    </BodyContent>
-    <FooterContent>
-        @this.LoginStatus
-    </FooterContent>
-</Modal>
+<RenderPortal TargetRegion="ModalDialogs">
+    @* @key=@this.Id
+        PassRef=@this.GetModalElementRef *@
+    <Modal @ref=this.ModalDialogComponent
+            ModalId=@this.MyModalId
+            Title="Login as user"
+            AddedClasses=@this.AddedClasses
+            AddedStyles=@this.AddedStyles>
+        <HeaderContent>
+            @* <h4 class="modal-title">Login as user</h4> *@
+        </HeaderContent>
+        <BodyContent>
+            <input type="text"
+                    title="Enter user name"
+                    placeholder="User name"
+                    @onkeydown=@this.OnInputKey_UI_Async
+                    @bind:event="oninput"
+                    @bind:get=@this.UserName
+                    @bind:set=@this.OnInputUserName_UI_Async />
+            <br />
+            <input type="password"
+                    title="Enter password"
+                    placeholder="Password"
+                    @onkeydown=@this.OnInputKey_UI_Async
+                    @bind:event="oninput"
+                    @bind:get=@this.Password
+                    @bind:set=@this.OnInputPassword_UI_Async />
+                    @* @this.PasswordFiltered *@
+            <br />
+            <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
+        </BodyContent>
+        <FooterContent>
+            @this.LoginStatus
+        </FooterContent>
+    </Modal>
+</RenderPortal>
 
 
 
@@ -45,8 +49,8 @@
 
 
 
-    public RenderFragment GenerateDialogOpener() {
-        return this.ModalElement.GenerateDialogOpener( buttonLabel: "Login" );
+    public RenderFragment? GenerateDialogOpener() {
+        return this.ModalDialogComponent?.GenerateDialogOpener( buttonLabel: "Login" );
     }
 
     private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
@@ -88,7 +92,7 @@
             this.Password = "";
         }
 
-        this.ModalElement.Close();
+        this.ModalDialogComponent?.Close();
 
         return success;
     }

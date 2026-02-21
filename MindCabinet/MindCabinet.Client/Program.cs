@@ -26,6 +26,7 @@ public class Program {
         var builder = WebAssemblyHostBuilder.CreateDefault( args );
 
         builder.Services.AddSingleton<INetMode, NetModeClient>();
+        builder.Services.AddSingleton<RenderPortalService>();
 
         builder.Services.AddScoped( http => new HttpClient {
             BaseAddress = new Uri( builder.HostEnvironment.BaseAddress )

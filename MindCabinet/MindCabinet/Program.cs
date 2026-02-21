@@ -60,6 +60,7 @@ public class Program {
         builder.Services.AddTransient<ClientSessionData>(); // not intended for use on server, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
+        builder.Services.AddScoped<RenderPortalService>();
         
         //
         

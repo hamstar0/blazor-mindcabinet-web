@@ -1,0 +1,6 @@
+@using MindCabinet.Client.Services;
+
+
+@foreach( RenderFragment frag in this.Portal.GetFragments(this.Region) ) {
+    @frag
+}

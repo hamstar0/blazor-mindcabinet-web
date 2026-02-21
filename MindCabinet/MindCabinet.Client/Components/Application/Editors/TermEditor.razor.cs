@@ -53,7 +53,7 @@ public partial class TermEditor : ComponentBase {
     [Parameter, EditorRequired]
     public OnTermConfirmFunc_Async OnTermConfirm_Async { get; set; } = null!;
     
-    private Modal ModalDialog = null!;
+    private Modal ModalDialogComponent = null!;
 
 
 
@@ -120,7 +120,7 @@ public partial class TermEditor : ComponentBase {
         }
 
         if( context is null ) {
-            this.ModalDialog.Open();
+            this.ModalDialogComponent.Open();
 
             this.InProgressTermEdit = termText;
 

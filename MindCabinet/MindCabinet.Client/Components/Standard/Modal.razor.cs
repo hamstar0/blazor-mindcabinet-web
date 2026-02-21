@@ -32,7 +32,7 @@ public partial class Modal : ComponentBase {
     public string? AddedStyles { get; set; } = null;
 
 
-    public string FullStyles => $"{this.ModalDisplay} {this.AddedStyles}";
+    public string FullStyles => $"{this.ModalDisplay} {this.AddedStyles}";  // position: fixed;
 
 
     public bool IsOpen => this.ModalClass == "Show";
@@ -43,6 +43,16 @@ public partial class Modal : ComponentBase {
     private bool ShowBackdrop = false;
 
 
+
+    // public RenderFragment GenerateBackdrop() {
+    //     return builder => {
+    //         int seq = 0;
+    //         builder.OpenElement( seq++, "div" );
+    //         builder.AddAttribute( seq++, "class", "modal-backdrop fade show" );
+    //         builder.AddAttribute( seq++, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, this.Close) );
+    //         builder.CloseElement();
+    //     };
+    // }
 
     public RenderFragment GenerateDialogOpener( string buttonLabel ) {
         return builder => {

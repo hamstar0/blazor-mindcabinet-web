@@ -3,50 +3,52 @@
 
 
 
-<Modal @ref=this.ModalElement
-        ModalId=@this.MyModalId
-        Title="Create new user"
-        AddedClasses=@this.AddedClasses
-        AddedStyles=@this.AddedStyles>
-    <HeaderContent>
-        @* <h4 class="modal-title">Login as user</h4> *@
-    </HeaderContent>
-    <BodyContent>
-        <input type="text"
-                title="Enter user name"
-                placeholder="User name"
-                disabled=@this.CanEditInputs
-                @onkeydown=@this.OnInputKey_UI_Async
-                @bind:event="oninput"
-                @bind:get=@this.UserName
-                @bind:set=@this.OnInputUserName_UI_Async />
-        <br />
-        <input type="email"
-                title="Enter email"
-                placeholder="Email"
-                disabled=@this.CanEditInputs
-                @onkeydown=@this.OnInputKey_UI_Async
-                @bind:event="oninput"
-                @bind:get=@this.Email
-                @bind:set=@this.OnInputEmail_UI_Async />
-        <br />
-        <input type="password"
-                title="Enter password"
-                placeholder="Password"
-                disabled=@this.CanEditInputs
-                @onkeydown=@this.OnInputKey_UI_Async
-                @bind:event="oninput"
-                @bind:get=@this.Password
-                @bind:set=@this.OnInputPassword_UI_Async />
-                @* @bind:set=this.OnInputPassword_UI_Async /> *@
-        <br />
-        <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
-        <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
-    </BodyContent>
-    <FooterContent>
-        @this.RegistrationStatus
-    </FooterContent>
-</Modal>
+<RenderPortal TargetRegion="ModalDialogs">
+    <Modal @ref=this.ModalDialogComponent
+            ModalId=@this.MyModalId
+            Title="Create new user"
+            AddedClasses=@this.AddedClasses
+            AddedStyles=@this.AddedStyles>
+        <HeaderContent>
+            @* <h4 class="modal-title">Login as user</h4> *@
+        </HeaderContent>
+        <BodyContent>
+            <input type="text"
+                    title="Enter user name"
+                    placeholder="User name"
+                    disabled=@this.CanEditInputs
+                    @onkeydown=@this.OnInputKey_UI_Async
+                    @bind:event="oninput"
+                    @bind:get=@this.UserName
+                    @bind:set=@this.OnInputUserName_UI_Async />
+            <br />
+            <input type="email"
+                    title="Enter email"
+                    placeholder="Email"
+                    disabled=@this.CanEditInputs
+                    @onkeydown=@this.OnInputKey_UI_Async
+                    @bind:event="oninput"
+                    @bind:get=@this.Email
+                    @bind:set=@this.OnInputEmail_UI_Async />
+            <br />
+            <input type="password"
+                    title="Enter password"
+                    placeholder="Password"
+                    disabled=@this.CanEditInputs
+                    @onkeydown=@this.OnInputKey_UI_Async
+                    @bind:event="oninput"
+                    @bind:get=@this.Password
+                    @bind:set=@this.OnInputPassword_UI_Async />
+                    @* @bind:set=this.OnInputPassword_UI_Async /> *@
+            <br />
+            <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
+            <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
+        </BodyContent>
+        <FooterContent>
+            @this.RegistrationStatus
+        </FooterContent>
+    </Modal>
+</RenderPortal>
 
 
 
@@ -57,8 +59,8 @@
 
 
 
-    public RenderFragment GenerateDialogOpener() {
-        return this.ModalElement.GenerateDialogOpener( buttonLabel: "Sign Up" );
+    public RenderFragment? GenerateDialogOpener() {
+        return this.ModalDialogComponent?.GenerateDialogOpener( buttonLabel: "Sign Up" ) ?? default;
     }
 
     private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {

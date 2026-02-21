@@ -1,6 +1,7 @@
 ﻿@using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Components;
 
 
 @inherits LayoutComponentBase;
@@ -11,6 +12,7 @@
 
 <div class="page">
     @this.Body      @* Routed page is rendered here. *@
+    <RenderPortalRegion Region="ModalDialogs" />
 </div>
 
 

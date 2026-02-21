@@ -25,8 +25,6 @@ public partial class UserLoginForm : ComponentBase {
     private ClientSessionData SessionData { get; set; } = null!;
 
 
-    private Modal ModalElement = null!;
-
     private string MyModalId => "UserLoginForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
 
     [Parameter, EditorRequired]
@@ -48,6 +46,9 @@ public partial class UserLoginForm : ComponentBase {
     public OnUserLoginFunc_Async OnUserLogin_Async { get; set; } = null!;
 
     public string? LoginStatus = null;
+
+
+    private Modal? ModalDialogComponent = null;
 
 
 
