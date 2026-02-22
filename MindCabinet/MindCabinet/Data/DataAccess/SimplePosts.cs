@@ -17,7 +17,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 SimplePostObject.DatabaseEntry entry,
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData ) {
+                ServerDataAccess_TermSets termSetsData ) {
         return new SimplePostObject(
             id: entry.Id,
             created: entry.Created,
@@ -33,7 +33,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<(bool success, TermObject sampleTerm)> Install_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 long defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -43,7 +43,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
                 TermSetId INT NOT NULL,
-                CONSTRAINT FK_SimplePosts_PostsUserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
             //    ON DELETE CASCADE
@@ -62,7 +62,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<SimplePostObject?> GetById_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 long id ) {
         SimplePostObject.DatabaseEntry? postRaw = await dbCon.QuerySingleAsync<SimplePostObject.DatabaseEntry?>(
             $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
@@ -102,7 +102,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 (
                     (SELECT (@Tags)) EXCEPT (
                         SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
-                        INNER JOIN {ServerDataAccess_Terms_Sets.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
@@ -142,7 +142,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<SimplePostObject>();
@@ -207,7 +207,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 	public async Task<SimplePostObject> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
                 bool skipHistory ) {

@@ -32,7 +32,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
     public const string TableName = "Terms";
 
-	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_Terms_Sets termsSetsData ) {
+	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_TermSets termsSetsData ) {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -40,9 +40,9 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
-                CONSTRAINT FK_Terms_ContextTermId FOREIGN KEY (ContextId)
+                CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
                     REFERENCES {TableName}(Id),
-                CONSTRAINT FK_Terms_AliasTermId FOREIGN KEY (AliasId)
+                CONSTRAINT FK_{TableName}_AliasId FOREIGN KEY (AliasId)
                     REFERENCES {TableName}(Id)
             );"
         );

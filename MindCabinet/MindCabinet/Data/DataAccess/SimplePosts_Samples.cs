@@ -13,7 +13,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     private async Task<(bool success, TermObject sampleTerm)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 long defaultUserId ) {
         ClientDataAccess_Terms.Create_Return sampleTerm = await termsData.Create_Async(
             dbConnection,

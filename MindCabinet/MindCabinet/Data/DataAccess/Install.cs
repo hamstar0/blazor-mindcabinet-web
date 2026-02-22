@@ -1,9 +1,7 @@
 ﻿using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
-using Dapper;
-using static MindCabinet.Program;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserContext;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -13,12 +11,13 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
-                ServerDataAccess_UserContext userContextData ) {
+                ServerDataAccess_UserContexts userContextData,
+                ServerDataAccess_UserAppData userAppData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
             return true;
         }
@@ -26,6 +25,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         bool success;
         long defaultUserId;
         TermObject sampleTerm;
+        UserContextObject sampleUsrCtx;
 
         (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
@@ -47,7 +47,11 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        success = await userContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
+        (success, sampleUsrCtx) = await userContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
+        if( !success ) {
+            return false;
+        }
+        success = await userAppData.Install_Async( dbCon, defaultUserId, sampleUsrCtx );
         if( !success ) {
             return false;
         }

@@ -16,7 +16,7 @@ namespace MindCabinet.Controllers;
 public class UserContextController : ControllerBase {
     private readonly DbAccess DbAccess;
 
-    private readonly ServerDataAccess_UserContext UserContextsData;
+    private readonly ServerDataAccess_UserContexts UserContextsData;
 
     private readonly ServerSessionData SessionData;
 
@@ -24,7 +24,7 @@ public class UserContextController : ControllerBase {
 
     public UserContextController(
                 DbAccess dbAccess,
-                ServerDataAccess_UserContext userContextsData,
+                ServerDataAccess_UserContexts userContextsData,
                 ServerSessionData sessionData ) {
         this.DbAccess = dbAccess;
         this.UserContextsData = userContextsData;

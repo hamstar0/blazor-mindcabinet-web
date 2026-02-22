@@ -18,9 +18,9 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     
     public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_UserContext userContextData,
+                ServerDataAccess_UserContexts userContextData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return [];
@@ -52,9 +52,9 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_UserContext userContextData,
+                ServerDataAccess_UserContexts userContextData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;

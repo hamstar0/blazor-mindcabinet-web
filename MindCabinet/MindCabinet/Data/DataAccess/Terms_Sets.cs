@@ -8,7 +8,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_Terms_Sets : IServerDataAccess {
+public partial class ServerDataAccess_TermSets : IServerDataAccess {
     public const string TableName = "TermSet";
     public const string IdSupplierTableName = "TermSetIdSupplier";
 
@@ -18,8 +18,8 @@ public partial class ServerDataAccess_Terms_Sets : IServerDataAccess {
             CREATE TABLE {TableName} (
                 SetId INT NOT NULL,
                 TermId BIGINT NOT NULL,
-                CONSTRAINT PK_TermSet_SetAndTermId PRIMARY KEY (SetId, TermId),
-                CONSTRAINT FK_TermSet_TermId FOREIGN KEY (TermId)
+                CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SetId, TermId),
+                CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             )"
             //    ON DELETE CASCADE
@@ -69,7 +69,7 @@ public partial class ServerDataAccess_Terms_Sets : IServerDataAccess {
     public async Task<IEnumerable<TermObject>> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                int termSetId ) {
+                long termSetId ) {
         IEnumerable<TermObject.DatabaseEntry?> termSetRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry?>(
             $@"SELECT MyTerms.Id, MyTerms.Term, MyTerms.ContextId, MyTerms.AliasId
                 FROM {ServerDataAccess_Terms.TableName} AS MyTerms

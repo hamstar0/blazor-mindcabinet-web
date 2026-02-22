@@ -22,11 +22,11 @@ public class PrioritizedPostController : ControllerBase {
 
     private readonly ServerDataAccess_Terms TermsData;
 
-    private readonly ServerDataAccess_Terms_Sets TermSetsData;
+    private readonly ServerDataAccess_TermSets TermSetsData;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerDataAccess_UserContext UserContextData;
+    private readonly ServerDataAccess_UserContexts UserContextData;
 
     private readonly ServerSessionData SessionData;
 
@@ -36,9 +36,9 @@ public class PrioritizedPostController : ControllerBase {
                 DbAccess dbAccess,
                 ServerDataAccess_PrioritizedPosts prioritizedPostsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerDataAccess_UserContext userContextData,
+                ServerDataAccess_UserContexts userContextData,
                 ServerSessionData sessData ) {
         //this.HttpContext
         this.DbAccess = dbAccess;

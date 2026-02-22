@@ -34,12 +34,12 @@ public partial class ServerSessionData {
     }
 
 
-    public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+    public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
         await sessionsData.VisitSimpleUserSession_Async( dbCon, this );
     }
 
 
-    public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+    public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
         this.UserOfSession = null;
         
         if( this.SessionId is null ) {

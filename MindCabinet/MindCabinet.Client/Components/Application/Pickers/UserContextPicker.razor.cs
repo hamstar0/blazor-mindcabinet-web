@@ -44,6 +44,19 @@ public partial class UserContextPicker : ComponentBase {
 
 
 
+	protected async override Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+
+        UserContextObject? currCtx = this.Session.GetCurrentContext();
+
+        if( currCtx is not null ) {
+            this.SearchOptions = new List<UserContextObject>() { currCtx };
+            this.SearchPosition = 0;
+            this.Value = currCtx.Name;
+        }
+Console.WriteLine( $"UserContextPicker initialized with current context: {currCtx?.Name}" ); f
+	}
+
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
         int optionCount = this.SearchOptions.Count();
         if( optionCount == 0 ) {

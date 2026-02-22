@@ -10,6 +10,6 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
         public long Id;
         public DateTime Created;
         public string Body = "";
-        public int TermSetId;
+        public long TermSetId;
     }
 }

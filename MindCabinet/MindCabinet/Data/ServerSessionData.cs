@@ -87,7 +87,7 @@ public partial class ServerSessionData(
     }
 
     
-    public async Task LogoutSessionAndItsUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers_Sessions sessionsData ) {
+    public async Task LogoutSessionAndItsUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
         await this.LogoutUser_Async( dbCon, sessionsData );
         
         //this.RespCookies?.Delete( "sessionid" );

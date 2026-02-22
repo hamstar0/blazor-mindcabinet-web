@@ -3,7 +3,11 @@
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public partial class UserContextObject( long id, string name, string? description, List<UserContextTermEntryObject> entries ) {
+public partial class UserContextObject(
+            long id,
+            string name,
+            string? description,
+            List<UserContextTermEntryObject> entries ) {
     public long Id { get; set; } = id;
 
     public string Name { get; set; } = name;

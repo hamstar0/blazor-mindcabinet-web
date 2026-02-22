@@ -10,8 +10,8 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContext : IServerDataAccess {
-    private async Task<bool> InstallSamples_Async(
+public partial class ServerDataAccess_UserContexts : IServerDataAccess {
+    private async Task<(bool success, UserContextObject userContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 TermObject sampleTerm,
                 long defaultUserId ) {
@@ -26,12 +26,25 @@ public partial class ServerDataAccess_UserContext : IServerDataAccess {
             Entries = new List<UserContextTermEntryObject.DatabaseEntry>() { sampleRawEntry }
         };
 
-        long sampleCtxId = ( await this.Create_Async(
+        long usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
             parameters: sampleRawCtx
-        ) ).UserContextId;
+        )).UserContextId;
 
-        return true;
+        UserContextObject usrCtx = new UserContextObject(
+            id: usrCtxId,
+            name: sampleRawCtx.Name,
+            description: sampleRawCtx.Description,
+            entries: new List<UserContextTermEntryObject>() {
+                new UserContextTermEntryObject(
+                    term: sampleTerm,
+                    priority: sampleRawEntry.Priority,
+                    isRequired: sampleRawEntry.IsRequired
+                )
+            }
+        );
+
+        return (true, usrCtx);
     }
 }

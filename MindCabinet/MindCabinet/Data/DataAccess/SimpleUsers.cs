@@ -158,7 +158,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                     MySessions.LatestVisit AS LatestVisit,
                     MySessions.Visits AS Visits
                 FROM {TableName} AS MyUsers
-                INNER JOIN {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
+                INNER JOIN {ServerDataAccess_SimpleUserSessions.TableName} AS MySessions
                     ON (MyUsers.Id = MySessions.SimpleUserId) 
                 WHERE MySessions.Id = @SessionId",
             new { SessionId = sessionId }
@@ -184,7 +184,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             //     );
             // if( entry is not null ) {
             await dbCon.ExecuteAsync(
-                $"DELETE FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} WHERE Id = @Id",
+                $"DELETE FROM {ServerDataAccess_SimpleUserSessions.TableName} WHERE Id = @Id",
                 new {
                     Id = sessionId
                 }

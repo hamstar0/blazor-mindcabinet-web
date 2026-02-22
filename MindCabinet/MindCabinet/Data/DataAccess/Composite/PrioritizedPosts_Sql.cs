@@ -57,7 +57,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 (
                     (SELECT (@AllTags)) EXCEPT (
                         SELECT MyAllTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAllTerms
-                        INNER JOIN {ServerDataAccess_Terms_Sets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
+                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
                         WHERE MyAllTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
@@ -73,7 +73,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 (
                     (SELECT (@AnyTags)) INTERSECT (
                         SELECT MyAnyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAnyTerms
-                        INNER JOIN {ServerDataAccess_Terms_Sets.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
+                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
                         WHERE MyAnyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NOT NULL

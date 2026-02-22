@@ -2,6 +2,7 @@
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserContext;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -13,6 +14,7 @@ public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory s
     public class SessionDataJson {
         public string SessionId { get; set; } = "";
         public SimpleUserObject.ClientData? UserData { get; set; }
+        public UserAppDataObject.ClientData? UserAppData { get; set; }
     }
 
 

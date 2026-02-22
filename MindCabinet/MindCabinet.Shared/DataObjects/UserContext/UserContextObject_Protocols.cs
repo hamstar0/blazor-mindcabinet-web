@@ -6,7 +6,7 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 public partial class UserContextObject {
     public class DatabaseEntry {
-        public long ContextId = default;
+        public long Id = default;
         public string Name = "";
         public string? Description;
 
@@ -14,13 +14,13 @@ public partial class UserContextObject {
 
 
 
-        public async Task<UserContextObject> CreateUserContext_Async( Func<IEnumerable<long>, Task<IEnumerable<TermObject>>> termFactory ) {
+        public async Task<UserContextObject> CreateUserContextObject_Async( Func<IEnumerable<long>, Task<IEnumerable<TermObject>>> termFactory ) {
             IEnumerable<TermObject> entries = await termFactory(
                 this.Entries.Select( e => e.TermId )
             );
 
             return new UserContextObject(
-                id: this.ContextId,
+                id: this.Id,
                 name: this.Name,
                 description: this.Description,
                 entries: entries.Select( t =>

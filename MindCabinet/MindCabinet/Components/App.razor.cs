@@ -13,7 +13,7 @@ public partial class App : ComponentBase {
     private DbAccess Db { get; set; } = null!;
 
     [Inject]
-    private ServerDataAccess_SimpleUsers_Sessions UserSessionsData { get; set; } = null!;
+    private ServerDataAccess_SimpleUserSessions UserSessionsData { get; set; } = null!;
 
     [Inject]
     private ServerSessionData ServerSessionData { get; set; } = null!;

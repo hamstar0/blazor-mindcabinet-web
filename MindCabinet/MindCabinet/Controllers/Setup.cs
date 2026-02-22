@@ -16,24 +16,26 @@ public class SetupController : ControllerBase {
     private readonly DbAccess DbAccess;
     private readonly ServerDataAccess_Install InstallData;
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
-    private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
+    private readonly ServerDataAccess_SimpleUserSessions SessionsData;
     private readonly ServerDataAccess_UserFavoriteTerms FavoriteTermsData;
     private readonly ServerDataAccess_Terms TermsData;
-    private readonly ServerDataAccess_Terms_Sets TermSetsData;
+    private readonly ServerDataAccess_TermSets TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
-    private readonly ServerDataAccess_UserContext UserContextData;
+    private readonly ServerDataAccess_UserContexts UserContextData;
+    private readonly ServerDataAccess_UserAppData UserAppDataData;
 
 
 
     public SetupController( DbAccess dbAccess,
                 ServerDataAccess_Install installData,
                 ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_UserContext userContextData ) {
+                ServerDataAccess_UserContexts userContextData,
+                ServerDataAccess_UserAppData userAppDataData ) {
         this.DbAccess = dbAccess;
         this.InstallData = installData;
         this.SimpleUsersData = simpleUsersData;
@@ -43,6 +45,7 @@ public class SetupController : ControllerBase {
         this.TermSetsData = termSetsData;
         this.SimplePostsData = simplePostsData;
         this.UserContextData = userContextData;
+        this.UserAppDataData = userAppDataData;
     }
 
     [HttpGet("Install")]
@@ -61,7 +64,8 @@ public class SetupController : ControllerBase {
             this.TermSetsData,
             this.SimplePostsData,
             this.FavoriteTermsData,
-            this.UserContextData
+            this.UserContextData,
+            this.UserAppDataData
         );
 
         if( isInstalled ) {

@@ -17,7 +17,7 @@ namespace MindCabinet.Controllers;
 public class SessionController(
             ILogger<SessionController> logger,
             DbAccess dbAccess,
-            ServerDataAccess_SimpleUsers_Sessions sessionsData,
+            ServerDataAccess_SimpleUserSessions sessionsData,
             ServerDataAccess_Terms termsData,
             ServerSessionData sessData
         ) : ControllerBase {
@@ -25,7 +25,7 @@ public class SessionController(
 
     private readonly DbAccess DbAccess = dbAccess;
 
-    private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData = sessionsData;
+    private readonly ServerDataAccess_SimpleUserSessions SessionsData = sessionsData;
 
     private readonly ServerDataAccess_Terms TermsData = termsData;
 
@@ -42,7 +42,8 @@ public class SessionController(
 
         return new ClientSessionData.SessionDataJson {
             SessionId = this.SessData.SessionId!,
-            UserData = this.SessData.UserOfSession?.GetClientOnlyData()
+            UserData = this.SessData.UserOfSession?.GetClientOnlyData(),
+            UserAppData = current context id
         };
     }
 

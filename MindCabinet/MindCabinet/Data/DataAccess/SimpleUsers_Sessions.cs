@@ -6,7 +6,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
+public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     public const string TableName = "SimpleUserSessions";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
@@ -19,7 +19,7 @@ public partial class ServerDataAccess_SimpleUsers_Sessions : IServerDataAccess {
                 LatestVisit DATETIME(2) NOT NULL,
                 Visits INT NOT NULL,
                 PRIMARY KEY (Id),
-                CONSTRAINT FK_SimpleUserSessions_UserId FOREIGN KEY (SimpleUserId)
+                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         //    ON DELETE CASCADE

@@ -41,7 +41,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         public int Visits;
     }
 
-    public class UserAndSession_DatabaseEntry : User_DatabaseEntry {    // no multiple inheritance
+    public class UserAndSession_DatabaseEntry : User_DatabaseEntry {    // no multiple inheritance :(
         public string SessionId = "";
         public string IpAddress = "";
         public long SimpleUserId;

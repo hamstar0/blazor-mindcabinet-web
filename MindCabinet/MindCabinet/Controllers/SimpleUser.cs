@@ -22,7 +22,7 @@ public partial class SimpleUserController : ControllerBase {
 
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
 
-    private readonly ServerDataAccess_SimpleUsers_Sessions SessionsData;
+    private readonly ServerDataAccess_SimpleUserSessions SessionsData;
 
     private readonly ServerDataAccess_UserFavoriteTerms FavoriteTermsData;
     
@@ -34,7 +34,7 @@ public partial class SimpleUserController : ControllerBase {
                 ILogger<SimpleUserController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerSessionData sessData ) {
         this.Logger = logger;

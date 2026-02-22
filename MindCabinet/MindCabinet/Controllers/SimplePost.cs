@@ -21,7 +21,7 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_Terms TermsData;
 
-    private readonly ServerDataAccess_Terms_Sets TermSetsData;
+    private readonly ServerDataAccess_TermSets TermSetsData;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
@@ -34,7 +34,7 @@ public class SimplePostController : ControllerBase {
                 DbAccess dbAccess,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_Terms_Sets termSetsData,
+                ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerSessionData sessData ) {
         this.Logger = logger;

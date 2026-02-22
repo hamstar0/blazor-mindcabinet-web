@@ -4,4 +4,4 @@
 
 
 <UserContextPicker OnContextSelect_Async=@this.OnContextSelect_Async />
-<UserContextEditor InitialContext=@this.CurrentContext />
+<UserContextEditor InitialContext=@this.SessionData.GetCurrentContext() />

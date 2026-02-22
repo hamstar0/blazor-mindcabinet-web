@@ -27,7 +27,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
     public UserFavoriteTermsController(
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUsers_Sessions sessionsData,
+                ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
                 ServerSessionData sessionData ) {
         this.DbAccess = dbAccess;
