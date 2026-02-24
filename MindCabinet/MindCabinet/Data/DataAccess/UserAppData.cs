@@ -57,20 +57,23 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
 
 
-    public async Task<ClientDataAccess_UserAppData.Create_Return> Create_Async(
+    public async Task<UserAppDataObject> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                UserAppDataObject.DatabaseEntry parameters ) {
+                UserContextObject userContext ) {
         long _ = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, ContextId) 
                 VALUES (@SimpleUserId, @ContextId);
             SELECT LAST_INSERT_ID();",
             new {
                 SimpleUserId = simpleUserId,
-                ContextId = parameters.ContextId
+                ContextId = userContext.Id
             }
         );
 
-        return new ClientDataAccess_UserAppData.Create_Return();
+        return new UserAppDataObject(
+            simpleUserId,
+            userContext
+        );
     }
 }

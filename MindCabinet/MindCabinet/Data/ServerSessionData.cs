@@ -30,6 +30,13 @@ public partial class ServerSessionData(
     //private IList<string> _RenderScripts = new List<string>();
     //this.RenderScripts = this._RenderScripts.AsReadOnly();
 
+    
+    public SimpleUserObject? UserOfSession { get; private set; }
+
+    public UserAppDataObject? UserAppData { get; private set; }
+
+
+
     public bool IsLoaded { get; private set; } = false;
 
 
@@ -75,6 +82,7 @@ public partial class ServerSessionData(
     private async Task<bool> LoadExistingSessionAndItsUser_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimpleUsers userData,
+                ServerDataAccess_UserAppData userAppData,
                 string sessId,
                 bool isInstalling ) {
         this.SessionId = sessId;
@@ -83,7 +91,13 @@ public partial class ServerSessionData(
             return false;
         }
 
-        return await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
+        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
+
+        if( isLoggedIn ) {
+            this.UserAppData = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+        }
+
+        return isLoggedIn;
     }
 
     

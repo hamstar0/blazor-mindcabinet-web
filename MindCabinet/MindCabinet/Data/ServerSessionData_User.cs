@@ -8,10 +8,6 @@ namespace MindCabinet.Data;
 
 
 public partial class ServerSessionData {
-    public SimpleUserObject? UserOfSession { get; private set; }
-
-
-
     /**
      * @return `true` if session is a valid user.
      */

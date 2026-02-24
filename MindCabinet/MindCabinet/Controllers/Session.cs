@@ -43,7 +43,7 @@ public class SessionController(
         return new ClientSessionData.SessionDataJson {
             SessionId = this.SessData.SessionId!,
             UserData = this.SessData.UserOfSession?.GetClientOnlyData(),
-            UserAppData = current context id
+            UserAppData = this.SessData.UserAppData
         };
     }
 

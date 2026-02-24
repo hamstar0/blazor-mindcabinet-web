@@ -14,7 +14,7 @@ public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory s
     public class SessionDataJson {
         public string SessionId { get; set; } = "";
         public SimpleUserObject.ClientData? UserData { get; set; }
-        public UserAppDataObject.ClientData? UserAppData { get; set; }
+        public UserAppDataObject? UserAppData { get; set; }
     }
 
 

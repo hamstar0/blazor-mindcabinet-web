@@ -46,11 +46,14 @@ v0.6
 			-	Disable tag entry if no user
 			-	Disable post create if no user
 			-	Change Id back into SessionId
+			-	Normalize Create method return value conventions
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Context entry
 			-	Context tag entry
 			-	Content posting
 			-	New tag posting
+			-	User's current context
+			-	Restructure data Objects to supply relevant FK ids as properties
 
 
 			-	Logout
