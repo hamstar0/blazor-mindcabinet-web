@@ -7,8 +7,8 @@ using System.Text;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimpleUserObject : IEquatable<SimpleUserObject> {    public long Id { get; private set; }
-
+public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
+	public long Id { get; private set; }
 
 	public DateTime Created { get; set; }
 

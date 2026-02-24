@@ -9,16 +9,20 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
         public string? Term;
 
-        public Prototype? Context;
+        public IdDataObject<TermObject>? Context;
 
-        public Prototype? Alias;
+        public IdDataObject<TermObject>? Alias;
 
 
 
         public override string ToString() {
-		    return this.Context is not null
-			    ? $"{this.Term ?? "-"} ({this.Context.Term ?? "-"})"
-			    : this.Term ?? "-";
+            string ctx = this.Context is not null
+                ? this.Context!.Data is not null
+                    ? " ("+this.Context.Data!.Term+")"
+                    : " {"+this.Context.Id+"}"
+                : "";
+
+		    return this.Term ?? ctx;
         }
     }
 }

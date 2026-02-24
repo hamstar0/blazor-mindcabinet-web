@@ -1,4 +1,5 @@
-﻿using MindCabinet.Shared.DataObjects.Term;
+﻿using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using System.Text.Json.Serialization;
 
 
@@ -13,11 +14,11 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
     public string Body { get; set; }
 
-    public List<TermObject> Tags { get; set; }
+    public List<IdDataObject<TermObject>> Tags { get; set; }
 
 
 
-	public SimplePostObject( long id, DateTime created, string body, List<TermObject> tags ) {
+	public SimplePostObject( long id, DateTime created, string body, List<IdDataObject<TermObject>> tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;
@@ -38,18 +39,20 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Body != other.Body ) { return false; }
 		if( this.Tags.Count != other.Tags.Count ) { return false; }
-		if( !this.Tags.All( t => other.Tags.Any(t2 => t2.Equals(t))) ) { return false; }
+		if( !this.Tags.All( kv => other.Tags.Any(kv2 => kv2.Id == kv.Id) ) ) { return false; }
 		return true;
 	}
 
 
-	public bool Test( string bodyPattern, ISet<TermObject> tags ) {
-		if( !string.IsNullOrEmpty(bodyPattern) && !this.Body.Contains(bodyPattern) ) {
-			return false;
+	public bool Test( string bodyPattern, IEnumerable<long> tagIds ) {
+		if( !string.IsNullOrEmpty(bodyPattern) ) {
+			 if( !this.Body.Contains(bodyPattern) ) {	// TODO
+				return false;
+			}
 		}
 
-		if( tags.Count() > 0 ) {
-			if( !tags.All(t => this.Tags.Any(t2 => t2.Equals(t))) ) {
+		if( tagIds.Count() > 0 ) {
+			if( !tagIds.All(id => this.Tags.Any(t => t.Id == id)) ) {
 				return false;
 			}
 		}

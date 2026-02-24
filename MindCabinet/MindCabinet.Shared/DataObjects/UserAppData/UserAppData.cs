@@ -6,8 +6,8 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class UserAppDataObject( long simpleUserId, UserContextObject userContext ) {
+public partial class UserAppDataObject( long simpleUserId, IdDataObject<UserContextObject> userContext ) {
 	public long SimpleUserId { get; private set; } = simpleUserId;
 
-	public UserContextObject UserContext { get; set; } = userContext;
+	public IdDataObject<UserContextObject> UserContext { get; set; } = userContext;
 }
