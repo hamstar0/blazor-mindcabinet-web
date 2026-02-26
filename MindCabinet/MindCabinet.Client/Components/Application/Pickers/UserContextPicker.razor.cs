@@ -54,7 +54,6 @@ public partial class UserContextPicker : ComponentBase {
             this.SearchPosition = 0;
             this.Value = currCtx.Name;
         }
-Console.WriteLine( $"UserContextPicker initialized with current context: {currCtx?.Name}" ); f
 	}
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {

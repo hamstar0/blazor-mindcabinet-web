@@ -14,8 +14,9 @@ public partial class UserContextObject {
 
 
 
-        public async Task<UserContextObject> CreateUserContextObject_Async( Func<IEnumerable<long>, Task<IEnumerable<TermObject>>> termFactory ) {
-            IEnumerable<TermObject> entries = await termFactory(
+        public async Task<UserContextObject> CreateUserContextObject_Async(
+                    Func<IEnumerable<long>, Task<IEnumerable<IdDataObject<UserContextTermEntryObject>>>> termFactory ) {
+            IEnumerable<IdDataObject<UserContextTermEntryObject>> entries = await termFactory(
                 this.Entries.Select( e => e.TermId )
             );
 
@@ -23,12 +24,7 @@ public partial class UserContextObject {
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
-                entries: entries.Select( t =>
-                    new UserContextTermEntryObject(
-                        term: t,
-                        priority: this.Entries.First( en => en.TermId == t.Id ).Priority,
-                        isRequired: this.Entries.First( en => en.TermId == t.Id ).IsRequired
-                    ) ).ToList()
+                entries: entries.ToList()
             );
         }
     }

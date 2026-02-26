@@ -10,7 +10,8 @@ public partial class UserContextTermEntryObject {
         public double Priority = default;
         public bool IsRequired = default;
 
-		public async Task<UserContextTermEntryObject> CreateUserContextTermEntry_Async( Func<long, Task<TermObject>> termFactory ) {
+		public async Task<UserContextTermEntryObject> CreateUserContextTermEntry_Async(
+                    Func<long, Task<IdDataObject<TermObject>>> termFactory ) {
             return new UserContextTermEntryObject(
                 term: await termFactory( this.TermId ),
                 priority: this.Priority,

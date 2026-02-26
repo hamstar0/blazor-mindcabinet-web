@@ -52,7 +52,10 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         }
 
         return await usrAppDataRaw.CreateUserAppDataObject_Async(
-            async (usrCtxId) => await userContextsData.GetById_Async(dbCon, termsData, termSetsData, usrCtxId)
+            async (usrCtxId) => new IdDataObject<UserContextObject> {
+                Id = usrCtxId,
+                Data = await userContextsData.GetById_Async( dbCon, termsData, termSetsData, usrCtxId )
+            }
         );
     }
 
@@ -60,20 +63,20 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<UserAppDataObject> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                UserContextObject userContext ) {
+                long userContextId ) {
         long _ = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, ContextId) 
                 VALUES (@SimpleUserId, @ContextId);
             SELECT LAST_INSERT_ID();",
             new {
                 SimpleUserId = simpleUserId,
-                ContextId = userContext.Id
+                ContextId = userContextId
             }
         );
 
         return new UserAppDataObject(
             simpleUserId,
-            userContext
+            new IdDataObject<UserContextObject> { Id = userContextId }
         );
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Data;
+using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
 namespace MindCabinet.Shared.DataObjects.UserContext;
@@ -14,6 +15,10 @@ public partial class UserContextObject {
 
 
         public bool Matches( UserContextObject other ) {
+            if( other.Entries.Any(e => e.Data is null) ) {
+                throw new DataException( "Could not compare prototype to a context with missing entry data." );
+            }
+
             if( this.Name != other.Name ) {
                 return false;
             }
@@ -23,14 +28,14 @@ public partial class UserContextObject {
             if( this.Entries.Count != other.Entries.Count ) {
                 return false;
             }
-
+            
             for( int i = 0; i < this.Entries.Count; i++ ) {
                 UserContextTermEntryObject.DatabaseEntry entryA = this.Entries[i];
-                UserContextTermEntryObject entryB = other.Entries[i];
+                IdDataObject<UserContextTermEntryObject> entryB = other.Entries[i];
 
-                if( entryA.TermId != entryB.Term.Id
-                    || entryA.Priority != entryB.Priority
-                    || entryA.IsRequired != entryB.IsRequired ) {
+                if( entryA.TermId != entryB.Data!.Term.Id
+                    || entryA.Priority != entryB.Data!.Priority
+                    || entryA.IsRequired != entryB.Data!.IsRequired ) {
                     return false;
                 }
             }
