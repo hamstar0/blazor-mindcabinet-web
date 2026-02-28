@@ -22,7 +22,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             id: entry.Id,
             created: entry.Created,
             body: entry.Body,
-            tags: (await termSetsData.GetTermSet_Async(dbCon, termsData, entry.TermSetId)).ToList()
+            tags: await termSetsData.GetTermSet_Async(dbCon, termsData, entry.TermSetId)
         );
     }
 
@@ -229,6 +229,8 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             created: now,
             body: parameters.Body,
             tags: parameters.Tags
+                .Select( t => new IdDataObject<TermObject> { Id = t.Id, Data = t } )
+                .ToList()
         );
 
         if( !skipHistory ) {

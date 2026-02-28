@@ -8,6 +8,7 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 public partial class UserContextObject {
     public class Prototype {
         public string? Name;
+        
         public string? Description;
 
         public List<UserContextTermEntryObject.DatabaseEntry> Entries = new List<UserContextTermEntryObject.DatabaseEntry>();
@@ -15,10 +16,6 @@ public partial class UserContextObject {
 
 
         public bool Matches( UserContextObject other ) {
-            if( other.Entries.Any(e => e.Data is null) ) {
-                throw new DataException( "Could not compare prototype to a context with missing entry data." );
-            }
-
             if( this.Name != other.Name ) {
                 return false;
             }
@@ -31,11 +28,11 @@ public partial class UserContextObject {
             
             for( int i = 0; i < this.Entries.Count; i++ ) {
                 UserContextTermEntryObject.DatabaseEntry entryA = this.Entries[i];
-                IdDataObject<UserContextTermEntryObject> entryB = other.Entries[i];
+                UserContextTermEntryObject entryB = other.Entries[i];
 
-                if( entryA.TermId != entryB.Data!.Term.Id
-                    || entryA.Priority != entryB.Data!.Priority
-                    || entryA.IsRequired != entryB.Data!.IsRequired ) {
+                if( entryA.TermId != entryB.Term.Id
+                    || entryA.Priority != entryB.Priority
+                    || entryA.IsRequired != entryB.IsRequired ) {
                     return false;
                 }
             }

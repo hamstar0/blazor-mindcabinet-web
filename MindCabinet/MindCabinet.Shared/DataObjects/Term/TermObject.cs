@@ -1,24 +1,32 @@
 ﻿using System.Text.Json.Serialization;
+using MindCabinet.Shared.Utility;
 
 namespace MindCabinet.Shared.DataObjects.Term;
 
 
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
-    public long Id { get; set; }
+    public long Id { get; private set; }
 
     public string Term { get; set; }
 
-    public IdDataObject<TermObject>? Context { get; set; }
+    public IdDataObject<TermObject>? Context { get; private set; }
 
-    public IdDataObject<TermObject>? Alias { get; set; }
+    public IdDataObject<TermObject>? Alias { get; private set; }
 
 
 
-	public TermObject( long id, string term, IdDataObject<TermObject>? context, IdDataObject<TermObject>? alias ) {
+	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
 		this.Id = id;
 		this.Term = term;
-		this.Context = context;
-		this.Alias = alias;
+		this.Context = context is not null ? new IdDataObject<TermObject> { Id = context.Id, Data = context } : null;
+		this.Alias = alias is not null ? new IdDataObject<TermObject> { Id = alias.Id, Data = alias } : null;
+    }
+
+	public TermObject( long id, string term, long? contextId, long? aliasId ) {
+		this.Id = id;
+		this.Term = term;
+		this.Context = contextId is not null ? new IdDataObject<TermObject> { Id = contextId.Value, Data = null } : null;
+		this.Alias = aliasId is not null ? new IdDataObject<TermObject> { Id = aliasId.Value, Data = null } : null;
     }
 
 
@@ -90,18 +98,18 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     }
 
     public Prototype ToPrototype() {
-        IdDataObject<TermObject>? ctx = this.Context is not null 
-            ? new IdDataObject<TermObject> { Id = this.Context.Id, Data = this.Context.Data }
-            : null;
-        IdDataObject<TermObject>? alias = this.Alias is not null 
-            ? new IdDataObject<TermObject> { Id = this.Alias.Id, Data = this.Alias.Data }
-            : null;
+        // IdDataObject<TermObject>? ctx = this.Context is not null 
+        //     ? new IdDataObject<TermObject> { Id = this.Context.Id, Data = this.Context.Data }
+        //     : null;
+        // IdDataObject<TermObject>? alias = this.Alias is not null 
+        //     ? new IdDataObject<TermObject> { Id = this.Alias.Id, Data = this.Alias.Data }
+        //     : null;
 
         return new Prototype {
             Id = this.Id,
             Term = this.Term,
-            Context = ctx,
-            Alias = alias
+            ContextTermId = new PrimitiveOptional<long>( value: this.Context?.Id ),
+            AliasTermId = new PrimitiveOptional<long>( value: this.Alias?.Id )
         };
     }
 }

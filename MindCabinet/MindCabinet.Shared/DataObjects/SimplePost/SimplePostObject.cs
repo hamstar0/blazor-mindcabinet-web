@@ -1,5 +1,6 @@
 ﻿using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using System.Data;
 using System.Text.Json.Serialization;
 
 
@@ -10,15 +11,15 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 	public long Id { get; private set; }
 
 
-	public DateTime Created { get; set; }
+	public DateTime Created { get; private set; }
 
-    public string Body { get; set; }
+    public string Body { get; private set; }
 
-    public List<IdDataObject<TermObject>> Tags { get; set; }
+    public TermSetObject Tags { get; private set; }
 
 
 
-	public SimplePostObject( long id, DateTime created, string body, List<IdDataObject<TermObject>> tags ) {
+	public SimplePostObject( long id, DateTime created, string body, TermSetObject tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;
@@ -38,8 +39,13 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 	public bool ContentEquals( SimplePostObject other, bool includeCreateDate ) {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Body != other.Body ) { return false; }
-		if( this.Tags.Count != other.Tags.Count ) { return false; }
-		if( !this.Tags.All( kv => other.Tags.Any(kv2 => kv2.Id == kv.Id) ) ) { return false; }
+		if( this.Tags?.TermSet.Count != other.Tags?.TermSet.Count ) { return false; }
+		if( this.Tags is not null ) {
+			SortedSet<TermObject> otherTermSet = other.Tags!.TermSet;
+			if( !this.Tags.TermSet.All( kv => otherTermSet.Any(kv2 => kv2.Id == kv.Id) ) ) {
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -52,7 +58,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 		}
 
 		if( tagIds.Count() > 0 ) {
-			if( !tagIds.All(id => this.Tags.Any(t => t.Id == id)) ) {
+			if( this.Tags is null || !tagIds.All(id => this.Tags.TermSet.Any(t => t.Id == id)) ) {
 				return false;
 			}
 		}

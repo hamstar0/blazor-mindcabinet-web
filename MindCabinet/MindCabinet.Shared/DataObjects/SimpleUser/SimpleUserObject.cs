@@ -10,17 +10,17 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 	public long Id { get; private set; }
 
-	public DateTime Created { get; set; }
+	public DateTime Created { get; private set; }
 
     public string Name { get; set; }
 
-    public string Email { get; set; }
+    public string Email { get; private set; }
 
-	public byte[] PwHash { get; set; }
+	public byte[] PwHash { get; private set; }
 
-	public byte[] PwSalt { get; set; }
+	public byte[] PwSalt { get; private set; }
 
-	public bool IsValidated { get; set; }
+	public bool IsValidated { get; private set; }
 
 
 

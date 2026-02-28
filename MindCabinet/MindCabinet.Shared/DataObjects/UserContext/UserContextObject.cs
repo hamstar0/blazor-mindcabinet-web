@@ -7,35 +7,27 @@ public partial class UserContextObject(
             long id,
             string name,
             string? description,
-            List<IdDataObject<UserContextTermEntryObject>> entries ) {
-    public long Id { get; set; } = id;
+            List<UserContextTermEntryObject> entries ) {
+    public long Id { get; private set; } = id;
 
-    public string Name { get; set; } = name;
+    public string Name { get; private set; } = name;
     
-    public string? Description { get; set; } = description;
+    public string? Description { get; private set; } = description;
 
-    public List<IdDataObject<UserContextTermEntryObject>> Entries { get; set; } = entries;
+    public List<UserContextTermEntryObject> Entries { get; private set; } = entries;
 
 
 
-    public (bool allEntriesAvailable, IEnumerable<UserContextTermEntryObject> availableEntries) GetRequiredEntries() {
-        if( this.Entries.Any(e => e.Data is null) ) {
-            return (false, []);
-        }
-        return (true, this.Entries
-            .Select( e => e.Data! )
-            .Where( e => e.IsRequired )
-        );
+    public IEnumerable<UserContextTermEntryObject> GetRequiredEntries() {
+        return this.Entries
+            .Select( e => e )
+            .Where( e => e.IsRequired );
     }
 
-    public (bool allEntriesAvailable, IEnumerable<UserContextTermEntryObject> availableEntries) GetOptionalEntries() {
-        if( this.Entries.Any(e => e.Data is null) ) {
-            return (false, []);
-        }
-        return (true, this.Entries
-            .Select( e => e.Data! )
-            .Where( e => !e.IsRequired )
-        );
+    public IEnumerable<UserContextTermEntryObject> GetOptionalEntries() {
+        return this.Entries
+            .Select( e => e )
+            .Where( e => !e.IsRequired );
     }
     
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using MindCabinet.Shared.Utility;
 
 namespace MindCabinet.Shared.DataObjects.Term;
 
@@ -9,20 +10,8 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
         public string? Term;
 
-        public IdDataObject<TermObject>? Context;
+        public PrimitiveOptional<long>? ContextTermId;
 
-        public IdDataObject<TermObject>? Alias;
-
-
-
-        public override string ToString() {
-            string ctx = this.Context is not null
-                ? this.Context!.Data is not null
-                    ? " ("+this.Context.Data!.Term+")"
-                    : " {"+this.Context.Id+"}"
-                : "";
-
-		    return this.Term ?? ctx;
-        }
+        public PrimitiveOptional<long>? AliasTermId;
     }
 }

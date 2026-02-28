@@ -66,7 +66,7 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task<IEnumerable<TermObject>> GetTermSet_Async(
+    public async Task<TermSetObject.DatabaseEntry> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 long termSetId ) {

@@ -7,7 +7,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     public class DatabaseEntry {
         public long Id = default;
         public string Term = "";
-        public long? ContextId = null;
-        public long? AliasId = null;
+        public long? ContextTermId = null;
+        public long? AliasTermId = null;
     }
 }

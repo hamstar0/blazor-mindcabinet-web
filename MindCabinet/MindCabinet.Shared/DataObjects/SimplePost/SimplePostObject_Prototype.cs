@@ -13,6 +13,6 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
 		public string? Body;
 
-		public List<TermObject>? Tags;
+		public List<long>? Tags;
 	}
 }

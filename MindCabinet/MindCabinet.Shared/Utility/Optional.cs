@@ -13,9 +13,9 @@ public struct Optional<T> where T : class? {
 
     public Optional() { }
 
-    public Optional( T value ) {
+    public Optional( T? value ) {
         this.Value = value;
-        this.HasValue = true;
+        this.HasValue = value is not null;
     }
 
     public void Set( T value ) {
@@ -26,5 +26,15 @@ public struct Optional<T> where T : class? {
     public void Unset() {
         this.Value = default;
         this.HasValue = false;
+    }
+}
+
+
+public struct PrimitiveOptional<T> where T : struct {
+    public T? Value { get; private set; } = default;
+
+
+    public PrimitiveOptional( T? value ) {
+        this.Value = value;
     }
 }

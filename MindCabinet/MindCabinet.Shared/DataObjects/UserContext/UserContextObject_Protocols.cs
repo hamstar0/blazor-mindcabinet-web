@@ -15,8 +15,8 @@ public partial class UserContextObject {
 
 
         public async Task<UserContextObject> CreateUserContextObject_Async(
-                    Func<IEnumerable<long>, Task<IEnumerable<IdDataObject<UserContextTermEntryObject>>>> termFactory ) {
-            IEnumerable<IdDataObject<UserContextTermEntryObject>> entries = await termFactory(
+                    Func<IEnumerable<long>, Task<IEnumerable<UserContextTermEntryObject>>> termFactory ) {
+            IEnumerable<UserContextTermEntryObject> entries = await termFactory(
                 this.Entries.Select( e => e.TermId )
             );
 

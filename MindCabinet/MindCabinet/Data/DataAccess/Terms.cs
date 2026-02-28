@@ -17,11 +17,11 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         return new TermObject(
             id: entry.Id,
             term: entry.Term,
-            context: entry.ContextId is not null
-                ? await termsData.GetById_Async(dbCon, termsData, entry.ContextId.Value)
+            context: entry.ContextTermId is not null
+                ? await termsData.GetById_Async(dbCon, termsData, entry.ContextTermId.Value)
                 : null,
-            alias: entry.AliasId is not null
-                ? await termsData.GetById_Async(dbCon, termsData, entry.AliasId.Value)
+            alias: entry.AliasTermId is not null
+                ? await termsData.GetById_Async(dbCon, termsData, entry.AliasTermId.Value)
                 : null
         );
     }

@@ -4,10 +4,10 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public partial class UserContextTermEntryObject( IdDataObject<TermObject> term, double priority, bool isRequired ) {
-    public IdDataObject<TermObject> Term { get; set; } = term;
-    public double Priority { get; set; } = priority;
-    public bool IsRequired { get; set; } = isRequired;
+public partial class UserContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
+    public TermObject Term { get; private set; } = term;
+    public double Priority { get; private set; } = priority;
+    public bool IsRequired { get; private set; } = isRequired;
 
 
     public override string ToString() {
