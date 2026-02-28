@@ -80,9 +80,9 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
 
     public class Create_Return(
                 bool isAdded,
-                TermObject term ) {
+                TermObject.DatabaseEntry term ) {
         public bool IsAdded { get; } = isAdded;
-        public TermObject Term { get; } = term;
+        public TermObject.DatabaseEntry Term { get; } = term;
     }
 
     public const string Create_Path = "Term";

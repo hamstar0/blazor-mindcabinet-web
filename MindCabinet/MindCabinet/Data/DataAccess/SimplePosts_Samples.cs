@@ -10,7 +10,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
-    private async Task<(bool success, TermObject sampleTerm)> InstallSamples_Async(
+    private async Task<(bool success, TermObject.DatabaseEntry sampleTerm)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,

@@ -18,9 +18,9 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
 
 
-    public async Task<(bool success, UserContextObject userContext)> Install_Async(
+    public async Task<(bool success, UserContextObject.DatabaseEntry userContext)> Install_Async(
                 IDbConnection dbConnection,
-                TermObject sampleTerm,
+                TermObject.DatabaseEntry sampleTerm,
                 long defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -50,7 +50,8 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     }
     
 
-    public async Task<UserContextObject?> GetById_Async( IDbConnection dbCon,
+    public async Task<UserContextObject.DatabaseEntry?> GetById_Async(
+                IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 long contextId ) {

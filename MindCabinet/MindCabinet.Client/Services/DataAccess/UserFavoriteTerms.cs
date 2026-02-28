@@ -41,8 +41,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
     }
 
 
-    public class AddTermsForCurrentUser_Params(
-                List<long> termIds ) {
+    public class AddTermsForCurrentUser_Params( List<long> termIds ) {
         public List<long> TermIds { get; } = termIds;
     }
 
@@ -63,8 +62,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
     }
 
 
-    public class RemoveTermsForCurrentUser_Params(
-                List<long> termIds ) {
+    public class RemoveTermsForCurrentUser_Params( List<long> termIds ) {
         public List<long> TermIds { get; } = termIds;
     }
 

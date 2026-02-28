@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System;
 using System.Data;
@@ -13,17 +14,27 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public static async Task<TermObject> CreateTermObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                TermObject.DatabaseEntry entry ) {
-        return new TermObject(
-            id: entry.Id,
-            term: entry.Term,
-            context: entry.ContextTermId is not null
-                ? await termsData.GetById_Async(dbCon, termsData, entry.ContextTermId.Value)
-                : null,
-            alias: entry.AliasTermId is not null
-                ? await termsData.GetById_Async(dbCon, termsData, entry.AliasTermId.Value)
-                : null
-        );
+                TermObject.DatabaseEntry entry,
+                bool includeContextAndAlias ) {
+        if( includeContextAndAlias ) {
+            return new TermObject(
+                id: entry.Id,
+                term: entry.Term,
+                contextId: entry.ContextTermId,
+                aliasId: entry.AliasTermId
+            );
+        } else {
+            return new TermObject(
+                id: entry.Id,
+                term: entry.Term,
+                context: entry.ContextTermId is not null
+                    ? await termsData.GetById_Async(dbCon, termsData, entry.ContextTermId.Value)
+                    : null,
+                alias: entry.AliasTermId is not null
+                    ? await termsData.GetById_Async(dbCon, termsData, entry.AliasTermId.Value)
+                    : null
+            );
+        }
     }
 
     //
@@ -54,11 +65,11 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
 
 
-    internal IDictionary<long, TermObject> TermsById_Cache = new Dictionary<long, TermObject>();
+    internal IDictionary<long, TermObject.DatabaseEntry> TermsById_Cache = new Dictionary<long, TermObject.DatabaseEntry>();
 
 
 
-    public async Task<TermObject?> GetById_Async(
+    public async Task<TermObject.DatabaseEntry?> GetById_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 long id ) {
@@ -82,7 +93,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         return term;
     }
 
-    public async Task<IEnumerable<TermObject>> GetByIds_Async(
+    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetByIds_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 IEnumerable<long> ids ) {
@@ -107,7 +118,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         return termList;
     }
     
-    public async Task<IEnumerable<TermObject>> GetTermsByCriteria_Async(
+    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {

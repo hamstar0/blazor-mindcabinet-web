@@ -80,8 +80,7 @@ public partial class ClientDataAccess_UserContext(
     //     return ret;
     // }
 
-    public class CreateForCurrentUser_Return(
-                long userContextId ) {
+    public class CreateForCurrentUser_Return( long userContextId ) {
         public long UserContextId { get; } = userContextId;
     }
 

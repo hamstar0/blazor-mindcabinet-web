@@ -11,9 +11,9 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserContexts : IServerDataAccess {
-    private async Task<(bool success, UserContextObject userContext)> InstallSamples_Async(
+    private async Task<(bool success, UserContextObject.DatabaseEntry userContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
-                TermObject sampleTerm,
+                TermObject.DatabaseEntry sampleTerm,
                 long defaultUserId ) {
         var sampleRawEntry = new UserContextTermEntryObject.DatabaseEntry {
             TermId = sampleTerm.Id,

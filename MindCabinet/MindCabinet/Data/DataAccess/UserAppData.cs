@@ -20,7 +20,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
                 long defaultUserId,
-                UserContextObject sampleContext ) {
+                UserContextObject.DatabaseEntry sampleContext ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
@@ -37,7 +37,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
     
 
-    public async Task<UserAppDataObject?> GetById_Async( IDbConnection dbCon,
+    public async Task<UserAppDataObject.DatabaseEntry?> GetById_Async( IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserContexts userContextsData,
@@ -60,7 +60,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
 
 
-    public async Task<UserAppDataObject> Create_Async(
+    public async Task<UserAppDataObject.DatabaseEntry> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 long userContextId ) {

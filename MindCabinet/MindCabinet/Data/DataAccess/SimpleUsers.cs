@@ -105,7 +105,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public async Task<SimpleUserObject?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
+    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
         if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
             return this.SimpleUsersById_Cache[id];
         }
@@ -127,7 +127,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
 
-    public async Task<SimpleUserObject?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
+    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
         SimpleUserObject.User_DatabaseEntry? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
@@ -144,7 +144,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         return user;
     }
 
-    public async Task<SimpleUserObject?> GetSimpleUserBySession_Async(
+    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUserBySession_Async(
                 IDbConnection dbCon,
                 string sessionId,
                 string ipAddress ) {

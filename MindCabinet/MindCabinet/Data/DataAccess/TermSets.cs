@@ -41,20 +41,20 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
     public async Task<long> Create_Async(
                 IDbConnection dbCon,
-                params TermObject[] parameters ) {
+                params long[] parameters ) {
         long newSetId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {IdSupplierTableName} (Bogus) 
                 VALUES (null);
             SELECT LAST_INSERT_ID();" //DEFAULT VALUES
         );
 
-        foreach(  TermObject termEntry in parameters ) {
+        foreach(  long termId in parameters ) {
             await dbCon.ExecuteAsync(
                 $@"INSERT INTO {TableName} (SetId, TermId) 
                     VALUES (@SetId, @TermId)",
                 new {
                     SetId = newSetId,
-                    TermId = termEntry.Id,
+                    TermId = termId,
                 }
             );
         }

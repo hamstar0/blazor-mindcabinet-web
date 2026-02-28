@@ -11,7 +11,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
-    private static async Task<SimplePostObject> CreateSimplePost_Async(
+    private static async Task<SimplePostObject.DatabaseEntry> CreateSimplePost_Async(
     // public static class DatabaseEntry_Extensions {
                 // this SimplePostObject.DatabaseEntry entry,
                 SimplePostObject.DatabaseEntry entry,
@@ -30,7 +30,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
     public const string TableName = "SimplePosts";
 
-    public async Task<(bool success, TermObject sampleTerm)> Install_Async(
+    public async Task<(bool success, TermObject.DatabaseEntry sampleTerm)> Install_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
@@ -59,7 +59,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
 
 
-    public async Task<SimplePostObject?> GetById_Async(
+    public async Task<SimplePostObject.DatabaseEntry?> GetById_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
@@ -139,13 +139,13 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     }
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
-            return Enumerable.Empty<SimplePostObject>();
+            return Enumerable.Empty<SimplePostObject.DatabaseEntry>();
         }
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, false );
@@ -204,7 +204,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     }
 
 
-	public async Task<SimplePostObject> Create_Async(
+	public async Task<SimplePostObject.DatabaseEntry> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ServerDataAccess_TermSets termSetsData,
