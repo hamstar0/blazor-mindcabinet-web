@@ -18,10 +18,14 @@ public partial class ClientDataAccess_UserAppData( HttpClient http ) : IClientDa
         public long SimpleUserId { get; } = simpleUserId;
     }
 
+    public class GetById_Return( UserAppDataObject.DatabaseEntry? userAppData ) {
+        public UserAppDataObject.DatabaseEntry? UserAppData { get; } = userAppData;
+    }
+
     public const string GetById_Path = "UserAppData";
     public const string GetById_Route = "GetById";
 
-    public async Task<UserAppDataObject?> GetById_Async( GetById_Params parameters ) {
+    public async Task<GetById_Return> GetById_Async( GetById_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetById_Path}/{GetById_Route}",
             value: parameters
@@ -29,9 +33,9 @@ public partial class ClientDataAccess_UserAppData( HttpClient http ) : IClientDa
 
         msg.EnsureSuccessStatusCode();
 
-        UserAppDataObject? ret = await msg.Content.ReadFromJsonAsync<UserAppDataObject>();
+        GetById_Return? ret = await msg.Content.ReadFromJsonAsync<GetById_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize UserAppDataObject" );
+            throw new InvalidDataException( "Could not deserialize GetById_Return" );
         }
 
         return ret;

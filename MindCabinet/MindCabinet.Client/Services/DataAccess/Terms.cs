@@ -14,10 +14,14 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
 
 
 
+    public class GetByX_Return( IEnumerable<TermObject.DatabaseEntry> terms ) {
+        public IEnumerable<TermObject.DatabaseEntry> Terms { get; } = terms;
+    }
+
     public const string GetByIds_Path = "Term";
     public const string GetByIds_Route = "GetByIds";
 
-    public async Task<IEnumerable<TermObject>> GetByIds_Async( IEnumerable<long> termIds ) {
+    public async Task<GetByX_Return> GetByIds_Async( IEnumerable<long> termIds ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetByIds_Path}/{GetByIds_Route}",
             value: termIds
@@ -25,9 +29,9 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
         
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<TermObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<TermObject>>();
+        GetByX_Return? ret = await msg.Content.ReadFromJsonAsync<GetByX_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<TermEntry>" );
+            throw new InvalidDataException( "Could not deserialize GetByX_Return" );
         }
 
         return ret;
@@ -44,7 +48,7 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
     public const string GetByCriteria_Path = "Term";
     public const string GetByCriteria_Route = "GetByCriteria";
     
-    public async Task<IEnumerable<TermObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
+    public async Task<GetByX_Return> GetByCriteria_Async( GetByCriteria_Params parameters ) {
 //Console.WriteLine( "GetTermsByCriteria_Async "+JsonSerializer.Serialize(parameters) );
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
@@ -56,9 +60,9 @@ public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
 //string jsondata = await msg.Content.ReadAsStringAsync();
 //Console.WriteLine( "Term/GetByCriteria: "+jsondata );
 //return new List<TermEntry>();
-        IEnumerable<TermObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<TermObject>>();
+        GetByX_Return? ret = await msg.Content.ReadFromJsonAsync<GetByX_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<TermEntry>" );
+            throw new InvalidDataException( "Could not deserialize GetByX_Return" );
         }
 
 //if( ret.Count() > 0 ) {

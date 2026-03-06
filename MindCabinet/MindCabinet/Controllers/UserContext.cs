@@ -37,7 +37,14 @@ public class UserContextController : ControllerBase {
                 ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserContextsData.GetByCriteria_Async( dbCon, this.SessionData.UserOfSession!.Id, parameters );
+        IEnumerable<UserContextObject.DatabaseEntry> contexts = await this.UserContextsData.GetByCriteria_Async(
+            dbCon,
+            this.SessionData.UserOfSession!.Id,
+            parameters,
+            true
+        );
+
+        return new ClientDataAccess_UserContext.Get_Return( contexts );
     }
 
     [HttpPost(ClientDataAccess_UserContext.CreateForCurrentUser_Route)]

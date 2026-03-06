@@ -31,7 +31,7 @@ public partial class ClientDataAccess_UserContext(
     public const string GetForCurrentUserByCriteria_Path = "UserContext";
     public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
-    public async Task<IEnumerable<UserContextObject>> GetForCurrentUserByCriteria_Async(
+    public async Task<Get_Return> GetForCurrentUserByCriteria_Async(
                 GetForCurrentUserByCriteria_Params parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -44,9 +44,9 @@ public partial class ClientDataAccess_UserContext(
         
         msg.EnsureSuccessStatusCode();
         
-        IEnumerable<UserContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContextObject>>();
+        Get_Return? ret = await msg.Content.ReadFromJsonAsync<Get_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<UserContextObject>" );
+            throw new InvalidDataException( "Could not deserialize Get_Return" );
         }
 
         return ret;

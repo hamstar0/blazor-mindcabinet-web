@@ -66,10 +66,11 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     }
 
 
-    public async Task<ClientDataAccess_UserContext.Get_Return> GetByCriteria_Async(
+    public async Task<IEnumerable<UserContextObject.DatabaseEntry>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters ) {
+                ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters,
+                bool alsoGetEntries ) {
         string sql1 = $@"SELECT * FROM {TableName} AS MyContext
             WHERE MyContext.SimpleUserId = @UserId;";
         var sqlParams1 = new Dictionary<string, object> { { "@UserId", simpleUserId } };
@@ -93,17 +94,19 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 new DynamicParameters(sqlParams1)
             );
 
-        string sql2 = $@"SELECT MyCtxEntries.ContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
-            FROM {EntriesTableName} AS MyCtxEntries
-            WHERE MyCtxEntries.ContextId = @ContextId;";
-        foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
-            var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
+        if( alsoGetEntries ) {
+            string sql2 = $@"SELECT MyCtxEntries.ContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+                FROM {EntriesTableName} AS MyCtxEntries
+                WHERE MyCtxEntries.ContextId = @ContextId;";
+            foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
+                var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
 
-            ctx.Entries = await dbCon.QueryAsync<UserContextTermEntryObject.DatabaseEntry>(
-                sql2, new DynamicParameters(sqlParams2) );
+                ctx.Entries = await dbCon.QueryAsync<UserContextTermEntryObject.DatabaseEntry>(
+                    sql2, new DynamicParameters(sqlParams2) );
+            }
         }
 
-        return new ClientDataAccess_UserContext.Get_Return( contexts.ToArray() );
+        return contexts;
     }
 
 

@@ -48,11 +48,12 @@ public class SimplePostController : ControllerBase {
 
 
     [HttpPost(ClientDataAccess_SimplePosts.GetByCriteria_Route)]
-    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
+    public async Task<ClientDataAccess_SimplePosts.GetByCriteria_Return> GetByCriteria_Async(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
+        IEnumerable<SimplePostObject.DatabaseEntry> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
+        return new ClientDataAccess_SimplePosts.GetByCriteria_Return( posts );
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.GetCountByCriteria_Route)]

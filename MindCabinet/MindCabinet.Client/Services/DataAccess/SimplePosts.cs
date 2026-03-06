@@ -37,10 +37,14 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
         }
     }
 
+    public class GetByCriteria_Return( IEnumerable<SimplePostObject.DatabaseEntry> posts ) {
+        public IEnumerable<SimplePostObject.DatabaseEntry> Posts { get; } = posts;
+    }
+
     public const string GetByCriteria_Path = "SimplePost";
     public const string GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
+    public async Task<GetByCriteria_Return> GetByCriteria_Async( GetByCriteria_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
             value: parameters
@@ -48,9 +52,9 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<SimplePostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject>>();
+        GetByCriteria_Return? ret = await msg.Content.ReadFromJsonAsync<GetByCriteria_Return>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<SimplePostObject>" );
+            throw new InvalidDataException( "Could not deserialize GetByCriteria_Return" );
         }
 
         return ret;
@@ -90,7 +94,7 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
     public const string Create_Path = "SimplePost";
     public const string Create_Route = "Create";
 
-    public async Task<SimplePostObject> Create_Async( Create_Params parameters ) {
+    public async Task<SimplePostObject.DatabaseEntry> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{Create_Path}/{Create_Route}",
             value: parameters
@@ -98,7 +102,7 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
         msg.EnsureSuccessStatusCode();
 
-        SimplePostObject? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject>();
+        SimplePostObject.DatabaseEntry? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject.DatabaseEntry>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimplePostEntry" );
         }

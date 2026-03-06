@@ -39,7 +39,7 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
 
         IEnumerable<GetTermIdsForCurrentUser_Return>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<GetTermIdsForCurrentUser_Return>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<ClientDataAccess_UserTermsHistory.GetByUserId_Return>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>" );
         }
 
         return ret;

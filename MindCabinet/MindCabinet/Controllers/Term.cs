@@ -26,19 +26,23 @@ public class TermController : ControllerBase {
 
 
     [HttpPost(ClientDataAccess_Terms.GetByCriteria_Route)]
-    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetByCriteria_Async(
+    public async Task<ClientDataAccess_Terms.GetByX_Return> GetByCriteria_Async(
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
+        IEnumerable<TermObject.DatabaseEntry> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
+
+        return new ClientDataAccess_Terms.GetByX_Return( terms );
     }
 
     [HttpPost(ClientDataAccess_Terms.GetByIds_Route)]
-    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetByIds_Async(
+    public async Task<ClientDataAccess_Terms.GetByX_Return> GetByIds_Async(
                 IEnumerable<long> termIds ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.TermsData.GetByIds_Async( dbCon, termIds );
+        IEnumerable<TermObject.DatabaseEntry> terms = await this.TermsData.GetByIds_Async( dbCon, termIds );
+
+        return new ClientDataAccess_Terms.GetByX_Return( terms );
     }
 
     [HttpPost(ClientDataAccess_Terms.Create_Route)]
