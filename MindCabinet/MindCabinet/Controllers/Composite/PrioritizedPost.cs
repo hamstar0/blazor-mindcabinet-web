@@ -58,8 +58,6 @@ public class PrioritizedPostController : ControllerBase {
 
         return await this.PrioritizedPostsData.GetByCriteria_Async(
             dbCon: dbCon,
-            termsData: this.TermsData,
-            termSetsData: this.TermSetsData,
             userContextData: this.UserContextData,
             parameters: parameters
         );
@@ -72,8 +70,6 @@ public class PrioritizedPostController : ControllerBase {
 
         return await this.PrioritizedPostsData.GetCountByCriteria_Async(
             dbCon: dbCon,
-            termsData: this.TermsData,
-            termSetsData: this.TermSetsData,
             userContextData: this.UserContextData,
             parameters: parameters
         );

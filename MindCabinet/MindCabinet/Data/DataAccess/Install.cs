@@ -24,8 +24,8 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         
         bool success;
         long defaultUserId;
-        TermObject sampleTerm;
-        UserContextObject sampleUsrCtx;
+        TermObject.DatabaseEntry sampleTerm;
+        UserContextObject.DatabaseEntry sampleUsrCtx;
 
         (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {

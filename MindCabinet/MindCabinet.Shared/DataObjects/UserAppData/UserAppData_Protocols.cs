@@ -14,10 +14,14 @@ public partial class UserAppDataObject {
         
         
         public async Task<UserAppDataObject?> CreateUserAppDataObject_Async(
-                    Func<long, Task<UserContextObject>> userContextFactory ) {
+                    Func<long, Task<UserContextObject?>> userContextFactory ) {
+            UserContextObject? userContext = await userContextFactory( this.UserContextId );
+            if( userContext is null ) {
+                return null;
+            }
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,
-                userContext: await userContextFactory( this.UserContextId )
+                userContext: userContext
             );
         }
     }

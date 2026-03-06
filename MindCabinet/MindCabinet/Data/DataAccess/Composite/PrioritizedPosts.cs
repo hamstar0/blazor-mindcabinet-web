@@ -19,14 +19,12 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_UserContexts userContextData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return [];
         }
 
-        UserContextObject? usrCtx = await userContextData.GetById_Async( dbCon, termsData, termSetsData, parameters.UserContextId );
+        UserContextObject.DatabaseEntry? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
         if( usrCtx is null ) {
             return [];
         }
@@ -53,14 +51,12 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_UserContexts userContextData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
 
-        UserContextObject? usrCtx = await userContextData.GetById_Async( dbCon, termsData, termSetsData, parameters.UserContextId );
+        UserContextObject.DatabaseEntry? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
         if( usrCtx is null ) {
             return 0;
         }

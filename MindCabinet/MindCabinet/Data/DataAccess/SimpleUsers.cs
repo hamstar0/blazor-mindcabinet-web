@@ -36,9 +36,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public class SimpleUserQueryResult( SimpleUserObject? user, string status ) {
-        public SimpleUserObject? User = user;
-        public string Status = status;
+    public class SimpleUserQueryResult( SimpleUserObject.User_DatabaseEntry? user, bool alreadyExists ) {
+        public SimpleUserObject.User_DatabaseEntry? User = user;
+        public bool AlreadyExists = alreadyExists;
     }
 
     //
@@ -76,7 +76,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //throw new Exception( JsonSerializer.Serialize(obj) );
 
         if( result.User is null ) {
-            throw new Exception( "Failed to create default user: "+result.Status );
+            throw new Exception( "Failed to create default user: "+(result.AlreadyExists ? "already exists" : "unknown error") );
         }
 
         return (true, result.User.Id);
@@ -101,7 +101,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         this.Logger = logger;
     }
 
-    private IDictionary<long, SimpleUserObject> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject>();
+    private IDictionary<long, SimpleUserObject.User_DatabaseEntry> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject.User_DatabaseEntry>();
 
 
 
@@ -119,11 +119,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             return null;
         }
 
-        SimpleUserObject user = userRaw.CreateUserEntry();
+        this.SimpleUsersById_Cache.Add( id, userRaw );
 
-        this.SimpleUsersById_Cache.Add( id, user );
-
-        return user;
+        return userRaw;
     }
 
 
@@ -137,17 +135,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             return null;
         }
 
-        SimpleUserObject user = userRaw.CreateUserEntry();
+        this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
 
-        this.SimpleUsersById_Cache.Add( userRaw.Id, user );
-
-        return user;
+        return userRaw;
     }
 
     public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUserBySession_Async(
                 IDbConnection dbCon,
                 string sessionId,
-                string ipAddress ) {
+                string ipAddress,
+                bool destroyIfSessionExpiredOrInvalid ) {
         var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry?>(
             $@"SELECT
                     MyUsers.*,
@@ -168,36 +165,36 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             return null;
         }
 
-        bool isValidIp = userRaw.IpAddress == ipAddress;
-        bool isExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
+        if( destroyIfSessionExpiredOrInvalid ) {
+            bool isValidIp = userRaw.IpAddress == ipAddress;
+            bool isExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
 
-        if( !isValidIp ) {
-            throw new Exception( "Hax!" );  //TODO
+            if( !isValidIp ) {
+                throw new Exception( "Hax!" );  //TODO
+            }
+
+            if( !isValidIp || isExpired ) {
+                // SimpleUserObject.UserAndSession_DatabaseEntry? entry =
+                //     await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry>(
+                //         $@"SELECT MySessions.Id FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
+                //             WHERE MySessions.Id = @Id",
+                //         new { Id = sessionId }
+                //     );
+                // if( entry is not null ) {
+                await dbCon.ExecuteAsync(
+                    $"DELETE FROM {ServerDataAccess_SimpleUserSessions.TableName} WHERE Id = @Id",
+                    new {
+                        Id = sessionId
+                    }
+                );
+
+                return null;
+            }
         }
 
-        if( !isValidIp || isExpired ) {
-            // SimpleUserObject.UserAndSession_DatabaseEntry? entry =
-            //     await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry>(
-            //         $@"SELECT MySessions.Id FROM {ServerDataAccess_SimpleUsers_Sessions.TableName} AS MySessions
-            //             WHERE MySessions.Id = @Id",
-            //         new { Id = sessionId }
-            //     );
-            // if( entry is not null ) {
-            await dbCon.ExecuteAsync(
-                $"DELETE FROM {ServerDataAccess_SimpleUserSessions.TableName} WHERE Id = @Id",
-                new {
-                    Id = sessionId
-                }
-            );
+        this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
 
-            return null;
-        }
-
-        SimpleUserObject user = userRaw.CreateUserEntry();
-
-        this.SimpleUsersById_Cache.Add( (long)user.Id!, user );
-
-        return user;
+        return userRaw;
     }
 
 
@@ -205,13 +202,15 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
+        SimpleUserObject.User_DatabaseEntry? user;
+
         if( detectCollision ) {
-            var userByName = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_DatabaseEntry?>(
+            user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_DatabaseEntry?>(
                 $"SELECT * FROM {TableName} WHERE Name = @Name",
                 new { Name = parameters.Name }
             );
-            if( userByName is not null ) {
-                return new SimpleUserQueryResult( null, $"User {parameters.Name} already exists" );
+            if( user is not null ) {
+                return new SimpleUserQueryResult( null, true );
             }
         }
 
@@ -234,16 +233,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             }
         );
 
-        var newUser = new SimpleUserObject(
-            id: newUserId,
-            created: now,
-            name: parameters.Name,
-            email: parameters.Email,
-            pwHash: pwHash,
-            pwSalt: pwSalt,
-            isValidated: parameters.IsValidated
-        );
+        var newUser = new SimpleUserObject.User_DatabaseEntry {
+            Id = newUserId,
+            Created = now,
+            Name = parameters.Name,
+            Email = parameters.Email,
+            PwHash = pwHash,
+            PwSalt = pwSalt,    // note: not for client
+            IsValidated = parameters.IsValidated
+        };
 
-        return new SimpleUserQueryResult( newUser, $"User {parameters.Name} successfully created." );
+        return new SimpleUserQueryResult( newUser, false );
     }
 }

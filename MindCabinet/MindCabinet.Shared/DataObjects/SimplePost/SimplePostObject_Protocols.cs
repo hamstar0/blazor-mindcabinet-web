@@ -11,5 +11,17 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
         public DateTime Created;
         public string Body = "";
         public long TermSetId;
+
+
+        
+        public async Task<SimplePostObject> CreateSimplePost_Async(
+                    Func<long, Task<TermSetObject>> termSetFactory ) {
+            return new SimplePostObject(
+                id: this.Id,
+                created: this.Created,
+                body: this.Body,
+                tags: await termSetFactory(this.TermSetId)
+            );
+        }
     }
 }

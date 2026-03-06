@@ -11,36 +11,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_Terms : IServerDataAccess {
-    public static async Task<TermObject> CreateTermObject_Async(
-                IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                TermObject.DatabaseEntry entry,
-                bool includeContextAndAlias ) {
-        if( includeContextAndAlias ) {
-            return new TermObject(
-                id: entry.Id,
-                term: entry.Term,
-                contextId: entry.ContextTermId,
-                aliasId: entry.AliasTermId
-            );
-        } else {
-            return new TermObject(
-                id: entry.Id,
-                term: entry.Term,
-                context: entry.ContextTermId is not null
-                    ? await termsData.GetById_Async(dbCon, termsData, entry.ContextTermId.Value)
-                    : null,
-                alias: entry.AliasTermId is not null
-                    ? await termsData.GetById_Async(dbCon, termsData, entry.AliasTermId.Value)
-                    : null
-            );
-        }
-    }
-
-    //
-
-
-
     public const string TableName = "Terms";
 
 	public async Task<bool> Install_Async( IDbConnection dbCon, ServerDataAccess_TermSets termsSetsData ) {
@@ -71,7 +41,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
     public async Task<TermObject.DatabaseEntry?> GetById_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 long id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
@@ -86,16 +55,13 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             return null;
         }
 
-        TermObject term = await ServerDataAccess_Terms.CreateTermObject_Async( dbCon, termsData, termRaw );
+        this.TermsById_Cache.Add( id, termRaw );
 
-        this.TermsById_Cache.Add( id, term );
-
-        return term;
+        return termRaw;
     }
 
     public async Task<IEnumerable<TermObject.DatabaseEntry>> GetByIds_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 IEnumerable<long> ids ) {
         if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
             return ids.Select( id => this.TermsById_Cache[id] );
@@ -109,18 +75,11 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         IEnumerable<TermObject.DatabaseEntry> termsRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
             sql, new DynamicParameters(sqlParams) );
 
-        var termList = new List<TermObject>( termsRaw.Count() );
-
-        foreach( TermObject.DatabaseEntry termRaw in termsRaw ) {
-            termList.Add( await ServerDataAccess_Terms.CreateTermObject_Async(dbCon, termsData, termRaw) );
-        }
-
-        return termList;
+        return termsRaw;
     }
     
     public async Task<IEnumerable<TermObject.DatabaseEntry>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
@@ -156,31 +115,25 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             sql, new DynamicParameters(sqlParams) );
 //this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
-        var termList = new List<TermObject>( termsRaw.Count() );
-
-        foreach( TermObject.DatabaseEntry termRaw in termsRaw ) {
-            termList.Add( await ServerDataAccess_Terms.CreateTermObject_Async(dbCon, termsData, termRaw) );
-        }
-
-        return termList;
+        return termsRaw;
 	}
 
 
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 ClientDataAccess_Terms.Create_Params parameters ) {
-		IEnumerable<TermObject> terms = await this.GetTermsByCriteria_Async(
+		IEnumerable<TermObject.DatabaseEntry> matchingTerms = await this.GetTermsByCriteria_Async(
             dbCon: dbCon,
-            termsData: termsData,
 			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
 				context: parameters.Context?.ToPrototype() ?? null
 			)
 		);
-		if( terms.Count() > 0 ) {
-			return new ClientDataAccess_Terms.Create_Return( false, terms.First() );
-		}
+		if( matchingTerms.Count() == 1 ) {
+			return new ClientDataAccess_Terms.Create_Return( false, matchingTerms.First() );
+		} else if( matchingTerms.Count() >= 2 ) {
+            throw new Exception( "Multiple matching terms found." );
+        }
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (Term, ContextId, AliasId) 
@@ -194,12 +147,12 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             }
         );
 
-        var newTerm = new TermObject(
-			id: newId,
-			term: parameters.TermPattern,
-			context: parameters.Context,
-			alias: parameters.Alias
-		);
+        var newTerm = new TermObject.DatabaseEntry {
+			Id = newId,
+			Term = parameters.TermPattern,
+			ContextTermId = parameters.Context?.Id,
+			AliasTermId = parameters.Alias?.Id
+		};
 		this.TermsById_Cache[newId] = newTerm;
 
         return new ClientDataAccess_Terms.Create_Return( true, newTerm );

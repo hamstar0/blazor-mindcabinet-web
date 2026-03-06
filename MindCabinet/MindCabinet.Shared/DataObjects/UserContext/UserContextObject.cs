@@ -20,13 +20,11 @@ public partial class UserContextObject(
 
     public IEnumerable<UserContextTermEntryObject> GetRequiredEntries() {
         return this.Entries
-            .Select( e => e )
             .Where( e => e.IsRequired );
     }
 
     public IEnumerable<UserContextTermEntryObject> GetOptionalEntries() {
         return this.Entries
-            .Select( e => e )
             .Where( e => !e.IsRequired );
     }
     

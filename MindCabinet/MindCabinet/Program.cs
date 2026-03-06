@@ -89,10 +89,13 @@ public class Program {
 
             var sessionData = context.RequestServices.GetRequiredService<ServerSessionData>();
             var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
-            var users = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
+            var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
+            var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
+            var userAppData = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
+            var userContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_UserContexts>();
             using var dbCon = await dbAccess.GetDbConnection_Async( !isInstalling );
 
-            await sessionData.Load_Async( dbCon, users, isInstalling );
+            await sessionData.Load_Async( dbCon, termsData, usersData, userAppData, userContextsData, isInstalling );
 
             await next();
         } );

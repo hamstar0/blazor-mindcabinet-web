@@ -70,10 +70,12 @@ public partial class SimpleUserController : ControllerBase {
         //         session: this.ServerSessionData
         //     );
         // }
-        this.Logger.LogInformation( "Create user result: {Status}", result.Status );
+        this.Logger.LogInformation( $"User already exists? {result.AlreadyExists}" );
 
         return new ClientDataAccess_SimpleUsers.Create_Return(
-            result.User?.GetClientOnlyData(),
+            result.User is not null
+                ? new SimpleUserObject.ClientData( result.User.Id, result.User.Name, result.User.Created, result.User.Email )
+                : null,
             result.User is not null
                 ? "User created. Validate email address and log in to complete registration."
                 : "Could not create user."

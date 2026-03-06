@@ -38,25 +38,13 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     
 
     public async Task<UserAppDataObject.DatabaseEntry?> GetById_Async( IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
-                ServerDataAccess_UserContexts userContextsData,
                 long userId ) {
         UserAppDataObject.DatabaseEntry? usrAppDataRaw = await dbCon.QuerySingleAsync<UserAppDataObject.DatabaseEntry?>(
             $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId",
             new { SimpleUserId = userId }
         );
 
-        if( usrAppDataRaw is null ) {
-            return null;
-        }
-
-        return await usrAppDataRaw.CreateUserAppDataObject_Async(
-            async (usrCtxId) => new IdDataObject<UserContextObject> {
-                Id = usrCtxId,
-                Data = await userContextsData.GetById_Async( dbCon, termsData, termSetsData, usrCtxId )
-            }
-        );
+        return usrAppDataRaw;
     }
 
 
@@ -74,9 +62,9 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             }
         );
 
-        return new UserAppDataObject(
-            simpleUserId,
-            new IdDataObject<UserContextObject> { Id = userContextId }
-        );
+        return new UserAppDataObject.DatabaseEntry {
+            SimpleUserId = simpleUserId,
+            UserContextId = userContextId
+        };
     }
 }

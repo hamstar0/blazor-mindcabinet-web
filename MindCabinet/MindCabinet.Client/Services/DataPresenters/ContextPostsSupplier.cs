@@ -98,7 +98,7 @@ public partial class ContextPostsSupplier(
         int matchedCount = 0;
 
         foreach( UserContextTermEntryObject entry in ctx.Entries ) {
-            if( post.Tags.FirstOrDefault(t => t.Id == entry.Term.Id) is not null ) {
+            if( post.Tags.TermSet.FirstOrDefault(t => t.Id == entry.Term.Id) is not null ) {
                 matchedCount++;
                 totalPriority += entry.Priority;
             } else if( entry.IsRequired ) {

@@ -51,7 +51,7 @@ public partial class SimplePostEditor : ComponentBase {
 
     private async Task Submit_UI_Async() {
         SimplePostObject post = await this.SimplePostsData.Create_Async(
-            new ClientDataAccess_SimplePosts.Create_Params( this.PostText, this.Tags )
+            new ClientDataAccess_SimplePosts.Create_Params( this.PostText, this.Tags.Select( t => t.Id ).ToArray() )
         );
 
         this.PostText = "";

@@ -5,6 +5,7 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
 public partial class UserContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
+    //public UserContextObject UserContext { get; private set; } = userContext;
     public TermObject Term { get; private set; } = term;
     public double Priority { get; private set; } = priority;
     public bool IsRequired { get; private set; } = isRequired;

@@ -137,7 +137,12 @@ public partial class TermEditor : ComponentBase {
             new ClientDataAccess_Terms.Create_Params( termText, null, null )
         );
 
-        TermObject? newerTerm = await this.OnTermConfirm_Async( newTermRet.Term, newTermRet.IsAdded );
+        TermObject newTerm = await newTermRet.Term.CreateTermObject_Async(
+            async t => (await this.TermsData.GetByIds_Async( new long[] { t } ))
+                .First()
+        );
+
+        TermObject? newerTerm = await this.OnTermConfirm_Async( newTerm, newTermRet.IsAdded );
 
         if( newerTerm is null ) {
             this.Value = "";

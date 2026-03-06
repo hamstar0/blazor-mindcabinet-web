@@ -32,7 +32,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
 
     public async Task CreateSimpleUserSession_Async(
                 IDbConnection dbCon,
-                SimpleUserObject user,
+                long simpleUserId,
                 ServerSessionData session ) {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );
@@ -58,7 +58,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
             new {
                 Id = session.SessionId,
                 IpAddress = session.IpAddress,
-                SimpleUserId = user.Id,
+                SimpleUserId = simpleUserId,
                 FirstVisit = now,
                 LatestVisit = now,
                 Visits = 1

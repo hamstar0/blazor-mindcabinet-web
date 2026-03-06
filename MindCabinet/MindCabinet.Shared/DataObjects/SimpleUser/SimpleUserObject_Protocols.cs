@@ -58,8 +58,4 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         public DateTime Created { get; } = created;
         public string Email { get; } = email;
     }
-
-    public ClientData GetClientOnlyData() {
-		return new ClientData( this.Id, this.Name, this.Created, this.Email );
-	}
 }

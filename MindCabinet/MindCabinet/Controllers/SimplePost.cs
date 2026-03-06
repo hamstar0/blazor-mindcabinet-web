@@ -48,7 +48,7 @@ public class SimplePostController : ControllerBase {
 
 
     [HttpPost(ClientDataAccess_SimplePosts.GetByCriteria_Route)]
-    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
@@ -64,14 +64,14 @@ public class SimplePostController : ControllerBase {
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
-    public async Task<SimplePostObject> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
+    public async Task<SimplePostObject.DatabaseEntry> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.SimplePostsData.Create_Async(
+        (long newPostId, long termSetId) = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionData.UserOfSession.Id,
             termSetsData: this.TermSetsData,
@@ -79,5 +79,12 @@ public class SimplePostController : ControllerBase {
             parameters: parameters,
             skipHistory: false
         );
+        return new SimplePostObject.DatabaseEntry {
+            Id = newPostId,
+            //SimpleUserId = this.SessionData.UserOfSession.Id,
+            Body = parameters.Body,
+            Created = DateTime.UtcNow,
+            TermSetId = termSetId
+        };
     }
 }

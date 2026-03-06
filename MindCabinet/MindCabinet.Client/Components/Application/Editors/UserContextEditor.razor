@@ -18,8 +18,7 @@
             @bind:set=@this.OnInputName_UI_Async />
 	<TermSetEditor Label="Enter tags (at least 1 required)"
 				InitialTerms=@( this.InitialContext?.Entries
-						.Where( e => e.Data is not null && e.Data.Term.Data is not null )
-						.Select( e => (e.Data!).Term.Data! )
+						.Select( e => e.Term )
 						.ToList()
 					?? new List<TermObject>() )
 				AllowFavoritingTerms=@false

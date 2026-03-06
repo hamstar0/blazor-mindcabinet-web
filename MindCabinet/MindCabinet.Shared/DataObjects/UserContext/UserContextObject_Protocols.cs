@@ -7,25 +7,41 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 public partial class UserContextObject {
     public class DatabaseEntry {
         public long Id = default;
+        
         public string Name = "";
+
         public string? Description;
 
         public IEnumerable<UserContextTermEntryObject.DatabaseEntry> Entries = default!;
 
 
 
-        public async Task<UserContextObject> CreateUserContextObject_Async(
-                    Func<IEnumerable<long>, Task<IEnumerable<UserContextTermEntryObject>>> termFactory ) {
-            IEnumerable<UserContextTermEntryObject> entries = await termFactory(
-                this.Entries.Select( e => e.TermId )
-            );
+        public async Task<UserContextObject?> CreateUserContextObject_Async(
+                    Func<UserContextTermEntryObject.DatabaseEntry, Task<UserContextTermEntryObject?>> termFactory ) {
+            IEnumerable<Task<UserContextTermEntryObject?>> entriesTasks = this.Entries.Select( async e => await termFactory(e) );
+            IEnumerable<UserContextTermEntryObject?> entries = await Task.WhenAll( entriesTasks );
+
+            if( entries.Any(e => e is null) ) {
+                return null;
+            }
 
             return new UserContextObject(
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
-                entries: entries.ToList()
+                entries: entries.Select( e => e! ).ToList()
             );
+        }
+
+        
+        public IEnumerable<UserContextTermEntryObject.DatabaseEntry> GetRequiredEntries() {
+            return this.Entries
+                .Where( e => e.IsRequired );
+        }
+
+        public IEnumerable<UserContextTermEntryObject.DatabaseEntry> GetOptionalEntries() {
+            return this.Entries
+                .Where( e => !e.IsRequired );
         }
     }
 }

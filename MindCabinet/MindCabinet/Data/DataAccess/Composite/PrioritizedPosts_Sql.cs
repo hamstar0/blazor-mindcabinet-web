@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess.Composite;
 
 public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
-                UserContextObject userContext,
+                UserContextObject.DatabaseEntry userContext,
                 string? bodyPattern,
                 bool sortAscendingByDate,
                 int postsPerPage,
@@ -45,11 +45,11 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
         IEnumerable<long> allTagIds = additionalTagIds.Concat(
             userContext.GetRequiredEntries()
-                .Select( e => e.Term.Id )
+                .Select( e => e.TermId )
                 .Where( id => !additionalTagIds.Contains(id) )
         );
         IEnumerable<long> anyTagIds = userContext.GetOptionalEntries()
-            .Select( e => e.Term.Id );
+            .Select( e => e.TermId );
 
         if( allTagIds.Count() > 0 ) {
             sql += hasWhere ? "AND" : "WHERE";

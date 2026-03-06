@@ -1,6 +1,8 @@
 ﻿using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserContext;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -41,7 +43,13 @@ public partial class ServerSessionData(
 
 
 
-    public async Task<bool> Load_Async( IDbConnection dbCon, ServerDataAccess_SimpleUsers userData, bool isInstalling ) {
+    public async Task<bool> Load_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_SimpleUsers userData,
+                ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_UserContexts userContextsData,
+                bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
             return false;
         }
@@ -56,7 +64,7 @@ public partial class ServerSessionData(
         if( sessId is null ) {
             this.LoadNewSessionAndNoUser();
         } else {
-            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, userData, sessId, isInstalling );
+            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, termsData, userData, userAppData, userContextsData, sessId, isInstalling );
         }
 // this.Logger.LogInformation( $"SESS: {sessId}, IP: {this.IpAddress}, User: {this.UserOfSession?.Name} ({isLoggedIn})" );
 
@@ -81,8 +89,10 @@ public partial class ServerSessionData(
 
     private async Task<bool> LoadExistingSessionAndItsUser_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimpleUsers userData,
                 ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_UserContexts userContextsData,
                 string sessId,
                 bool isInstalling ) {
         this.SessionId = sessId;
@@ -94,7 +104,27 @@ public partial class ServerSessionData(
         bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
 
         if( isLoggedIn ) {
-            this.UserAppData = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+            Func<long, Task<TermObject?>> termFactory = async termId => {
+                TermObject.DatabaseEntry? termRaw = await termsData.GetById_Async( dbCon, termId );
+                return termRaw is not null
+                    ? await termRaw.CreateTermObject_Async( null )
+                    : null;
+            };
+            Func<UserContextTermEntryObject.DatabaseEntry, Task<UserContextTermEntryObject?>> ctxTermFactory = async ctxTermEntry => {
+                return await ctxTermEntry.CreateUserContextTermEntry_Async( termFactory );
+            };
+            Func<long, Task<UserContextObject?>> userContextFactory = async id => {
+                UserContextObject.DatabaseEntry? ctxRaw = await userContextsData.GetById_Async( dbCon, id );
+                UserContextObject? ctx = ctxRaw is not null
+                    ? await ctxRaw.CreateUserContextObject_Async( ctxTermFactory )
+                    : null;
+                return ctx;
+            };
+            UserAppDataObject.DatabaseEntry? usrAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+
+            this.UserAppData = usrAppDataRaw is not null
+                ? await usrAppDataRaw.CreateUserAppDataObject_Async( userContextFactory )
+                : null;
         }
 
         return isLoggedIn;

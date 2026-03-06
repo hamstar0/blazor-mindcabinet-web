@@ -42,7 +42,12 @@ public class SessionController(
 
         return new ClientSessionData.SessionDataJson {
             SessionId = this.SessData.SessionId!,
-            UserData = this.SessData.UserOfSession?.GetClientOnlyData(),
+            UserData = new SimpleUserObject.ClientData(
+                id: this.SessData.UserOfSession!.Id,
+                name: this.SessData.UserOfSession!.Name,
+                created: this.SessData.UserOfSession!.Created,
+                email: this.SessData.UserOfSession!.Email
+            ),
             UserAppData = this.SessData.UserAppData
         };
     }

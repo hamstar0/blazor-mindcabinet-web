@@ -52,8 +52,6 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
     public async Task<UserContextObject.DatabaseEntry?> GetById_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
                 long contextId ) {
         UserContextObject.DatabaseEntry? usrCtxRaw = await dbCon.QuerySingleAsync<UserContextObject.DatabaseEntry?>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
@@ -64,9 +62,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             return null;
         }
 
-        return await usrCtxRaw.CreateUserContextObject_Async( async (ids) => {
-            return await termsData.GetByIds_Async( dbCon, termsData, ids );
-        } );
+        return usrCtxRaw;
     }
 
 
@@ -97,9 +93,9 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 new DynamicParameters(sqlParams1)
             );
 
-        string sql2 = $@"SELECT MyContextEntries.TermId, MyContextEntries.Priority, MyContextEntries.IsRequired
-            FROM {EntriesTableName} AS MyContextEntries
-            WHERE MyContextEntries.ContextId = @ContextId;";
+        string sql2 = $@"SELECT MyCtxEntries.ContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+            FROM {EntriesTableName} AS MyCtxEntries
+            WHERE MyCtxEntries.ContextId = @ContextId;";
         foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
             var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
 

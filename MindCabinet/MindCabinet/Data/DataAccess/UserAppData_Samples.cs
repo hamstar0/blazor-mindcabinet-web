@@ -25,7 +25,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
-            userContext: sampleContext
+            userContextId: sampleContext.Id
         );
 
         return true;

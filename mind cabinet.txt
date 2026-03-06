@@ -48,6 +48,7 @@ v0.6
 			-	Change Id back into SessionId
 			-	Normalize Create method return value conventions
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
+			-	Channel API calls through Hub (test)
 			-	Context entry
 			-	Context tag entry
 			-	Content posting

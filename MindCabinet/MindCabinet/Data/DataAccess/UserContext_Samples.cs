@@ -32,19 +32,8 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             parameters: sampleRawCtx
         )).UserContextId;
 
-        UserContextObject usrCtx = new UserContextObject(
-            id: usrCtxId,
-            name: sampleRawCtx.Name,
-            description: sampleRawCtx.Description,
-            entries: new List<UserContextTermEntryObject>() {
-                new UserContextTermEntryObject(
-                    term: sampleTerm,
-                    priority: sampleRawEntry.Priority,
-                    isRequired: sampleRawEntry.IsRequired
-                )
-            }
-        );
+        sampleRawCtx.Id = usrCtxId;
 
-        return (true, usrCtx);
+        return (true, sampleRawCtx);
     }
 }

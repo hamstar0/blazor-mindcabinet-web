@@ -23,24 +23,27 @@ public partial class SimpleUserController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimpleUserObject? user = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
-        if( user is null ) {
+        SimpleUserObject.User_DatabaseEntry? userRaw = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
+        if( userRaw is null ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "User not found by name: "+parameters.Name );
         }
 
-        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, user.PwSalt );
+        byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, userRaw.PwSalt );
 
 // this.Logger.LogInformation( "pw: "+parameters.Password
 // +", user.PwHash: "+Encoding.UTF8.GetString(user.PwHash)
 // +", pwHash: "+Encoding.UTF8.GetString(pwHash) );
-        if( !CryptographicOperations.FixedTimeEquals(user.PwHash, pwHash) ) {
+        if( !CryptographicOperations.FixedTimeEquals(userRaw.PwHash, pwHash) ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "Invalid password." );
         }
 
-        await this.SessionsData.CreateSimpleUserSession_Async( dbCon, user, this.ServerSessionData );
+        await this.SessionsData.CreateSimpleUserSession_Async( dbCon, userRaw.Id, this.ServerSessionData );
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
-        return new ClientDataAccess_SimpleUsers.Login_Return( user.GetClientOnlyData(), "User validated." );
+        return new ClientDataAccess_SimpleUsers.Login_Return(
+            new SimpleUserObject.ClientData( userRaw.Id, userRaw.Name, userRaw.Created, userRaw.Email ),
+            "User validated."
+        );
     }
 
     [HttpPost("Visit")]
