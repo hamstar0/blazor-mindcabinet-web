@@ -15,11 +15,11 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
     public string Body { get; private set; }
 
-    public TermSetObject Tags { get; private set; }
+    public SortedSet<TermObject> Tags { get; private set; }
 
 
 
-	public SimplePostObject( long id, DateTime created, string body, TermSetObject tags ) {
+	public SimplePostObject( long id, DateTime created, string body, SortedSet<TermObject> tags ) {
         this.Id = id;
         this.Created = created;
         this.Body = body;
@@ -39,10 +39,9 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 	public bool ContentEquals( SimplePostObject other, bool includeCreateDate ) {
         if( includeCreateDate && this.Created != other.Created ) { return false; }
         if( this.Body != other.Body ) { return false; }
-		if( this.Tags?.TermSet.Count != other.Tags?.TermSet.Count ) { return false; }
+		if( this.Tags.Count() != other.Tags.Count() ) { return false; }
 		if( this.Tags is not null ) {
-			SortedSet<TermObject> otherTermSet = other.Tags!.TermSet;
-			if( !this.Tags.TermSet.All( kv => otherTermSet.Any(kv2 => kv2.Id == kv.Id) ) ) {
+			if( !this.Tags.All( kv => other.Tags.Any(kv2 => kv2.Id == kv.Id) ) ) {
 				return false;
 			}
 		}
@@ -58,7 +57,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 		}
 
 		if( tagIds.Count() > 0 ) {
-			if( this.Tags is null || !tagIds.All(id => this.Tags.TermSet.Any(t => t.Id == id)) ) {
+			if( this.Tags is null || !tagIds.All(id => this.Tags.Any(t => t.Id == id)) ) {
 				return false;
 			}
 		}

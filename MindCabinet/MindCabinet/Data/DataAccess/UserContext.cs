@@ -89,7 +89,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
         }
 
         IEnumerable<UserContextObject.DatabaseEntry> contexts
-            = await dbCon.QueryAsync<UserContextObject.DatabaseEntry>(
+            = await dbCon.QueryAsync<UserContextObject.DatabaseEntry>( f
                 sql1,
                 new DynamicParameters(sqlParams1)
             );
@@ -102,7 +102,9 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
 
                 ctx.Entries = await dbCon.QueryAsync<UserContextTermEntryObject.DatabaseEntry>(
-                    sql2, new DynamicParameters(sqlParams2) );
+                    sql2,
+                    new DynamicParameters(sqlParams2)
+                );
             }
         }
 

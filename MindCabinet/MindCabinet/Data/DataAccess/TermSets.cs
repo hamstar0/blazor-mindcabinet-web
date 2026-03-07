@@ -10,27 +10,30 @@ namespace MindCabinet.Data.DataAccess;
 
 public partial class ServerDataAccess_TermSets : IServerDataAccess {
     public const string TableName = "TermSet";
-    public const string IdSupplierTableName = "TermSetIdSupplier";
+    // public const string IdSupplierTableName = "TermSetIdSupplier";
 
 
 	public async Task<bool> Install_Async( IDbConnection dbCon ) {
         await dbCon.ExecuteAsync($@"
             CREATE TABLE {TableName} (
-                SetId INT NOT NULL,
+                SimplePostId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
-                CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SetId, TermId),
+                CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SimplePostId, TermId),
+                CONSTRAINT FK_{TableName}_SimplePostId FOREIGN KEY (SimplePostId)
+                    REFERENCES {ServerDataAccess_SimplePosts.TableName}(Id),
                 CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             )"
+                // SetId INT NOT NULL,
             //    ON DELETE CASCADE
             //    ON UPDATE CASCADE
         );
-        await dbCon.ExecuteAsync( $@"
-            CREATE TABLE {IdSupplierTableName} (
-                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Bogus BOOLEAN
-            );"
-        );
+        // await dbCon.ExecuteAsync( $@"
+        //     CREATE TABLE {IdSupplierTableName} (
+        //         Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        //         Bogus BOOLEAN
+        //     );"
+        // );
         
         return true;
     }
@@ -39,27 +42,26 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task<long> Create_Async(
+    public async Task Create_Async(
                 IDbConnection dbCon,
+                long simplePostId,
                 params long[] parameters ) {
-        long newSetId = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {IdSupplierTableName} (Bogus) 
-                VALUES (null);
-            SELECT LAST_INSERT_ID();" //DEFAULT VALUES
-        );
+        // long newSetId = await dbCon.ExecuteScalarAsync<long>(
+        //     $@"INSERT INTO {IdSupplierTableName} (Bogus) 
+        //         VALUES (null);
+        //     SELECT LAST_INSERT_ID();" //DEFAULT VALUES
+        // );
 
         foreach(  long termId in parameters ) {
             await dbCon.ExecuteAsync(
-                $@"INSERT INTO {TableName} (SetId, TermId) 
-                    VALUES (@SetId, @TermId)",
+                $@"INSERT INTO {TableName} (SimplePostId, TermId) 
+                    VALUES (@SimplePostId, @TermId)",
                 new {
-                    SetId = newSetId,
+                    SimplePostId = simplePostId,
                     TermId = termId,
                 }
             );
         }
-
-        return newSetId;
     }
 
     //

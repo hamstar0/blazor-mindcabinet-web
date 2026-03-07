@@ -28,7 +28,7 @@ public partial class SimplePostEditor : ComponentBase {
     private List<TermObject> Tags = new List<TermObject>();
 
     [Parameter, EditorRequired]
-    public Func<SimplePostObject, Task> OnSubmit_Async { get; set; } = null!;
+    public Func<SimplePostObject.DatabaseEntry, Task> OnSubmit_Async { get; set; } = null!;
 
 
 
@@ -50,7 +50,7 @@ public partial class SimplePostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        SimplePostObject post = await this.SimplePostsData.Create_Async(
+        SimplePostObject.DatabaseEntry post = await this.SimplePostsData.Create_Async(
             new ClientDataAccess_SimplePosts.Create_Params( this.PostText, this.Tags.Select( t => t.Id ).ToArray() )
         );
 

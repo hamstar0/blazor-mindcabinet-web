@@ -86,16 +86,31 @@ public partial class UserContextEditor : ComponentBase {
                 || this.CurrentContextPrototype.Entries.Any();
         }
 
-        IEnumerable<UserContextObject> contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
+        ClientDataAccess_UserContext.Get_Return contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
                 Ids = [ currentCtx.Id ]
             }
         );
 
-        UserContextObject currentContext = contexts.First( ctx => ctx.Id == currentCtx.Id );
+        UserContextObject.DatabaseEntry currentContextRaw = contexts
+            .Contexts
+            .First( ctx => ctx.Id == currentCtx.Id );
+        UserContextObject? currentContext = await currentContextRaw.CreateUserContextObject_Async(
+            async ctxTermEntryRaw => await ctxTermEntryRaw.CreateUserContextTermEntry_Async(
+                async termId => {
+                    TermObject.DatabaseEntry? termRaw = (await this.TermsData.GetByIds_Async( new long[] { termId } ))?
+                        .Terms
+                        .FirstOrDefault();
+                    return termRaw is not null
+                        ? await termRaw.CreateTermObject_Async( null )
+                        : null;
+                }
+            )
+        );
 
-		return !this.CurrentContextPrototype
-			.Matches( currentContext );
+		return currentContext is not null
+            ? !this.CurrentContextPrototype.Matches( currentContext! )
+            : false;
 	}
 
 

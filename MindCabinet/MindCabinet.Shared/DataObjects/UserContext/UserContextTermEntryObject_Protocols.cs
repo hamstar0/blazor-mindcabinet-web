@@ -15,14 +15,10 @@ public partial class UserContextTermEntryObject {
         public bool IsRequired = default;
 
 
-		public async Task<UserContextTermEntryObject?> CreateUserContextTermEntry_Async(
-                    Func<long, Task<TermObject?>> termFactory ) {
-            TermObject? term = await termFactory( this.TermId );
-            if( term is null ) {
-                return null;
-            }
+		public async Task<UserContextTermEntryObject> CreateUserContextTermEntry_Async(
+                    Func<long, Task<TermObject>> termFactory ) {
             return new UserContextTermEntryObject(
-                term: term,
+                term: await termFactory( this.TermId ),
                 priority: this.Priority,
                 isRequired: this.IsRequired
             );

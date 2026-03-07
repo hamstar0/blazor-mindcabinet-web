@@ -37,14 +37,17 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     }
     
 
-    public async Task<IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>> GetByUserId_Async(
+    public async Task<IEnumerable<UserTermsHistoryObject.DatabaseEntry>> GetByUserId_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT TermId, Created FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
-        return await dbCon.QueryAsync<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>( sql, new DynamicParameters(sqlParams) );
+        return await dbCon.QueryAsync<UserTermsHistoryObject.DatabaseEntry>(
+            sql,
+            new DynamicParameters(sqlParams)
+        );
 	}
 
 

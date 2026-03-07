@@ -8,19 +8,22 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class SimplePostObject : IEquatable<SimplePostObject> {
     public class DatabaseEntry {
         public long Id;
+
         public DateTime Created;
+
         public string Body = "";
-        public long TermSetId;
+
+        public long[] TagsTermIdSet = [];
 
 
         
         public async Task<SimplePostObject> CreateSimplePost_Async(
-                    Func<long, Task<TermSetObject>> termSetFactory ) {
+                    Func<long[], Task<TermObject[]>> termsFactory ) {
             return new SimplePostObject(
                 id: this.Id,
                 created: this.Created,
                 body: this.Body,
-                tags: await termSetFactory(this.TermSetId)
+                tags: new SortedSet<TermObject>( await termsFactory(this.TagsTermIdSet) )
             );
         }
     }

@@ -12,14 +12,13 @@ public partial class UserContextObject {
 
         public string? Description;
 
-        public IEnumerable<UserContextTermEntryObject.DatabaseEntry> Entries = default!;
+        public UserContextTermEntryObject.DatabaseEntry[] Entries = [];
 
 
 
         public async Task<UserContextObject?> CreateUserContextObject_Async(
-                    Func<UserContextTermEntryObject.DatabaseEntry, Task<UserContextTermEntryObject?>> termFactory ) {
-            IEnumerable<Task<UserContextTermEntryObject?>> entriesTasks = this.Entries.Select( async e => await termFactory(e) );
-            IEnumerable<UserContextTermEntryObject?> entries = await Task.WhenAll( entriesTasks );
+                    Func<UserContextTermEntryObject.DatabaseEntry[], Task<UserContextTermEntryObject[]>> termsFactory ) {
+            IEnumerable<UserContextTermEntryObject> entries = await termsFactory( this.Entries );
 
             if( entries.Any(e => e is null) ) {
                 return null;
@@ -29,7 +28,7 @@ public partial class UserContextObject {
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
-                entries: entries.Select( e => e! ).ToList()
+                entries: entries.ToList()
             );
         }
 

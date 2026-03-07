@@ -18,6 +18,7 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL,
                 FavTermId BIGINT NOT NULL,
+                Favor INT NOT NULL,
                 PRIMARY KEY (SimpleUserId, FavTermId),
                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
@@ -32,14 +33,19 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     }
     
 
-    public async Task<IEnumerable<long>> GetTermIds_Async(
+    public async Task<IEnumerable<UserFavoriteTermsObject.DatabaseEntry>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
-        string sql = $"SELECT FavTermId FROM {TableName} WHERE SimpleUserId = @UserId;";
+        string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
-        return await dbCon.QueryAsync<long>( sql, new DynamicParameters(sqlParams) );
+        var favTermsRaw = await dbCon.QueryAsync<UserFavoriteTermsObject.DatabaseEntry>(
+            sql,
+            new DynamicParameters(sqlParams)
+        );
+
+        return ClientDataAccess_UserFavoriteTerms.Get_Return( favTermsRaw );
 	}
 
 
@@ -50,9 +56,10 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
+        dataTable.Columns.Add("Favor", typeof(int));
 
         for( int i=0; i<parameters.TermIds.Count; i++ ) {
-            dataTable.Rows.Add( simpleUserId, parameters.TermIds[i] );
+            dataTable.Rows.Add( simpleUserId, parameters.TermIds[i], 0 );
         }
 
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
