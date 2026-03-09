@@ -48,19 +48,15 @@ public partial class UserContextEditor : ComponentBase {
                 Name = this.InitialContext?.Name,
                 Description = this.InitialContext?.Description,
                 Entries = this.InitialContext?.Entries
-                    .Select( e => new UserContextTermEntryObject.DatabaseEntry {
-                        TermId = e.Term.Id,
-                        Priority = e.Priority,
-                        IsRequired = e.IsRequired
-                    } ).ToList()
-                    ?? new List<UserContextTermEntryObject.DatabaseEntry>()
+                    .Select( e => e.ToDatabaseEntry() ).ToArray()
+                    ?? []
             };
         }
 	}
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
-        this.CurrentContextPrototype.Entries.Add( new UserContextTermEntryObject.DatabaseEntry {
+        this.CurrentContextPrototype.Entries.Append( new UserContextTermEntryObject.DatabaseEntry {
             TermId = newTag.Id,
             Priority = 0d,
             IsRequired = false
@@ -68,12 +64,16 @@ public partial class UserContextEditor : ComponentBase {
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
-        for( int i = 0; i < this.CurrentContextPrototype.Entries.Count; i++ ) {
-            if( this.CurrentContextPrototype.Entries[i].TermId == newTag.Id ) {
-                this.CurrentContextPrototype.Entries.RemoveAt( i );
+        List<UserContextTermEntryObject.DatabaseEntry> entries = this.CurrentContextPrototype.Entries.ToList();
+
+        for( int i = 0; i < entries.Count; i++ ) {
+            if( entries[i].TermId == newTag.Id ) {
+                entries.RemoveAt( i );
                 break;
             }
         }
+
+        this.CurrentContextPrototype.Entries = entries.ToArray();
 	}
 
     
@@ -95,18 +95,7 @@ public partial class UserContextEditor : ComponentBase {
         UserContextObject.DatabaseEntry currentContextRaw = contexts
             .Contexts
             .First( ctx => ctx.Id == currentCtx.Id );
-        UserContextObject? currentContext = await currentContextRaw.CreateUserContextObject_Async(
-            async ctxTermEntryRaw => await ctxTermEntryRaw.CreateUserContextTermEntry_Async(
-                async termId => {
-                    TermObject.DatabaseEntry? termRaw = (await this.TermsData.GetByIds_Async( new long[] { termId } ))?
-                        .Terms
-                        .FirstOrDefault();
-                    return termRaw is not null
-                        ? await termRaw.CreateTermObject_Async( null )
-                        : null;
-                }
-            )
-        );
+        UserContextObject currentContext = await ClientDataAccess_UserContext.ToObject( this.TermsData, currentContextRaw );
 
 		return currentContext is not null
             ? !this.CurrentContextPrototype.Matches( currentContext! )

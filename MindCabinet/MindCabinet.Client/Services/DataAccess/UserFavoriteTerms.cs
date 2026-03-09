@@ -41,8 +41,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
     }
 
 
-    public class AddTermsForCurrentUser_Params( List<long> termIds ) {
-        public List<long> TermIds { get; } = termIds;
+    public class AddTermsForCurrentUser_Params( long[] termIds ) {
+        public long[] TermIds { get; } = termIds;
     }
 
     public const string AddTermsForCurrentUser_Path = "UserFavoriteTerms";

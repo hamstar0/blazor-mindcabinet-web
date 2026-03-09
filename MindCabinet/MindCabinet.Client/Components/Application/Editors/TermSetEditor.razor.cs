@@ -7,7 +7,11 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TermSetEditor : ComponentBase {
-    public delegate Task OnTermsChange_Func( IEnumerable<TermObject> currentTerms, TermObject changedTerm, bool isAdded );
+    public delegate Task OnTermsChange_Func(
+        IEnumerable<TermObject> currentTerms,
+        TermObject changedTerm,
+        bool isAdded
+    );
 
 
 

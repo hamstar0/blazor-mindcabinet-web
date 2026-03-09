@@ -11,6 +11,8 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TermEditor : ComponentBase {
+    public delegate Task<(string termText, bool isSubmit)> OnTermInputFunc_Async( string termText );
+
     public delegate Task<TermObject?> OnTermConfirmFunc_Async( TermObject term, bool isAdded );
 
 
@@ -48,7 +50,7 @@ public partial class TermEditor : ComponentBase {
     public string? Description { get; set; }
 
     [Parameter]
-    public Func<string, Task<(string termText, bool isSubmit)>>? OnTermInput_Async { get; set; } = null;
+    public OnTermInputFunc_Async? OnTermInput_Async { get; set; } = null;
 
     [Parameter, EditorRequired]
     public OnTermConfirmFunc_Async OnTermConfirm_Async { get; set; } = null!;

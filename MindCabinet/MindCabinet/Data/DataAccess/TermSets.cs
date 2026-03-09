@@ -42,7 +42,7 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task Create_Async(
+    public async Task CreateForSimplePost_Async(
                 IDbConnection dbCon,
                 long simplePostId,
                 params long[] parameters ) {
@@ -68,7 +68,7 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task<TermSetObject.DatabaseEntry> GetTermSet_Async(
+    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 long termSetId ) {
@@ -84,9 +84,6 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
             termsData.TermsById_Cache[ termRaw.Id ] = termRaw;
         }
 
-        return new TermSetObject.DatabaseEntry {
-            Id = termSetId,
-            Terms = termSetRaw.Select( t => t.Id ).ToArray()
-        };
+        return termSetRaw;
     }
 }

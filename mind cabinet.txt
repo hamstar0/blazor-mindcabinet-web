@@ -47,6 +47,7 @@ v0.6
 			-	Disable post create if no user
 			-	Change Id back into SessionId
 			-	Normalize Create method return value conventions
+			-	Restructure DatabaseEntry objects to require full 
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Channel API calls through Hub (test)
 			-	Context entry
@@ -54,9 +55,9 @@ v0.6
 			-	Content posting
 			-	New tag posting
 			-	User's current context
+
+
 			-	Restructure data Objects to supply relevant FK ids as properties
-
-
 			-	Logout
 			-	User Register
 			-	User Login

@@ -7,14 +7,14 @@ public partial class UserContextObject(
             long id,
             string name,
             string? description,
-            List<UserContextTermEntryObject> entries ) {
-    public long Id { get; private set; } = id;
+            UserContextTermEntryObject[] entries ) {
+    public long Id { get; } = id;
 
-    public string Name { get; private set; } = name;
+    public string Name { get; } = name;
     
-    public string? Description { get; private set; } = description;
+    public string? Description { get; } = description;
 
-    public List<UserContextTermEntryObject> Entries { get; private set; } = entries;
+    public UserContextTermEntryObject[] Entries { get; } = entries;
 
 
 
@@ -30,7 +30,7 @@ public partial class UserContextObject(
     
 
     public override string ToString() {
-		return $"{this.Name}: {string.Join(", ", this.Entries)}";
+		return $"{this.Name}: {string.Join(", ", this.Entries.Select(e => e.ToString()))}";
     }
 
     public string ToFullString( bool includeId ) {
@@ -38,7 +38,7 @@ public partial class UserContextObject(
         if( includeId ) {
             output += $" (Id: {this.Id})";
         }
-        output += $": {string.Join(", ", this.Entries)}";
+        output += $": {string.Join(", ", this.Entries.Select(e => e.ToString()))}";
 
         return output;
     }

@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -25,7 +26,7 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
     public const string GetTermIdsForCurrentUser_Path = "UserTermsHistory";
     public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
 
-    public async Task<IEnumerable<GetTermIdsForCurrentUser_Return>> GetTermIdsForCurrentUser_Async() {
+    public async Task<IEnumerable<UserHistoryTermObject.DatabaseEntry>> GetTermIdsForCurrentUser_Async() {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -37,9 +38,9 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<GetTermIdsForCurrentUser_Return>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<GetTermIdsForCurrentUser_Return>>();
+        IEnumerable<UserHistoryTermObject.DatabaseEntry>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserHistoryTermObject.DatabaseEntry>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<UserHistoryTermObject.DatabaseEntry>" );
         }
 
         return ret;

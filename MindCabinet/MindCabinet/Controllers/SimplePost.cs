@@ -72,7 +72,7 @@ public class SimplePostController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        (long newPostId, long termSetId) = await this.SimplePostsData.Create_Async(
+        long simplePostId = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionData.UserOfSession.Id,
             termSetsData: this.TermSetsData,
@@ -81,11 +81,11 @@ public class SimplePostController : ControllerBase {
             skipHistory: false
         );
         return new SimplePostObject.DatabaseEntry {
-            Id = newPostId,
+            Id = simplePostId,
             //SimpleUserId = this.SessionData.UserOfSession.Id,
             Body = parameters.Body,
             Created = DateTime.UtcNow,
-            TermSetId = termSetId
+            TagsTermIdSet = parameters.TermIds.ToArray()
         };
     }
 }

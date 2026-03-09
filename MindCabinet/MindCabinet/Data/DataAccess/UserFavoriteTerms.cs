@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -23,7 +24,9 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
                 CONSTRAINT FK_{TableName}_FavTermId FOREIGN KEY (FavTermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id)
+                    REFERENCES {ServerDataAccess_Terms.TableName}(Id),
+                INDEX IDX_SimpleUserId (SimpleUserId),
+                INDEX IDX_SimpleUserIdAndFavor (SimpleUserId, Favor)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE
@@ -33,33 +36,31 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     }
     
 
-    public async Task<IEnumerable<UserFavoriteTermsObject.DatabaseEntry>> GetFavTermEntries_Async(
+    public async Task<IEnumerable<UserFavoriteTermObject.DatabaseEntry>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
 
-        var favTermsRaw = await dbCon.QueryAsync<UserFavoriteTermsObject.DatabaseEntry>(
+        return await dbCon.QueryAsync<UserFavoriteTermObject.DatabaseEntry>(
             sql,
             new DynamicParameters(sqlParams)
         );
-
-        return ClientDataAccess_UserFavoriteTerms.Get_Return( favTermsRaw );
 	}
 
 
-    public async Task AddTermIds_Async(
+    public async Task AddFavTermEntries_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params parameters ) {
+                long[] favTermIds ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
         dataTable.Columns.Add("Favor", typeof(int));
 
-        for( int i=0; i<parameters.TermIds.Count; i++ ) {
-            dataTable.Rows.Add( simpleUserId, parameters.TermIds[i], 0 );
+        for( int i=0; i<favTermIds.Length; i++ ) {
+            dataTable.Rows.Add( simpleUserId, favTermIds[i], 0 );
         }
 
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
@@ -70,14 +71,14 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     }
 
 
-    public async Task RemoveTermIds_Async(
+    public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName}
                 WHERE SimpleUserId = @SimpleUserId
-                AND FavTermId IN @TermIds",
+                    AND FavTermId IN @TermIds",
             new {
                 SimpleUserId = simpleUserId,
                 TermIds = parameters.TermIds

@@ -11,7 +11,7 @@ public partial class UserContextObject {
         
         public string? Description;
 
-        public List<UserContextTermEntryObject.DatabaseEntry> Entries = new List<UserContextTermEntryObject.DatabaseEntry>();
+        public UserContextTermEntryObject.DatabaseEntry[] Entries = [];
 
 
 
@@ -22,11 +22,11 @@ public partial class UserContextObject {
             if( this.Description != other.Description ) {
                 return false;
             }
-            if( this.Entries.Count != other.Entries.Count ) {
+            if( this.Entries.Length != other.Entries.Length ) {
                 return false;
             }
             
-            for( int i = 0; i < this.Entries.Count; i++ ) {
+            for( int i = 0; i < this.Entries.Length; i++ ) {
                 UserContextTermEntryObject.DatabaseEntry entryA = this.Entries[i];
                 UserContextTermEntryObject entryB = other.Entries[i];
 

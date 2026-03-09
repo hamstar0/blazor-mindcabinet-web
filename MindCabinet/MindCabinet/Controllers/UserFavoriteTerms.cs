@@ -5,6 +5,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -45,7 +46,9 @@ public partial class UserFavoriteTermsController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.FavoriteTermsData.GetFavTermEntries_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        IEnumerable<UserFavoriteTermObject.DatabaseEntry> termsRaw = await this.FavoriteTermsData
+            .GetFavTermEntries_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        return termsRaw.Select( e => e.FavTermId );
     }
 
 
@@ -58,7 +61,7 @@ public partial class UserFavoriteTermsController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.AddTermIds_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        await this.FavoriteTermsData.AddFavTermEntries_Async( dbCon, this.SessionData.UserOfSession.Id, parameters.TermIds );
     }
 
 
@@ -71,6 +74,6 @@ public partial class UserFavoriteTermsController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.RemoveTermIds_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        await this.FavoriteTermsData.RemoveFavTermEntries_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
     }
 }

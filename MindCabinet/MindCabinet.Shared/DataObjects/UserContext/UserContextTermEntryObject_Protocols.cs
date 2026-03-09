@@ -6,8 +6,6 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 public partial class UserContextTermEntryObject {
     public class DatabaseEntry {
-        public long UserContextId = default;
-
         public long TermId = default;
 
         public double Priority = default;
@@ -24,4 +22,13 @@ public partial class UserContextTermEntryObject {
             );
 		}
 	}
+
+
+    public DatabaseEntry ToDatabaseEntry() {
+        return new DatabaseEntry {
+            TermId = this.Term.Id,
+            Priority = this.Priority,
+            IsRequired = this.IsRequired
+        };
+    }
 }

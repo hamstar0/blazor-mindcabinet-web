@@ -8,14 +8,14 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimplePostObject : IEquatable<SimplePostObject> {
-	public long Id { get; private set; }
+	public long Id { get; }
 
 
-	public DateTime Created { get; private set; }
+	public DateTime Created { get; }
 
-    public string Body { get; private set; }
+    public string Body { get; }
 
-    public SortedSet<TermObject> Tags { get; private set; }
+    public SortedSet<TermObject> Tags { get; }
 
 
 

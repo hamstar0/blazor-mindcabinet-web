@@ -5,28 +5,36 @@ namespace MindCabinet.Shared.DataObjects.Term;
 
 
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
-    public long Id { get; private set; }
+    public long Id { get; }
 
-    public string Term { get; set; }
+    public string Term { get; }
 
-    public IdDataObject<TermObject>? Context { get; private set; }
+    public IdDataObject<TermObject>? Context { get; }
 
-    public IdDataObject<TermObject>? Alias { get; private set; }
+    public IdDataObject<TermObject>? Alias { get; }
 
 
 
 	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
 		this.Id = id;
 		this.Term = term;
-		this.Context = context is not null ? new IdDataObject<TermObject> { Id = context.Id, Data = context } : null;
-		this.Alias = alias is not null ? new IdDataObject<TermObject> { Id = alias.Id, Data = alias } : null;
+		this.Context = context is not null
+            ? new IdDataObject<TermObject> { Id = context.Id, Data = context }
+            : null;
+		this.Alias = alias is not null
+            ? new IdDataObject<TermObject> { Id = alias.Id, Data = alias }
+            : null;
     }
 
 	public TermObject( long id, string term, long? contextId, long? aliasId ) {
 		this.Id = id;
 		this.Term = term;
-		this.Context = contextId is not null ? new IdDataObject<TermObject> { Id = contextId.Value, Data = null } : null;
-		this.Alias = aliasId is not null ? new IdDataObject<TermObject> { Id = aliasId.Value, Data = null } : null;
+		this.Context = contextId is not null
+            ? new IdDataObject<TermObject> { Id = contextId.Value, Data = null }
+            : null;
+		this.Alias = aliasId is not null
+            ? new IdDataObject<TermObject> { Id = aliasId.Value, Data = null }
+            : null;
     }
 
 

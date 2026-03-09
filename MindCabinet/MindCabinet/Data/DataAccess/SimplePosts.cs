@@ -172,27 +172,26 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     }
 
 
-	public async Task<(long newPostId, long termSetId)> Create_Async(
+	public async Task<long> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
                 bool skipHistory ) {
-        long termSetId = await termSetsData.Create_Async( dbCon, parameters.TermIds );
-
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            $@"INSERT INTO {TableName} (Created, Modified, Body, TermSetId) 
-                VALUES (@Created, @Created, @Body, @TermSetId);
+            $@"INSERT INTO {TableName} (Created, Modified, Body) 
+                VALUES (@Created, @Created, @Body);
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
-                Body = new DbString { Value = parameters.Body, IsAnsi = true },
-                TermSetId = await termSetsData.Create_Async( dbCon, termSetId ),
+                Body = new DbString { Value = parameters.Body, IsAnsi = true }
             }
         );
+        
+        await termSetsData.CreateForSimplePost_Async( dbCon, newPostId, parameters.TermIds );
 
         if( !skipHistory ) {
             await Task.WhenAll( parameters.TermIds.Select( termId =>
@@ -206,6 +205,6 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             ) );
         }
 
-        return (newPostId, termSetId);
+        return newPostId;
     }
 }

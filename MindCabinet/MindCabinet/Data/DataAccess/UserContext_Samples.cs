@@ -23,7 +23,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
         var sampleRawCtx = new UserContextObject.DatabaseEntry {
             Name = "Default Context",
             Description = "A sample user context.",
-            Entries = new List<UserContextTermEntryObject.DatabaseEntry>() { sampleRawEntry }
+            Entries = [sampleRawEntry]
         };
 
         long usrCtxId = (await this.Create_Async(

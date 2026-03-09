@@ -7,7 +7,7 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class UserAppDataObject( long simpleUserId, UserContextObject userContext ) {
-	public long SimpleUserId { get; private set; } = simpleUserId;
+	public long SimpleUserId { get; } = simpleUserId;
 
-	public UserContextObject UserContext { get; private set; } = userContext;
+	public UserContextObject UserContext { get; } = userContext;
 }

@@ -9,7 +9,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
+public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
     private HttpClient Http = http;
 
 
