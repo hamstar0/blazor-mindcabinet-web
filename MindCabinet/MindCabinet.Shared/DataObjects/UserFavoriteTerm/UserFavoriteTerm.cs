@@ -6,8 +6,8 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 
 
-public partial class UserFavoriteTermObject( long simpleUserId, int favor, TermObject favTerm ) {
-	public long SimpleUserId { get; } = simpleUserId;
+public partial class UserFavoriteTermObject( SimpleUserObject simpleUser, int favor, TermObject favTerm ) {
+	public SimpleUserObject SimpleUser { get; } = simpleUser;
 
 	public int Favor { get; } = favor;
 

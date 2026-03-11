@@ -7,7 +7,7 @@ namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 
 
 public partial class UserFavoriteTermObject {
-    public class DatabaseEntry {
+    public class Raw {
 		public long SimpleUserId;
 
 	    public int Favor;
@@ -16,13 +16,34 @@ public partial class UserFavoriteTermObject {
 
         
         
-        public async Task<UserFavoriteTermObject> CreateUserAppDataObject_Async(
+        public async Task<UserFavoriteTermObject> CreateDataObject_Async(
+                    Func<long, Task<SimpleUserObject>> userFactory,
                     Func<long, Task<TermObject>> termFactory ) {
             return new UserFavoriteTermObject(
+                simpleUser: await userFactory( this.SimpleUserId ),
+                favor: this.Favor,
+                favTerm: await termFactory( this.FavTermId )
+            );
+        }
+
+        
+        public async Task<ClientObject> CreateClientObject_Async(
+                    Func<long, Task<TermObject>> termFactory ) {
+            return new ClientObject(
                 simpleUserId: this.SimpleUserId,
                 favor: this.Favor,
                 favTerm: await termFactory( this.FavTermId )
             );
         }
+    }
+
+
+    
+    public class ClientObject( long simpleUserId, int favor, TermObject favTerm ) {
+        public long SimpleUserId { get; } = simpleUserId;
+
+        public int Favor { get; } = favor;
+
+        public TermObject FavTerm { get; } = favTerm;
     }
 }

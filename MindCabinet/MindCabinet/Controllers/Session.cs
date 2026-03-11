@@ -42,7 +42,7 @@ public class SessionController(
 
         return new ClientSessionData.SessionDataJson {
             SessionId = this.SessData.SessionId!,
-            UserData = new SimpleUserObject.ClientData(
+            UserData = new SimpleUserObject.ClientObject(
                 id: this.SessData.UserOfSession!.Id,
                 name: this.SessData.UserOfSession!.Name,
                 created: this.SessData.UserOfSession!.Created,

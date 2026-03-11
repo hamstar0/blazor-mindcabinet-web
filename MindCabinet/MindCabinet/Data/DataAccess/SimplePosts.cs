@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public const string TableName = "SimplePosts";
 
-    public async Task<(bool success, TermObject.DatabaseEntry sampleTerm)> Install_Async(
+    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
@@ -42,10 +42,10 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
 
 
-    public async Task<SimplePostObject.DatabaseEntry?> GetById_Async(
+    public async Task<SimplePostObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 long id ) {
-        SimplePostObject.DatabaseEntry? postRaw = await dbCon.QuerySingleAsync<SimplePostObject.DatabaseEntry?>(
+        SimplePostObject.Raw? postRaw = await dbCon.QuerySingleAsync<SimplePostObject.Raw?>(
             $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
             new { Id = id }
         );
@@ -113,19 +113,19 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     }
 
 
-    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
-            return Enumerable.Empty<SimplePostObject.DatabaseEntry>();
+            return Enumerable.Empty<SimplePostObject.Raw>();
         }
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, false );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<SimplePostObject.DatabaseEntry> postsRaw = await dbCon.QueryAsync<SimplePostObject.DatabaseEntry>(
+        IEnumerable<SimplePostObject.Raw> postsRaw = await dbCon.QueryAsync<SimplePostObject.Raw>(
             sql, new DynamicParameters( sqlParams )
         );
 

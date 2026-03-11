@@ -32,8 +32,8 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
         public bool IsValidated { get; } = isValidated;
     }
     
-    public class Create_Return( SimpleUserObject.ClientData? user, string status ) {
-        public SimpleUserObject.ClientData? User { get; } = user;
+    public class Create_Return( SimpleUserObject.ClientObject? user, string status ) {
+        public SimpleUserObject.ClientObject? User { get; } = user;
         public string Status { get; } = status;
     }
 
@@ -64,8 +64,8 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
         public string Password { get; } = password;
     }
 
-    public class Login_Return( SimpleUserObject.ClientData? user, string status ) {
-        public SimpleUserObject.ClientData? User { get; } = user;
+    public class Login_Return( SimpleUserObject.ClientObject? user, string status ) {
+        public SimpleUserObject.ClientObject? User { get; } = user;
         public string Status { get; } = status;
     }
 

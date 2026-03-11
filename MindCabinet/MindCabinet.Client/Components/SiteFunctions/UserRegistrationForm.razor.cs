@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Components.SiteFunctions;
 
 
 public partial class UserRegistrationForm : ComponentBase {
-    public delegate Task OnUserCreateFunc_Async( SimpleUserObject.ClientData user );
+    public delegate Task OnUserCreateFunc_Async( SimpleUserObject.ClientObject user );
 
 
 

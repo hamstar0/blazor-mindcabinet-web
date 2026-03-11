@@ -74,7 +74,7 @@ public partial class SimpleUserController : ControllerBase {
 
         return new ClientDataAccess_SimpleUsers.Create_Return(
             result.User is not null
-                ? new SimpleUserObject.ClientData( result.User.Id, result.User.Name, result.User.Created, result.User.Email )
+                ? new SimpleUserObject.ClientObject( result.User.Id, result.User.Name, result.User.Created, result.User.Email )
                 : null,
             result.User is not null
                 ? "User created. Validate email address and log in to complete registration."

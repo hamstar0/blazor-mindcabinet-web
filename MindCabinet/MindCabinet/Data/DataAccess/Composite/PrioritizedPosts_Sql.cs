@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess.Composite;
 
 public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
-                UserContextObject.DatabaseEntry userContext,
+                UserContextObject.Raw userContext,
                 string? bodyPattern,
                 bool sortAscendingByDate,
                 int postsPerPage,

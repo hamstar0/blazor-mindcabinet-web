@@ -1,4 +1,5 @@
-﻿using MindCabinet.Data.DataAccess;
+﻿using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -104,26 +105,10 @@ public partial class ServerSessionData(
         bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
 
         if( isLoggedIn ) {
-            Func<long, Task<TermObject?>> termFactory = async termId => {
-                TermObject.DatabaseEntry? termRaw = await termsData.GetById_Async( dbCon, termId );
-                return termRaw is not null
-                    ? await termRaw.CreateTermObject_Async( null )
-                    : null;
-            };
-            Func<UserContextTermEntryObject.DatabaseEntry, Task<UserContextTermEntryObject?>> ctxTermFactory = async ctxTermEntry => {
-                return await ctxTermEntry.CreateUserContextTermEntry_Async( termFactory );
-            };
-            Func<long, Task<UserContextObject?>> userContextFactory = async id => {
-                UserContextObject.DatabaseEntry? ctxRaw = await userContextsData.GetById_Async( dbCon, id );
-                UserContextObject? ctx = ctxRaw is not null
-                    ? await ctxRaw.CreateUserContextObject_Async( ctxTermFactory )
-                    : null;
-                return ctx;
-            };
-            UserAppDataObject.DatabaseEntry? usrAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+            UserAppDataObject.Raw? usrAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
 
             this.UserAppData = usrAppDataRaw is not null
-                ? await usrAppDataRaw.CreateUserAppDataObject_Async( userContextFactory )
+                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, userContextsData, usrAppDataRaw )
                 : null;
         }
 

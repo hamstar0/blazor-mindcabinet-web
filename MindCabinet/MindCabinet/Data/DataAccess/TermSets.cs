@@ -68,11 +68,11 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetTermSet_Async(
+    public async Task<IEnumerable<TermObject.Raw>> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 long termSetId ) {
-        IEnumerable<TermObject.DatabaseEntry> termSetRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
+        IEnumerable<TermObject.Raw> termSetRaw = await dbCon.QueryAsync<TermObject.Raw>(
             $@"SELECT MyTerms.Id, MyTerms.Term, MyTerms.ContextId, MyTerms.AliasId
                 FROM {ServerDataAccess_Terms.TableName} AS MyTerms
                 INNER JOIN {TableName} AS MyTermSet ON (MyTerms.Id = MyTermSet.TermId)
@@ -80,7 +80,7 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
             new { SetId = termSetId }
         );
 
-        foreach( TermObject.DatabaseEntry? termRaw in termSetRaw ) {
+        foreach( TermObject.Raw? termRaw in termSetRaw ) {
             termsData.TermsById_Cache[ termRaw.Id ] = termRaw;
         }
 

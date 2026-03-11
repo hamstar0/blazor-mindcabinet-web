@@ -36,8 +36,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public class SimpleUserQueryResult( SimpleUserObject.User_DatabaseEntry? user, bool alreadyExists ) {
-        public SimpleUserObject.User_DatabaseEntry? User = user;
+    public class SimpleUserQueryResult( SimpleUserObject.User_Raw? user, bool alreadyExists ) {
+        public SimpleUserObject.User_Raw? User = user;
         public bool AlreadyExists = alreadyExists;
     }
 
@@ -101,16 +101,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         this.Logger = logger;
     }
 
-    private IDictionary<long, SimpleUserObject.User_DatabaseEntry> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject.User_DatabaseEntry>();
+    private IDictionary<long, SimpleUserObject.User_Raw> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject.User_Raw>();
 
 
 
-    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
+    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
         if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserObject.User_DatabaseEntry? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_Raw?>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = id }
         );
@@ -125,8 +125,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
 
-    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
-        SimpleUserObject.User_DatabaseEntry? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_DatabaseEntry?>(
+    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
+        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_Raw?>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
         );
@@ -140,12 +140,12 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         return userRaw;
     }
 
-    public async Task<SimpleUserObject.User_DatabaseEntry?> GetSimpleUserBySession_Async(
+    public async Task<SimpleUserObject.User_Raw?> GetSimpleUserBySession_Async(
                 IDbConnection dbCon,
                 string sessionId,
                 string ipAddress,
                 bool destroyIfSessionExpiredOrInvalid ) {
-        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_DatabaseEntry?>(
+        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(
             $@"SELECT
                     MyUsers.*,
                     MySessions.Id AS SessionId,
@@ -202,10 +202,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
-        SimpleUserObject.User_DatabaseEntry? user;
+        SimpleUserObject.User_Raw? user;
 
         if( detectCollision ) {
-            user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_DatabaseEntry?>(
+            user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw?>(
                 $"SELECT * FROM {TableName} WHERE Name = @Name",
                 new { Name = parameters.Name }
             );
@@ -233,7 +233,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             }
         );
 
-        var newUser = new SimpleUserObject.User_DatabaseEntry {
+        var newUser = new SimpleUserObject.User_Raw {
             Id = newUserId,
             Created = now,
             Name = parameters.Name,

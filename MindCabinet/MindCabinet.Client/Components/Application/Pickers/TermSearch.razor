@@ -31,7 +31,7 @@
         <div>
             <label>Favorite Terms:</label>
             <MultiTermRender
-                    Terms=@this.FavoriteTerms_Cache
+                    Terms=@this.FavoriteTerms_Cache.Select( e => e.FavTerm )
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
@@ -39,7 +39,7 @@
         <div>
             <label>Recent Terms:</label>
             <MultiTermRender
-                    Terms=@this.RecentTerms_Cache
+                    Terms=@this.RecentTerms_Cache.Select( e => e.Term )
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }

@@ -12,30 +12,38 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_UserContext : IClientDataAccess {
-    public static async Task<UserContextObject> ToObject(
+    public static async Task<UserContextObject[]> ToObjects_Async(
                 ClientDataAccess_Terms termsData,
-                UserContextObject.DatabaseEntry entryRaw ) {
-        Func<UserContextTermEntryObject.DatabaseEntry[], Task<UserContextTermEntryObject[]>> ctxTermEntriesFactory = 
+                UserContextObject.Raw[] entriesRaw ) {
+        return await Task.WhenAll(
+            entriesRaw.Select( entryRaw => ClientDataAccess_UserContext.ToObject_Async(termsData, entryRaw) )
+        );
+    }
+
+    public static async Task<UserContextObject> ToObject_Async(
+                ClientDataAccess_Terms termsData,
+                UserContextObject.Raw entryRaw ) {
+        Func<UserContextTermEntryObject.Raw[], Task<UserContextTermEntryObject[]>> ctxTermEntriesFactory = 
             async ctxTermEntriesRaw => {
-                return await ClientDataAccess_UserContext.ToTermEntryObjects( termsData, ctxTermEntriesRaw );
+                return await ClientDataAccess_UserContext.ToTermEntryObjects_Async( termsData, ctxTermEntriesRaw );
             };
 
-        return await entryRaw.CreateUserContextObject_Async( ctxTermEntriesFactory );
+        return await entryRaw.CreateDataObject_Async( ctxTermEntriesFactory );
     }
 
 
-    public static async Task<UserContextTermEntryObject[]> ToTermEntryObjects(
+    public static async Task<UserContextTermEntryObject[]> ToTermEntryObjects_Async(
                 ClientDataAccess_Terms termsData,
-                UserContextTermEntryObject.DatabaseEntry[] ctxTermEntriesRaw ) {
+                UserContextTermEntryObject.Raw[] ctxTermEntriesRaw ) {
         long[] termIds = ctxTermEntriesRaw.Select( t => t.TermId ).ToArray();
-        IEnumerable<TermObject.DatabaseEntry> termsRaw = (await termsData.GetByIds_Async( termIds ))
+        IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
             .Terms;
 
         Func<long, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
-            .ToObject( termsData, termId );
+            .ToObject_Async( termsData, termId );
 
         return await Task.WhenAll(
-            ctxTermEntriesRaw.Select( ctxTermEntryRaw => ctxTermEntryRaw.CreateUserContextTermEntry_Async(termFactory) )
+            ctxTermEntriesRaw.Select( ctxTermEntryRaw => ctxTermEntryRaw.CreateDataObject_Async(termFactory) )
         );
     }
 }

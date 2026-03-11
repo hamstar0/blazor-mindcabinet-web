@@ -15,6 +15,9 @@ public partial class UserContextPicker : ComponentBase {
     //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
+    private ClientDataAccess_Terms TermsData { get; set; } = null!;
+
+    [Inject]
     private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
 
     [Inject]
@@ -93,12 +96,13 @@ public partial class UserContextPicker : ComponentBase {
             return;
         }
 
-        IEnumerable<UserContextObject> contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
+        ClientDataAccess_UserContext.Get_Return contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
                 NameContains = contextText
             }
         );
-        this.SearchOptions = contexts.ToList();    // TODO
+        this.SearchOptions = (await ClientDataAccess_UserContext.ToObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
+            .ToList();
     }
 
 

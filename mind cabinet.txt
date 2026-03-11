@@ -57,6 +57,8 @@ v0.6
 			-	User's current context
 
 
+			-	Set TermObject to use a DatabaseEntry properties for Alias and Context
+			-	Change DatabaseEntry to Raw
 			-	Restructure data Objects to supply relevant FK ids as properties
 			-	Logout
 			-	User Register

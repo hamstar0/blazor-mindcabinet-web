@@ -14,8 +14,8 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
 
 
 
-    public class GetByX_Return( IEnumerable<TermObject.DatabaseEntry> terms ) {
-        public IEnumerable<TermObject.DatabaseEntry> Terms { get; } = terms;
+    public class GetByX_Return( IEnumerable<TermObject.Raw> terms ) {
+        public IEnumerable<TermObject.Raw> Terms { get; } = terms;
     }
 
     public const string GetByIds_Path = "Term";
@@ -84,9 +84,9 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
 
     public class Create_Return(
                 bool isAdded,
-                TermObject.DatabaseEntry term ) {
+                TermObject.Raw term ) {
         public bool IsAdded { get; } = isAdded;
-        public TermObject.DatabaseEntry Term { get; } = term;
+        public TermObject.Raw Term { get; } = term;
     }
 
     public const string Create_Path = "Term";

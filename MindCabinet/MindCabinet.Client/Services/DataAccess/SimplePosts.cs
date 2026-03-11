@@ -37,8 +37,8 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
         }
     }
 
-    public class GetByCriteria_Return( IEnumerable<SimplePostObject.DatabaseEntry> posts ) {
-        public IEnumerable<SimplePostObject.DatabaseEntry> Posts { get; } = posts;
+    public class GetByCriteria_Return( IEnumerable<SimplePostObject.Raw> posts ) {
+        public IEnumerable<SimplePostObject.Raw> Posts { get; } = posts;
     }
 
     public const string GetByCriteria_Path = "SimplePost";
@@ -94,7 +94,7 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
     public const string Create_Path = "SimplePost";
     public const string Create_Route = "Create";
 
-    public async Task<SimplePostObject.DatabaseEntry> Create_Async( Create_Params parameters ) {
+    public async Task<SimplePostObject.Raw> Create_Async( Create_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{Create_Path}/{Create_Route}",
             value: parameters
@@ -102,7 +102,7 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
         msg.EnsureSuccessStatusCode();
 
-        SimplePostObject.DatabaseEntry? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject.DatabaseEntry>();
+        SimplePostObject.Raw? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject.Raw>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize SimplePostEntry" );
         }

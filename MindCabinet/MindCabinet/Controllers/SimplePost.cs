@@ -52,7 +52,7 @@ public class SimplePostController : ControllerBase {
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<SimplePostObject.DatabaseEntry> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
+        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
         return new ClientDataAccess_SimplePosts.GetByCriteria_Return( posts );
     }
 
@@ -65,7 +65,7 @@ public class SimplePostController : ControllerBase {
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
-    public async Task<SimplePostObject.DatabaseEntry> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
+    public async Task<SimplePostObject.Raw> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -80,7 +80,7 @@ public class SimplePostController : ControllerBase {
             parameters: parameters,
             skipHistory: false
         );
-        return new SimplePostObject.DatabaseEntry {
+        return new SimplePostObject.Raw {
             Id = simplePostId,
             //SimpleUserId = this.SessionData.UserOfSession.Id,
             Body = parameters.Body,

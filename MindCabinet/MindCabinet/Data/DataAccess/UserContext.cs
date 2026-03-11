@@ -18,9 +18,9 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
 
 
-    public async Task<(bool success, UserContextObject.DatabaseEntry userContext)> Install_Async(
+    public async Task<(bool success, UserContextObject.Raw userContext)> Install_Async(
                 IDbConnection dbConnection,
-                TermObject.DatabaseEntry sampleTerm,
+                TermObject.Raw sampleTerm,
                 long defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -50,10 +50,10 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     }
     
 
-    public async Task<UserContextObject.DatabaseEntry?> GetById_Async(
+    public async Task<UserContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 long contextId ) {
-        UserContextObject.DatabaseEntry? usrCtxRaw = await dbCon.QuerySingleAsync<UserContextObject.DatabaseEntry?>(
+        UserContextObject.Raw? usrCtxRaw = await dbCon.QuerySingleAsync<UserContextObject.Raw?>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = contextId }
         );
@@ -66,7 +66,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     }
 
 
-    public async Task<IEnumerable<UserContextObject.DatabaseEntry>> GetByCriteria_Async(
+    public async Task<IEnumerable<UserContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters,
@@ -88,8 +88,8 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
         }
 
-        IEnumerable<UserContextObject.DatabaseEntry> contexts
-            = await dbCon.QueryAsync<UserContextObject.DatabaseEntry>(
+        IEnumerable<UserContextObject.Raw> contexts
+            = await dbCon.QueryAsync<UserContextObject.Raw>(
                 sql1,
                 new DynamicParameters(sqlParams1)
             );
@@ -98,10 +98,10 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             string sql2 = $@"SELECT MyCtxEntries.ContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                 FROM {EntriesTableName} AS MyCtxEntries
                 WHERE MyCtxEntries.ContextId = @ContextId;";
-            foreach( UserContextObject.DatabaseEntry ctx in contexts ) {
+            foreach( UserContextObject.Raw ctx in contexts ) {
                 var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
 
-                ctx.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.DatabaseEntry>(
+                ctx.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.Raw>(
                     sql2,
                     new DynamicParameters(sqlParams2)
                 )).ToArray();
@@ -115,7 +115,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
-                UserContextObject.DatabaseEntry parameters ) {
+                UserContextObject.Raw parameters ) {
         long userContextId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, Name, Description) 
                 VALUES (@SimpleUserId, @Name, @Description);
@@ -129,7 +129,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
         string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (ContextId, TermId, Priority, IsRequired) 
                 VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextTermEntryObject.DatabaseEntry entry in parameters.Entries ) {
+        foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
@@ -148,7 +148,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Update_Async(
                 IDbConnection dbCon,
                 long userContextId,
-                UserContextObject.DatabaseEntry parameters ) {
+                UserContextObject.Raw parameters ) {
         await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
                 SET Name = @Name, Description = @Description
@@ -170,7 +170,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
         string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (ContextId, TermId, Priority, IsRequired) 
             VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextTermEntryObject.DatabaseEntry entry in parameters.Entries ) {
+        foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {

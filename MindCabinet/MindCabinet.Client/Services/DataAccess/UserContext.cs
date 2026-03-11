@@ -24,8 +24,8 @@ public partial class ClientDataAccess_UserContext(
         public List<long> Ids { get; set; } = [];
     }
 
-    public class Get_Return( IEnumerable<UserContextObject.DatabaseEntry> contexts ) {
-        public IEnumerable<UserContextObject.DatabaseEntry> Contexts { get; } = contexts;
+    public class Get_Return( IEnumerable<UserContextObject.Raw> contexts ) {
+        public IEnumerable<UserContextObject.Raw> Contexts { get; } = contexts;
     }
 
     public const string GetForCurrentUserByCriteria_Path = "UserContext";
@@ -87,7 +87,7 @@ public partial class ClientDataAccess_UserContext(
     public const string CreateForCurrentUser_Path = "UserContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.DatabaseEntry parameters ) {
+    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -111,7 +111,7 @@ public partial class ClientDataAccess_UserContext(
     public const string UpdateForCurrentUser_Path = "UserContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.DatabaseEntry parameters ) {
+    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

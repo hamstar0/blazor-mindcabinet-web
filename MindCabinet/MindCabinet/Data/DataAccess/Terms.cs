@@ -35,18 +35,18 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
 
 
-    internal IDictionary<long, TermObject.DatabaseEntry> TermsById_Cache = new Dictionary<long, TermObject.DatabaseEntry>();
+    internal IDictionary<long, TermObject.Raw> TermsById_Cache = new Dictionary<long, TermObject.Raw>();
 
 
 
-    public async Task<TermObject.DatabaseEntry?> GetById_Async(
+    public async Task<TermObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 long id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
 
-        TermObject.DatabaseEntry? termRaw = await dbCon.QuerySingleAsync<TermObject.DatabaseEntry?>(
+        TermObject.Raw? termRaw = await dbCon.QuerySingleAsync<TermObject.Raw?>(
             $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
@@ -60,7 +60,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         return termRaw;
     }
 
-    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetByIds_Async(
+    public async Task<IEnumerable<TermObject.Raw>> GetByIds_Async(
                 IDbConnection dbCon,
                 IEnumerable<long> ids ) {
         if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
@@ -72,13 +72,13 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             WHERE MyTerms.Id IN @Ids";
         var sqlParams = new Dictionary<string, object> { { "@Ids", ids } };
 
-        IEnumerable<TermObject.DatabaseEntry> termsRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
+        IEnumerable<TermObject.Raw> termsRaw = await dbCon.QueryAsync<TermObject.Raw>(
             sql, new DynamicParameters(sqlParams) );
 
         return termsRaw;
     }
     
-    public async Task<IEnumerable<TermObject.DatabaseEntry>> GetTermsByCriteria_Async(
+    public async Task<IEnumerable<TermObject.Raw>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
@@ -111,7 +111,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         //sqlParams["@Quantity"] = parameters.Quantity;
 
 //this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<TermObject.DatabaseEntry> termsRaw = await dbCon.QueryAsync<TermObject.DatabaseEntry>(
+        IEnumerable<TermObject.Raw> termsRaw = await dbCon.QueryAsync<TermObject.Raw>(
             sql, new DynamicParameters(sqlParams) );
 //this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
@@ -122,7 +122,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_Terms.Create_Params parameters ) {
-		IEnumerable<TermObject.DatabaseEntry> matchingTerms = await this.GetTermsByCriteria_Async(
+		IEnumerable<TermObject.Raw> matchingTerms = await this.GetTermsByCriteria_Async(
             dbCon: dbCon,
 			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
@@ -147,7 +147,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             }
         );
 
-        var newTerm = new TermObject.DatabaseEntry {
+        var newTerm = new TermObject.Raw {
 			Id = newId,
 			Term = parameters.TermPattern,
 			ContextTermId = parameters.Context?.Id,

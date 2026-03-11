@@ -11,7 +11,7 @@ public partial class UserContextObject {
         
         public string? Description;
 
-        public UserContextTermEntryObject.DatabaseEntry[] Entries = [];
+        public UserContextTermEntryObject.Raw[] Entries = [];
 
 
 
@@ -27,7 +27,7 @@ public partial class UserContextObject {
             }
             
             for( int i = 0; i < this.Entries.Length; i++ ) {
-                UserContextTermEntryObject.DatabaseEntry entryA = this.Entries[i];
+                UserContextTermEntryObject.Raw entryA = this.Entries[i];
                 UserContextTermEntryObject entryB = other.Entries[i];
 
                 if( entryA.TermId != entryB.Term.Id
@@ -45,12 +45,12 @@ public partial class UserContextObject {
                 && this.Entries.Any();
         }
 
-        public UserContextObject.DatabaseEntry CreateDatabaseEntry() {
+        public UserContextObject.Raw CreateDatabaseEntry() {
             if( !this.IsValid() ) {
                 throw new InvalidOperationException("Cannot create database entry from invalid prototype.");
             }
             
-            return new UserContextObject.DatabaseEntry {
+            return new UserContextObject.Raw {
                 Name = this.Name ?? "",
                 Description = this.Description,
                 Entries = this.Entries

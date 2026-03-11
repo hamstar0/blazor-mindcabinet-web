@@ -5,7 +5,7 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
 public partial class UserContextTermEntryObject {
-    public class DatabaseEntry {
+    public class Raw {
         public long TermId = default;
 
         public double Priority = default;
@@ -13,7 +13,7 @@ public partial class UserContextTermEntryObject {
         public bool IsRequired = default;
 
 
-		public async Task<UserContextTermEntryObject> CreateUserContextTermEntry_Async(
+		public async Task<UserContextTermEntryObject> CreateDataObject_Async(
                     Func<long, Task<TermObject>> termFactory ) {
             return new UserContextTermEntryObject(
                 term: await termFactory( this.TermId ),
@@ -24,8 +24,8 @@ public partial class UserContextTermEntryObject {
 	}
 
 
-    public DatabaseEntry ToDatabaseEntry() {
-        return new DatabaseEntry {
+    public Raw ToRaw() {
+        return new Raw {
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

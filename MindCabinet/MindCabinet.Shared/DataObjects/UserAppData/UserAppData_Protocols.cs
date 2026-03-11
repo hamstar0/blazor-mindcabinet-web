@@ -7,13 +7,13 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class UserAppDataObject {
-    public class DatabaseEntry {
+    public class Raw {
 		public long SimpleUserId;
 		public long UserContextId;
 
         
         
-        public async Task<UserAppDataObject> CreateUserAppDataObject_Async(
+        public async Task<UserAppDataObject> CreateDataObject_Async(
                     Func<long, Task<UserContextObject>> userContextFactory ) {
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,

@@ -12,13 +12,30 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
-    public static async Task<TermObject> ToObject(
+    public static async Task<TermObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
                 long termId ) {
-        TermObject.DatabaseEntry termRaw = (await termsData.GetByIds_Async( new long[] { termId } ))
+        Func<long, Task<TermObject.Raw>> termRawFactory = async (long termId) =>
+            (await termsData.GetByIds_Async( new long[] { termId } ))
             .Terms
             .First();
 
-        return await termRaw.CreateTermObject_Async( null );
+        TermObject.Raw termRaw = await termRawFactory( termId );
+
+        return await termRaw.CreateDataObject_Async( termRawFactory );
+    }
+
+
+    public static async Task<TermObject[]> ToObjects_Async(
+                ClientDataAccess_Terms termsData,
+                TermObject.Raw[] rawTerms ) {
+        Func<long, Task<TermObject.Raw>> termRawFactory = async (long termId) =>
+            (await termsData.GetByIds_Async( new long[] { termId } ))
+            .Terms
+            .First();
+
+        return await Task.WhenAll(
+            rawTerms.Select( async rawTerm => await rawTerm.CreateDataObject_Async(termRawFactory) )
+        );
     }
 }

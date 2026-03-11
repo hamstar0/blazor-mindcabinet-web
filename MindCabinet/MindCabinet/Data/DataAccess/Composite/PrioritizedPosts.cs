@@ -16,7 +16,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     
 
     
-    public async Task<IEnumerable<SimplePostObject.DatabaseEntry>> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_UserContexts userContextData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
@@ -24,7 +24,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             return [];
         }
 
-        UserContextObject.DatabaseEntry? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
+        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
         if( usrCtx is null ) {
             return [];
         }
@@ -40,7 +40,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
         );
 
         // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
-        IEnumerable<SimplePostObject.DatabaseEntry> posts = await dbCon.QueryAsync<SimplePostObject.DatabaseEntry>(
+        IEnumerable<SimplePostObject.Raw> posts = await dbCon.QueryAsync<SimplePostObject.Raw>(
             sql, new DynamicParameters( sqlParams )
         );
 
@@ -56,7 +56,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             return 0;
         }
 
-        UserContextObject.DatabaseEntry? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
+        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
         if( usrCtx is null ) {
             return 0;
         }

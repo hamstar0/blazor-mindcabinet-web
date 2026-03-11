@@ -11,7 +11,7 @@ namespace MindCabinet.Client.Components.SiteFunctions;
 
 
 public partial class UserLoginForm : ComponentBase {
-    public delegate Task OnUserLoginFunc_Async( SimpleUserObject.ClientData user );
+    public delegate Task OnUserLoginFunc_Async( SimpleUserObject.ClientObject user );
 
 
 

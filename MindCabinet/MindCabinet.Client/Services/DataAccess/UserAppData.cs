@@ -18,8 +18,8 @@ public partial class ClientDataAccess_UserAppData( HttpClient http ) : IClientDa
         public long SimpleUserId { get; } = simpleUserId;
     }
 
-    public class GetById_Return( UserAppDataObject.DatabaseEntry? userAppData ) {
-        public UserAppDataObject.DatabaseEntry? UserAppData { get; } = userAppData;
+    public class GetById_Return( UserAppDataObject.Raw? userAppData ) {
+        public UserAppDataObject.Raw? UserAppData { get; } = userAppData;
     }
 
     public const string GetById_Path = "UserAppData";

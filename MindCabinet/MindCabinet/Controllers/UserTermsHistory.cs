@@ -36,7 +36,7 @@ public partial class UserTermsHistoryController : ControllerBase {
 
     
     [HttpPost(ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Route)]
-    public async Task<IEnumerable<UserHistoryTermObject.DatabaseEntry>> GetForCurrentUserId_Async(
+    public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetForCurrentUserId_Async(
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );

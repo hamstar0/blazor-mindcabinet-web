@@ -6,8 +6,8 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
-public partial class UserHistoryTermObject( long simpleUserId, DateTime created, TermObject term ) {
-	public long SimpleUserId { get; } = simpleUserId;
+public partial class UserHistoryTermObject( SimpleUserObject simpleUser, DateTime created, TermObject term ) {
+	public SimpleUserObject SimpleUser { get; } = simpleUser;
 
 	public DateTime Created { get; } = created;
 

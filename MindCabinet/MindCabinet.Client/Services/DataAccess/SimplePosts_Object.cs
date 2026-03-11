@@ -11,18 +11,16 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
-    public static async Task<SimplePostObject> ToObject(
+    public static async Task<SimplePostObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
-                SimplePostObject.DatabaseEntry entryRaw ) {
+                SimplePostObject.Raw entryRaw ) {
         Func<long[], Task<TermObject[]>> termSetFactory = async ( long[] termSetIds ) => {
-            IEnumerable<TermObject.DatabaseEntry> termRaws = (await termsData.GetByIds_Async( termSetIds ))
-                .Terms;
-            IEnumerable<Task<TermObject>> termWhens = termRaws
-                .Select( async termRaw => await termRaw.CreateTermObject_Async( null ) );
-            return (await Task.WhenAll(termWhens))
+            TermObject.Raw[] termRaws = (await termsData.GetByIds_Async( termSetIds ))
+                .Terms
                 .ToArray();
+            return await ClientDataAccess_Terms.ToObjects_Async(termsData, termRaws);
         };
         
-        return await entryRaw.CreateSimplePost_Async( termSetFactory );
+        return await entryRaw.CreateDataObject_Async( termSetFactory );
     }
 }

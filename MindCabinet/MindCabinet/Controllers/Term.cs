@@ -30,7 +30,7 @@ public class TermController : ControllerBase {
                 ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.DatabaseEntry> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
+        IEnumerable<TermObject.Raw> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
 
         return new ClientDataAccess_Terms.GetByX_Return( terms );
     }
@@ -40,7 +40,7 @@ public class TermController : ControllerBase {
                 IEnumerable<long> termIds ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.DatabaseEntry> terms = await this.TermsData.GetByIds_Async( dbCon, termIds );
+        IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, termIds );
 
         return new ClientDataAccess_Terms.GetByX_Return( terms );
     }

@@ -20,7 +20,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
                 long defaultUserId,
-                UserContextObject.DatabaseEntry sampleContext ) {
+                UserContextObject.Raw sampleContext ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
@@ -37,9 +37,9 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
     
 
-    public async Task<UserAppDataObject.DatabaseEntry?> GetById_Async( IDbConnection dbCon,
+    public async Task<UserAppDataObject.Raw?> GetById_Async( IDbConnection dbCon,
                 long userId ) {
-        UserAppDataObject.DatabaseEntry? usrAppDataRaw = await dbCon.QuerySingleAsync<UserAppDataObject.DatabaseEntry?>(
+        UserAppDataObject.Raw? usrAppDataRaw = await dbCon.QuerySingleAsync<UserAppDataObject.Raw?>(
             $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId",
             new { SimpleUserId = userId }
         );
@@ -48,7 +48,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
 
 
-    public async Task<UserAppDataObject.DatabaseEntry> Create_Async(
+    public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 long userContextId ) {
@@ -62,7 +62,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             }
         );
 
-        return new UserAppDataObject.DatabaseEntry {
+        return new UserAppDataObject.Raw {
             SimpleUserId = simpleUserId,
             UserContextId = userContextId
         };

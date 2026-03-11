@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -44,8 +45,8 @@ public partial class TermRender : ComponentBase {
         }
 
         // TODO: Add caching
-        IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
-        return termIds.Contains( this.Term.Id );
+        IEnumerable<UserFavoriteTermObject.Raw> termRaws = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
+        return termRaws.Any( t => t.FavTermId == this.Term.Id );
     }
 
 
@@ -54,9 +55,9 @@ public partial class TermRender : ComponentBase {
             return;
         }
 
-        IEnumerable<long> termIds = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
+        IEnumerable<UserFavoriteTermObject.Raw> termRaws = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
 
-        if( termIds.Contains(this.Term.Id) ) {
+        if( termRaws.Any(t => t.FavTermId == this.Term.Id) ) {
             await this.UserFavoriteTermsData.RemoveTermsForCurrentUser_Async(
                 new ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params( [this.Term.Id] )
             );

@@ -11,16 +11,16 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserContexts : IServerDataAccess {
-    private async Task<(bool success, UserContextObject.DatabaseEntry userContext)> InstallSamples_Async(
+    private async Task<(bool success, UserContextObject.Raw userContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
-                TermObject.DatabaseEntry sampleTerm,
+                TermObject.Raw sampleTerm,
                 long defaultUserId ) {
-        var sampleRawEntry = new UserContextTermEntryObject.DatabaseEntry {
+        var sampleRawEntry = new UserContextTermEntryObject.Raw {
             TermId = sampleTerm.Id,
             Priority = 1.0,
             IsRequired = true
         };
-        var sampleRawCtx = new UserContextObject.DatabaseEntry {
+        var sampleRawCtx = new UserContextObject.Raw {
             Name = "Default Context",
             Description = "A sample user context.",
             Entries = [sampleRawEntry]

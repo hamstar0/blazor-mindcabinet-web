@@ -18,15 +18,10 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
         //public long UserId { get; } = userId;
     }
 
-    public class GetTermIdsForCurrentUser_Return( long termId, DateTime created ) {
-        public long TermId { get; } = termId;
-        public DateTime Created { get; } = created;
-    }
-
     public const string GetTermIdsForCurrentUser_Path = "UserTermsHistory";
     public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
 
-    public async Task<IEnumerable<UserHistoryTermObject.DatabaseEntry>> GetTermIdsForCurrentUser_Async() {
+    public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetHistTermsForCurrentUser_Async() {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -38,7 +33,7 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<UserHistoryTermObject.DatabaseEntry>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserHistoryTermObject.DatabaseEntry>>();
+        IEnumerable<UserHistoryTermObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserHistoryTermObject.Raw>>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize IEnumerable<UserHistoryTermObject.DatabaseEntry>" );
         }

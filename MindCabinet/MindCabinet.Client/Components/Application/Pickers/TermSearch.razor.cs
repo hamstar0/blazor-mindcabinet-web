@@ -4,6 +4,8 @@ using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 namespace MindCabinet.Client.Components.Application.Pickers;
@@ -48,8 +50,8 @@ public partial class TermSearch : ComponentBase {
     public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
 
-    private IEnumerable<TermObject> FavoriteTerms_Cache = new List<TermObject>();
-    private IEnumerable<TermObject> RecentTerms_Cache = new List<TermObject>();
+    private IEnumerable<UserFavoriteTermObject.ClientObject> FavoriteTerms_Cache = [];
+    private IEnumerable<UserHistoryTermObject.ClientObject> RecentTerms_Cache = [];
 
 
 
@@ -60,18 +62,18 @@ public partial class TermSearch : ComponentBase {
             return;
         }
 
-        IEnumerable<long> favTermIds
-            = await this.UserFavoriteTermsData.GetTermIdsForCurrentUser_Async();
-        IEnumerable<ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Return> histTermIds
-            = await this.UserTermsHistoryData.GetTermIdsForCurrentUser_Async();
+        IEnumerable<UserFavoriteTermObject.Raw> favTerms
+            = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserHistoryTermObject.Raw> histTerms
+            = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
 
-        this.FavoriteTerms_Cache = (await this.TermsData.GetByIds_Async( favTermIds ))
-            .Terms;
-        this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
-            histTermIds
-                .OrderByDescending( x => x.Created )
-                .Select( x => x.TermId )
-        );
+        this.FavoriteTerms_Cache = await ClientDataAccess_UserFavoriteTerms.ToClientObjects_Async( this.TermsData, favTerms.ToArray() );
+        this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ToClientObjects_Async( this.TermsData, histTerms.ToArray() );
+        // this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
+        //     histTerms
+        //         .OrderByDescending( x => x.Created )
+        //         .Select( x => x.TermId )
+        // );
     }
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
@@ -107,10 +109,10 @@ public partial class TermSearch : ComponentBase {
 
 
     private async Task SearchAndStoreTerms_Async( string termText ) {
-        IEnumerable<TermObject> terms = await this.TermsData.GetByCriteria_Async(
+        IEnumerable<TermObject.Raw> rawTerms = (await this.TermsData.GetByCriteria_Async(
             new ClientDataAccess_Terms.GetByCriteria_Params( termText, null )
-        );
-        this.SearchOptions = terms.ToList();    // TODO
+        )).Terms;
+        this.SearchOptions = await ClientDataAccess_Terms.ToObjects_Async( this.TermsData, rawTerms, true );
     }
 
 

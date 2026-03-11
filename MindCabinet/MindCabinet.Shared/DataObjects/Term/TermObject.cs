@@ -9,9 +9,9 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public string Term { get; }
 
-    public IdDataObject<TermObject>? Context { get; }
+    public TermObject.Raw? Context { get; }
 
-    public IdDataObject<TermObject>? Alias { get; }
+    public TermObject.Raw? Alias { get; }
 
 
 
@@ -19,22 +19,28 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 		this.Id = id;
 		this.Term = term;
 		this.Context = context is not null
-            ? new IdDataObject<TermObject> { Id = context.Id, Data = context }
+            ? new TermObject.Raw {
+                Id = context.Id,
+                Term = context.Term,
+                ContextTermId = context.Context?.Id,
+                AliasTermId = context.Alias?.Id
+            }
             : null;
 		this.Alias = alias is not null
-            ? new IdDataObject<TermObject> { Id = alias.Id, Data = alias }
+            ? new TermObject.Raw {
+                Id = alias.Id,
+                Term = alias.Term,
+                ContextTermId = alias.Context?.Id,
+                AliasTermId = alias.Alias?.Id
+            }
             : null;
     }
 
-	public TermObject( long id, string term, long? contextId, long? aliasId ) {
+	public TermObject( long id, string term, TermObject.Raw? context, TermObject.Raw? alias ) {
 		this.Id = id;
 		this.Term = term;
-		this.Context = contextId is not null
-            ? new IdDataObject<TermObject> { Id = contextId.Value, Data = null }
-            : null;
-		this.Alias = aliasId is not null
-            ? new IdDataObject<TermObject> { Id = aliasId.Value, Data = null }
-            : null;
+		this.Context = context;
+		this.Alias = alias;
     }
 
 
@@ -43,9 +49,9 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 			this.Id,
 			this.Term,
             this.Context is null
-				? 0 : HashCode.Combine( this.Context.Id, this.Context.Data?.Term ),
+				? 0 : HashCode.Combine( this.Context.Id, this.Context?.Term ),
             this.Alias is null
-				? 0 : HashCode.Combine( this.Alias.Id, this.Alias.Data?.Term )
+				? 0 : HashCode.Combine( this.Alias.Id, this.Alias?.Term )
 		);
     }
 
@@ -99,20 +105,11 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public override string ToString() {
 		return this.Context is not null
-			? this.Context.Data is not null
-                ? $"{this.Term} ({this.Context.Data.Term})"
-                : this.Term+" {"+this.Context.Id+"}"
+            ? $"{this.Term} ({this.Context.Term})"
 			: this.Term;
     }
 
     public Prototype ToPrototype() {
-        // IdDataObject<TermObject>? ctx = this.Context is not null 
-        //     ? new IdDataObject<TermObject> { Id = this.Context.Id, Data = this.Context.Data }
-        //     : null;
-        // IdDataObject<TermObject>? alias = this.Alias is not null 
-        //     ? new IdDataObject<TermObject> { Id = this.Alias.Id, Data = this.Alias.Data }
-        //     : null;
-
         return new Prototype {
             Id = this.Id,
             Term = this.Term,

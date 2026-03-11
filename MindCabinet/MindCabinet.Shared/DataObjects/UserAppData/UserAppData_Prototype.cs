@@ -10,6 +10,6 @@ public partial class UserAppDataObject {
 	public class Prototype {
 		public long? SimpleUserId;
 
-		public UserContextObject.DatabaseEntry? UserContext;
+		public UserContextObject.Raw? UserContext;
 	}
 }

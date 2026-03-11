@@ -48,7 +48,7 @@ public partial class UserContextEditor : ComponentBase {
                 Name = this.InitialContext?.Name,
                 Description = this.InitialContext?.Description,
                 Entries = this.InitialContext?.Entries
-                    .Select( e => e.ToDatabaseEntry() ).ToArray()
+                    .Select( e => e.ToRaw() ).ToArray()
                     ?? []
             };
         }
@@ -56,7 +56,7 @@ public partial class UserContextEditor : ComponentBase {
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
-        this.CurrentContextPrototype.Entries.Append( new UserContextTermEntryObject.DatabaseEntry {
+        this.CurrentContextPrototype.Entries.Append( new UserContextTermEntryObject.Raw {
             TermId = newTag.Id,
             Priority = 0d,
             IsRequired = false
@@ -64,7 +64,7 @@ public partial class UserContextEditor : ComponentBase {
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
-        List<UserContextTermEntryObject.DatabaseEntry> entries = this.CurrentContextPrototype.Entries.ToList();
+        List<UserContextTermEntryObject.Raw> entries = this.CurrentContextPrototype.Entries.ToList();
 
         for( int i = 0; i < entries.Count; i++ ) {
             if( entries[i].TermId == newTag.Id ) {
@@ -92,10 +92,10 @@ public partial class UserContextEditor : ComponentBase {
             }
         );
 
-        UserContextObject.DatabaseEntry currentContextRaw = contexts
+        UserContextObject.Raw currentContextRaw = contexts
             .Contexts
             .First( ctx => ctx.Id == currentCtx.Id );
-        UserContextObject currentContext = await ClientDataAccess_UserContext.ToObject( this.TermsData, currentContextRaw );
+        UserContextObject currentContext = await ClientDataAccess_UserContext.ToObject_Async( this.TermsData, currentContextRaw );
 
 		return currentContext is not null
             ? !this.CurrentContextPrototype.Matches( currentContext! )

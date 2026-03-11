@@ -6,6 +6,7 @@ using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -37,8 +38,8 @@ public partial class UserFavoriteTermsController : ControllerBase {
     }
 
     
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Route)]
-    public async Task<IEnumerable<long>> GetTermIdsForCurrentUserId_Async(
+    [HttpPost(ClientDataAccess_UserFavoriteTerms.GetFavTermsForCurrentUser_Route)]
+    public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetTermIdsForCurrentUserId_Async(
                 ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -46,9 +47,8 @@ public partial class UserFavoriteTermsController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<UserFavoriteTermObject.DatabaseEntry> termsRaw = await this.FavoriteTermsData
+        return await this.FavoriteTermsData
             .GetFavTermEntries_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
-        return termsRaw.Select( e => e.FavTermId );
     }
 
 

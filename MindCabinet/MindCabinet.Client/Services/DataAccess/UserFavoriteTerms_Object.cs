@@ -1,0 +1,30 @@
+﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Options;
+using System.Threading;
+using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Client.Services.DataAccess;
+using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+
+
+namespace MindCabinet.Client.Services.DbAccess;
+
+
+
+public partial class ClientDataAccess_UserFavoriteTerms : IClientDataAccess {
+    public static async Task<UserFavoriteTermObject.ClientObject[]> ToClientObjects_Async(
+                ClientDataAccess_Terms termsData,
+                UserFavoriteTermObject.Raw[] entriesRaw ) {
+        long[] termIds = entriesRaw.Select( t => t.FavTermId ).ToArray();
+        IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
+            .Terms;
+        
+        Func<long, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
+            .ToObject_Async( termsData, termId );
+
+        return await Task.WhenAll(
+            entriesRaw.Select( entryRaw => entryRaw.CreateClientObject_Async(termFactory) )
+        );
+    }
+}

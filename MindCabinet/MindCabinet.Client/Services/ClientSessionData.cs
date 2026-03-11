@@ -13,7 +13,7 @@ namespace MindCabinet.Client.Services;
 public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory serviceScopeFactory ) {
     public class SessionDataJson {
         public string SessionId { get; set; } = "";
-        public SimpleUserObject.ClientData? UserData { get; set; }
+        public SimpleUserObject.ClientObject? UserData { get; set; }
         public UserAppDataObject? UserAppData { get; set; }
     }
 

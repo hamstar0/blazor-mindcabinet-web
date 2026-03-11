@@ -23,7 +23,7 @@ public partial class SimpleUserController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimpleUserObject.User_DatabaseEntry? userRaw = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
+        SimpleUserObject.User_Raw? userRaw = await this.SimpleUsersData.GetSimpleUser_Async( dbCon, parameters.Name );
         if( userRaw is null ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "User not found by name: "+parameters.Name );
         }
@@ -41,7 +41,7 @@ public partial class SimpleUserController : ControllerBase {
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.Login_Return(
-            new SimpleUserObject.ClientData( userRaw.Id, userRaw.Name, userRaw.Created, userRaw.Email ),
+            new SimpleUserObject.ClientObject( userRaw.Id, userRaw.Name, userRaw.Created, userRaw.Email ),
             "User validated."
         );
     }

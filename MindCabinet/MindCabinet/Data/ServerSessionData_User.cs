@@ -25,7 +25,7 @@ public partial class ServerSessionData {
         }
 
         this.UserOfSession = (await userData.GetSimpleUserBySession_Async( dbCon, sessId, ip, true ))?
-            .CreateUserEntry();
+            .CreateDataObject();
 
         return this.UserOfSession is not null;
     }

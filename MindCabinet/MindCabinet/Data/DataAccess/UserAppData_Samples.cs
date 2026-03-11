@@ -16,8 +16,8 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     private async Task<bool> InstallSamples_Async(
                 IDbConnection dbConnection,
                 long defaultUserId,
-                UserContextObject.DatabaseEntry sampleContext ) {
-        var sampleRaw = new UserAppDataObject.DatabaseEntry {
+                UserContextObject.Raw sampleContext ) {
+        var sampleRaw = new UserAppDataObject.Raw {
             SimpleUserId = defaultUserId,
             UserContextId = sampleContext.Id
         };

@@ -16,7 +16,7 @@ public partial class ClientSessionData {
 
 
 
-    public void LocalLogin( SimpleUserObject.ClientData user ) {
+    public void LocalLogin( SimpleUserObject.ClientObject user ) {
         if( this.ServerData is not null ) {
             this.ServerData.UserData = user;
         }

@@ -7,22 +7,43 @@ namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 public partial class UserHistoryTermObject {
-    public class DatabaseEntry {
+    public class Raw {
 		public long SimpleUserId;
-
+        
 	    public DateTime Created;
 
 		public long TermId;
 
         
         
-        public async Task<UserHistoryTermObject> CreateUserAppDataObject_Async(
+        public async Task<UserHistoryTermObject> CreateDataObject_Async(
+                    Func<long, Task<SimpleUserObject>> userFactory,
                     Func<long, Task<TermObject>> termFactory ) {
             return new UserHistoryTermObject(
+                simpleUser: await userFactory( this.SimpleUserId ),
+                created: this.Created,
+                term: await termFactory( this.TermId )
+            );
+        }
+
+        
+        public async Task<ClientObject> CreateClientObject_Async(
+                    Func<long, Task<TermObject>> termFactory ) {
+            return new ClientObject(
                 simpleUserId: this.SimpleUserId,
                 created: this.Created,
                 term: await termFactory( this.TermId )
             );
         }
+    }
+
+
+    
+    public class ClientObject( long simpleUserId, DateTime created, TermObject term ) {
+        public long SimpleUserId { get; } = simpleUserId;
+
+        public DateTime Created { get; } = created;
+
+        public TermObject Term { get; } = term;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -17,24 +19,24 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         //public long UserId { get; } = userId;
     }
 
-    public const string GetTermIdsForCurrentUser_Path = "UserFavoriteTerms";
-    public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
+    public const string GetFavTermsForCurrentUser_Path = "UserFavoriteTerms";
+    public const string GetFavTermsForCurrentUser_Route = "GetFavoriteTermsForCurrentUser";
 
-    public async Task<IEnumerable<long>> GetTermIdsForCurrentUser_Async() {   //( Get_Params parameters ) {
+    public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
+            requestUri: $"{GetFavTermsForCurrentUser_Path}/{GetFavTermsForCurrentUser_Route}",
             value: new GetTermIdsForCurrentUser_Params()    //parameters
         );
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<long>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<long>>();
+        IEnumerable<UserFavoriteTermObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserFavoriteTermObject.Raw>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<long>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<UserFavoriteTermObject.DatabaseEntry>" );
         }
 
         return ret;

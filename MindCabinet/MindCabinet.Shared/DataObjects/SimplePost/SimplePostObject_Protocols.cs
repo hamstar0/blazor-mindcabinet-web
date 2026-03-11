@@ -6,7 +6,7 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimplePostObject : IEquatable<SimplePostObject> {
-    public class DatabaseEntry {
+    public class Raw {
         public long Id;
 
         public DateTime Created;
@@ -17,7 +17,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
 
         
-        public async Task<SimplePostObject> CreateSimplePost_Async(
+        public async Task<SimplePostObject> CreateDataObject_Async(
                     Func<long[], Task<TermObject[]>> termsFactory ) {
             return new SimplePostObject(
                 id: this.Id,
