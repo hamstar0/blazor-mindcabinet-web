@@ -35,11 +35,19 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        success = await termsData.Install_Async( dbCon, termSetsData );
+        success = await termsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        (success, sampleTerm) = await simplePostsData.Install_Async( dbCon, termsData, termSetsData, defaultUserId );
+        success = await simplePostsData.Install_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        success = await termSetsData.Install_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        (success, sampleTerm) = await simplePostsData.Install_AfterTermSets_Async( dbCon, termsData, termSetsData, defaultUserId );
         if( !success ) {
             return false;
         }

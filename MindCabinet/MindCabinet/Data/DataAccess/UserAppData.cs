@@ -27,7 +27,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 ContextId BIGINT NOT NULL,
                 Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
                 CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
                     REFERENCES {ServerDataAccess_UserContexts.TableName}(Id)
             );"

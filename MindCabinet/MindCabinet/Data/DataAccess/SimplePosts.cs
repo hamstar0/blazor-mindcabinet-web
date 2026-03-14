@@ -13,11 +13,8 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public const string TableName = "SimplePosts";
 
-    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_Async(
-                IDbConnection dbConnection, 
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
-                long defaultUserId ) {
+    public async Task<bool> Install_Async(
+                IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +22,6 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 Modified DATETIME(2) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-                TermSetId INT NOT NULL,
                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
@@ -33,8 +29,14 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             //    ON UPDATE CASCADE
         );
 
-        //
+        return true;
+    }
 
+    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterTermSets_Async(
+                IDbConnection dbConnection, 
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_TermSets termSetsData,
+                long defaultUserId ) {
         return await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId );
     }
 

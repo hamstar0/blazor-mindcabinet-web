@@ -39,15 +39,20 @@ public class SessionController(
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
+        if( this.SessData.SessionId is null ) {
+            throw new NullReferenceException( "Session has no ID." );
+        }
 
         return new ClientSessionData.SessionDataJson {
-            SessionId = this.SessData.SessionId!,
-            UserData = new SimpleUserObject.ClientObject(
-                id: this.SessData.UserOfSession!.Id,
-                name: this.SessData.UserOfSession!.Name,
-                created: this.SessData.UserOfSession!.Created,
-                email: this.SessData.UserOfSession!.Email
-            ),
+            SessionId = this.SessData.SessionId,
+            UserData = this.SessData.UserOfSession is not null
+                ? new SimpleUserObject.ClientObject(
+                    id: this.SessData.UserOfSession.Id,
+                    name: this.SessData.UserOfSession.Name,
+                    created: this.SessData.UserOfSession.Created,
+                    email: this.SessData.UserOfSession.Email
+                )
+                : null,
             UserAppData = this.SessData.UserAppData
         };
     }
