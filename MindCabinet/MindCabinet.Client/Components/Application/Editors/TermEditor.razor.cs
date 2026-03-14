@@ -139,12 +139,7 @@ public partial class TermEditor : ComponentBase {
             new ClientDataAccess_Terms.Create_Params( termText, null, null )
         );
 
-        TermObject newTerm = await newTermRet.Term.CreateDataObject_Async(
-            async t => await (await this.TermsData.GetByIds_Async( new long[] { t } ))
-                .Terms
-                .First()
-                .CreateDataObject_Async( null )
-        );
+        TermObject newTerm = await ClientDataAccess_Terms.ToObject_Async( this.TermsData, newTermRet.TermRaw );
 
         TermObject? newerTerm = await this.OnTermConfirm_Async( newTerm, newTermRet.IsAdded );
 
@@ -152,7 +147,7 @@ public partial class TermEditor : ComponentBase {
             this.Value = "";
 
             this.StateHasChanged();
-        } else if( !newerTerm.Equals(newTermRet.Term) ) {
+        } else if( !newerTerm.Equals(newTermRet.TermRaw) ) {
             this.Value = newerTerm.Term;
 
             this.StateHasChanged();
@@ -171,16 +166,15 @@ public partial class TermEditor : ComponentBase {
         }
 
         IEnumerable<TermObject.Raw> termsRaw = (await this.TermsData.GetByCriteria_Async(
-            new ClientDataAccess_Terms.GetByCriteria_Params( termText!, null )
+            new ClientDataAccess_Terms.GetByCriteria_Params( termText!, null, null )
         )).Terms;
 
         this.SearchOptions = await Task.WhenAll(
             termsRaw
             .Select( t => t.CreateDataObject_Async(
-                async t => await (await this.TermsData.GetByIds_Async( new long[] { t } ))
+                async t => (await this.TermsData.GetByIds_Async( new long[] { t } ))
                     .Terms
                     .First()
-                    .CreateDataObject_Async( null )
             ) )
         );
     }

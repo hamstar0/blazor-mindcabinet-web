@@ -18,21 +18,12 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_UserContexts userContextsData,
                 UserAppDataObject.Raw dbEntry ) {
-        Func<long[], Task<TermObject[]>> termsFactory = async termIds => {
-            IEnumerable<TermObject.Raw> termRaws = await termsData.GetByIds_Async( dbCon, termIds );
-            if( termRaws.Count() != termIds.Count() ) {
-                throw new Exception( $"One or more terms not found." );
-            }
-
-            return await Task.WhenAll(
-                termRaws.Select(
-                    async termRaw => await ServerDataAccess_Terms.ToObject_Async( dbCon, termsData, termRaw )
-                )
-            );
-        };
-
         Func<UserContextTermEntryObject.Raw[], Task<UserContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
-            return await ServerDataAccess_UserContexts.ToTermEntriesDataObjects_Async( ctxTermEntries, termsFactory );
+            return await ServerDataAccess_UserContexts.ToTermEntriesDataObjects_Async(
+                dbCon,
+                termsData,
+                ctxTermEntries
+            );
         };
 
         Func<long, Task<UserContextObject>> userContextFactory = async id => {

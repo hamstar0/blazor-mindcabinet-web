@@ -109,12 +109,12 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 			: this.Term;
     }
 
-    public Prototype ToPrototype() {
-        return new Prototype {
-            Id = this.Id,
-            Term = this.Term,
-            ContextTermId = new PrimitiveOptional<long>( value: this.Context?.Id ),
-            AliasTermId = new PrimitiveOptional<long>( value: this.Alias?.Id )
-        };
-    }
+    // public Prototype ToPrototype() {
+    //     return new Prototype {
+    //         Id = this.Id,
+    //         Term = this.Term,
+    //         ContextTermId = new PrimitiveOptional<long>( value: this.Context?.Id ),
+    //         AliasTermId = new PrimitiveOptional<long>( value: this.Alias?.Id )
+    //     };
+    // }
 }

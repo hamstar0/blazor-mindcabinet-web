@@ -40,7 +40,7 @@ public partial class ClientDataAccess_UserContext : IClientDataAccess {
             .Terms;
 
         Func<long, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
-            .ToObject_Async( termsData, termId );
+            .ToObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
 
         return await Task.WhenAll(
             ctxTermEntriesRaw.Select( ctxTermEntryRaw => ctxTermEntryRaw.CreateDataObject_Async(termFactory) )

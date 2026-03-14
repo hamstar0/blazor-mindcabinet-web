@@ -34,6 +34,9 @@ public partial class TermRender : ComponentBase {
     [Parameter, EditorRequired]
 	public TermObject Term { get; set; } = null!;
 
+    [Parameter]
+	public TermObject? TermContextContext { get; set; } = null;
+
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
 

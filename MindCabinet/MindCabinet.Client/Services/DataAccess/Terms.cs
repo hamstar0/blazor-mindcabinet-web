@@ -3,6 +3,7 @@ using System.Text.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.Utility;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -40,9 +41,16 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
 
     public class GetByCriteria_Params(
                 string termPattern,
-                TermObject.Prototype? context ) {
+                long? contextTermId,
+                string? contextTermPattern ) {
+                // PrimitiveOptional<long>? contextContextTermId
         public string TermPattern { get; } = termPattern;
-        public TermObject.Prototype? Context { get; } = context;
+
+        public long? ContextTermId { get; } = contextTermId;
+
+        public string? ContextTermPattern { get; } = contextTermPattern;
+
+        // public PrimitiveOptional<long>? ContextContextTermId { get; } = contextContextTermId;
     }
     
     public const string GetByCriteria_Path = "Term";
@@ -86,7 +94,7 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
                 bool isAdded,
                 TermObject.Raw term ) {
         public bool IsAdded { get; } = isAdded;
-        public TermObject.Raw Term { get; } = term;
+        public TermObject.Raw TermRaw { get; } = term;
     }
 
     public const string Create_Path = "Term";

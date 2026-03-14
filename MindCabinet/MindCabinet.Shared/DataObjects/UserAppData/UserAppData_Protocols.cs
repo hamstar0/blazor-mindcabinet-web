@@ -9,6 +9,7 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class UserAppDataObject {
     public class Raw {
 		public long SimpleUserId;
+        
 		public long UserContextId;
 
         

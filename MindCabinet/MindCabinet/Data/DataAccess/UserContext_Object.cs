@@ -17,5 +17,11 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 UserContextTermEntryObject.Raw[] entriesRaw ) {
+        IEnumerable<TermObject.Raw> termRaws = await termsData.GetByIds_Async( dbCon, entriesRaw.Select(e => e.TermId) );
+
+        return await Task.WhenAll( entriesRaw.Select( async entryRaw => {
+            TermObject term = await ServerDataAccess_Terms.ToObject_Async(dbCon, termsData, termRaws.First( t => t.Id == entryRaw.TermId) );
+            return new UserContextTermEntryObject( term, entryRaw.Priority, entryRaw.IsRequired );
+        } ) );
     }
 }

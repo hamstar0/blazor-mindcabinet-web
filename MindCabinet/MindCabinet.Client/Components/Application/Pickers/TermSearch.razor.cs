@@ -110,9 +110,11 @@ public partial class TermSearch : ComponentBase {
 
     private async Task SearchAndStoreTerms_Async( string termText ) {
         IEnumerable<TermObject.Raw> rawTerms = (await this.TermsData.GetByCriteria_Async(
-            new ClientDataAccess_Terms.GetByCriteria_Params( termText, null )
+            new ClientDataAccess_Terms.GetByCriteria_Params( termText, null, null )
         )).Terms;
-        this.SearchOptions = await ClientDataAccess_Terms.ToObjects_Async( this.TermsData, rawTerms, true );
+
+        this.SearchOptions = (await ClientDataAccess_Terms.ToObjects_Async( this.TermsData, rawTerms.ToArray() ))
+            .ToList();
     }
 
 

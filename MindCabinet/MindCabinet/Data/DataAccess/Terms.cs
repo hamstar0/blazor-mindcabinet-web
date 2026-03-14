@@ -87,15 +87,15 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         string sql = $"SELECT * FROM {TableName} AS MyTerms";
         var sqlParams = new Dictionary<string, object>();
 
-        if( parameters.Context is not null ) {
-            if( parameters.Context.Id is null ) {
+        if( parameters.ContextTermId is not null || parameters.ContextTermPattern is not null ) {
+            if( parameters.ContextTermId is not null ) {
+                sql += $@" WHERE MyTerms.ContextId = @ContextId";
+                sqlParams["@ContextId"] = parameters.ContextTermId!;
+            } else {
                 sql += $@" INNER JOIN {TableName} AS CtxTerms
                     ON (MyTerms.Context.Id = CtxTerms.Id)
                     WHERE CtxTerms.Term = @ContextTerm";
-                sqlParams["@ContextTerm"] = parameters.Context.Term!;
-            } else {
-                sql += $@" WHERE MyTerms.ContextId = @ContextId";
-                sqlParams["@ContextId"] = parameters.Context.Id!;
+                sqlParams["@ContextTerm"] = parameters.ContextTermPattern!;
             }
 
             sql += " AND MyTerms.Term LIKE @Term";
@@ -126,7 +126,8 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             dbCon: dbCon,
 			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
 				termPattern: parameters.TermPattern,
-				context: parameters.Context?.ToPrototype() ?? null
+                contextTermId: parameters.Context?.Id,
+                contextTermPattern: parameters.Context?.Term
 			)
 		);
 		if( matchingTerms.Count() == 1 ) {

@@ -31,8 +31,8 @@ public partial class UserContextObject {
                 UserContextTermEntryObject entryB = other.Entries[i];
 
                 if( entryA.TermId != entryB.Term.Id
-                    || entryA.Priority != entryB.Priority
-                    || entryA.IsRequired != entryB.IsRequired ) {
+                        || entryA.Priority != entryB.Priority
+                        || entryA.IsRequired != entryB.IsRequired ) {
                     return false;
                 }
             }
