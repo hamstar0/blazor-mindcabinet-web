@@ -20,13 +20,13 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 FavTermId BIGINT NOT NULL,
                 Favor INT NOT NULL,
-                PRIMARY KEY (SimpleUserId, FavTermId),
-                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                 PRIMARY KEY (SimpleUserId, FavTermId),
+                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                CONSTRAINT FK_{TableName}_FavTermId FOREIGN KEY (FavTermId)
+                 CONSTRAINT FK_{TableName}_FavTermId FOREIGN KEY (FavTermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id),
-                INDEX IDX_SimpleUserId (SimpleUserId),
-                INDEX IDX_SimpleUserIdAndFavor (SimpleUserId, Favor)
+                 INDEX IDX_SimpleUserId (SimpleUserId),
+                 INDEX IDX_SimpleUserIdAndFavor (SimpleUserId, Favor)
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE

@@ -10,9 +10,9 @@ public partial class UserFavoriteTermObject {
     public class Raw {
 		public long SimpleUserId;
 
-	    public int Favor;
-
 		public long FavTermId;
+
+	    public int Favor;
 
         
         

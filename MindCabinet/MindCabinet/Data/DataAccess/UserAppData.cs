@@ -24,11 +24,10 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
-                ContextId BIGINT NOT NULL,
-                Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                UserContextId BIGINT NOT NULL,
+                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
+                 CONSTRAINT FK_{TableName}_UserContextId FOREIGN KEY (UserContextId)
                     REFERENCES {ServerDataAccess_UserContexts.TableName}(Id)
             );"
         );
@@ -37,9 +36,10 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
     
 
-    public async Task<UserAppDataObject.Raw?> GetById_Async( IDbConnection dbCon,
+    public async Task<UserAppDataObject.Raw?> GetById_Async(
+                IDbConnection dbCon,
                 long userId ) {
-        UserAppDataObject.Raw? usrAppDataRaw = await dbCon.QuerySingleAsync<UserAppDataObject.Raw?>(
+        UserAppDataObject.Raw? usrAppDataRaw = await dbCon.QuerySingleOrDefaultAsync<UserAppDataObject.Raw>(
             $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId",
             new { SimpleUserId = userId }
         );
@@ -53,12 +53,12 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 long simpleUserId,
                 long userContextId ) {
         long _ = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (SimpleUserId, ContextId) 
-                VALUES (@SimpleUserId, @ContextId);
+            $@"INSERT INTO {TableName} (SimpleUserId, UserContextId) 
+                VALUES (@SimpleUserId, @UserContextId);
             SELECT LAST_INSERT_ID();",
             new {
                 SimpleUserId = simpleUserId,
-                ContextId = userContextId
+                UserContextId = userContextId
             }
         );
 

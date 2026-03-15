@@ -21,9 +21,9 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 Term VARCHAR(64) NOT NULL,
                 ContextId BIGINT,
                 AliasId BIGINT,
-                CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
+                 CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
                     REFERENCES {TableName}(Id),
-                CONSTRAINT FK_{TableName}_AliasId FOREIGN KEY (AliasId)
+                 CONSTRAINT FK_{TableName}_AliasId FOREIGN KEY (AliasId)
                     REFERENCES {TableName}(Id)
             );"
         );
@@ -46,16 +46,14 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             return this.TermsById_Cache[id];
         }
 
-        TermObject.Raw? termRaw = await dbCon.QuerySingleAsync<TermObject.Raw?>(
+        TermObject.Raw? termRaw = await dbCon.QuerySingleOrDefaultAsync<TermObject.Raw>(
             $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
 
-        if( termRaw is null ) {
-            return null;
+        if( termRaw is not null ) {
+            this.TermsById_Cache.Add( id, termRaw );
         }
-
-        this.TermsById_Cache.Add( id, termRaw );
 
         return termRaw;
     }

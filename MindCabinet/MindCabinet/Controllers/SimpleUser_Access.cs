@@ -37,7 +37,7 @@ public partial class SimpleUserController : ControllerBase {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "Invalid password." );
         }
 
-        await this.SessionsData.CreateSimpleUserSession_Async( dbCon, userRaw.Id, this.ServerSessionData );
+        await this.SessionsData.Create_Async( dbCon, userRaw.Id, this.ServerSessionData );
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.Login_Return(

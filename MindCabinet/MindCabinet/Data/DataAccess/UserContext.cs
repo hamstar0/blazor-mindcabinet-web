@@ -28,20 +28,20 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 SimpleUserId BIGINT NOT NULL,
                 Name VARCHAR(256) NOT NULL,
                 Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         );
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {EntriesTableName} (
-                ContextId BIGINT NOT NULL,
+                UserContextId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Priority DOUBLE NOT NULL,
                 IsRequired BOOLEAN NOT NULL,
-                PRIMARY KEY (ContextId, TermId),
-                CONSTRAINT FK_{EntriesTableName}_ContextId FOREIGN KEY (ContextId)
+                 PRIMARY KEY (UserContextId, TermId),
+                 CONSTRAINT FK_{EntriesTableName}_UserContextId FOREIGN KEY (UserContextId)
                     REFERENCES {TableName}(Id),
-                CONSTRAINT FK_{EntriesTableName}_TermId FOREIGN KEY (TermId)
+                 CONSTRAINT FK_{EntriesTableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             );"
         );
@@ -53,16 +53,10 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     public async Task<UserContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 long contextId ) {
-        UserContextObject.Raw? usrCtxRaw = await dbCon.QuerySingleAsync<UserContextObject.Raw?>(
+        return await dbCon.QuerySingleOrDefaultAsync<UserContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = contextId }
         );
-
-        if( usrCtxRaw is null ) {
-            return null;
-        }
-
-        return usrCtxRaw;
     }
 
 
@@ -95,11 +89,11 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             );
 
         if( alsoGetEntries ) {
-            string sql2 = $@"SELECT MyCtxEntries.ContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+            string sql2 = $@"SELECT MyCtxEntries.UserContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                 FROM {EntriesTableName} AS MyCtxEntries
-                WHERE MyCtxEntries.ContextId = @ContextId;";
+                WHERE MyCtxEntries.UserContextId = @UserContextId;";
             foreach( UserContextObject.Raw ctx in contexts ) {
-                var sqlParams2 = new Dictionary<string, object> { { "@ContextId", ctx.Id } };
+                var sqlParams2 = new Dictionary<string, object> { { "@UserContextId", ctx.Id } };
 
                 ctx.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.Raw>(
                     sql2,
@@ -127,13 +121,13 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             }
         );
 
-        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (ContextId, TermId, Priority, IsRequired) 
-                VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
+        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserContextId, TermId, Priority, IsRequired) 
+                VALUES (@UserContextId, @TermId, @Priority, @IsRequired);";
         foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    ContextId = userContextId,
+                    UserContextId = userContextId,
                     TermId = entry.TermId,
                     Priority = entry.Priority,
                     IsRequired = entry.IsRequired
@@ -162,19 +156,19 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
         
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {EntriesTableName}
-                WHERE ContextId = @ContextId;",
+                WHERE UserContextId = @UserContextId;",
             new {
-                ContextId = parameters.Id
+                UserContextId = parameters.Id
             }
         );
 
-        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (ContextId, TermId, Priority, IsRequired) 
-            VALUES (@ContextId, @TermId, @Priority, @IsRequired);";
+        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserContextId, TermId, Priority, IsRequired) 
+            VALUES (@UserContextId, @TermId, @Priority, @IsRequired);";
         foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    ContextId = userContextId,
+                    UserContextId = userContextId,
                     TermId = entry.TermId,
                     Priority = entry.Priority,
                     IsRequired = entry.IsRequired

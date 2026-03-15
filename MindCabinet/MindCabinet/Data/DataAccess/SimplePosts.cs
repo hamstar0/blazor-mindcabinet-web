@@ -22,7 +22,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 Modified DATETIME(2) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
             //    ON DELETE CASCADE
@@ -47,7 +47,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<SimplePostObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 long id ) {
-        SimplePostObject.Raw? postRaw = await dbCon.QuerySingleAsync<SimplePostObject.Raw?>(
+        SimplePostObject.Raw? postRaw = await dbCon.QuerySingleOrDefaultAsync<SimplePostObject.Raw>(
             $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
             new { Id = id }
         );

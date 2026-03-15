@@ -46,8 +46,6 @@ v0.6
 			-	Disable tag entry if no user
 			-	Disable post create if no user
 			-	Change Id back into SessionId
-			-	Normalize Create method return value conventions
-			-	Restructure DatabaseEntry objects to require full 
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Channel API calls through Hub (test)
 			-	Context entry

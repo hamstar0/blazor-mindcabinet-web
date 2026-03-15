@@ -18,10 +18,10 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
             CREATE TABLE {TableName} (
                 SimplePostId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
-                CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SimplePostId, TermId),
-                CONSTRAINT FK_{TableName}_SimplePostId FOREIGN KEY (SimplePostId)
+                 CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SimplePostId, TermId),
+                 CONSTRAINT FK_{TableName}_SimplePostId FOREIGN KEY (SimplePostId)
                     REFERENCES {ServerDataAccess_SimplePosts.TableName}(Id),
-                CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
+                 CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
             )"
                 // SetId INT NOT NULL,
@@ -71,13 +71,13 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
     public async Task<IEnumerable<TermObject.Raw>> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                long termSetId ) {
+                long simplePostId ) {
         IEnumerable<TermObject.Raw> termSetRaw = await dbCon.QueryAsync<TermObject.Raw>(
             $@"SELECT MyTerms.Id, MyTerms.Term, MyTerms.ContextId, MyTerms.AliasId
                 FROM {ServerDataAccess_Terms.TableName} AS MyTerms
                 INNER JOIN {TableName} AS MyTermSet ON (MyTerms.Id = MyTermSet.TermId)
-                WHERE MyTermSet.SetId = @SetId",
-            new { SetId = termSetId }
+                WHERE MyTermSet.SimplePostId = @SimplePostId",
+            new { SimplePostId = simplePostId }
         );
 
         foreach( TermObject.Raw? termRaw in termSetRaw ) {

@@ -9,10 +9,10 @@ namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 public partial class UserHistoryTermObject {
     public class Raw {
 		public long SimpleUserId;
-        
-	    public DateTime Created;
 
 		public long TermId;
+        
+	    public DateTime Created;
 
         
         

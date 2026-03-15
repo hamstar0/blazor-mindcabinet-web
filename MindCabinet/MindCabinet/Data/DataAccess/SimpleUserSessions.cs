@@ -18,8 +18,8 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 FirstVisit DATETIME(2) NOT NULL,
                 LatestVisit DATETIME(2) NOT NULL,
                 Visits INT NOT NULL,
-                PRIMARY KEY (Id),
-                CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                 PRIMARY KEY (Id),
+                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
             );"
         //    ON DELETE CASCADE
@@ -30,7 +30,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     }
 
 
-    public async Task CreateSimpleUserSession_Async(
+    public async Task Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
                 ServerSessionData session ) {

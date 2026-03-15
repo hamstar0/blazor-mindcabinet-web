@@ -48,7 +48,7 @@ public partial class UserContextEditor : ComponentBase {
                 Name = this.InitialContext?.Name,
                 Description = this.InitialContext?.Description,
                 Entries = this.InitialContext?.Entries
-                    .Select( e => e.ToRaw() ).ToArray()
+                    .Select( e => e.ToRaw(this.InitialContext.Id) ).ToArray()
                     ?? []
             };
         }

@@ -6,6 +6,8 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 public partial class UserContextTermEntryObject {
     public class Raw {
+        public long UserContextId = default;
+
         public long TermId = default;
 
         public double Priority = default;
@@ -24,8 +26,9 @@ public partial class UserContextTermEntryObject {
 	}
 
 
-    public Raw ToRaw() {
+    public Raw ToRaw( long contextId ) {
         return new Raw {
+            UserContextId = contextId,
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

@@ -110,32 +110,28 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_Raw?>(
+        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = id }
         );
 
-        if( userRaw is null ) {
-            return null;
+        if( userRaw is not null ) {
+            this.SimpleUsersById_Cache.Add( id, userRaw );
         }
-
-        this.SimpleUsersById_Cache.Add( id, userRaw );
 
         return userRaw;
     }
 
 
     public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
-        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleAsync<SimpleUserObject.User_Raw?>(
+        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
         );
 
-        if( userRaw is null ) {
-            return null;
+        if( userRaw is not null ) {
+            this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
         }
-
-        this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
 
         return userRaw;
     }
