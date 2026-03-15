@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 
@@ -13,7 +14,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 Id VARCHAR(36) NOT NULL,
-                IpAddress VARCHAR(45) NOT NULL,
+                LatestIpAddress VARCHAR(45) NOT NULL,
                 SimpleUserId BIGINT NOT NULL,
                 FirstVisit DATETIME(2) NOT NULL,
                 LatestVisit DATETIME(2) NOT NULL,
@@ -30,6 +31,18 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     }
 
 
+
+    public async Task<UserSessionObject.Raw?> GetById_Async(
+                IDbConnection dbCon,
+                string sessionId ) {
+        UserSessionObject.Raw? sessionData = await dbCon.QuerySingleOrDefaultAsync<UserSessionObject.Raw>(
+            $@"SELECT * FROM {TableName} WHERE Id = @Id",
+            new { Id = sessionId }
+        );
+
+        return sessionData;
+    }
+    
     public async Task Create_Async(
                 IDbConnection dbCon,
                 long simpleUserId,
@@ -37,7 +50,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }
-        if( session.IpAddress is null ) {
+        if( session.LatestIpAddress is null ) {
             throw new Exception( "Invalid IP address." );
         }
 
@@ -53,11 +66,11 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
 
         int rows = await dbCon.ExecuteAsync(
             $@"INSERT INTO {TableName}
-                (Id, IpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
-                VALUES (@Id, @IpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
+                (Id, LatestIpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
+                VALUES (@Id, @LatestIpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
                 Id = session.SessionId,
-                IpAddress = session.IpAddress,
+                LatestIpAddress = session.LatestIpAddress,
                 SimpleUserId = simpleUserId,
                 FirstVisit = now,
                 LatestVisit = now,
@@ -70,7 +83,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     }
 
 
-    public async Task RemoveSimpleUserBySession_Async( IDbConnection dbCon, string sessionId ) {
+    public async Task RemoveSessionById_Async( IDbConnection dbCon, string sessionId ) {
         int rows = await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName} WHERE Id = @Id",
             new {

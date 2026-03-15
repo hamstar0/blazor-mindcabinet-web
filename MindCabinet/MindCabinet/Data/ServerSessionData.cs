@@ -1,5 +1,6 @@
 ﻿using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.DataObjects;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserContext;
@@ -23,9 +24,22 @@ public partial class ServerSessionData(
     private IResponseCookies? RespCookies => this.HttpContext.HttpContext?.Response.Cookies;
 
 
-    public string? SessionId { get; private set; }
+    private UserSessionObject.Raw _SessionData = new UserSessionObject.Raw();
 
-    public string? IpAddress { get; private set; }
+    public string? SessionId {
+        get => this._SessionData.Id != ""
+            ? this._SessionData.Id
+            : null;
+        set => this._SessionData.Id = value ?? "";
+    }
+
+    public string? LatestIpAddress {
+        get => this._SessionData.LatestIpAddress != ""
+            ? this._SessionData.LatestIpAddress
+            : null;
+        set => this._SessionData.LatestIpAddress = value ?? "";
+    }
+    
 
     //public IReadOnlyList<string> RenderScripts { get; private set; }
     //
@@ -75,9 +89,9 @@ public partial class ServerSessionData(
 
 
     private void LoadIp() {
-        this.IpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        this.LatestIpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
-        if( string.IsNullOrEmpty(this.IpAddress) ) {
+        if( string.IsNullOrEmpty(this.LatestIpAddress) ) {
             throw new Exception( "Who are you?" );
         }
     }
@@ -101,7 +115,7 @@ public partial class ServerSessionData(
             return false;
         }
 
-        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.IpAddress! );
+        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.LatestIpAddress! );
 
         if( isLoggedIn ) {
             UserAppDataObject.Raw? usrAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );

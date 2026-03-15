@@ -43,7 +43,7 @@ public partial class ServerSessionData {
             return;
         }
 
-        await sessionsData.RemoveSimpleUserBySession_Async( dbCon, this.SessionId );
+        await sessionsData.RemoveSessionById_Async( dbCon, this.SessionId );
         
         //this.SessionId = null;
     }
