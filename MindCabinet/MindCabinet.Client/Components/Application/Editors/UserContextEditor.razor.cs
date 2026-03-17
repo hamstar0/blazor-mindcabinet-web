@@ -114,7 +114,7 @@ public partial class UserContextEditor : ComponentBase {
     
     private async Task Create_Async() {
         await this.UserContextsData.CreateForCurrentUser_Async(
-            this.CurrentContextPrototype.CreateDatabaseEntry()
+            this.CurrentContextPrototype.ToRaw()
         );
 
         if( this.OnCreate_Async is not null ) {
@@ -124,7 +124,7 @@ public partial class UserContextEditor : ComponentBase {
     
     private async Task Update_Async() {
         await this.UserContextsData.UpdateForCurrentUser_Async(
-            this.CurrentContextPrototype.CreateDatabaseEntry()
+            this.CurrentContextPrototype.ToRaw()
         );
     }
 }

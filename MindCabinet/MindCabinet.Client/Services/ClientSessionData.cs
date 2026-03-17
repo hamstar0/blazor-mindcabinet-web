@@ -1,20 +1,26 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory serviceScopeFactory ) {
-    public class SessionDataJson {
-        public string SessionId { get; set; } = "";
-        public SimpleUserObject.ClientObject? UserData { get; set; }
-        public UserAppDataObject? UserAppData { get; set; }
+public partial class ClientSessionData(
+            INetMode netMode,
+            IServiceScopeFactory serviceScopeFactory ) {
+    public class DataBundle( string sessionId, SimpleUserObject.ClientObject? userData, UserAppDataObject? userAppData ) {
+        public string SessionId = sessionId;
+
+        public SimpleUserObject.ClientObject? UserData = userData;
+
+        public UserAppDataObject? UserAppData = userAppData;
     }
 
 
@@ -28,13 +34,9 @@ public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory s
     public bool IsLoading { get; private set; } = false;
 
 
-    private SessionDataJson? ServerData;
+    private DataBundle? Data;
 
-
-
-    public const string Get_Path = "Session";
-    public const string Get_Route = "GetSession";
-
+    
     internal async Task<bool> Load_Async() {
         if( !this.NetMode.IsClientSide ) {
             return false;
@@ -46,36 +48,40 @@ public partial class ClientSessionData( INetMode netMode, IServiceScopeFactory s
         this.IsLoading = true;
         
         using IServiceScope scope = this.ServiceScopeFactory.CreateScope();
+
         HttpClient? httpClient = scope.ServiceProvider.GetService<HttpClient>();
         if( httpClient is null ) {
             throw new InvalidOperationException( "HttpClient service not available in ClientSessionData." );
         }
 
-        //ClientSessionData.Json? data = await this.Http.GetFromJsonAsync<ClientSessionData.Json>( "Session/Data" );
-        HttpResponseMessage msg = await httpClient.PostAsJsonAsync(
-            $"{Get_Path}/{Get_Route}",
-            new object()
-        );
-
-        msg.EnsureSuccessStatusCode();
-
-        string rawData = await msg.Content.ReadAsStringAsync();
-        if( string.IsNullOrWhiteSpace(rawData) || rawData == "{}" ) {
-            throw new InvalidDataException( "Could not deserialize raw ClientSessionData.SessionDataJson" );
+        ClientDataAccess_Terms? termsData = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
+        if( termsData is null ) {
+            throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
         }
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        ClientSessionData.SessionDataJson? data = JsonSerializer.Deserialize<ClientSessionData.SessionDataJson>(
-            json: rawData,
-            options: options
-        );
-        // ClientSessionData.SessionDataJson? data = await msg.Content
-        //     .ReadFromJsonAsync<ClientSessionData.SessionDataJson>();
-        if( data is null ) {
-            throw new InvalidDataException( "Could not deserialize ClientSessionData.SessionDataJson" );
+        ClientDataAccess_ClientSessionBundle? sessionBundle = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
+        if( sessionBundle is null ) {
+            throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
         }
 
-        this.ServerData = data;
+        ClientSessionData.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
+
+        //
+
+        this.Data = userAndAppData;
+
+        await Task.WhenAll(
+            this.OnUserAndAppDataLoaded_Async
+                .Select( f => f.Invoke(this.Data) )
+        );
+        if( this.Data.UserAppData?.UserContext is not null ) {
+            await Task.WhenAll(
+                this.OnUserContextChanged_Async
+                    .Select( f => f.Invoke(this.Data.UserAppData.UserContext) )
+            );
+        }
+
+        //
 
         this.IsLoading = false;
         this.IsLoaded = true;

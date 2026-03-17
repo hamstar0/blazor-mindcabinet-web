@@ -29,6 +29,15 @@ public partial class UserContextObject(
     }
     
 
+    public UserContextObject.Raw ToRaw() {
+        return new UserContextObject.Raw {
+            Name = this.Name ?? "",
+            Description = this.Description,
+            Entries = this.Entries.Select( e => e.ToRaw() ).ToArray()
+        };
+    }
+
+
     public override string ToString() {
 		return $"{this.Name}: {string.Join(", ", this.Entries.Select(e => e.ToString()))}";
     }

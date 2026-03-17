@@ -3,5 +3,7 @@
 @using MindCabinet.Client.Components.Application.Pickers;
 
 
-<UserContextPicker OnContextSelect_Async=@this.OnContextSelect_Async />
-<UserContextEditor InitialContext=@this.SessionData.GetCurrentContext() />
+<UserContextPicker
+    OnContextSelect_Async=@this.OnContextSelect_Async />
+<UserContextEditor
+    InitialContext=@this.SessionData.GetCurrentContext() />

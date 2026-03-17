@@ -68,7 +68,7 @@
 
 @code {
     private async Task OnLogin_UI_Async( SimpleUserObject.ClientObject user ) {
-        this.SessionData.LocalLogin( user );
+        await this.SessionData.LocalLogin_Async( user );
 
         this.StateHasChanged();
     }

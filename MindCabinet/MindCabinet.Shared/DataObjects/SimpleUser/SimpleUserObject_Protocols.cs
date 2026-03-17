@@ -35,7 +35,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
     public class Session_Raw {
         public string Id = "";
-        public string IpAddress = "";
+        public string LatestIpAddress = "";
         public long SimpleUserId;
         public DateTime FirstVisit;
         public DateTime LatestVisit;
@@ -44,7 +44,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
     public class UserAndSession_Raw : User_Raw {    // no multiple inheritance :(
         public string SessionId = "";
-        public string IpAddress = "";
+        public string LatestIpAddress = "";
         public long SimpleUserId;
         public DateTime FirstVisit;
         public DateTime LatestVisit;

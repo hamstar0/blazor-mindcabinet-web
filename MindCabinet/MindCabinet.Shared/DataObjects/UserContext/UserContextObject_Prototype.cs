@@ -45,9 +45,9 @@ public partial class UserContextObject {
                 && this.Entries.Any();
         }
 
-        public UserContextObject.Raw CreateDatabaseEntry() {
+        public UserContextObject.Raw ToRaw() {
             if( !this.IsValid() ) {
-                throw new InvalidOperationException("Cannot create database entry from invalid prototype.");
+                throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
             
             return new UserContextObject.Raw {

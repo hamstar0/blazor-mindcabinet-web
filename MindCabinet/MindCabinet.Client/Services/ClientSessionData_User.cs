@@ -8,18 +8,25 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientSessionData {
-    public string? SessionId { get => this.ServerData?.SessionId; }
+    public string? SessionId => this.Data?.SessionId;
 
-    public long? UserId { get => this.ServerData?.UserData?.Id; }
+    public long? UserId => this.Data?.UserData?.Id;
 
-    public string? UserName { get => this.ServerData?.UserData?.Name; }
+    public string? UserName => this.Data?.UserData?.Name;
 
 
 
-    public void LocalLogin( SimpleUserObject.ClientObject user ) {
-        if( this.ServerData is not null ) {
-            this.ServerData.UserData = user;
+    public async Task LocalLogin_Async( SimpleUserObject.ClientObject user ) {
+        if( this.Data is null ) {
+            throw new InvalidOperationException( "UserAndAppData is null in LocalLogin." );
         }
+        
+        this.Data.UserData = user;
+
+        await Task.WhenAll(
+            this.OnUserLogin_Async
+                .Select( f => f.Invoke(user) )
+        );
     }
 
 
@@ -27,7 +34,7 @@ public partial class ClientSessionData {
     public const string Logout_Route = "Logout";
 
     public async Task Logout_Async( HttpClient httpClient ) {
-        if( this.ServerData is null ) {
+        if( this.Data is null ) {
             return;
         }
 
@@ -37,6 +44,11 @@ public partial class ClientSessionData {
 
         msg.EnsureSuccessStatusCode();
 
-        this.ServerData.UserData = null;
+        await Task.WhenAll(
+            this.OnUserLogout_Async
+                .Select( f => f.Invoke(this.Data.UserData!) )
+        );
+
+        this.Data.UserData = null;
     }
 }

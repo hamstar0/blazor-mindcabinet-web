@@ -94,26 +94,4 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
             throw new Exception( "No session found to remove." );
         }
     }
-
-
-    public async Task VisitSimpleUserSession_Async(
-                IDbConnection dbCon,
-                ServerSessionData session ) {
-        if( !session.IsLoaded ) {
-            throw new Exception( "Session not loaded." );
-        }
-
-        int rows = await dbCon.ExecuteAsync(
-            $@"UPDATE {TableName}
-                SET Visits = Visits + 1, LatestVisit = @Now
-                WHERE Id = @Id",
-            new {
-                Now = DateTime.UtcNow,
-                Id = session.SessionId
-            }
-        );
-        if( rows == 0 ) {
-            throw new Exception( "No session found to indicate a visit." );
-        }
-    }
 }

@@ -33,6 +33,7 @@ v0.6
 -	@Ensure singleton services are thread safe
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
+-	Add landing page when not logged in
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	Implement custom posts sorting (via hook?)

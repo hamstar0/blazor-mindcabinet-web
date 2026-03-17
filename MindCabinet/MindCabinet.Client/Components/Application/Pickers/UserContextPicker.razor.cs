@@ -50,13 +50,13 @@ public partial class UserContextPicker : ComponentBase {
 	protected async override Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        UserContextObject? currCtx = this.Session.GetCurrentContext();
-
-        if( currCtx is not null ) {
-            this.SearchOptions = new List<UserContextObject>() { currCtx };
+        this.Session.RegisterUserContextEvent( async ( ctx ) => {
+            this.SearchOptions = new List<UserContextObject>() { ctx };
             this.SearchPosition = 0;
-            this.Value = currCtx.Name;
-        }
+            this.Value = ctx.Name;
+
+            this.StateHasChanged();
+        } );
 	}
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {

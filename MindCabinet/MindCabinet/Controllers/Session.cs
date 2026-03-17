@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
@@ -18,7 +19,6 @@ public class SessionController(
             ILogger<SessionController> logger,
             DbAccess dbAccess,
             ServerDataAccess_SimpleUserSessions sessionsData,
-            ServerDataAccess_Terms termsData,
             ServerSessionData sessData
         ) : ControllerBase {
     private readonly ILogger<SessionController> Logger = logger;
@@ -27,15 +27,12 @@ public class SessionController(
 
     private readonly ServerDataAccess_SimpleUserSessions SessionsData = sessionsData;
 
-    private readonly ServerDataAccess_Terms TermsData = termsData;
-
     private readonly ServerSessionData SessData = sessData;
 
     
 
-    // [HttpPost(nameof(ClientDbAccess.Route_SimpleUser_GetSessionData.route))]
-    [HttpPost(ClientSessionData.Get_Route)]
-    public async Task<ClientSessionData.SessionDataJson> Get_Async( object parameters ) {
+    [HttpPost(ClientDataAccess_ClientSessionBundle.GetCurrent_Route)]
+    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrent_Return> GetCurrent_Async( object parameters ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -43,7 +40,7 @@ public class SessionController(
             throw new NullReferenceException( "Session has no ID." );
         }
 
-        return new ClientSessionData.SessionDataJson {
+        return new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
             SessionId = this.SessData.SessionId,
             UserData = this.SessData.UserOfSession is not null
                 ? new SimpleUserObject.ClientObject(
@@ -53,7 +50,8 @@ public class SessionController(
                     email: this.SessData.UserOfSession.Email
                 )
                 : null,
-            UserAppData = this.SessData.UserAppData
+            UserAppData = this.SessData.UserAppData?.ToRaw(),
+            UserAppData_UserContext = this.SessData.UserAppData?.UserContext?.ToRaw()
         };
     }
 

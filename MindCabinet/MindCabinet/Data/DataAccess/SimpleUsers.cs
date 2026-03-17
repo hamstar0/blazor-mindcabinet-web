@@ -145,7 +145,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             $@"SELECT
                     MyUsers.*,
                     MySessions.Id AS SessionId,
-                    MySessions.IpAddress AS IpAddress,
+                    MySessions.LatestIpAddress AS LatestIpAddress,
                     MySessions.SimpleUserId AS SimpleUserId,
                     MySessions.FirstVisit AS FirstVisit,
                     MySessions.LatestVisit AS LatestVisit,
@@ -162,7 +162,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         if( destroyIfSessionExpiredOrInvalid ) {
-            bool isValidIp = userRaw.IpAddress == ipAddress;
+            bool isValidIp = userRaw.LatestIpAddress == ipAddress;
             bool isExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
 
             if( !isValidIp ) {

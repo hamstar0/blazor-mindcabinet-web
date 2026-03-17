@@ -13,6 +13,14 @@ public partial class UserContextTermEntryObject( TermObject term, double priorit
     public bool IsRequired { get; } = isRequired;
 
 
+    public UserContextTermEntryObject.Raw ToRaw() {
+        return new UserContextTermEntryObject.Raw {
+            TermId = this.Term.Id,
+            Priority = this.Priority,
+            IsRequired = this.IsRequired
+        };
+    }
+    
     public override string ToString() {
         return $"{this.Term} - {this.Priority} {(this.IsRequired ? "(Required)" : "")}";
     }

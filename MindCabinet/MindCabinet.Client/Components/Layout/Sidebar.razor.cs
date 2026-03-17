@@ -25,12 +25,10 @@ public partial class Sidebar {
     [Inject]
     private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
 
-    private IEnumerable<UserContextObject>? Contexts = null;
-
 
     
     private async Task OnContextSelect_Async( UserContextObject context ) {
-        this.SessionData.SetCurrentContext( context );
+        await this.SessionData.SetCurrentContext_Await( context );
 
         this.StateHasChanged();
     }

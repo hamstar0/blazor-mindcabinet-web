@@ -9,14 +9,21 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientSessionData {
-    private UserContextObject? CurrentContext;
-
-
     public UserContextObject? GetCurrentContext() {
-        return this.CurrentContext;
+        return this.Data?.UserAppData?.UserContext;
     }
 
-    public void SetCurrentContext( UserContextObject context ) {
-        this.CurrentContext = context;
+
+    public async Task SetCurrentContext_Await( UserContextObject context ) {
+        if( this.Data?.UserAppData is null ) {
+            throw new InvalidOperationException( "UserAppData is null in SetCurrentContext." );
+        }
+
+        this.Data.UserAppData.SetUserContext( context );
+        
+        await Task.WhenAll(
+            this.OnUserContextChanged_Async
+                .Select( f => f.Invoke(context) )
+        );
     }
 }
