@@ -5,14 +5,14 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
 public partial class UserContextTermEntryObject {
-    public class Raw {
-        public long UserContextId = default;
+    public class Raw : IRawDataObject {
+        public long UserContextId { get; set; } = default;
 
-        public long TermId = default;
+        public long TermId { get; set; } = default;
 
-        public double Priority = default;
+        public double Priority { get; set; } = default;
 
-        public bool IsRequired = default;
+        public bool IsRequired { get; set; } = default;
 
 
 		public async Task<UserContextTermEntryObject> CreateDataObject_Async(

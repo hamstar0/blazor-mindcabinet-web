@@ -23,10 +23,7 @@ public partial class ClientSessionData {
         
         this.Data.UserData = user;
 
-        await Task.WhenAll(
-            this.OnUserLogin_Async
-                .Select( f => f.Invoke(user) )
-        );
+        await this.TriggerUserLogin_Async( user );
     }
 
 
@@ -44,10 +41,7 @@ public partial class ClientSessionData {
 
         msg.EnsureSuccessStatusCode();
 
-        await Task.WhenAll(
-            this.OnUserLogout_Async
-                .Select( f => f.Invoke(this.Data.UserData!) )
-        );
+        await this.TriggerUserLogout_Async( this.Data.UserData! );
 
         this.Data.UserData = null;
     }

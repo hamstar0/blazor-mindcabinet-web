@@ -21,9 +21,6 @@ public partial class ClientSessionData {
 
         this.Data.UserAppData.SetUserContext( context );
         
-        await Task.WhenAll(
-            this.OnUserContextChanged_Async
-                .Select( f => f.Invoke(context) )
-        );
+        await this.TriggerUserContextChanged_Async( context );
     }
 }

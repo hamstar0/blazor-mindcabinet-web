@@ -74,6 +74,7 @@
     }
 
     private async Task OnRegistration_UI_Async( SimpleUserObject.ClientObject user ) {
+        await Task.CompletedTask;
         //this.SessionData.Login(user);     <- No automatic login
 
         this.StateHasChanged();

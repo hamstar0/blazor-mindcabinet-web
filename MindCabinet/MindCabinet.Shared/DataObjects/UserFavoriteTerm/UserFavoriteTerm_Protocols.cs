@@ -7,12 +7,12 @@ namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 
 
 public partial class UserFavoriteTermObject {
-    public class Raw {
-		public long SimpleUserId;
+    public class Raw : IRawDataObject {
+		public long SimpleUserId { get; set; }
 
-		public long FavTermId;
+		public long FavTermId { get; set; }
 
-	    public int Favor;
+	    public int Favor { get; set; }
 
         
         

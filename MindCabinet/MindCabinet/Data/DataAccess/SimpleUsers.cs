@@ -141,7 +141,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 string sessionId,
                 string ipAddress,
                 bool destroyIfSessionExpiredOrInvalid ) {
-        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(
+        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(  // Note: MySessions.Id is SessionId to avoid collision
             $@"SELECT
                     MyUsers.*,
                     MySessions.Id AS SessionId,

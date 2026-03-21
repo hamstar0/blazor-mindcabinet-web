@@ -8,15 +8,15 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
-    public class User_Raw {
-        public long Id;
-        public DateTime Created;
-        public string Name = "";
-        public string Email = "";
-        public byte[] PwHash = new byte[SimpleUserObject.PasswordHashLength];
-        public byte[] PwSalt = new byte[SimpleUserObject.PasswordSaltLength];
-        public bool IsValidated = false;
-        //public bool IsPrivileged = false;
+    public class User_Raw : IRawDataObject {
+        public long Id { get; set; }
+        public DateTime Created { get; set; }
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+        public byte[] PwHash { get; set; } = new byte[SimpleUserObject.PasswordHashLength];
+        public byte[] PwSalt { get; set; } = new byte[SimpleUserObject.PasswordSaltLength];
+        public bool IsValidated { get; set; } = false;
+        //public bool IsPrivileged { get; set; } = false;
         
         
         public SimpleUserObject CreateDataObject() {
@@ -33,30 +33,30 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         }
     }
 
-    public class Session_Raw {
-        public string Id = "";
-        public string LatestIpAddress = "";
-        public long SimpleUserId;
-        public DateTime FirstVisit;
-        public DateTime LatestVisit;
-        public int Visits;
+    public class Session_Raw : IRawDataObject {
+        public string Id { get; set; } = "";
+        public string LatestIpAddress { get; set; } = "";
+        public long SimpleUserId { get; set; }
+        public DateTime FirstVisit { get; set; }
+        public DateTime LatestVisit { get; set; }
+        public int Visits { get; set; }
     }
 
-    public class UserAndSession_Raw : User_Raw {    // no multiple inheritance :(
-        public string SessionId = "";
-        public string LatestIpAddress = "";
-        public long SimpleUserId;
-        public DateTime FirstVisit;
-        public DateTime LatestVisit;
-        public int Visits;
+    public class UserAndSession_Raw : User_Raw, IRawDataObject {
+        public string SessionId { get; set; } = "";   // Note: MySessions.Id is SessionId to avoid collision
+        public string LatestIpAddress { get; set; } = "";
+        public long SimpleUserId { get; set; }
+        public DateTime FirstVisit { get; set; }
+        public DateTime LatestVisit { get; set; }
+        public int Visits { get; set; }
     }
 
 
     
-    public class ClientObject( long id, string name, DateTime created, string email ) {
-        public long Id { get; } = id;
-        public string Name { get; } = name;
-        public DateTime Created { get; } = created;
-        public string Email { get; } = email;
+    public class ClientObject( long id, string name, DateTime created, string email ) : IRawDataObject {
+        public long Id { get; set; } = id;
+        public string Name { get; set; } = name;
+        public DateTime Created { get; set; } = created;
+        public string Email { get; set; } = email;
     }
 }

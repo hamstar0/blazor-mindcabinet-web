@@ -5,9 +5,11 @@ using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.UserContext;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 
 
 namespace MindCabinet.Controllers;
@@ -40,7 +42,9 @@ public class SessionController(
             throw new NullReferenceException( "Session has no ID." );
         }
 
-        return new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
+        UserAppDataObject.Raw? userAppData = this.SessData.UserAppData?.ToRaw();
+        UserContextObject.Raw? userAppData_UserContext = this.SessData.UserAppData?.UserContext?.ToRaw();
+        var ret = new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
             SessionId = this.SessData.SessionId,
             UserData = this.SessData.UserOfSession is not null
                 ? new SimpleUserObject.ClientObject(
@@ -50,11 +54,11 @@ public class SessionController(
                     email: this.SessData.UserOfSession.Email
                 )
                 : null,
-            UserAppData = this.SessData.UserAppData?.ToRaw(),
-            UserAppData_UserContext = this.SessData.UserAppData?.UserContext?.ToRaw()
+            UserAppData = userAppData,
+            UserAppData_UserContext = userAppData_UserContext
         };
+        return ret;
     }
-
 
 
     [HttpGet(ClientSessionData.Logout_Route)]

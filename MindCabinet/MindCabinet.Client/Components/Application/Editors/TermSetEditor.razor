@@ -46,6 +46,7 @@
 
 
     public async Task<(string termText, bool isSubmit)> OnTermEditConfirmSubmit_UI_Async( string term ) {
+        await Task.CompletedTask;
         return term.Contains(",")
             ? (term.Split(",")[0], true)
             : (term, false);

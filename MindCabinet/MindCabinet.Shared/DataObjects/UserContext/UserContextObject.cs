@@ -1,21 +1,34 @@
 ﻿using System.Text.Json.Serialization;
+using MindCabinet.Shared.DataObjects;
 
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
-public partial class UserContextObject(
+public partial class UserContextObject : IDataObject {
+    public long Id { get; }
+
+    public string Name { get; }
+    
+    public string? Description { get; }
+
+    public UserContextTermEntryObject[] Entries { get; }
+
+
+
+    public UserContextObject(
             long id,
             string name,
             string? description,
             UserContextTermEntryObject[] entries ) {
-    public long Id { get; } = id;
+        if( id == 0 ) {
+            throw new ArgumentException( "Id cannot be 0 in UserContextObject." );
+        }
 
-    public string Name { get; } = name;
-    
-    public string? Description { get; } = description;
-
-    public UserContextTermEntryObject[] Entries { get; } = entries;
-
+        this.Id = id;
+        this.Name = name;
+        this.Description = description;
+        this.Entries = entries;
+    }
 
 
     public IEnumerable<UserContextTermEntryObject> GetRequiredEntries() {
@@ -31,9 +44,10 @@ public partial class UserContextObject(
 
     public UserContextObject.Raw ToRaw() {
         return new UserContextObject.Raw {
+            Id = this.Id,
             Name = this.Name ?? "",
             Description = this.Description,
-            Entries = this.Entries.Select( e => e.ToRaw() ).ToArray()
+            Entries = this.Entries.Select( e => e.ToRaw(this.Id) ).ToArray()
         };
     }
 

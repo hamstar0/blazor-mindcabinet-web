@@ -19,6 +19,8 @@ public partial class TermSetEditor : ComponentBase {
     [Parameter]
     public List<TermObject> InitialTerms { get; set; } = new List<TermObject>();
 
+    private bool IsInitialized = false;
+
     private List<TermObject> _Terms = new List<TermObject>();
 
     public IReadOnlyList<TermObject> Terms => this._Terms.AsReadOnly();
@@ -41,7 +43,10 @@ public partial class TermSetEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
 
-        this._Terms = new List<TermObject>( this.InitialTerms );
+        if( !this.IsInitialized ) {
+            this._Terms = new List<TermObject>( this.InitialTerms );
+            this.IsInitialized = true;
+        }
     }
 
     public async Task AddTerm_Async( TermObject term ) {

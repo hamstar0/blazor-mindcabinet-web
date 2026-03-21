@@ -7,10 +7,10 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class UserAppDataObject {
-    public class Raw {
-		public long SimpleUserId;
+    public class Raw : IRawDataObject {
+		public long SimpleUserId { get; set; }
         
-		public long UserContextId;
+		public long UserContextId { get; set; }
 
         
         

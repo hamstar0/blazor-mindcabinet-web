@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimplePostObject : IEquatable<SimplePostObject> {
+public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObject {
 	public long Id { get; }
 
 
@@ -20,6 +20,10 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
 
 	public SimplePostObject( long id, DateTime created, string body, SortedSet<TermObject> tags ) {
+		if( id == 0 ) {
+			throw new ArgumentException( "Id cannot be 0 in SimplePostObject." );
+		}
+
         this.Id = id;
         this.Created = created;
         this.Body = body;

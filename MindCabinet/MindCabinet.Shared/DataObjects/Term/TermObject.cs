@@ -1,10 +1,11 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.Utility;
+using MindCabinet.Shared.DataObjects;
 
 namespace MindCabinet.Shared.DataObjects.Term;
 
 
-public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
+public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject {
     public long Id { get; }
 
     public string Term { get; }
@@ -16,6 +17,10 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
 
 	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
+		if( id == 0 ) {
+			throw new ArgumentException( "Id cannot be 0 in TermObject." );
+		}
+
 		this.Id = id;
 		this.Term = term;
 		this.Context = context is not null

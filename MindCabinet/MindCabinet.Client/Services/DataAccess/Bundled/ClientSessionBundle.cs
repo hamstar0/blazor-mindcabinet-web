@@ -33,16 +33,18 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
         msg.EnsureSuccessStatusCode();
 
-        string rawData = await msg.Content.ReadAsStringAsync();
-        if( string.IsNullOrWhiteSpace(rawData) || rawData == "{}" ) {
-            throw new InvalidDataException( "Did not receive JSON string for ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
-        }
+        // string rawData = await msg.Content.ReadAsStringAsync();
+        // if( string.IsNullOrWhiteSpace(rawData) || rawData == "{}" ) {
+        //     throw new InvalidDataException( "Did not receive JSON string for GetCurrent_Return" );
+        // }
 
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        ClientDataAccess_ClientSessionBundle.GetCurrent_Return? sessionData = JsonSerializer.Deserialize<ClientDataAccess_ClientSessionBundle.GetCurrent_Return>(
-            json: rawData,
-            options: options
-        );
+        // var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        // GetCurrent_Return? sessionData = JsonSerializer.Deserialize<GetCurrent_Return>(
+        //     json: rawData,
+        //     options: options
+        // );
+        GetCurrent_Return? sessionData = await msg.Content.ReadFromJsonAsync<GetCurrent_Return>();
+
         if( sessionData is null ) {
             throw new InvalidDataException( "Could not deserialize ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
         }

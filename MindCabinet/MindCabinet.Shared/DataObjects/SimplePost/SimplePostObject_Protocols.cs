@@ -6,14 +6,14 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimplePostObject : IEquatable<SimplePostObject> {
-    public class Raw {
-        public long Id;
+    public class Raw : IRawDataObject {
+        public long Id { get; set; }
 
-        public DateTime Created;
+        public DateTime Created { get; set; }
 
-        public string Body = "";
+        public string Body { get; set; } = "";
 
-        public long[] TagsTermIdSet = [];
+        public long[] TagsTermIdSet { get; set; } = [];
 
 
         

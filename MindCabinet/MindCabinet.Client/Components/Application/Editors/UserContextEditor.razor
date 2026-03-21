@@ -80,6 +80,7 @@
 	}
 	
     private async Task OnInputName_UI_Async( string? nameText ) {
+        await Task.CompletedTask;
         if( string.IsNullOrEmpty(nameText) ) {
             return;
         }
@@ -97,6 +98,7 @@
 	}
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
+        await Task.CompletedTask;
 		UserContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
@@ -107,6 +109,7 @@
 	}
 	
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
+        await Task.CompletedTask;
 		UserContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );

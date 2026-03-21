@@ -50,7 +50,7 @@ public partial class UserContextPicker : ComponentBase {
 	protected async override Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        this.Session.RegisterUserContextEvent( async ( ctx ) => {
+        await this.Session.RegisterUserContextEvent_Async( async ( ctx ) => {
             this.SearchOptions = new List<UserContextObject>() { ctx };
             this.SearchPosition = 0;
             this.Value = ctx.Name;

@@ -5,16 +5,16 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
 public partial class UserContextObject {
-    public class Raw {
-        public long Id = default;
+    public class Raw : IRawDataObject {
+        public long Id { get; set; } = default;
 
-        public long SimpleUserId = default;
-        
-        public string Name = "";
+        public long SimpleUserId { get; set; } = default;
 
-        public string? Description;
+        public string Name { get; set; } = "";
 
-        public UserContextTermEntryObject.Raw[] Entries = [];
+        public string? Description { get; set; }
+
+        public UserContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
 

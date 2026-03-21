@@ -2,12 +2,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
+using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
+public partial class SimpleUserObject : IEquatable<SimpleUserObject>, IDataObject {
 	public long Id { get; }
 
 	public DateTime Created { get; }
@@ -32,6 +33,10 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 				byte[] pwHash,
 				byte[] pwSalt,
 				bool isValidated ) {
+		if( id == 0 ) {
+			throw new ArgumentException( "Id cannot be 0 in SimpleUserObject." );
+		}
+
         this.Id = id;
         this.Created = created;
         this.Name = name;

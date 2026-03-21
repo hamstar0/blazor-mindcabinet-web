@@ -1,15 +1,27 @@
 ﻿using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 using System.Text.Json.Serialization;
+using MindCabinet.Shared.DataObjects;
 
 
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class UserAppDataObject( long simpleUserId, UserContextObject userContext ) {
-	public long SimpleUserId { get; private set; } = simpleUserId;
+public partial class UserAppDataObject : IDataObject {
+	public long SimpleUserId { get; private set; }
 
-	public UserContextObject UserContext { get; private set; } = userContext;
+	public UserContextObject UserContext { get; private set; }
+
+
+
+	public UserAppDataObject( long simpleUserId, UserContextObject userContext ) {
+		if( simpleUserId == 0 ) {
+			throw new ArgumentException( "SimpleUserId cannot be 0 in UserAppDataObject." );
+		}
+
+		this.SimpleUserId = simpleUserId;
+		this.UserContext = userContext;
+	}
 
 
 	public void SetUserContext( UserContextObject context ) {	// i hate this

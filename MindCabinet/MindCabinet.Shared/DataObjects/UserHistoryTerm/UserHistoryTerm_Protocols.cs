@@ -7,12 +7,12 @@ namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 public partial class UserHistoryTermObject {
-    public class Raw {
-		public long SimpleUserId;
+    public class Raw : IRawDataObject {
+		public long SimpleUserId { get; set; }
 
-		public long TermId;
+		public long TermId { get; set; }
         
-	    public DateTime Created;
+	    public DateTime Created { get; set; }
 
         
         

@@ -83,6 +83,7 @@
     }
 
     private async Task OnInputUserName_UI_Async( string val ) {
+        await Task.CompletedTask;
         bool hasChanged = this.UserName != val;
 
         this.UserName = val ?? "";
@@ -93,6 +94,7 @@
     }
 
     private async Task OnInputEmail_UI_Async( string val ) {
+        await Task.CompletedTask;
         bool hasChanged = this.Email != val;
 
         this.Email = val ?? "";
@@ -103,6 +105,7 @@
     }
 
     private async Task OnInputPassword_UI_Async( string val ) {
+        await Task.CompletedTask;
         bool hasChanged = this.Password != val;
 
         this.Password = val ?? "";

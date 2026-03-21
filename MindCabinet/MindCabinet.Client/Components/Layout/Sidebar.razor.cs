@@ -26,7 +26,14 @@ public partial class Sidebar {
     private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
 
 
-    
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+
+        await this.SessionData.RegisterUserContextEvent_Async( async ctx => this.StateHasChanged() );
+	}
+
+
     private async Task OnContextSelect_Async( UserContextObject context ) {
         await this.SessionData.SetCurrentContext_Await( context );
 

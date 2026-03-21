@@ -70,15 +70,9 @@ public partial class ClientSessionData(
 
         this.Data = userAndAppData;
 
-        await Task.WhenAll(
-            this.OnUserAndAppDataLoaded_Async
-                .Select( f => f.Invoke(this.Data) )
-        );
+        await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
         if( this.Data.UserAppData?.UserContext is not null ) {
-            await Task.WhenAll(
-                this.OnUserContextChanged_Async
-                    .Select( f => f.Invoke(this.Data.UserAppData.UserContext) )
-            );
+            await this.TriggerUserContextChanged_Async( this.Data.UserAppData.UserContext );
         }
 
         //

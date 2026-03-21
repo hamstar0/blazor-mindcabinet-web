@@ -33,6 +33,8 @@ public partial class UserContextEditor : ComponentBase {
     [Parameter]
     public UserContextObject? InitialContext { get; set; } = null;
 
+    private UserContextObject? InitialContextCheck;
+
 	private UserContextObject.Prototype CurrentContextPrototype = new UserContextObject.Prototype();
 
     [Parameter]
@@ -44,13 +46,20 @@ public partial class UserContextEditor : ComponentBase {
 		base.OnParametersSet();
         
         if( this.InitialContext is not null ) {
-            this.CurrentContextPrototype = new UserContextObject.Prototype {
-                Name = this.InitialContext?.Name,
-                Description = this.InitialContext?.Description,
-                Entries = this.InitialContext?.Entries
-                    .Select( e => e.ToRaw(this.InitialContext.Id) ).ToArray()
-                    ?? []
-            };
+            if( this.InitialContext != this.InitialContextCheck ) {
+                this.InitialContextCheck = this.InitialContext; // TODO: Verify inequality
+
+                this.CurrentContextPrototype = new UserContextObject.Prototype {
+                    Name = this.InitialContext?.Name,
+                    Description = this.InitialContext?.Description,
+                    Entries = this.InitialContext?.Entries
+                        .Select( e => e.ToRaw(this.InitialContext.Id) ).ToArray()
+                        ?? []
+                };
+            }
+        } else {
+            this.InitialContextCheck = this.InitialContext;
+            this.CurrentContextPrototype = new UserContextObject.Prototype();
         }
 	}
 
