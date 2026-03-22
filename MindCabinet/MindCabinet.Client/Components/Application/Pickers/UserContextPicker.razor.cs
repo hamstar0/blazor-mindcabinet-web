@@ -24,6 +24,9 @@ public partial class UserContextPicker : ComponentBase {
     private ClientSessionData Session { get; set; } = null!;
 
 
+    [Parameter, EditorRequired]
+    public string UniqueName { get; set; } = null!;
+
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
@@ -45,19 +48,6 @@ public partial class UserContextPicker : ComponentBase {
     [Parameter, EditorRequired]
     public Func<UserContextObject, Task> OnContextSelect_Async { get; set; } = null!;
 
-
-
-	protected async override Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
-
-        await this.Session.RegisterUserContextEvent_Async( async ( ctx ) => {
-            this.SearchOptions = new List<UserContextObject>() { ctx };
-            this.SearchPosition = 0;
-            this.Value = ctx.Name;
-
-            this.StateHasChanged();
-        } );
-	}
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
         int optionCount = this.SearchOptions.Count();

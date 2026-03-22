@@ -38,14 +38,14 @@ public class SessionController(
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
-        if( this.SessData.SessionId is null ) {
+        if( this.SessData.CurrentSessionId is null ) {
             throw new NullReferenceException( "Session has no ID." );
         }
 
-        UserAppDataObject.Raw? userAppData = this.SessData.UserAppData?.ToRaw();
-        UserContextObject.Raw? userAppData_UserContext = this.SessData.UserAppData?.UserContext?.ToRaw();
+        UserAppDataObject.Raw? userAppData = this.SessData.UserAppDataOfSession?.ToRaw();
+        UserContextObject.Raw? userAppData_UserContext = this.SessData.UserAppDataOfSession?.UserContext?.ToRaw();
         var ret = new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
-            SessionId = this.SessData.SessionId,
+            SessionId = this.SessData.CurrentSessionId,
             UserData = this.SessData.UserOfSession is not null
                 ? new SimpleUserObject.ClientObject(
                     id: this.SessData.UserOfSession.Id,
@@ -57,6 +57,7 @@ public class SessionController(
             UserAppData = userAppData,
             UserAppData_UserContext = userAppData_UserContext
         };
+
         return ret;
     }
 

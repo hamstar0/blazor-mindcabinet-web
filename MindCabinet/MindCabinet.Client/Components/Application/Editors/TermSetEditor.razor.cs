@@ -19,7 +19,7 @@ public partial class TermSetEditor : ComponentBase {
     [Parameter]
     public List<TermObject> InitialTerms { get; set; } = new List<TermObject>();
 
-    private bool IsInitialized = false;
+    private List<TermObject>? InitialContextCheck = null;
 
     private List<TermObject> _Terms = new List<TermObject>();
 
@@ -27,6 +27,9 @@ public partial class TermSetEditor : ComponentBase {
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+    [Parameter]
+    public string? AddedPerItemClasses { get; set; } = null;
 
     [Parameter]
     public string? Label { get; set; } = null;
@@ -43,9 +46,10 @@ public partial class TermSetEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
 
-        if( !this.IsInitialized ) {
+        if( this.InitialTerms != this.InitialContextCheck ) {
+            this.InitialContextCheck = this.InitialTerms;
+
             this._Terms = new List<TermObject>( this.InitialTerms );
-            this.IsInitialized = true;
         }
     }
 

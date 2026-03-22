@@ -4,11 +4,14 @@
 
 
 
-<div component-name="MultiUserContextRender" class="basic @(this.AddedClasses ?? "")"
+<div component-name="MultiUserContextRender"
+        class="basic @(this.AddedClasses ?? "")"
+        style="background-color: white;"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
     @foreach( UserContextObject context in this.Contexts ) {
-        <UserContextRender AddedClasses="ib"
+        <UserContextRender
+                AddedClasses="ib"
                 Context=@context
                 OnClick_Async=@(async e => await this.OnClickEach_UI_Async(context, e)) />
     }

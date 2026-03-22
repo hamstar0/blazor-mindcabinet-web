@@ -50,13 +50,13 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }
-        if( session.LatestIpAddress is null ) {
+        if( session.CurrentIpAddress is null ) {
             throw new Exception( "Invalid IP address." );
         }
 
         //var sessData = await dbCon.QuerySingleAsync<SimpleUserEntry.SessionDbData?>(
         //    "SELECT * FROM SimpleUserSession WHERE SessionId = @SessionId",
-        //    new { SessionId = session.SessionId }
+        //    new { SessionId = session.CurrentSessionId }
         //);
         //if( sessData is not null ) {
         //    throw new Exception( "Session already exists." );
@@ -69,8 +69,8 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 (Id, LatestIpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
                 VALUES (@Id, @LatestIpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
-                Id = session.SessionId,
-                LatestIpAddress = session.LatestIpAddress,
+                Id = session.CurrentSessionId,
+                LatestIpAddress = session.CurrentIpAddress,
                 SimpleUserId = simpleUserId,
                 FirstVisit = now,
                 LatestVisit = now,

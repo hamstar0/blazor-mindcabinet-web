@@ -21,7 +21,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 WHERE Id = @Id",
             new {
                 Now = DateTime.UtcNow,
-                Id = session.SessionId
+                Id = session.CurrentSessionId
             }
         );
         if( rows == 0 ) {

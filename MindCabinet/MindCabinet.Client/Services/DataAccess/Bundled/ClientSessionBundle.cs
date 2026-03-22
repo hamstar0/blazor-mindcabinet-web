@@ -44,7 +44,6 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
         //     options: options
         // );
         GetCurrent_Return? sessionData = await msg.Content.ReadFromJsonAsync<GetCurrent_Return>();
-
         if( sessionData is null ) {
             throw new InvalidDataException( "Could not deserialize ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
         }

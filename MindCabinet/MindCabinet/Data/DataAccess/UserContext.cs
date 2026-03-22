@@ -52,11 +52,26 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
     public async Task<UserContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                long contextId ) {
-        return await dbCon.QuerySingleOrDefaultAsync<UserContextObject.Raw>(
+                long contextId,
+                bool alsoGetEntries ) {
+        var raw = await dbCon.QuerySingleOrDefaultAsync<UserContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = contextId }
         );
+        if( raw is null ) {
+            return null;
+        }
+
+        if( alsoGetEntries ) {
+            raw.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.Raw>(
+                $@"SELECT MyCtxEntries.UserContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+                    FROM {EntriesTableName} AS MyCtxEntries
+                    WHERE MyCtxEntries.UserContextId = @UserContextId;",
+                new { UserContextId = contextId }
+            )).ToArray();
+        }
+
+        return raw;
     }
 
 

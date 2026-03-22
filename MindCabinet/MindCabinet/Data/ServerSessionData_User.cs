@@ -17,7 +17,7 @@ public partial class ServerSessionData {
                 string sessId,
                 string ip ) {
         if( this.UserOfSession is not null ) {
-            if( this.SessionId != sessId ) {
+            if( this.CurrentSessionId != sessId ) {
                 throw new Exception( "shit be whack, yo" ); //TODO
             }
             
@@ -39,12 +39,12 @@ public partial class ServerSessionData {
     public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
         this.UserOfSession = null;
         
-        if( this.SessionId is null ) {
+        if( this.CurrentSessionId is null ) {
             return;
         }
 
-        await sessionsData.RemoveSessionById_Async( dbCon, this.SessionId );
+        await sessionsData.RemoveSessionById_Async( dbCon, this.CurrentSessionId );
         
-        //this.SessionId = null;
+        //this.CurrentSessionId = null;
     }
 }

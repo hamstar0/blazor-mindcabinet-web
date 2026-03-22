@@ -10,13 +10,15 @@
 
 
 <div component-name="UserContextEditor" class=@this.AddedClasses>
-	<h4>Enter tags to describe your current circumstances:</h4>
+	<h4>Enter a name to represent a given circumstance ("context"):</h4>
 	<input type="text"
 			placeholder="Enter context name"
 			@bind:event="oninput"
             @bind:get=@this.CurrentContextPrototype.Name
             @bind:set=@this.OnInputName_UI_Async />
+	<h4>Enter tags to describe your current "context":</h4>
 	<TermSetEditor Label="Enter tags (at least 1 required)"
+				AddedPerItemClasses="d-block"
 				InitialTerms=@( this.InitialContext?.Entries
 						.Select( e => e.Term )
 						.ToList()

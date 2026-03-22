@@ -24,7 +24,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             return [];
         }
 
-        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
+        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId, true );
         if( usrCtx is null ) {
             return [];
         }
@@ -56,7 +56,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             return 0;
         }
 
-        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId );
+        UserContextObject.Raw? usrCtx = await userContextData.GetById_Async( dbCon, parameters.UserContextId, true );
         if( usrCtx is null ) {
             return 0;
         }

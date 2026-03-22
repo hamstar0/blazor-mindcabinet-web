@@ -24,32 +24,14 @@ public partial class ServerSessionData(
     private IResponseCookies? RespCookies => this.HttpContext.HttpContext?.Response.Cookies;
 
 
-    private UserSessionObject.Raw _SessionData = new UserSessionObject.Raw();
+    public string? CurrentSessionId { get; private set; }
 
-    public string? SessionId {
-        get => this._SessionData.Id != ""
-            ? this._SessionData.Id
-            : null;
-        set => this._SessionData.Id = value ?? "";
-    }
-
-    public string? LatestIpAddress {
-        get => this._SessionData.LatestIpAddress != ""
-            ? this._SessionData.LatestIpAddress
-            : null;
-        set => this._SessionData.LatestIpAddress = value ?? "";
-    }
-    
-
-    //public IReadOnlyList<string> RenderScripts { get; private set; }
-    //
-    //private IList<string> _RenderScripts = new List<string>();
-    //this.RenderScripts = this._RenderScripts.AsReadOnly();
+    public string? CurrentIpAddress { get; private set; }
 
     
     public SimpleUserObject? UserOfSession { get; private set; }
 
-    public UserAppDataObject? UserAppData { get; private set; }
+    public UserAppDataObject? UserAppDataOfSession { get; private set; }
 
 
 
@@ -64,7 +46,7 @@ public partial class ServerSessionData(
                 ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_UserContexts userContextsData,
                 bool isInstalling ) {
-        if( !string.IsNullOrEmpty(this.SessionId) || this.RespCookies is null ) {
+        if( !string.IsNullOrEmpty(this.CurrentSessionId) || this.RespCookies is null ) {
             return false;
         }
 
@@ -89,16 +71,16 @@ public partial class ServerSessionData(
 
 
     private void LoadIp() {
-        this.LatestIpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        this.CurrentIpAddress = this.HttpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
-        if( string.IsNullOrEmpty(this.LatestIpAddress) ) {
+        if( string.IsNullOrEmpty(this.CurrentIpAddress) ) {
             throw new Exception( "Who are you?" );
         }
     }
 
     private void LoadNewSessionAndNoUser() {
-        this.SessionId = Guid.NewGuid().ToString();
-        this.RespCookies?.Append( "sessionid", this.SessionId );
+        this.CurrentSessionId = Guid.NewGuid().ToString();
+        this.RespCookies?.Append( "sessionid", this.CurrentSessionId );
     }
 
     private async Task<bool> LoadExistingSessionAndItsUser_Async(
@@ -109,19 +91,19 @@ public partial class ServerSessionData(
                 ServerDataAccess_UserContexts userContextsData,
                 string sessId,
                 bool isInstalling ) {
-        this.SessionId = sessId;
+        this.CurrentSessionId = sessId;
 
         if( isInstalling ) {
             return false;
         }
 
-        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.LatestIpAddress! );
+        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, userData, sessId!, this.CurrentIpAddress! );
 
         if( isLoggedIn ) {
-            UserAppDataObject.Raw? usrAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+            UserAppDataObject.Raw? userAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
 
-            this.UserAppData = usrAppDataRaw is not null
-                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, userContextsData, usrAppDataRaw )
+            this.UserAppDataOfSession = userAppDataRaw is not null
+                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, userContextsData, userAppDataRaw )
                 : null;
         }
 

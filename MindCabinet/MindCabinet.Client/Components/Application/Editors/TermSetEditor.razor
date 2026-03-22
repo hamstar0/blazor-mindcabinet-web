@@ -14,7 +14,7 @@
         <span>@this.Label</span>
     }
     @foreach( TermObject term in this.Terms ) {
-        <TermRender AddedClasses="ib" Term=@term HasFavoriteButton=@this.AllowFavoritingTerms>
+        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses) Term=@term HasFavoriteButton=@this.AllowFavoritingTerms>
             @this.PerTermAffix?.Invoke( term )
             <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(term) )>X</a>
         </TermRender>
