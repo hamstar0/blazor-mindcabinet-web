@@ -53,6 +53,7 @@ v0.6
 			-	Context tag entry
 			-	Content posting
 			-	New tag posting
+			-	Prevent password entry via enter key when invalid
 			-	Ensure tag widgets work
 
 

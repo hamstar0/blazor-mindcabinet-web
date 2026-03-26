@@ -7,7 +7,7 @@ using MindCabinet.Shared.DataObjects.UserPostsContext;
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class MultiUserContextRender : ComponentBase {
+public partial class MultiUserPostsContextRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
