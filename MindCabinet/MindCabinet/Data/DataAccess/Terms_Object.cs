@@ -15,7 +15,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 TermObject.Raw termRaw ) {
-        Func<long, Task<TermObject.Raw>> termRawFactory = async (long termId) => {
+        Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) => {
             TermObject.Raw? term = await termsData.GetById_Async( dbCon, termId );
             if( term is null ) {
                 throw new InvalidOperationException("Term not found");

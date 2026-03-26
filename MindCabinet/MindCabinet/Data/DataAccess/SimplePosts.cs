@@ -36,7 +36,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
-                long defaultUserId ) {
+                SimpleUserId defaultUserId ) {
         return await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId );
     }
 
@@ -174,9 +174,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     }
 
 
-	public async Task<long> Create_Async(
+	public async Task<SimplePostId> Create_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
@@ -193,7 +193,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             }
         );
         
-        await termSetsData.CreateForSimplePost_Async( dbCon, newPostId, parameters.TermIds );
+        await termSetsData.CreateForSimplePost_Async( dbCon, (SimplePostId)newPostId, parameters.TermIds );
 
         if( !skipHistory ) {
             await Task.WhenAll( parameters.TermIds.Select( termId =>
@@ -207,6 +207,6 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             ) );
         }
 
-        return newPostId;
+        return (SimplePostId)newPostId;
     }
 }

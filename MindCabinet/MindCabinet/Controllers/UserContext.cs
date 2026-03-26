@@ -68,6 +68,6 @@ public class UserContextController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserContextsData.Update_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        return await this.UserContextsData.Update_Async( dbCon, parameters );
     }
 }

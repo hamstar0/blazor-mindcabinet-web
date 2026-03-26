@@ -34,7 +34,7 @@ public class SessionController(
     
 
     [HttpPost(ClientDataAccess_ClientSessionBundle.GetCurrent_Route)]
-    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrent_Return> GetCurrent_Async( object parameters ) {
+    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrent_Return> GetCurrent_Async( object _ ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }

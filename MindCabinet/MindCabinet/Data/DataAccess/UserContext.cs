@@ -12,7 +12,7 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContexts : IServerDataAccess {
+public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_UserContexts> logger ) : IServerDataAccess {
     public const string TableName = "UserContexts";
     public const string EntriesTableName = "UserContextEntries";
 
@@ -21,7 +21,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     public async Task<(bool success, UserContextObject.Raw userContext)> Install_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm,
-                long defaultUserId ) {
+                SimpleUserId defaultUserId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -48,15 +48,20 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
         return await this.InstallSamples_Async( dbConnection, sampleTerm, defaultUserId );
     }
+
     
+
+    private readonly ILogger<ServerDataAccess_UserContexts> Logger = logger;
+
+
 
     public async Task<UserContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                long contextId,
+                UserContextId userContextId,
                 bool alsoGetEntries ) {
         var raw = await dbCon.QuerySingleOrDefaultAsync<UserContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
-            new { Id = contextId }
+            new { Id = (long)userContextId }
         );
         if( raw is null ) {
             return null;
@@ -67,7 +72,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
                 $@"SELECT MyCtxEntries.UserContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                     FROM {EntriesTableName} AS MyCtxEntries
                     WHERE MyCtxEntries.UserContextId = @UserContextId;",
-                new { UserContextId = contextId }
+                new { UserContextId = (long)userContextId }
             )).ToArray();
         }
 
@@ -77,17 +82,17 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
     public async Task<IEnumerable<UserContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         string sql1 = $@"SELECT * FROM {TableName} AS MyContext
             WHERE MyContext.SimpleUserId = @UserId;";
-        var sqlParams1 = new Dictionary<string, object> { { "@UserId", simpleUserId } };
+        var sqlParams1 = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
-        if( parameters.Ids.Count >= 2 ) {
+        if( parameters.Ids.Length >= 2 ) {
             sql1 += " AND MyContext.Id IN @Ids;";
             sqlParams1.Add( "@Ids", parameters.Ids );
-        } else if( parameters.Ids.Count == 1 ) {
+        } else if( parameters.Ids.Length == 1 ) {
             sql1 += " AND MyContext.Id = @Id;";
             sqlParams1.Add( "@Id", parameters.Ids[0] );
         }
@@ -123,7 +128,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
 
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Create_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 UserContextObject.Raw parameters ) {
         long userContextId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, Name, Description) 
@@ -150,13 +155,12 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             );
         }
 
-        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( userContextId );
+        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( (UserContextId)userContextId );
     }
 
 
     public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Update_Async(
                 IDbConnection dbCon,
-                long userContextId,
                 UserContextObject.Raw parameters ) {
         await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
@@ -169,28 +173,30 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             }
         );
         
-        await dbCon.ExecuteAsync(
+        int rowsAffected = await dbCon.ExecuteAsync(
             $@"DELETE FROM {EntriesTableName}
                 WHERE UserContextId = @UserContextId;",
             new {
                 UserContextId = parameters.Id
             }
         );
+this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserContextId {parameters.Id}." );
 
-        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserContextId, TermId, Priority, IsRequired) 
+        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName}
+            (UserContextId, TermId, Priority, IsRequired) 
             VALUES (@UserContextId, @TermId, @Priority, @IsRequired);";
         foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    UserContextId = userContextId,
-                    TermId = entry.TermId,
-                    Priority = entry.Priority,
+                    UserContextId = (long)parameters.Id,
+                    TermId = (long)entry.TermId,
+                    Priority = (long)entry.Priority,
                     IsRequired = entry.IsRequired
                 }
             );
         }
 
-        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( userContextId );
+        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( parameters.Id );
     }
 }

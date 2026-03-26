@@ -67,8 +67,14 @@ public partial class TermSearch : ComponentBase {
         IEnumerable<UserHistoryTermObject.Raw> histTerms
             = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
 
-        this.FavoriteTerms_Cache = await ClientDataAccess_UserFavoriteTerms.ToClientObjects_Async( this.TermsData, favTerms.ToArray() );
-        this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ToClientObjects_Async( this.TermsData, histTerms.ToArray() );
+        this.FavoriteTerms_Cache = await ClientDataAccess_UserFavoriteTerms.ToClientObjects_Async(
+            this.TermsData,
+            favTerms.ToArray()
+        );
+        this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ToClientObjects_Async(
+            this.TermsData,
+            histTerms.ToArray()
+        );
         // this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
         //     histTerms
         //         .OrderByDescending( x => x.Created )

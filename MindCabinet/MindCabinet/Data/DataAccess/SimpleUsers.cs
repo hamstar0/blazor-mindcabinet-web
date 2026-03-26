@@ -47,7 +47,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public const string TableName = "SimpleUsers";
 
-    public async Task<(bool success, long defaultUserId)> Install_Async(
+    public async Task<(bool success, SimpleUserId defaultUserId)> Install_Async(
                 IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -101,18 +101,18 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         this.Logger = logger;
     }
 
-    private IDictionary<long, SimpleUserObject.User_Raw> SimpleUsersById_Cache = new Dictionary<long, SimpleUserObject.User_Raw>();
+    private IDictionary<SimpleUserId, SimpleUserObject.User_Raw> SimpleUsersById_Cache = new Dictionary<SimpleUserId, SimpleUserObject.User_Raw>();
 
 
 
-    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, long id ) {
+    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, SimpleUserId id ) {
         if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
             return this.SimpleUsersById_Cache[id];
         }
 
         SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
-            new { Id = id }
+            new { Id = (long)id }
         );
 
         if( userRaw is not null ) {
@@ -230,7 +230,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         );
 
         var newUser = new SimpleUserObject.User_Raw {
-            Id = newUserId,
+            Id = (SimpleUserId)newUserId,
             Created = now,
             Name = parameters.Name,
             Email = parameters.Email,

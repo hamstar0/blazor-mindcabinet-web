@@ -4,6 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
+using MindCabinet.Shared.DataObjects.UserContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
@@ -15,15 +16,15 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
 
     public class GetByCriteria_Params(
-                long userContextId,
+                UserContextId userContextId,
                 string? bodyPattern,
-                long[] additionalTagIds,
+                TermId[] additionalTagIds,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
-        public long UserContextId { get; } = userContextId;
+        public UserContextId UserContextId { get; } = userContextId;
         public string? BodyPattern { get; } = bodyPattern;
-        public long[] AdditionalTagIds { get; } = additionalTagIds;
+        public TermId[] AdditionalTagIds { get; } = additionalTagIds;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
         public int PageNumber { get; } = pageNumber;
         public int PostsPerPage { get; } = postsPerPage;

@@ -5,8 +5,12 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Shared.DataObjects.Term;
 
 
+public enum TermId : long { }
+
+
+
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject {
-    public long Id { get; }
+    public TermId Id { get; }
 
     public string Term { get; }
 
@@ -16,7 +20,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
 
 
-	public TermObject( long id, string term, TermObject? context, TermObject? alias ) {
+	public TermObject( TermId id, string term, TermObject? context, TermObject? alias ) {
 		if( id == 0 ) {
 			throw new ArgumentException( "Id cannot be 0 in TermObject." );
 		}
@@ -41,7 +45,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
             : null;
     }
 
-	public TermObject( long id, string term, TermObject.Raw? context, TermObject.Raw? alias ) {
+	public TermObject( TermId id, string term, TermObject.Raw? context, TermObject.Raw? alias ) {
 		this.Id = id;
 		this.Term = term;
 		this.Context = context;

@@ -72,7 +72,7 @@ public class SimplePostController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        long simplePostId = await this.SimplePostsData.Create_Async(
+        SimplePostId simplePostId = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionData.UserOfSession.Id,
             termSetsData: this.TermSetsData,

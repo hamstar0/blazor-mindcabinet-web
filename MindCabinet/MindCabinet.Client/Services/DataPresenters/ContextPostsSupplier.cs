@@ -38,7 +38,7 @@ public partial class ContextPostsSupplier(
 
     public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
                 string? searchTerm,
-                long[] addedFilterTagIds ) {
+                TermId[] addedFilterTagIds ) {
         UserContextObject? userContext = this.SessionData.GetCurrentContext();
         if( userContext is null ) {
             return [];
@@ -55,7 +55,7 @@ public partial class ContextPostsSupplier(
             )
         );
 
-        var postPriorities = posts.Select( post => new KeyValuePair<long, double?>(
+        var postPriorities = posts.Select( post => new KeyValuePair<SimplePostId, double?>(
             key: post.Id,
             value: this.GetPriority(userContext, post)
         ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
@@ -72,7 +72,7 @@ public partial class ContextPostsSupplier(
     }
 
     public async Task<int> GetCurrentContextPostCount_Async(
-                long[] addedFilterTagIds ) {
+                TermId[] addedFilterTagIds ) {
         UserContextObject? currCtx = this.SessionData.GetCurrentContext();
         if( currCtx is null ) {
             return 0;

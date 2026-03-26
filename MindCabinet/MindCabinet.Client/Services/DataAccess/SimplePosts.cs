@@ -86,9 +86,9 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
     public class Create_Params(
                 string body,
-                long[] termIds ) {
+                TermId[] termIds ) {
         public string Body { get; } = body;
-        public long[] TermIds { get; } = termIds;
+        public TermId[] TermIds { get; } = termIds;
     }
     
     public const string Create_Path = "SimplePost";

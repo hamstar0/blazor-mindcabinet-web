@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Microsoft.Data.SqlClient;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 
@@ -23,7 +24,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         }
         
         bool success;
-        long defaultUserId;
+        SimpleUserId defaultUserId;
         TermObject.Raw sampleTerm;
         UserContextObject.Raw sampleUsrCtx;
 

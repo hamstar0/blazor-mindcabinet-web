@@ -6,9 +6,9 @@ namespace MindCabinet.Shared.DataObjects.UserContext;
 
 public partial class UserContextObject {
     public class Raw : IRawDataObject {
-        public long Id { get; set; } = default;
+        public UserContextId Id { get; set; } = default;
 
-        public long SimpleUserId { get; set; } = default;
+        public SimpleUserId SimpleUserId { get; set; } = default;
 
         public string Name { get; set; } = "";
 
@@ -19,8 +19,8 @@ public partial class UserContextObject {
 
 
         public async Task<UserContextObject> CreateDataObject_Async(
-                    Func<UserContextTermEntryObject.Raw[], Task<UserContextTermEntryObject[]>> termsFactory ) {
-            UserContextTermEntryObject[] entries = await termsFactory( this.Entries );
+                    Func<UserContextTermEntryObject.Raw[], Task<UserContextTermEntryObject[]>> ctxTermsFactory ) {
+            UserContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
 
             return new UserContextObject(
                 id: this.Id,

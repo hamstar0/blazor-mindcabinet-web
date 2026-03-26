@@ -22,7 +22,7 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
     public const string GetByIds_Path = "Term";
     public const string GetByIds_Route = "GetByIds";
 
-    public async Task<GetByX_Return> GetByIds_Async( IEnumerable<long> termIds ) {
+    public async Task<GetByX_Return> GetByIds_Async( IEnumerable<TermId> termIds ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetByIds_Path}/{GetByIds_Route}",
             value: termIds
@@ -41,12 +41,12 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
 
     public class GetByCriteria_Params(
                 string termPattern,
-                long? contextTermId,
+                TermId? contextTermId,
                 string? contextTermPattern ) {
                 // PrimitiveOptional<long>? contextContextTermId
         public string TermPattern { get; } = termPattern;
 
-        public long? ContextTermId { get; } = contextTermId;
+        public TermId? ContextTermId { get; } = contextTermId;
 
         public string? ContextTermPattern { get; } = contextTermPattern;
 

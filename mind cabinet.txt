@@ -53,9 +53,10 @@ v0.6
 			-	Context tag entry
 			-	Content posting
 			-	New tag posting
+			-	Ensure tag widgets work
+
+
 			-	User's current context
-
-
 			-	Set TermObject to use a DatabaseEntry properties for Alias and Context
 			-	Change DatabaseEntry to Raw
 			-	Restructure data Objects to supply relevant FK ids as properties

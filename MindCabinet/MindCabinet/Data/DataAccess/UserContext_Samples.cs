@@ -14,7 +14,7 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
     private async Task<(bool success, UserContextObject.Raw userContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm,
-                long defaultUserId ) {
+                SimpleUserId defaultUserId ) {
         var sampleRawEntry = new UserContextTermEntryObject.Raw {
             TermId = sampleTerm.Id,
             Priority = 1.0,
@@ -26,11 +26,11 @@ public partial class ServerDataAccess_UserContexts : IServerDataAccess {
             Entries = [sampleRawEntry]
         };
 
-        long usrCtxId = (await this.Create_Async(
+        UserContextId usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
             parameters: sampleRawCtx
-        )).UserContextId;
+        )).Id;
 
         sampleRawCtx.Id = usrCtxId;
 

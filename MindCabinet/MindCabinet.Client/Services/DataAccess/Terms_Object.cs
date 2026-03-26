@@ -15,8 +15,8 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
     public static async Task<TermObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
                 TermObject.Raw termRaw ) {
-        Func<long, Task<TermObject.Raw>> termRawFactory = async (long termId) =>
-            (await termsData.GetByIds_Async( new long[] { termId } ))
+        Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
+            (await termsData.GetByIds_Async( new TermId[] { termId } ))
             .Terms
             .First();
 
@@ -27,8 +27,8 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
     public static async Task<TermObject[]> ToObjects_Async(
                 ClientDataAccess_Terms termsData,
                 TermObject.Raw[] rawTerms ) {
-        Func<long, Task<TermObject.Raw>> termRawFactory = async (long termId) =>
-            (await termsData.GetByIds_Async( new long[] { termId } ))
+        Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
+            (await termsData.GetByIds_Async( new TermId[] { termId } ))
             .Terms
             .First();
 

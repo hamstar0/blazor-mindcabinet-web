@@ -19,7 +19,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
 
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
-                long defaultUserId,
+                SimpleUserId defaultUserId,
                 UserContextObject.Raw sampleContext ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -38,10 +38,10 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
 
     public async Task<UserAppDataObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                long userId ) {
+                SimpleUserId id ) {
         UserAppDataObject.Raw? usrAppDataRaw = await dbCon.QuerySingleOrDefaultAsync<UserAppDataObject.Raw>(
             $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId",
-            new { SimpleUserId = userId }
+            new { SimpleUserId = (long)id }
         );
 
         return usrAppDataRaw;
@@ -50,8 +50,8 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
 
     public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
-                long userContextId ) {
+                SimpleUserId simpleUserId,
+                UserContextId userContextId ) {
         long _ = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, UserContextId) 
                 VALUES (@SimpleUserId, @UserContextId);

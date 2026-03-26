@@ -8,17 +8,17 @@ namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 
 public partial class UserFavoriteTermObject {
     public class Raw : IRawDataObject {
-		public long SimpleUserId { get; set; }
+		public SimpleUserId SimpleUserId { get; set; }
 
-		public long FavTermId { get; set; }
+		public TermId FavTermId { get; set; }
 
 	    public int Favor { get; set; }
 
         
         
         public async Task<UserFavoriteTermObject> CreateDataObject_Async(
-                    Func<long, Task<SimpleUserObject>> userFactory,
-                    Func<long, Task<TermObject>> termFactory ) {
+                    Func<SimpleUserId, Task<SimpleUserObject>> userFactory,
+                    Func<TermId, Task<TermObject>> termFactory ) {
             return new UserFavoriteTermObject(
                 simpleUser: await userFactory( this.SimpleUserId ),
                 favor: this.Favor,
@@ -28,7 +28,7 @@ public partial class UserFavoriteTermObject {
 
         
         public async Task<ClientObject> CreateClientObject_Async(
-                    Func<long, Task<TermObject>> termFactory ) {
+                    Func<TermId, Task<TermObject>> termFactory ) {
             return new ClientObject(
                 simpleUserId: this.SimpleUserId,
                 favor: this.Favor,
@@ -39,8 +39,8 @@ public partial class UserFavoriteTermObject {
 
 
     
-    public class ClientObject( long simpleUserId, int favor, TermObject favTerm ) {
-        public long SimpleUserId { get; } = simpleUserId;
+    public class ClientObject( SimpleUserId simpleUserId, int favor, TermObject favTerm ) {
+        public SimpleUserId SimpleUserId { get; } = simpleUserId;
 
         public int Favor { get; } = favor;
 

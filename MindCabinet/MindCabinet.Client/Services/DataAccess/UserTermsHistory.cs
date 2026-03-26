@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
@@ -43,10 +44,10 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
 
 
     public class AddTermsForCurrentUser_Params(
-                //long simpleUserId,
-                long termId ) {
-        //public long SimpleUserId { get; } = simpleUserId;
-        public long TermId { get; } = termId;
+                //SimpleUserId simpleUserId,
+                TermId termId ) {
+        //public SimpleUserId SimpleUserId { get; } = simpleUserId;
+        public TermId TermId { get; } = termId;
     }
 
     public const string AddTermsForCurrentUser_Path = "UserTermsHistory";

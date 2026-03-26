@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services;
 public partial class ClientSessionData {
     public string? SessionId => this.Data?.SessionId;
 
-    public long? UserId => this.Data?.UserData?.Id;
+    public SimpleUserId? UserId => this.Data?.UserData?.Id;
 
     public string? UserName => this.Data?.UserData?.Name;
 

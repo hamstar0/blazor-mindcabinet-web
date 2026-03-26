@@ -40,10 +40,10 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
 
     public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetByUserId_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId;";
-        var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", simpleUserId } };
+        var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", (long)simpleUserId } };
 
         return await dbCon.QueryAsync<UserHistoryTermObject.Raw>(
             sql,
@@ -54,13 +54,13 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
 
     public async Task AddTerm_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
             $@"INSERT INTO {TableName} (SimpleUserId, TermId, Created) 
                 VALUES (@SimpleUserId, @TermId, @Created);",
             new {
-                SimpleUserId = simpleUserId,
+                SimpleUserId = (long)simpleUserId,
                 TermId = parameters.TermId,
                 Created = DateTime.UtcNow,
             }
@@ -85,7 +85,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
                     LIMIT @AllowedCount
                 );",
             new {
-                SimpleUserId = simpleUserId,
+                SimpleUserId = (long)simpleUserId,
                 AllowedCount = ServerDataAccess_UserTermsHistory.HistoryMaxEntries,
             }
         );

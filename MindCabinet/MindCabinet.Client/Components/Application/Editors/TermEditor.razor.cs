@@ -172,7 +172,7 @@ public partial class TermEditor : ComponentBase {
         this.SearchOptions = await Task.WhenAll(
             termsRaw
             .Select( t => t.CreateDataObject_Async(
-                async t => (await this.TermsData.GetByIds_Async( new long[] { t } ))
+                async t => (await this.TermsData.GetByIds_Async( new TermId[] { t } ))
                     .Terms
                     .First()
             ) )

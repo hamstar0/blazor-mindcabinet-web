@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 using MindCabinet.Shared.Utility;
 using System.Data;
@@ -38,10 +39,10 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
 
     public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
-        var sqlParams = new Dictionary<string, object> { { "@UserId", simpleUserId } };
+        var sqlParams = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
         return await dbCon.QueryAsync<UserFavoriteTermObject.Raw>(
             sql,
@@ -52,15 +53,15 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
 
     public async Task AddFavTermEntries_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
-                long[] favTermIds ) {
+                SimpleUserId simpleUserId,
+                TermId[] favTermIds ) {
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
         dataTable.Columns.Add("Favor", typeof(int));
 
         for( int i=0; i<favTermIds.Length; i++ ) {
-            dataTable.Rows.Add( simpleUserId, favTermIds[i], 0 );
+            dataTable.Rows.Add( (long)simpleUserId, (long)favTermIds[i], 0 );
         }
 
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
@@ -73,14 +74,14 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
 
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
-                long simpleUserId,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName}
                 WHERE SimpleUserId = @SimpleUserId
                     AND FavTermId IN @TermIds",
             new {
-                SimpleUserId = simpleUserId,
+                SimpleUserId = (long)simpleUserId,
                 TermIds = parameters.TermIds
             }
         );

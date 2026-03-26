@@ -26,7 +26,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             );
         };
 
-        Func<long, Task<UserContextObject>> userContextFactory = async id => {
+        Func<UserContextId, Task<UserContextObject>> userContextFactory = async id => {
             UserContextObject.Raw? ctxRaw = await userContextsData.GetById_Async( dbCon, id, true );
             if( ctxRaw is null ) {
                 throw new Exception( $"UserContext with id {id} not found." );

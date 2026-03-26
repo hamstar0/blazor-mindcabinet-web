@@ -17,11 +17,11 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
     public static async Task<UserHistoryTermObject.ClientObject[]> ToClientObjects_Async(
                 ClientDataAccess_Terms termsData,
                 UserHistoryTermObject.Raw[] entriesRaw ) {
-        long[] termIds = entriesRaw.Select( t => t.TermId ).ToArray();
+        TermId[] termIds = entriesRaw.Select( t => t.TermId ).ToArray();
         IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
             .Terms;
 
-        Func<long, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
+        Func<TermId, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
             .ToObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
         
         return await Task.WhenAll(

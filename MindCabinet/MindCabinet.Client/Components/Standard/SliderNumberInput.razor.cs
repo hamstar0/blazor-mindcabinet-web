@@ -16,6 +16,8 @@ public partial class SliderNumberInput : ComponentBase {
     [Parameter]
     public double InitialValue { get; set; } = 0;
 
+    private bool IsInitialized = false;
+
     [Parameter]
     public double Min { get; set; } = 0;
 
@@ -30,6 +32,12 @@ public partial class SliderNumberInput : ComponentBase {
 
 
 	protected override void OnParametersSet() {
-        this.Value = this.InitialValue;
+        base.OnParametersSet();
+
+        if( !this.IsInitialized ) {
+            this.IsInitialized = true;
+
+            this.Value = this.InitialValue;
+        }
 	}
 }

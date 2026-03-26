@@ -14,8 +14,8 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     public static async Task<SimplePostObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
                 SimplePostObject.Raw entryRaw ) {
-        Func<long[], Task<TermObject[]>> termSetFactory = async ( long[] termSetIds ) => {
-            TermObject.Raw[] termRaws = (await termsData.GetByIds_Async( termSetIds ))
+        Func<TermId[], Task<TermObject[]>> termSetFactory = async ( TermId[] termIdsOfSet ) => {
+            TermObject.Raw[] termRaws = (await termsData.GetByIds_Async( termIdsOfSet ))
                 .Terms
                 .ToArray();
             return await ClientDataAccess_Terms.ToObjects_Async(termsData, termRaws);

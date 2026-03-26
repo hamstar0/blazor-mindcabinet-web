@@ -35,13 +35,13 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
 
 
-    internal IDictionary<long, TermObject.Raw> TermsById_Cache = new Dictionary<long, TermObject.Raw>();
+    internal IDictionary<TermId, TermObject.Raw> TermsById_Cache = new Dictionary<TermId, TermObject.Raw>();
 
 
 
     public async Task<TermObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                long id ) {
+                TermId id ) {
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
@@ -60,7 +60,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
     public async Task<IEnumerable<TermObject.Raw>> GetByIds_Async(
                 IDbConnection dbCon,
-                IEnumerable<long> ids ) {
+                IEnumerable<TermId> ids ) {
         if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
             return ids.Select( id => this.TermsById_Cache[id] );
         }
@@ -147,12 +147,12 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         );
 
         var newTerm = new TermObject.Raw {
-			Id = newId,
+			Id = (TermId)newId,
 			Term = parameters.TermPattern,
 			ContextTermId = parameters.Context?.Id,
 			AliasTermId = parameters.Alias?.Id
 		};
-		this.TermsById_Cache[newId] = newTerm;
+		this.TermsById_Cache[ (TermId)newId ] = newTerm;
 
         return new ClientDataAccess_Terms.Create_Return( true, newTerm );
     }

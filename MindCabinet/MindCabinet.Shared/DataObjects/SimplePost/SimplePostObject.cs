@@ -1,4 +1,5 @@
-﻿using MindCabinet.Shared.DataObjects;
+﻿//global using SimplePostId = System.Int64;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 using System.Text.Json.Serialization;
@@ -7,8 +8,12 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
+public enum SimplePostId : long { }
+
+
+
 public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObject {
-	public long Id { get; }
+	public SimplePostId Id { get; }
 
 
 	public DateTime Created { get; }
@@ -19,7 +24,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 
 
 
-	public SimplePostObject( long id, DateTime created, string body, SortedSet<TermObject> tags ) {
+	public SimplePostObject( SimplePostId id, DateTime created, string body, SortedSet<TermObject> tags ) {
 		if( id == 0 ) {
 			throw new ArgumentException( "Id cannot be 0 in SimplePostObject." );
 		}
@@ -53,7 +58,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 	}
 
 
-	public bool Test( string bodyPattern, IEnumerable<long> tagIds ) {
+	public bool Test( string bodyPattern, IEnumerable<TermId> tagIds ) {
 		if( !string.IsNullOrEmpty(bodyPattern) ) {
 			 if( !this.Body.Contains(bodyPattern) ) {	// TODO
 				return false;

@@ -37,10 +37,10 @@ public class TermController : ControllerBase {
 
     [HttpPost(ClientDataAccess_Terms.GetByIds_Route)]
     public async Task<ClientDataAccess_Terms.GetByX_Return> GetByIds_Async(
-                IEnumerable<long> termIds ) {
+                IEnumerable<TermId> ids ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, termIds );
+        IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, ids );
 
         return new ClientDataAccess_Terms.GetByX_Return( terms );
     }

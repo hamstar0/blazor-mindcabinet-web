@@ -21,7 +21,7 @@ public partial class ClientDataAccess_UserContext(
     public class GetForCurrentUserByCriteria_Params {
         public string? NameContains { get; set; }
 
-        public List<long> Ids { get; set; } = [];
+        public UserContextId[] Ids { get; set; } = [];
     }
 
     public class Get_Return( IEnumerable<UserContextObject.Raw> contexts ) {
@@ -80,8 +80,8 @@ public partial class ClientDataAccess_UserContext(
     //     return ret;
     // }
 
-    public class CreateForCurrentUser_Return( long userContextId ) {
-        public long UserContextId { get; } = userContextId;
+    public class CreateForCurrentUser_Return( UserContextId id ) {
+        public UserContextId Id { get; } = id;
     }
 
     public const string CreateForCurrentUser_Path = "UserContext";

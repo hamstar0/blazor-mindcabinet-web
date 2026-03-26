@@ -4,8 +4,12 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Shared.DataObjects.UserContext;
 
 
+public enum UserContextId : long { }
+
+
+
 public partial class UserContextObject : IDataObject {
-    public long Id { get; }
+    public UserContextId Id { get; }
 
     public string Name { get; }
     
@@ -16,7 +20,7 @@ public partial class UserContextObject : IDataObject {
 
 
     public UserContextObject(
-            long id,
+            UserContextId id,
             string name,
             string? description,
             UserContextTermEntryObject[] entries ) {

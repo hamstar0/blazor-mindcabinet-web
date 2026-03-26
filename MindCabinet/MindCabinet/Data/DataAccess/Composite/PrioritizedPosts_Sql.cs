@@ -3,6 +3,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserContext;
 using System.Data;
 using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
@@ -18,7 +19,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 bool sortAscendingByDate,
                 int postsPerPage,
                 int pageNumber,
-                long[] additionalTagIds,
+                TermId[] additionalTagIds,
                 bool countOnly ) {
         string sqlColumns = countOnly
             ? "COUNT(*)"
@@ -43,12 +44,12 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
         //
 
-        IEnumerable<long> allTagIds = additionalTagIds.Concat(
+        IEnumerable<TermId> allTagIds = additionalTagIds.Concat(
             userContext.GetRequiredEntries()
                 .Select( e => e.TermId )
                 .Where( id => !additionalTagIds.Contains(id) )
         );
-        IEnumerable<long> anyTagIds = userContext.GetOptionalEntries()
+        IEnumerable<TermId> anyTagIds = userContext.GetOptionalEntries()
             .Select( e => e.TermId );
 
         if( allTagIds.Count() > 0 ) {

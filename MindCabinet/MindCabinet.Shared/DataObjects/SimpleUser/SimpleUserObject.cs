@@ -8,8 +8,12 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Shared.DataObjects;
 
 
+public enum SimpleUserId : long { }
+
+
+
 public partial class SimpleUserObject : IEquatable<SimpleUserObject>, IDataObject {
-	public long Id { get; }
+	public SimpleUserId Id { get; }
 
 	public DateTime Created { get; }
 
@@ -26,7 +30,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject>, IDataObjec
 
 
 	public SimpleUserObject(
-				long id,
+				SimpleUserId id,
 				DateTime created,
 				string name,
 				string email,

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
+using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System;
 using System.Data;
@@ -44,8 +45,8 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
     public async Task CreateForSimplePost_Async(
                 IDbConnection dbCon,
-                long simplePostId,
-                long[] termIds ) {
+                SimplePostId simplePostId,
+                TermId[] termIds ) {
         // long newSetId = await dbCon.ExecuteScalarAsync<long>(
         //     $@"INSERT INTO {IdSupplierTableName} (Bogus) 
         //         VALUES (null);

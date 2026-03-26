@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
@@ -43,8 +44,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
     }
 
 
-    public class AddTermsForCurrentUser_Params( long[] termIds ) {
-        public long[] TermIds { get; } = termIds;
+    public class AddTermsForCurrentUser_Params( TermId[] termIds ) {
+        public TermId[] TermIds { get; } = termIds;
     }
 
     public const string AddTermsForCurrentUser_Path = "UserFavoriteTerms";
@@ -64,8 +65,8 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
     }
 
 
-    public class RemoveTermsForCurrentUser_Params( List<long> termIds ) {
-        public List<long> TermIds { get; } = termIds;
+    public class RemoveTermsForCurrentUser_Params( TermId[] termIds ) {
+        public TermId[] TermIds { get; } = termIds;
     }
 
     public const string RemoveTermsForCurrentUser_Path = "UserFavoriteTerms";

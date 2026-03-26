@@ -8,13 +8,13 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class UserAppDataObject : IDataObject {
-	public long SimpleUserId { get; private set; }
+	public SimpleUserId SimpleUserId { get; private set; }
 
 	public UserContextObject UserContext { get; private set; }
 
 
 
-	public UserAppDataObject( long simpleUserId, UserContextObject userContext ) {
+	public UserAppDataObject( SimpleUserId simpleUserId, UserContextObject userContext ) {
 		if( simpleUserId == 0 ) {
 			throw new ArgumentException( "SimpleUserId cannot be 0 in UserAppDataObject." );
 		}
