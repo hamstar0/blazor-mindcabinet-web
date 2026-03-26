@@ -9,10 +9,10 @@ namespace MindCabinet.Client.Services;
 
 
 public partial class ClientSessionData {
-    private Dictionary<string, Func<DataBundle, Task>> OnUserAndAppDataLoaded_Async = new();
+    private Dictionary<string, Func<DataBundle?, Task>> OnUserAndAppDataLoaded_Async = new();
     private DataBundle? OnUserAndAppDataLoaded_PromisedData = null;
 
-    private Dictionary<string, Func<UserPostsContextObject, Task>> OnUserPostsContextChanged_Async = new();
+    private Dictionary<string, Func<UserPostsContextObject?, Task>> OnUserPostsContextChanged_Async = new();
     private UserPostsContextObject? OnUserPostsContextChanged_PromisedData = null;
 
     private Dictionary<string, Func<SimpleUserObject.ClientObject, Task>> OnUserLogin_Async = new();
@@ -23,7 +23,7 @@ public partial class ClientSessionData {
 
 
 
-    private async Task TriggerUserAndAppDataLoaded_Async( DataBundle data ) {
+    private async Task TriggerUserAndAppDataLoaded_Async( DataBundle? data ) {
         this.OnUserAndAppDataLoaded_PromisedData = data;
 
         await Task.WhenAll(
@@ -32,7 +32,7 @@ public partial class ClientSessionData {
         );
     }
 
-    private async Task TriggerUserPostsContextChanged_Async( UserPostsContextObject context ) {
+    private async Task TriggerUserPostsContextChanged_Async( UserPostsContextObject? context ) {
         this.OnUserPostsContextChanged_PromisedData = context;
 
         await Task.WhenAll(
@@ -48,6 +48,16 @@ public partial class ClientSessionData {
             this.OnUserLogin_Async
                 .Select( kv => kv.Value.Invoke(user) )
         );
+
+        if( this.Data is null ) {
+            throw new InvalidOperationException( "Current session UserAndAppData is null in TriggerUserLogin." );
+        }
+        if( this.Data.UserAppData?.UserPostsContext is null ) {
+            throw new InvalidOperationException( "Current session UserPostsContext is null in TriggerUserLogin." );
+        }
+
+        await this.TriggerUserAndAppDataLoaded_Async( this.Data );
+        await this.TriggerUserPostsContextChanged_Async( this.Data.UserAppData?.UserPostsContext! );
     }
 
     private async Task TriggerUserLogout_Async( SimpleUserObject.ClientObject user ) {
@@ -57,10 +67,13 @@ public partial class ClientSessionData {
             this.OnUserLogout_Async
                 .Select( kv => kv.Value.Invoke(user) )
         );
+
+        await this.TriggerUserAndAppDataLoaded_Async( null );
+        await this.TriggerUserPostsContextChanged_Async( null );
     }
 
 
-    public async Task RegisterUserAndAppDataEvent_Async( string name, Func<DataBundle, Task> callback ) {
+    public async Task RegisterUserAndAppDataEvent_Async( string name, Func<DataBundle?, Task> callback ) {
         this.OnUserAndAppDataLoaded_Async.Add( name, callback );
 
         if( this.OnUserAndAppDataLoaded_PromisedData is not null ) {
@@ -68,7 +81,7 @@ public partial class ClientSessionData {
         }
     }
 
-    public async Task RegisterUserPostsContextEvent_Async( string name, Func<UserPostsContextObject, Task> callback ) {
+    public async Task RegisterUserPostsContextEvent_Async( string name, Func<UserPostsContextObject?, Task> callback ) {
         this.OnUserPostsContextChanged_Async.Add( name, callback );
 
         if( this.OnUserPostsContextChanged_PromisedData is not null ) {

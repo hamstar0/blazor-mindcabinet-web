@@ -20,6 +20,8 @@ public partial class ClientSessionData {
         if( this.Data is null ) {
             throw new InvalidOperationException( "UserAndAppData is null in LocalLogin." );
         }
+
+        await this.LoadData_Async();
         
         this.Data.UserData = user;
 
@@ -41,8 +43,9 @@ public partial class ClientSessionData {
 
         msg.EnsureSuccessStatusCode();
 
-        await this.TriggerUserLogout_Async( this.Data.UserData! );
+        SimpleUserObject.ClientObject? user = this.Data.UserData;
 
-        this.Data.UserData = null;
+        await this.UnloadData_Async( false );
+        await this.TriggerUserLogout_Async( user! );
     }
 }

@@ -53,8 +53,8 @@ public partial class ClientDataAccess_UserPostsContext(
     }
 
 
-    // public class GetByUserId_Params( long userId ) {
-    //     public long UserId { get; } = userId;
+    // public class GetByUserId_Params( SimpleUserId userId ) {
+    //     public SimpleUserId UserId { get; } = userId;
     // }
 
     // public class GetByUserId_Return( IEnumerable<UserPostsContext.UserPostsContextWithTermEntries_DbData> contexts ) {

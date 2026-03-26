@@ -39,6 +39,7 @@ public partial class ClientSessionData(
     
     internal async Task<bool> Load_Async() {
         if( !this.NetMode.IsClientSide ) {
+            //throw new InvalidOperationException( "Load_Async should only be called in client-side mode." );
             return false;
         }
 
@@ -46,7 +47,20 @@ public partial class ClientSessionData(
             return false;
         }
         this.IsLoading = true;
-        
+
+        //
+
+        await this.LoadData_Async();
+
+        //
+
+        this.IsLoading = false;
+        this.IsLoaded = true;
+
+        return true;
+    }
+    
+    private async Task LoadData_Async() {
         using IServiceScope scope = this.ServiceScopeFactory.CreateScope();
 
         HttpClient? httpClient = scope.ServiceProvider.GetService<HttpClient>();
@@ -64,22 +78,35 @@ public partial class ClientSessionData(
             throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
         }
 
+        //
+
+        await this.LoadData_Async( httpClient, termsData, sessionBundle, true );
+    }
+    
+    private async Task LoadData_Async(
+                HttpClient httpClient,
+                ClientDataAccess_Terms termsData,
+                ClientDataAccess_ClientSessionBundle sessionBundle,
+                bool triggerEvents ) {
         ClientSessionData.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
 
         //
 
         this.Data = userAndAppData;
 
-        await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
-        if( this.Data.UserAppData?.UserPostsContext is not null ) {
-            await this.TriggerUserPostsContextChanged_Async( this.Data.UserAppData.UserPostsContext );
+        if( triggerEvents ) {
+            await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
+            await this.TriggerUserPostsContextChanged_Async( this.Data.UserAppData?.UserPostsContext );
         }
+    }
+    
 
-        //
+    private async Task UnloadData_Async( bool triggerEvents ) {
+        this.Data = null;
 
-        this.IsLoading = false;
-        this.IsLoaded = true;
-
-        return true;
+        if( triggerEvents ) {
+            await this.TriggerUserAndAppDataLoaded_Async( null );
+            await this.TriggerUserPostsContextChanged_Async( null );
+        }
     }
 }

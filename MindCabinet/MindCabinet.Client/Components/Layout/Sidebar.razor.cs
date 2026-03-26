@@ -30,7 +30,7 @@ public partial class Sidebar {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterUserPostsContextEvent_Async( "Sidebar", async ctx => this.StateHasChanged() );
+        await this.SessionData.RegisterUserPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
 	}
 
 

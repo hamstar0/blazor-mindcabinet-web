@@ -130,7 +130,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         );
 
         if( userRaw is not null ) {
-            this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
+            this.SimpleUsersById_Cache[ userRaw.Id ] = userRaw;
         }
 
         return userRaw;
