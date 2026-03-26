@@ -1,14 +1,14 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserContext(
+public partial class ClientDataAccess_UserPostsContext(
             HttpClient http,
             ClientSessionData sessionData
         ) : IClientDataAccess {
@@ -21,14 +21,14 @@ public partial class ClientDataAccess_UserContext(
     public class GetForCurrentUserByCriteria_Params {
         public string? NameContains { get; set; }
 
-        public UserContextId[] Ids { get; set; } = [];
+        public UserPostsContextId[] Ids { get; set; } = [];
     }
 
-    public class Get_Return( IEnumerable<UserContextObject.Raw> contexts ) {
-        public IEnumerable<UserContextObject.Raw> Contexts { get; } = contexts;
+    public class Get_Return( IEnumerable<UserPostsContextObject.Raw> contexts ) {
+        public IEnumerable<UserPostsContextObject.Raw> Contexts { get; } = contexts;
     }
 
-    public const string GetForCurrentUserByCriteria_Path = "UserContext";
+    public const string GetForCurrentUserByCriteria_Path = "UserPostsContext";
     public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
     public async Task<Get_Return> GetForCurrentUserByCriteria_Async(
@@ -57,14 +57,14 @@ public partial class ClientDataAccess_UserContext(
     //     public long UserId { get; } = userId;
     // }
 
-    // public class GetByUserId_Return( IEnumerable<UserContext.UserContextWithTermEntries_DbData> contexts ) {
-    //     public IEnumerable<UserContext.UserContextWithTermEntries_DbData> Contexts { get; } = contexts;
+    // public class GetByUserId_Return( IEnumerable<UserPostsContext.UserPostsContextWithTermEntries_DbData> contexts ) {
+    //     public IEnumerable<UserPostsContext.UserPostsContextWithTermEntries_DbData> Contexts { get; } = contexts;
     // }
 
-    // public const string GetByUserId_Path = "UserContext";
+    // public const string GetByUserId_Path = "UserPostsContext";
     // public const string GetByUserId_Route = "GetByUserId";
 
-    // public async Task<IEnumerable<UserContext>> GetByUserId_Async( GetByUserId_Params parameters ) {
+    // public async Task<IEnumerable<UserPostsContextObject>> GetByUserId_Async( GetByUserId_Params parameters ) {
     //     HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
     //         $"{GetByUserId_Path}/{GetByUserId_Route}",
     //         parameters
@@ -72,22 +72,22 @@ public partial class ClientDataAccess_UserContext(
         
     //     msg.EnsureSuccessStatusCode();
         
-    //     IEnumerable<UserContext>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserContext>>();
+    //     IEnumerable<UserPostsContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserPostsContextObject>>();
     //     if( ret is null ) {
-    //         throw new InvalidDataException( "Could not deserialize IEnumerable<UserContext>" );
+    //         throw new InvalidDataException( "Could not deserialize IEnumerable<UserPostsContextObject>" );
     //     }
 
     //     return ret;
     // }
 
-    public class CreateForCurrentUser_Return( UserContextId id ) {
-        public UserContextId Id { get; } = id;
+    public class CreateForCurrentUser_Return( UserPostsContextId id ) {
+        public UserPostsContextId Id { get; } = id;
     }
 
-    public const string CreateForCurrentUser_Path = "UserContext";
+    public const string CreateForCurrentUser_Path = "UserPostsContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserContextObject.Raw parameters ) {
+    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -108,10 +108,10 @@ public partial class ClientDataAccess_UserContext(
     }
     
 
-    public const string UpdateForCurrentUser_Path = "UserContext";
+    public const string UpdateForCurrentUser_Path = "UserPostsContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserContextObject.Raw parameters ) {
+    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

@@ -1,13 +1,13 @@
-﻿@using MindCabinet.Client.Components.Application.Renders;
+﻿@using System.Threading.Tasks;
+@using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term;
-@using System.Threading.Tasks;
-@using MindCabinet.Shared.DataObjects.UserContext
+@using MindCabinet.Shared.DataObjects.UserPostsContext
 
 
 
-<div component-name="UserContextPicker"
+<div component-name="UserPostsContextPicker"
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
@@ -22,7 +22,7 @@
     <div>
         <div style="position: absolute; display: inline-block;">
             @if( this.IsSeachFocused && this.SearchOptions.Count() > 0 ) {
-                <MultiUserContextRender
+                <MultiUserPostsContextRender
                         Contexts=@this.SearchOptions
                         OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
@@ -49,13 +49,13 @@
         }
 
         if( termText is null ) {
-            this.SearchOptions = new List<UserContextObject>();
+            this.SearchOptions = new List<UserPostsContextObject>();
         } else {
             await this.SearchAndStoreTerms_Async( termText );
         }
     }
 
-    private async Task SelectSearchResults_UI_Async( UserContextObject context ) {
+    private async Task SelectSearchResults_UI_Async( UserPostsContextObject context ) {
         if( this.Disabled ) {
             return;
         }
@@ -63,7 +63,7 @@
             return;
         }
 
-        this.SearchOptions = new List<UserContextObject>();
+        this.SearchOptions = new List<UserPostsContextObject>();
 
         await this.SelectSearchResults_Async( context );
     }

@@ -92,10 +92,10 @@ public class Program {
             var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
             var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
             var userAppData = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
-            var userContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_UserContexts>();
+            var userPostsContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_UserPostsContexts>();
             using var dbCon = await dbAccess.GetDbConnection_Async( !isInstalling );
 
-            await sessionData.Load_Async( dbCon, termsData, usersData, userAppData, userContextsData, isInstalling );
+            await sessionData.Load_Async( dbCon, termsData, usersData, userAppData, userPostsContextsData, isInstalling );
 
             await next();
         } );

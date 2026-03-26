@@ -34,7 +34,7 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize GetByX_Return" );
         }
-
+        
         return ret;
     }
 

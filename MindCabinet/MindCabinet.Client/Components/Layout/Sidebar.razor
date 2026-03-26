@@ -3,8 +3,8 @@
 @using MindCabinet.Client.Components.Application.Pickers;
 
 
-<UserContextPicker
-    UniqueName="Sidebar_UserContextPicker"
+<UserPostsContextPicker
+    UniqueName="Sidebar_UserPostsContextPicker"
     OnContextSelect_Async=@this.OnContextSelect_Async />
-<UserContextEditor
+<UserPostsContextEditor
     InitialContext=@this.SessionData.GetCurrentContext() />

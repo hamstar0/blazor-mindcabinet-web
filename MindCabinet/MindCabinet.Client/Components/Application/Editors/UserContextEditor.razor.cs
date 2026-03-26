@@ -4,13 +4,13 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Components.Application.Editors;
 
 
-public partial class UserContextEditor : ComponentBase {
+public partial class UserPostsContextEditor : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
@@ -21,7 +21,7 @@ public partial class UserContextEditor : ComponentBase {
     private ClientDataAccess_Terms TermsData { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+    private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
     [Inject]
     private ClientSessionData SessionsData { get; set; } = null!;
@@ -31,14 +31,14 @@ public partial class UserContextEditor : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
     [Parameter]
-    public UserContextObject? InitialContext { get; set; } = null;
+    public UserPostsContextObject? InitialContext { get; set; } = null;
 
-    private UserContextObject? InitialContextCheck;
+    private UserPostsContextObject? InitialContextCheck;
 
-	private UserContextObject.Prototype CurrentContextPrototype = new UserContextObject.Prototype();
+	private UserPostsContextObject.Prototype CurrentContextPrototype = new UserPostsContextObject.Prototype();
 
     [Parameter]
-    public Func<UserContextObject.Prototype, Task>? OnCreate_Async { get; set; } = null;
+    public Func<UserPostsContextObject.Prototype, Task>? OnCreate_Async { get; set; } = null;
 
 
 
@@ -47,7 +47,7 @@ public partial class UserContextEditor : ComponentBase {
         
         if( this.InitialContext is null ) {
             this.InitialContextCheck = this.InitialContext;
-            this.CurrentContextPrototype = new UserContextObject.Prototype();
+            this.CurrentContextPrototype = new UserPostsContextObject.Prototype();
         }
 	}
     
@@ -58,7 +58,7 @@ public partial class UserContextEditor : ComponentBase {
             this.InitialContextCheck = this.InitialContext;
             
             if( this.InitialContext is not null ) {
-                this.CurrentContextPrototype = new UserContextObject.Prototype {
+                this.CurrentContextPrototype = new UserPostsContextObject.Prototype {
                     Name = this.InitialContext?.Name,
                     Description = this.InitialContext?.Description,
                     Entries = this.InitialContext?.Entries
@@ -66,14 +66,14 @@ public partial class UserContextEditor : ComponentBase {
                         ?? []
                 };
             } else {
-                this.CurrentContextPrototype = new UserContextObject.Prototype();
+                this.CurrentContextPrototype = new UserPostsContextObject.Prototype();
             }
         }
 	}
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
-        this.CurrentContextPrototype.Entries.Append( new UserContextTermEntryObject.Raw {
+        this.CurrentContextPrototype.Entries.Append( new UserPostsContextTermEntryObject.Raw {
             TermId = newTag.Id,
             Priority = 0d,
             IsRequired = false
@@ -81,7 +81,7 @@ public partial class UserContextEditor : ComponentBase {
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
-        List<UserContextTermEntryObject.Raw> entries = this.CurrentContextPrototype.Entries.ToList();
+        List<UserPostsContextTermEntryObject.Raw> entries = this.CurrentContextPrototype.Entries.ToList();
 
         for( int i = 0; i < entries.Count; i++ ) {
             if( entries[i].TermId == newTag.Id ) {
@@ -95,7 +95,7 @@ public partial class UserContextEditor : ComponentBase {
 
     
 	private async Task<bool> HasUnsavedChanges() {
-        UserContextObject? currentCtx = this.SessionsData.GetCurrentContext();
+        UserPostsContextObject? currentCtx = this.SessionsData.GetCurrentContext();
         
         if( currentCtx is null ) {
             return this.CurrentContextPrototype.Name is not null
@@ -103,16 +103,16 @@ public partial class UserContextEditor : ComponentBase {
                 || this.CurrentContextPrototype.Entries.Any();
         }
 
-        ClientDataAccess_UserContext.Get_Return contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
+        ClientDataAccess_UserPostsContext.Get_Return contexts = await this.UserPostsContextsData.GetForCurrentUserByCriteria_Async(
+            new ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params {
                 Ids = [ currentCtx.Id ]
             }
         );
 
-        UserContextObject.Raw currentContextRaw = contexts
+        UserPostsContextObject.Raw currentContextRaw = contexts
             .Contexts
             .First( ctx => ctx.Id == currentCtx.Id );
-        UserContextObject currentContext = await ClientDataAccess_UserContext.ToObject_Async( this.TermsData, currentContextRaw );
+        UserPostsContextObject currentContext = await ClientDataAccess_UserPostsContext.ToObject_Async( this.TermsData, currentContextRaw );
 
 		return currentContext is not null
             ? !this.CurrentContextPrototype.Matches( currentContext! )
@@ -121,7 +121,7 @@ public partial class UserContextEditor : ComponentBase {
 
 
 	private void ResetCurrentContext() {
-		this.CurrentContextPrototype = new UserContextObject.Prototype();
+		this.CurrentContextPrototype = new UserPostsContextObject.Prototype();
 	}
 
 
@@ -130,7 +130,7 @@ public partial class UserContextEditor : ComponentBase {
     }
     
     private async Task Create_Async() {
-        await this.UserContextsData.CreateForCurrentUser_Async(
+        await this.UserPostsContextsData.CreateForCurrentUser_Async(
             this.CurrentContextPrototype.ToRaw()
         );
 
@@ -140,7 +140,7 @@ public partial class UserContextEditor : ComponentBase {
     }
     
     private async Task Update_Async() {
-        await this.UserContextsData.UpdateForCurrentUser_Async(
+        await this.UserPostsContextsData.UpdateForCurrentUser_Async(
             this.CurrentContextPrototype.ToRaw()
         );
     }

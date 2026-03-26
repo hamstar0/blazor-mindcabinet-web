@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -17,7 +17,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
         public UserAppDataObject.Raw? UserAppData { get; set; }
 
-        public UserContextObject.Raw? UserAppData_UserContext { get; set; }
+        public UserPostsContextObject.Raw? UserAppData_UserPostsContext { get; set; }
     }
 
     public const string GetCurrent_Path = "Session";
@@ -48,9 +48,10 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
             throw new InvalidDataException( "Could not deserialize ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
         }
 
-        Task<UserAppDataObject>? userAppDataMaybeTask = sessionData.UserAppData_UserContext is not null
+        Task<UserAppDataObject>? userAppDataMaybeTask = sessionData.UserAppData_UserPostsContext is not null
             ? sessionData.UserAppData?.CreateDataObject_Async(
-                userContextFactory: async ( _ ) => await ClientDataAccess_UserContext.ToObject_Async( termsData, sessionData.UserAppData_UserContext! )
+                userPostsContextFactory: async ( _ ) =>
+                    await ClientDataAccess_UserPostsContext.ToObject_Async( termsData, sessionData.UserAppData_UserPostsContext! )
             )
             : null;
         UserAppDataObject? userAppDataMaybe = userAppDataMaybeTask is not null

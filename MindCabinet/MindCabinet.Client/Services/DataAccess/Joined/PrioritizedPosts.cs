@@ -4,7 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
@@ -16,13 +16,13 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
 
     public class GetByCriteria_Params(
-                UserContextId userContextId,
+                UserPostsContextId userPostsContextId,
                 string? bodyPattern,
                 TermId[] additionalTagIds,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
-        public UserContextId UserContextId { get; } = userContextId;
+        public UserPostsContextId UserPostsContextId { get; } = userPostsContextId;
         public string? BodyPattern { get; } = bodyPattern;
         public TermId[] AdditionalTagIds { get; } = additionalTagIds;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
@@ -32,7 +32,7 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
         public override string ToString() {
             return "Prioritized Posts Params: "
-                +this.UserContextId+", "
+                +this.UserPostsContextId+", "
                 +((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
                 +"["+string.Join(",", this.AdditionalTagIds)+"], "
                 +this.SortAscendingByDate+", "

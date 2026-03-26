@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -20,10 +20,10 @@ public partial class MultiUserContextRender : ComponentBase {
     
 
     [Parameter, EditorRequired]
-	public IEnumerable<UserContextObject> Contexts { get; set; } = null!;
+	public IEnumerable<UserPostsContextObject> Contexts { get; set; } = null!;
 
 	[Parameter]
-	public Func<UserContextObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
+	public Func<UserPostsContextObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
     
     public bool HasFocus { get; private set; } = false;
 }

@@ -1,5 +1,5 @@
 ﻿using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Text.Json.Serialization;
 
 
@@ -10,15 +10,15 @@ public partial class UserAppDataObject {
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
         
-		public UserContextId UserContextId { get; set; }
+		public UserPostsContextId UserPostsContextId { get; set; }
 
         
         
         public async Task<UserAppDataObject> CreateDataObject_Async(
-                    Func<UserContextId, Task<UserContextObject>> userContextFactory ) {
+                    Func<UserPostsContextId, Task<UserPostsContextObject>> userPostsContextFactory ) {
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,
-                userContext: await userContextFactory( this.UserContextId )
+                userPostsContext: await userPostsContextFactory( this.UserPostsContextId )
             );
         }
     }

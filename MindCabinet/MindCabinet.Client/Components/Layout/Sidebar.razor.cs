@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -23,18 +23,18 @@ public partial class Sidebar {
     private ClientSessionData SessionData { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+    private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
 
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterUserContextEvent_Async( "Sidebar", async ctx => this.StateHasChanged() );
+        await this.SessionData.RegisterUserPostsContextEvent_Async( "Sidebar", async ctx => this.StateHasChanged() );
 	}
 
 
-    private async Task OnContextSelect_Async( UserContextObject context ) {
+    private async Task OnContextSelect_Async( UserPostsContextObject context ) {
         await this.SessionData.SetCurrentContext_Await( context );
 
         this.StateHasChanged();

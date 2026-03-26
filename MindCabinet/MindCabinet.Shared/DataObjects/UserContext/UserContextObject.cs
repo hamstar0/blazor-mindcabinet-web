@@ -1,31 +1,31 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
-namespace MindCabinet.Shared.DataObjects.UserContext;
+namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public enum UserContextId : long { }
+public enum UserPostsContextId : long { }
 
 
 
-public partial class UserContextObject : IDataObject {
-    public UserContextId Id { get; }
+public partial class UserPostsContextObject : IDataObject {
+    public UserPostsContextId Id { get; }
 
     public string Name { get; }
     
     public string? Description { get; }
 
-    public UserContextTermEntryObject[] Entries { get; }
+    public UserPostsContextTermEntryObject[] Entries { get; }
 
 
 
-    public UserContextObject(
-            UserContextId id,
+    public UserPostsContextObject(
+            UserPostsContextId id,
             string name,
             string? description,
-            UserContextTermEntryObject[] entries ) {
+            UserPostsContextTermEntryObject[] entries ) {
         if( id == 0 ) {
-            throw new ArgumentException( "Id cannot be 0 in UserContextObject." );
+            throw new ArgumentException( $"Id cannot be 0 in {nameof(UserPostsContextObject)}." );
         }
 
         this.Id = id;
@@ -35,19 +35,19 @@ public partial class UserContextObject : IDataObject {
     }
 
 
-    public IEnumerable<UserContextTermEntryObject> GetRequiredEntries() {
+    public IEnumerable<UserPostsContextTermEntryObject> GetRequiredEntries() {
         return this.Entries
             .Where( e => e.IsRequired );
     }
 
-    public IEnumerable<UserContextTermEntryObject> GetOptionalEntries() {
+    public IEnumerable<UserPostsContextTermEntryObject> GetOptionalEntries() {
         return this.Entries
             .Where( e => !e.IsRequired );
     }
     
 
-    public UserContextObject.Raw ToRaw() {
-        return new UserContextObject.Raw {
+    public UserPostsContextObject.Raw ToRaw() {
+        return new UserPostsContextObject.Raw {
             Id = this.Id,
             Name = this.Name ?? "",
             Description = this.Description,

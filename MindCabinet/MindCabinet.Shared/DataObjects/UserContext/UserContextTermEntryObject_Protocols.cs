@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserContext;
+namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserContextTermEntryObject {
+public partial class UserPostsContextTermEntryObject {
     public class Raw : IRawDataObject {
-        public UserContextId UserContextId { get; set; } = default;
+        public UserPostsContextId UserPostsContextId { get; set; } = default;
 
         public TermId TermId { get; set; } = default;
 
@@ -15,9 +15,9 @@ public partial class UserContextTermEntryObject {
         public bool IsRequired { get; set; } = default;
 
 
-		public async Task<UserContextTermEntryObject> CreateDataObject_Async(
+		public async Task<UserPostsContextTermEntryObject> CreateDataObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
-            return new UserContextTermEntryObject(
+            return new UserPostsContextTermEntryObject(
                 term: await termFactory( this.TermId ),
                 priority: this.Priority,
                 isRequired: this.IsRequired
@@ -26,9 +26,9 @@ public partial class UserContextTermEntryObject {
 	}
 
 
-    public Raw ToRaw( UserContextId contextId ) {
+    public Raw ToRaw( UserPostsContextId contextId ) {
         return new Raw {
-            UserContextId = contextId,
+            UserPostsContextId = contextId,
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

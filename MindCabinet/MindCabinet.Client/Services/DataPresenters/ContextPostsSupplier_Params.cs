@@ -7,7 +7,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 namespace MindCabinet.Client.Services.DataPresenters;
 

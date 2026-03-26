@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserContext;
+namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
-    //public UserContextObject UserContext { get; } = userContext;
+public partial class UserPostsContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
+    //public UserPostsContextObject UserPostsContext { get; } = userPostsContext;
     public TermObject Term { get; } = term;
 
     public double Priority { get; } = priority;

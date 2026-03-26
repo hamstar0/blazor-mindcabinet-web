@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -20,15 +20,15 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
                 SimpleUserId defaultUserId,
-                UserContextObject.Raw sampleContext ) {
+                UserPostsContextObject.Raw sampleContext ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
-                UserContextId BIGINT NOT NULL,
+                UserPostsContextId BIGINT NOT NULL,
                  CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_UserContextId FOREIGN KEY (UserContextId)
-                    REFERENCES {ServerDataAccess_UserContexts.TableName}(Id)
+                 CONSTRAINT FK_{TableName}_UserPostsContextId FOREIGN KEY (UserPostsContextId)
+                    REFERENCES {ServerDataAccess_UserPostsContexts.TableName}(Id)
             );"
         );
 
@@ -51,20 +51,20 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                UserContextId userContextId ) {
+                UserPostsContextId userPostsContextId ) {
         long _ = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (SimpleUserId, UserContextId) 
-                VALUES (@SimpleUserId, @UserContextId);
+            $@"INSERT INTO {TableName} (SimpleUserId, UserPostsContextId) 
+                VALUES (@SimpleUserId, @UserPostsContextId);
             SELECT LAST_INSERT_ID();",
             new {
                 SimpleUserId = simpleUserId,
-                UserContextId = userContextId
+                UserPostsContextId = userPostsContextId
             }
         );
 
         return new UserAppDataObject.Raw {
             SimpleUserId = simpleUserId,
-            UserContextId = userContextId
+            UserPostsContextId = userPostsContextId
         };
     }
 }

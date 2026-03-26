@@ -3,7 +3,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -71,8 +71,8 @@ public partial class ClientSessionData(
         this.Data = userAndAppData;
 
         await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
-        if( this.Data.UserAppData?.UserContext is not null ) {
-            await this.TriggerUserContextChanged_Async( this.Data.UserAppData.UserContext );
+        if( this.Data.UserAppData?.UserPostsContext is not null ) {
+            await this.TriggerUserPostsContextChanged_Async( this.Data.UserAppData.UserPostsContext );
         }
 
         //

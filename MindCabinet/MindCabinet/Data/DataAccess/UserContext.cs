@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -12,13 +12,13 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_UserContexts> logger ) : IServerDataAccess {
-    public const string TableName = "UserContexts";
-    public const string EntriesTableName = "UserContextEntries";
+public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAccess_UserPostsContexts> logger ) : IServerDataAccess {
+    public const string TableName = "UserPostsContexts";
+    public const string EntriesTableName = "UserPostsContextEntries";
 
 
 
-    public async Task<(bool success, UserContextObject.Raw userContext)> Install_Async(
+    public async Task<(bool success, UserPostsContextObject.Raw userPostsContext)> Install_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm,
                 SimpleUserId defaultUserId ) {
@@ -34,12 +34,12 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
         );
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {EntriesTableName} (
-                UserContextId BIGINT NOT NULL,
+                UserPostsContextId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Priority DOUBLE NOT NULL,
                 IsRequired BOOLEAN NOT NULL,
-                 PRIMARY KEY (UserContextId, TermId),
-                 CONSTRAINT FK_{EntriesTableName}_UserContextId FOREIGN KEY (UserContextId)
+                 PRIMARY KEY (UserPostsContextId, TermId),
+                 CONSTRAINT FK_{EntriesTableName}_UserPostsContextId FOREIGN KEY (UserPostsContextId)
                     REFERENCES {TableName}(Id),
                  CONSTRAINT FK_{EntriesTableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
@@ -51,28 +51,28 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
 
     
 
-    private readonly ILogger<ServerDataAccess_UserContexts> Logger = logger;
+    private readonly ILogger<ServerDataAccess_UserPostsContexts> Logger = logger;
 
 
 
-    public async Task<UserContextObject.Raw?> GetById_Async(
+    public async Task<UserPostsContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                UserContextId userContextId,
+                UserPostsContextId userPostsContextId,
                 bool alsoGetEntries ) {
-        var raw = await dbCon.QuerySingleOrDefaultAsync<UserContextObject.Raw>(
+        var raw = await dbCon.QuerySingleOrDefaultAsync<UserPostsContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
-            new { Id = (long)userContextId }
+            new { Id = (long)userPostsContextId }
         );
         if( raw is null ) {
             return null;
         }
 
         if( alsoGetEntries ) {
-            raw.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.Raw>(
-                $@"SELECT MyCtxEntries.UserContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+            raw.Entries = (await dbCon.QueryAsync<UserPostsContextTermEntryObject.Raw>(
+                $@"SELECT MyCtxEntries.UserPostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                     FROM {EntriesTableName} AS MyCtxEntries
-                    WHERE MyCtxEntries.UserContextId = @UserContextId;",
-                new { UserContextId = (long)userContextId }
+                    WHERE MyCtxEntries.UserPostsContextId = @UserPostsContextId;",
+                new { UserPostsContextId = (long)userPostsContextId }
             )).ToArray();
         }
 
@@ -80,10 +80,10 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
     }
 
 
-    public async Task<IEnumerable<UserContextObject.Raw>> GetByCriteria_Async(
+    public async Task<IEnumerable<UserPostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params parameters,
+                ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         string sql1 = $@"SELECT * FROM {TableName} AS MyContext
             WHERE MyContext.SimpleUserId = @UserId;";
@@ -102,20 +102,20 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
         }
 
-        IEnumerable<UserContextObject.Raw> contexts
-            = await dbCon.QueryAsync<UserContextObject.Raw>(
+        IEnumerable<UserPostsContextObject.Raw> contexts
+            = await dbCon.QueryAsync<UserPostsContextObject.Raw>(
                 sql1,
                 new DynamicParameters(sqlParams1)
             );
 
         if( alsoGetEntries ) {
-            string sql2 = $@"SELECT MyCtxEntries.UserContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+            string sql2 = $@"SELECT MyCtxEntries.UserPostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                 FROM {EntriesTableName} AS MyCtxEntries
-                WHERE MyCtxEntries.UserContextId = @UserContextId;";
-            foreach( UserContextObject.Raw ctx in contexts ) {
-                var sqlParams2 = new Dictionary<string, object> { { "@UserContextId", ctx.Id } };
+                WHERE MyCtxEntries.UserPostsContextId = @UserPostsContextId;";
+            foreach( UserPostsContextObject.Raw ctx in contexts ) {
+                var sqlParams2 = new Dictionary<string, object> { { "@UserPostsContextId", ctx.Id } };
 
-                ctx.Entries = (await dbCon.QueryAsync<UserContextTermEntryObject.Raw>(
+                ctx.Entries = (await dbCon.QueryAsync<UserPostsContextTermEntryObject.Raw>(
                     sql2,
                     new DynamicParameters(sqlParams2)
                 )).ToArray();
@@ -126,11 +126,11 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
     }
 
 
-    public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Create_Async(
+    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                UserContextObject.Raw parameters ) {
-        long userContextId = await dbCon.ExecuteScalarAsync<long>(
+                UserPostsContextObject.Raw parameters ) {
+        long userPostsContextId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, Name, Description) 
                 VALUES (@SimpleUserId, @Name, @Description);
             SELECT LAST_INSERT_ID();",
@@ -141,13 +141,13 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
             }
         );
 
-        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserContextId, TermId, Priority, IsRequired) 
-                VALUES (@UserContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
+        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserPostsContextId, TermId, Priority, IsRequired) 
+                VALUES (@UserPostsContextId, @TermId, @Priority, @IsRequired);";
+        foreach( UserPostsContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    UserContextId = userContextId,
+                    UserPostsContextId = userPostsContextId,
                     TermId = entry.TermId,
                     Priority = entry.Priority,
                     IsRequired = entry.IsRequired
@@ -155,13 +155,13 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
             );
         }
 
-        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( (UserContextId)userContextId );
+        return new ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return( (UserPostsContextId)userPostsContextId );
     }
 
 
-    public async Task<ClientDataAccess_UserContext.CreateForCurrentUser_Return> Update_Async(
+    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Update_Async(
                 IDbConnection dbCon,
-                UserContextObject.Raw parameters ) {
+                UserPostsContextObject.Raw parameters ) {
         await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
                 SET Name = @Name, Description = @Description
@@ -175,21 +175,21 @@ public partial class ServerDataAccess_UserContexts( ILogger<ServerDataAccess_Use
         
         int rowsAffected = await dbCon.ExecuteAsync(
             $@"DELETE FROM {EntriesTableName}
-                WHERE UserContextId = @UserContextId;",
+                WHERE UserPostsContextId = @UserPostsContextId;",
             new {
-                UserContextId = parameters.Id
+                UserPostsContextId = parameters.Id
             }
         );
-this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserContextId {parameters.Id}." );
+this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserPostsContextId {parameters.Id}." );
 
         string sqlInsertEntries = $@"INSERT INTO {EntriesTableName}
-            (UserContextId, TermId, Priority, IsRequired) 
-            VALUES (@UserContextId, @TermId, @Priority, @IsRequired);";
-        foreach( UserContextTermEntryObject.Raw entry in parameters.Entries ) {
+            (UserPostsContextId, TermId, Priority, IsRequired) 
+            VALUES (@UserPostsContextId, @TermId, @Priority, @IsRequired);";
+        foreach( UserPostsContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    UserContextId = (long)parameters.Id,
+                    UserPostsContextId = (long)parameters.Id,
                     TermId = (long)entry.TermId,
                     Priority = (long)entry.Priority,
                     IsRequired = entry.IsRequired
@@ -197,6 +197,6 @@ this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserCo
             );
         }
 
-        return new ClientDataAccess_UserContext.CreateForCurrentUser_Return( parameters.Id );
+        return new ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return( parameters.Id );
     }
 }

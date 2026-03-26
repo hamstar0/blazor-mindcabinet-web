@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class UserContextRender : ComponentBase {
+public partial class UserPostsContextRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+    private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
 
     [Parameter]
@@ -26,7 +26,7 @@ public partial class UserContextRender : ComponentBase {
 
 
     [Parameter, EditorRequired]
-	public UserContextObject Context { get; set; } = null!;
+	public UserPostsContextObject Context { get; set; } = null!;
 
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;

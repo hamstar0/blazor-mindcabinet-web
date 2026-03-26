@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -17,7 +17,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_UserFavoriteTerms favoriteTermsData,
-                ServerDataAccess_UserContexts userContextData,
+                ServerDataAccess_UserPostsContexts userPostsContextData,
                 ServerDataAccess_UserAppData userAppData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
             return true;
@@ -26,7 +26,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         bool success;
         SimpleUserId defaultUserId;
         TermObject.Raw sampleTerm;
-        UserContextObject.Raw sampleUsrCtx;
+        UserPostsContextObject.Raw sampleUsrCtx;
 
         (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
@@ -56,7 +56,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        (success, sampleUsrCtx) = await userContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
+        (success, sampleUsrCtx) = await userPostsContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
         if( !success ) {
             return false;
         }

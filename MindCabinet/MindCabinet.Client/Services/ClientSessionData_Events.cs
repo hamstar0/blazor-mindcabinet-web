@@ -2,7 +2,7 @@
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Net.Http.Json;
 
 namespace MindCabinet.Client.Services;
@@ -12,8 +12,8 @@ public partial class ClientSessionData {
     private Dictionary<string, Func<DataBundle, Task>> OnUserAndAppDataLoaded_Async = new();
     private DataBundle? OnUserAndAppDataLoaded_PromisedData = null;
 
-    private Dictionary<string, Func<UserContextObject, Task>> OnUserContextChanged_Async = new();
-    private UserContextObject? OnUserContextChanged_PromisedData = null;
+    private Dictionary<string, Func<UserPostsContextObject, Task>> OnUserPostsContextChanged_Async = new();
+    private UserPostsContextObject? OnUserPostsContextChanged_PromisedData = null;
 
     private Dictionary<string, Func<SimpleUserObject.ClientObject, Task>> OnUserLogin_Async = new();
     private SimpleUserObject.ClientObject? OnUserLogin_PromisedData = null;
@@ -32,11 +32,11 @@ public partial class ClientSessionData {
         );
     }
 
-    private async Task TriggerUserContextChanged_Async( UserContextObject context ) {
-        this.OnUserContextChanged_PromisedData = context;
+    private async Task TriggerUserPostsContextChanged_Async( UserPostsContextObject context ) {
+        this.OnUserPostsContextChanged_PromisedData = context;
 
         await Task.WhenAll(
-            this.OnUserContextChanged_Async
+            this.OnUserPostsContextChanged_Async
                 .Select( kv => kv.Value.Invoke(context) )
         );
     }
@@ -68,11 +68,11 @@ public partial class ClientSessionData {
         }
     }
 
-    public async Task RegisterUserContextEvent_Async( string name, Func<UserContextObject, Task> callback ) {
-        this.OnUserContextChanged_Async.Add( name, callback );
+    public async Task RegisterUserPostsContextEvent_Async( string name, Func<UserPostsContextObject, Task> callback ) {
+        this.OnUserPostsContextChanged_Async.Add( name, callback );
 
-        if( this.OnUserContextChanged_PromisedData is not null ) {
-            await callback.Invoke( this.OnUserContextChanged_PromisedData );
+        if( this.OnUserPostsContextChanged_PromisedData is not null ) {
+            await callback.Invoke( this.OnUserPostsContextChanged_PromisedData );
         }
     }
 

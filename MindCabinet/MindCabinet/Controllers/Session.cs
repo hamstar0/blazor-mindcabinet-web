@@ -5,7 +5,7 @@ using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -43,7 +43,7 @@ public class SessionController(
         }
 
         UserAppDataObject.Raw? userAppData = this.SessData.UserAppDataOfSession?.ToRaw();
-        UserContextObject.Raw? userAppData_UserContext = this.SessData.UserAppDataOfSession?.UserContext?.ToRaw();
+        UserPostsContextObject.Raw? userAppData_UserPostsContext = this.SessData.UserAppDataOfSession?.UserPostsContext?.ToRaw();
         var ret = new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
             SessionId = this.SessData.CurrentSessionId,
             UserData = this.SessData.UserOfSession is not null
@@ -55,7 +55,7 @@ public class SessionController(
                 )
                 : null,
             UserAppData = userAppData,
-            UserAppData_UserContext = userAppData_UserContext
+            UserAppData_UserPostsContext = userAppData_UserPostsContext
         };
 
         return ret;

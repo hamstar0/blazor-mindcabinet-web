@@ -5,11 +5,11 @@
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term;
-@using MindCabinet.Shared.DataObjects.UserContext;
+@using MindCabinet.Shared.DataObjects.UserPostsContext
 
 
 
-<div component-name="UserContextEditor" class=@this.AddedClasses>
+<div component-name="UserPostsContextEditor" class=@this.AddedClasses>
 	<h4>Enter a name to represent a given circumstance ("context"):</h4>
 	<input type="text"
 			placeholder="Enter context name"
@@ -51,7 +51,7 @@
 
 <RenderPortal TargetRegion="ModalDialogs">
 	<Modal @ref=@this.ResetPromptDialogComponent
-			ModalId=@("UserContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8))
+			ModalId=@("UserPostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8))
 			Title="Confirm Context Creation">
 		<BodyContent>
 			<i>You have unsaved changes. Remove all changes?</i>
@@ -101,7 +101,7 @@
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
-		UserContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+		UserPostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
@@ -112,7 +112,7 @@
 	
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
         await Task.CompletedTask;
-		UserContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+		UserPostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 

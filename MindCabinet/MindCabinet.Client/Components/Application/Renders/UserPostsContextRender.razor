@@ -3,7 +3,7 @@
 
 
 
-<div component-name="UserContextRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
+<div component-name="UserPostsContextRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
     @this.Context.Name
     @if( this.Context.Description is not null ) {
         <div class="tooltiptext">@this.Context.Description</div>

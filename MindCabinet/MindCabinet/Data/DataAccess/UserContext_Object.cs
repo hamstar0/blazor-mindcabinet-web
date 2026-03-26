@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -12,16 +12,16 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContexts : IServerDataAccess {
-    public static async Task<UserContextTermEntryObject[]> ToTermEntriesDataObjects_Async(
+public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
+    public static async Task<UserPostsContextTermEntryObject[]> ToTermEntriesDataObjects_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                UserContextTermEntryObject.Raw[] entriesRaw ) {
+                UserPostsContextTermEntryObject.Raw[] entriesRaw ) {
         IEnumerable<TermObject.Raw> termRaws = await termsData.GetByIds_Async( dbCon, entriesRaw.Select(e => e.TermId) );
 
         return await Task.WhenAll( entriesRaw.Select( async entryRaw => {
             TermObject term = await ServerDataAccess_Terms.ToObject_Async(dbCon, termsData, termRaws.First( t => t.Id == entryRaw.TermId) );
-            return new UserContextTermEntryObject( term, entryRaw.Priority, entryRaw.IsRequired );
+            return new UserPostsContextTermEntryObject( term, entryRaw.Priority, entryRaw.IsRequired );
         } ) );
     }
 }

@@ -4,13 +4,13 @@ using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 namespace MindCabinet.Client.Components.Application.Pickers;
 
 
-public partial class UserContextPicker : ComponentBase {
+public partial class UserPostsContextPicker : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
@@ -18,7 +18,7 @@ public partial class UserContextPicker : ComponentBase {
     private ClientDataAccess_Terms TermsData { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserContext UserContextsData { get; set; } = null!;
+    private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
     [Inject]
     private ClientSessionData Session { get; set; } = null!;
@@ -37,7 +37,7 @@ public partial class UserContextPicker : ComponentBase {
 
     private bool IsCurrentInputSuppressed = false;
 
-    private List<UserContextObject> SearchOptions = new List<UserContextObject>();
+    private List<UserPostsContextObject> SearchOptions = new List<UserPostsContextObject>();
 
     private int SearchPosition = -1;
 
@@ -46,7 +46,7 @@ public partial class UserContextPicker : ComponentBase {
     public bool Disabled { get; set; } = false;
 
     [Parameter, EditorRequired]
-    public Func<UserContextObject, Task> OnContextSelect_Async { get; set; } = null!;
+    public Func<UserPostsContextObject, Task> OnContextSelect_Async { get; set; } = null!;
 
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
@@ -86,17 +86,17 @@ public partial class UserContextPicker : ComponentBase {
             return;
         }
 
-        ClientDataAccess_UserContext.Get_Return contexts = await this.UserContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_UserContext.GetForCurrentUserByCriteria_Params {
+        ClientDataAccess_UserPostsContext.Get_Return contexts = await this.UserPostsContextsData.GetForCurrentUserByCriteria_Async(
+            new ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params {
                 NameContains = contextText
             }
         );
-        this.SearchOptions = (await ClientDataAccess_UserContext.ToObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
+        this.SearchOptions = (await ClientDataAccess_UserPostsContext.ToObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
             .ToList();
     }
 
 
-    private async Task SelectSearchResults_Async( UserContextObject context ) {
+    private async Task SelectSearchResults_Async( UserPostsContextObject context ) {
         this.Value = context.Name ?? "";
 
         await this.OnContextSelect_Async.Invoke( context );

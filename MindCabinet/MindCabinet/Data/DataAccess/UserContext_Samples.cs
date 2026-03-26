@@ -3,30 +3,30 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserContext;
+using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Data;
 
 
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserContexts : IServerDataAccess {
-    private async Task<(bool success, UserContextObject.Raw userContext)> InstallSamples_Async(
+public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
+    private async Task<(bool success, UserPostsContextObject.Raw userPostsContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm,
                 SimpleUserId defaultUserId ) {
-        var sampleRawEntry = new UserContextTermEntryObject.Raw {
+        var sampleRawEntry = new UserPostsContextTermEntryObject.Raw {
             TermId = sampleTerm.Id,
             Priority = 1.0,
             IsRequired = true
         };
-        var sampleRawCtx = new UserContextObject.Raw {
+        var sampleRawCtx = new UserPostsContextObject.Raw {
             Name = "Default Context",
             Description = "A sample user context.",
             Entries = [sampleRawEntry]
         };
 
-        UserContextId usrCtxId = (await this.Create_Async(
+        UserPostsContextId usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
             parameters: sampleRawCtx

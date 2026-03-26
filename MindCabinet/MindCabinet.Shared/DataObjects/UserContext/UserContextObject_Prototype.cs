@@ -2,20 +2,20 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserContext;
+namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserContextObject {
+public partial class UserPostsContextObject {
     public class Prototype {
         public string? Name;
         
         public string? Description;
 
-        public UserContextTermEntryObject.Raw[] Entries = [];
+        public UserPostsContextTermEntryObject.Raw[] Entries = [];
 
 
 
-        public bool Matches( UserContextObject other ) {
+        public bool Matches( UserPostsContextObject other ) {
             if( this.Name != other.Name ) {
                 return false;
             }
@@ -27,8 +27,8 @@ public partial class UserContextObject {
             }
             
             for( int i = 0; i < this.Entries.Length; i++ ) {
-                UserContextTermEntryObject.Raw entryA = this.Entries[i];
-                UserContextTermEntryObject entryB = other.Entries[i];
+                UserPostsContextTermEntryObject.Raw entryA = this.Entries[i];
+                UserPostsContextTermEntryObject entryB = other.Entries[i];
 
                 if( entryA.TermId != entryB.Term.Id
                         || entryA.Priority != entryB.Priority
@@ -45,12 +45,12 @@ public partial class UserContextObject {
                 && this.Entries.Any();
         }
 
-        public UserContextObject.Raw ToRaw() {
+        public UserPostsContextObject.Raw ToRaw() {
             if( !this.IsValid() ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
             
-            return new UserContextObject.Raw {
+            return new UserPostsContextObject.Raw {
                 Name = this.Name ?? "",
                 Description = this.Description,
                 Entries = this.Entries

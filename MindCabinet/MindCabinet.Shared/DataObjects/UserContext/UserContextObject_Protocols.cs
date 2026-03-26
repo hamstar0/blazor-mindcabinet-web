@@ -1,12 +1,12 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserContext;
+namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserContextObject {
+public partial class UserPostsContextObject {
     public class Raw : IRawDataObject {
-        public UserContextId Id { get; set; } = default;
+        public UserPostsContextId Id { get; set; } = default;
 
         public SimpleUserId SimpleUserId { get; set; } = default;
 
@@ -14,15 +14,15 @@ public partial class UserContextObject {
 
         public string? Description { get; set; }
 
-        public UserContextTermEntryObject.Raw[] Entries { get; set; } = [];
+        public UserPostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
 
-        public async Task<UserContextObject> CreateDataObject_Async(
-                    Func<UserContextTermEntryObject.Raw[], Task<UserContextTermEntryObject[]>> ctxTermsFactory ) {
-            UserContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
+        public async Task<UserPostsContextObject> CreateDataObject_Async(
+                    Func<UserPostsContextTermEntryObject.Raw[], Task<UserPostsContextTermEntryObject[]>> ctxTermsFactory ) {
+            UserPostsContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
 
-            return new UserContextObject(
+            return new UserPostsContextObject(
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
@@ -31,12 +31,12 @@ public partial class UserContextObject {
         }
 
         
-        public IEnumerable<UserContextTermEntryObject.Raw> GetRequiredEntries() {
+        public IEnumerable<UserPostsContextTermEntryObject.Raw> GetRequiredEntries() {
             return this.Entries
                 .Where( e => e.IsRequired );
         }
 
-        public IEnumerable<UserContextTermEntryObject.Raw> GetOptionalEntries() {
+        public IEnumerable<UserPostsContextTermEntryObject.Raw> GetOptionalEntries() {
             return this.Entries
                 .Where( e => !e.IsRequired );
         }
