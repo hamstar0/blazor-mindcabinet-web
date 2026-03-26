@@ -5,7 +5,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 using System.Data;
 using System.Security.Cryptography;
@@ -17,20 +17,20 @@ namespace MindCabinet.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public partial class UserFavoriteTermsController : ControllerBase {
+public partial class UserTermFavoritesController : ControllerBase {
     private readonly DbAccess DbAccess;
 
-    private readonly ServerDataAccess_UserFavoriteTerms FavoriteTermsData;
+    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
 
     private readonly ServerSessionData SessionData;
 
 
 
-    public UserFavoriteTermsController(
+    public UserTermFavoritesController(
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUserSessions sessionsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
+                ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerSessionData sessionData ) {
         this.DbAccess = dbAccess;
         this.FavoriteTermsData = favoriteTermsData;
@@ -38,9 +38,9 @@ public partial class UserFavoriteTermsController : ControllerBase {
     }
 
     
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.GetFavTermsForCurrentUser_Route)]
-    public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetTermIdsForCurrentUserId_Async(
-                ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
+    [HttpPost(ClientDataAccess_UserTermFavorites.GetFavTermsForCurrentUser_Route)]
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetTermIdsForCurrentUserId_Async(
+                ClientDataAccess_UserTermFavorites.GetTermIdsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -52,9 +52,9 @@ public partial class UserFavoriteTermsController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Route)]
+    [HttpPost(ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Route)]
     public async Task AddTermIdsForCurrentUser_Async(
-                ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -65,9 +65,9 @@ public partial class UserFavoriteTermsController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Route)]
+    [HttpPost(ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Route)]
     public async Task RemoveTermIdsForCurrentUser_Async(
-                ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

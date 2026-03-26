@@ -16,7 +16,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_UserFavoriteTerms favoriteTermsData,
+                ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserPostsContexts userPostsContextData,
                 ServerDataAccess_UserAppData userAppData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {

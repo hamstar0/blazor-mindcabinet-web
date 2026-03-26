@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
@@ -14,7 +14,7 @@ public partial class TermRender : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserFavoriteTerms UserFavoriteTermsData { get; set; } = null!;
+    private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
 
     [Inject]
     private ClientSessionData Session { get; set; } = null!;
@@ -48,7 +48,7 @@ public partial class TermRender : ComponentBase {
         }
 
         // TODO: Add caching
-        IEnumerable<UserFavoriteTermObject.Raw> termRaws = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
         return termRaws.Any( t => t.FavTermId == this.Term.Id );
     }
 
@@ -58,15 +58,15 @@ public partial class TermRender : ComponentBase {
             return;
         }
 
-        IEnumerable<UserFavoriteTermObject.Raw> termRaws = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
 
         if( termRaws.Any(t => t.FavTermId == this.Term.Id) ) {
-            await this.UserFavoriteTermsData.RemoveTermsForCurrentUser_Async(
-                new ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params( [this.Term.Id] )
+            await this.UserTermFavoritesData.RemoveTermsForCurrentUser_Async(
+                new ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params( [this.Term.Id] )
             );
         } else {
-            await this.UserFavoriteTermsData.AddTermsForCurrentUser_Async(
-                new ClientDataAccess_UserFavoriteTerms.AddTermsForCurrentUser_Params( [this.Term.Id] )
+            await this.UserTermFavoritesData.AddTermsForCurrentUser_Async(
+                new ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Params( [this.Term.Id] )
             );
         }
     }

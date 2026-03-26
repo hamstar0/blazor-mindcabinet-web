@@ -3,10 +3,10 @@ using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Text.Json.Serialization;
 
 
-namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+namespace MindCabinet.Shared.DataObjects.UserTermFavorite;
 
 
-public partial class UserFavoriteTermObject {
+public partial class UserTermFavoriteObject {
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
 
@@ -16,10 +16,10 @@ public partial class UserFavoriteTermObject {
 
         
         
-        public async Task<UserFavoriteTermObject> CreateDataObject_Async(
+        public async Task<UserTermFavoriteObject> CreateDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,
                     Func<TermId, Task<TermObject>> termFactory ) {
-            return new UserFavoriteTermObject(
+            return new UserTermFavoriteObject(
                 simpleUser: await userFactory( this.SimpleUserId ),
                 favor: this.Favor,
                 favTerm: await termFactory( this.FavTermId )

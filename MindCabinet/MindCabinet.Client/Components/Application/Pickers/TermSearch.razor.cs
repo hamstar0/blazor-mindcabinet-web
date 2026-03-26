@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
@@ -19,7 +19,7 @@ public partial class TermSearch : ComponentBase {
     private ClientDataAccess_Terms TermsData { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserFavoriteTerms UserFavoriteTermsData { get; set; } = null!;
+    private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
 
     [Inject]
     private ClientDataAccess_UserTermsHistory UserTermsHistoryData { get; set; } = null!;
@@ -50,7 +50,7 @@ public partial class TermSearch : ComponentBase {
     public Func<TermObject, Task> OnTermSelect_Async { get; set; } = null!;
 
 
-    private IEnumerable<UserFavoriteTermObject.ClientObject> FavoriteTerms_Cache = [];
+    private IEnumerable<UserTermFavoriteObject.ClientObject> FavoriteTerms_Cache = [];
     private IEnumerable<UserHistoryTermObject.ClientObject> RecentTerms_Cache = [];
 
 
@@ -62,12 +62,12 @@ public partial class TermSearch : ComponentBase {
             return;
         }
 
-        IEnumerable<UserFavoriteTermObject.Raw> favTerms
-            = await this.UserFavoriteTermsData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> favTerms
+            = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
         IEnumerable<UserHistoryTermObject.Raw> histTerms
             = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
 
-        this.FavoriteTerms_Cache = await ClientDataAccess_UserFavoriteTerms.ToClientObjects_Async(
+        this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ToClientObjects_Async(
             this.TermsData,
             favTerms.ToArray()
         );

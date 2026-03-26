@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -12,8 +12,8 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
-    public const string TableName = "UserFavoriteTerms";
+public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
+    public const string TableName = "UserTermFavorites";
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
@@ -37,14 +37,14 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     }
     
 
-    public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetFavTermEntries_Async(
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserFavoriteTerms.GetTermIdsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.GetTermIdsForCurrentUser_Params parameters ) {
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
-        return await dbCon.QueryAsync<UserFavoriteTermObject.Raw>(
+        return await dbCon.QueryAsync<UserTermFavoriteObject.Raw>(
             sql,
             new DynamicParameters(sqlParams)
         );
@@ -75,7 +75,7 @@ public partial class ServerDataAccess_UserFavoriteTerms : IServerDataAccess {
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserFavoriteTerms.RemoveTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params parameters ) {
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName}
                 WHERE SimpleUserId = @SimpleUserId

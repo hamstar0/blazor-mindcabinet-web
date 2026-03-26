@@ -5,7 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.UserPostsContext;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 

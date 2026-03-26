@@ -2,7 +2,7 @@
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, ClientSessionData sessionData ) : IClientDataAccess {
+public partial class ClientDataAccess_UserTermFavorites( HttpClient http, ClientSessionData sessionData ) : IClientDataAccess {
     private HttpClient Http = http;
 
     private ClientSessionData SessionData = sessionData;
@@ -20,10 +20,10 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         //public long UserId { get; } = userId;
     }
 
-    public const string GetFavTermsForCurrentUser_Path = "UserFavoriteTerms";
+    public const string GetFavTermsForCurrentUser_Path = "UserTermFavorites";
     public const string GetFavTermsForCurrentUser_Route = "GetFavoriteTermsForCurrentUser";
 
-    public async Task<IEnumerable<UserFavoriteTermObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -35,9 +35,9 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<UserFavoriteTermObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserFavoriteTermObject.Raw>>();
+        IEnumerable<UserTermFavoriteObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserTermFavoriteObject.Raw>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<UserFavoriteTermObject.DatabaseEntry>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<UserTermFavoriteObject.DatabaseEntry>" );
         }
 
         return ret;
@@ -48,7 +48,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         public TermId[] TermIds { get; } = termIds;
     }
 
-    public const string AddTermsForCurrentUser_Path = "UserFavoriteTerms";
+    public const string AddTermsForCurrentUser_Path = "UserTermFavorites";
     public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
 
     public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
@@ -69,7 +69,7 @@ public partial class ClientDataAccess_UserFavoriteTerms( HttpClient http, Client
         public TermId[] TermIds { get; } = termIds;
     }
 
-    public const string RemoveTermsForCurrentUser_Path = "UserFavoriteTerms";
+    public const string RemoveTermsForCurrentUser_Path = "UserTermFavorites";
     public const string RemoveTermsForCurrentUser_Route = "RemoveTermsForCurrentUser";
 
     public async Task RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters ) {

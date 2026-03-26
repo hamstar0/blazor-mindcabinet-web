@@ -4,10 +4,10 @@ using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
 
-namespace MindCabinet.Shared.DataObjects.UserFavoriteTerm;
+namespace MindCabinet.Shared.DataObjects.UserTermFavorite;
 
 
-public partial class UserFavoriteTermObject( SimpleUserObject simpleUser, int favor, TermObject favTerm ) : IDataObject {
+public partial class UserTermFavoriteObject( SimpleUserObject simpleUser, int favor, TermObject favTerm ) : IDataObject {
 	public SimpleUserObject SimpleUser { get; } = simpleUser;
 
 	public int Favor { get; } = favor;
