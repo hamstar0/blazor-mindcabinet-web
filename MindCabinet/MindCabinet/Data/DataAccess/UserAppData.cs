@@ -36,9 +36,14 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     }
     
 
+
     public async Task<UserAppDataObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 SimpleUserId id ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+
         UserAppDataObject.Raw? usrAppDataRaw = await dbCon.QuerySingleOrDefaultAsync<UserAppDataObject.Raw>(
             $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId",
             new { SimpleUserId = (long)id }
@@ -52,13 +57,20 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 UserPostsContextId userPostsContextId ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( userPostsContextId == 0 ) {
+            throw new ArgumentException( "UserPostsContextId is not valid (must be non-zero)." );
+        }
+
         long _ = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, UserPostsContextId) 
                 VALUES (@SimpleUserId, @UserPostsContextId);
             SELECT LAST_INSERT_ID();",
             new {
-                SimpleUserId = simpleUserId,
-                UserPostsContextId = userPostsContextId
+                SimpleUserId = (long)simpleUserId,
+                UserPostsContextId = (long)userPostsContextId
             }
         );
 

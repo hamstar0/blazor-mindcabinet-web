@@ -176,11 +176,15 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
 	public async Task<SimplePostId> Create_Async(
                 IDbConnection dbCon,
-                SimpleUserId simpleUserId,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
+                SimpleUserId simpleUserId,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
                 bool skipHistory ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?

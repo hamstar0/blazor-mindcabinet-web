@@ -35,6 +35,10 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     public async Task<UserSessionObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 string sessionId ) {
+        if( UserSessionObject.ValidateId(sessionId) ) {
+            throw new ArgumentException( "UserSession Id is not valid." );
+        }
+
         UserSessionObject.Raw? sessionData = await dbCon.QuerySingleOrDefaultAsync<UserSessionObject.Raw>(
             $@"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = sessionId }
@@ -49,6 +53,9 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 ServerSessionData session ) {
         if( !session.IsLoaded ) {
             throw new Exception( "Session not loaded." );
+        }
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
         if( session.CurrentIpAddress is null ) {
             throw new Exception( "Invalid IP address." );
@@ -84,6 +91,10 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
 
 
     public async Task RemoveSessionById_Async( IDbConnection dbCon, string sessionId ) {
+        if( UserSessionObject.ValidateId(sessionId) ) {
+            throw new ArgumentException( "UserSession Id is not valid." );
+        }
+        
         int rows = await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName} WHERE Id = @Id",
             new {

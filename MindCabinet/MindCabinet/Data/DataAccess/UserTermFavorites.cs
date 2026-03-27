@@ -37,10 +37,15 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
     }
     
 
+
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermFavorites.GetTermIdsForCurrentUser_Params parameters ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
@@ -55,6 +60,13 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 TermId[] favTermIds ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( favTermIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
+        }
+
         var dataTable = new DataTable();
         dataTable.Columns.Add("SimpleUserId", typeof(long));
         dataTable.Columns.Add("FavTermId", typeof(long));
@@ -76,6 +88,13 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params parameters ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( parameters.TermIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
+        }
+
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName}
                 WHERE SimpleUserId = @SimpleUserId

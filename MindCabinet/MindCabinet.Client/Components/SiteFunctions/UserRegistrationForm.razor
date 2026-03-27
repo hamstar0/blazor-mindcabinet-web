@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Shared.DataObjects;
 
 
 
@@ -41,7 +42,7 @@
                     @bind:set=@this.OnInputPassword_UI_Async />
                     @* @bind:set=this.OnInputPassword_UI_Async /> *@
             <br />
-            <div>@( this.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
+            <div>@( SimpleUserObject.GetSubmitStatuses( this.GetSubmitStatusCode() ).FirstOrDefault() ?? " " )</div>
             <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
         </BodyContent>
         <FooterContent>

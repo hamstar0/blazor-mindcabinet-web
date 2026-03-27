@@ -59,6 +59,10 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
                 IDbConnection dbCon,
                 UserPostsContextId userPostsContextId,
                 bool alsoGetEntries ) {
+        if( userPostsContextId == 0 ) {
+            throw new ArgumentException( "UserPostsContextId is not valid (must be non-zero)." );
+        }
+
         var raw = await dbCon.QuerySingleOrDefaultAsync<UserPostsContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = (long)userPostsContextId }
@@ -85,6 +89,14 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params parameters,
                 bool alsoGetEntries ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( parameters.Ids.Any(id => id == 0) ) {
+            throw new ArgumentException( "Some UserPostsContextIds are not valid (must be non-zero)." );
+        }
+
+
         string sql1 = $@"SELECT * FROM {TableName} AS MyContext
             WHERE MyContext.SimpleUserId = @UserId;";
         var sqlParams1 = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
@@ -128,14 +140,20 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
 
     public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Create_Async(
                 IDbConnection dbCon,
-                SimpleUserId simpleUserId,
                 UserPostsContextObject.Raw parameters ) {
+        if( parameters.SimpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( UserPostsContextObject.ValidateName(parameters.Name) ) {
+            throw new ArgumentException( "UserPostsContext Name is not valid." );
+        }
+
         long userPostsContextId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (SimpleUserId, Name, Description) 
                 VALUES (@SimpleUserId, @Name, @Description);
             SELECT LAST_INSERT_ID();",
             new {
-                SimpleUserId = simpleUserId,
+                SimpleUserId = parameters.SimpleUserId,
                 Name = parameters.Name,
                 Description = parameters.Description,
             }
@@ -162,6 +180,13 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
     public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Update_Async(
                 IDbConnection dbCon,
                 UserPostsContextObject.Raw parameters ) {
+        if( parameters.Id == 0 ) {
+            throw new ArgumentException( "UserPostsContext Id is not valid (must be non-zero)." );
+        }
+        if( UserPostsContextObject.ValidateName(parameters.Name) ) {
+            throw new ArgumentException( "UserPostsContext Name is not valid." );
+        }
+
         await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
                 SET Name = @Name, Description = @Description

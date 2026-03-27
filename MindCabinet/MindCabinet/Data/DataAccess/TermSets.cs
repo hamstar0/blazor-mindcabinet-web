@@ -45,21 +45,28 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
     public async Task CreateForSimplePost_Async(
                 IDbConnection dbCon,
-                SimplePostId simplePostId,
+                SimplePostId id,
                 TermId[] termIds ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "SimplePostId is not valid (must be non-zero)." );
+        }
+        if( termIds.Any(t => t == 0) ) {
+            throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
+        }
+
         // long newSetId = await dbCon.ExecuteScalarAsync<long>(
         //     $@"INSERT INTO {IdSupplierTableName} (Bogus) 
         //         VALUES (null);
         //     SELECT LAST_INSERT_ID();" //DEFAULT VALUES
         // );
 
-        foreach(  long termId in termIds ) {
+        foreach( TermId termId in termIds ) {
             await dbCon.ExecuteAsync(
                 $@"INSERT INTO {TableName} (SimplePostId, TermId) 
                     VALUES (@SimplePostId, @TermId)",
                 new {
-                    SimplePostId = simplePostId,
-                    TermId = termId,
+                    SimplePostId = (long)id,
+                    TermId = (long)termId,
                 }
             );
         }
@@ -72,13 +79,17 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
     public async Task<IEnumerable<TermObject.Raw>> GetTermSet_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                long simplePostId ) {
+                SimplePostId id ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "SimplePostId is not valid (must be non-zero)." );
+        }
+
         IEnumerable<TermObject.Raw> termSetRaw = await dbCon.QueryAsync<TermObject.Raw>(
             $@"SELECT MyTerms.Id, MyTerms.Term, MyTerms.ContextId, MyTerms.AliasId
                 FROM {ServerDataAccess_Terms.TableName} AS MyTerms
                 INNER JOIN {TableName} AS MyTermSet ON (MyTerms.Id = MyTermSet.TermId)
                 WHERE MyTermSet.SimplePostId = @SimplePostId",
-            new { SimplePostId = simplePostId }
+            new { SimplePostId = (long)id }
         );
 
         foreach( TermObject.Raw? termRaw in termSetRaw ) {

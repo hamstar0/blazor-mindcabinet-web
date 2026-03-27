@@ -38,10 +38,15 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     }
     
 
+
     public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetByUserId_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId;";
         var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", (long)simpleUserId } };
 
@@ -56,6 +61,13 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( parameters.TermId == 0 ) {
+            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
+
         await dbCon.ExecuteAsync(
             $@"INSERT INTO {TableName} (SimpleUserId, TermId, Created) 
                 VALUES (@SimpleUserId, @TermId, @Created);",

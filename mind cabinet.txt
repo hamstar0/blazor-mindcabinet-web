@@ -55,6 +55,7 @@ v0.6
 			-	New tag posting
 			-	Prevent password entry via enter key when invalid
 			-	Ensure tag widgets work
+			-	Add data API validators
 
 
 			-	User's current context

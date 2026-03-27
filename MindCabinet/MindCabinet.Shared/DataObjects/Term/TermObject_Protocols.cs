@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects.Term;
 
 
-public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject> {
+public partial class TermObject {
     public class Raw : IRawDataObject {
         public TermId Id { get; set; } = default;
         public string Term { get; set; } = "";

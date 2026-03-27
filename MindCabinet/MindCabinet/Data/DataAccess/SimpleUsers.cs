@@ -2,6 +2,8 @@
 using Konscious.Security.Cryptography;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Client.Site.Pages;
+using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
@@ -124,6 +126,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
     public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
+        if( string.IsNullOrEmpty(userName) ) {
+            throw new ArgumentException( "userName is empty." );
+        }
+        
         SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
@@ -141,6 +147,13 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 string sessionId,
                 string ipAddress,
                 bool destroyIfSessionExpiredOrInvalid ) {
+        if( UserSessionObject.ValidateId(sessionId) ) {
+            throw new ArgumentException( "sessionId is empty." );
+        }
+        if( UserSessionObject.ValidateId(ipAddress) ) {
+            throw new ArgumentException( "ipAddress is empty." );
+        }
+        
         var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(  // Note: MySessions.Id is SessionId to avoid collision
             $@"SELECT
                     MyUsers.*,
@@ -198,6 +211,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
+        if( SimpleUserObject.GetUserNameStatus(parameters.Name) != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( "User name is not valid." );
+        }
+        if( SimpleUserObject.GetEmailStatus(parameters.Email) != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( "Email is not valid." );
+        }
+        if( SimpleUserObject.GetPasswordStatus(parameters.Password) != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( "Password is not valid." );
+        }
+
         SimpleUserObject.User_Raw? user;
 
         if( detectCollision ) {

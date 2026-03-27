@@ -74,9 +74,9 @@ public class SimplePostController : ControllerBase {
 
         SimplePostId simplePostId = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
-            simpleUserId: this.SessionData.UserOfSession.Id,
             termSetsData: this.TermSetsData,
             termHistoryData: this.UserTermsHistoryData,
+            simpleUserId: this.SessionData.UserOfSession.Id,
             parameters: parameters,
             skipHistory: false
         );

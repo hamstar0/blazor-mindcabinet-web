@@ -42,6 +42,10 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public async Task<TermObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 TermId id ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
+
         if( this.TermsById_Cache.ContainsKey(id) ) {
             return this.TermsById_Cache[id];
         }
@@ -61,6 +65,10 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public async Task<IEnumerable<TermObject.Raw>> GetByIds_Async(
                 IDbConnection dbCon,
                 IEnumerable<TermId> ids ) {
+        if( ids.Any(id => id == 0) ) {
+            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
+
         if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
             return ids.Select( id => this.TermsById_Cache[id] );
         }
@@ -120,6 +128,10 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_Terms.Create_Params parameters ) {
+        if( !TermObject.ValidateTerm(parameters.TermPattern) ) {
+            throw new ArgumentException( "Term is not valid." );
+        }
+
 		IEnumerable<TermObject.Raw> matchingTerms = await this.GetTermsByCriteria_Async(
             dbCon: dbCon,
 			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
