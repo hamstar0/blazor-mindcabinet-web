@@ -16,12 +16,12 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
 
     public class GetByCriteria_Params(
                 string? bodyPattern,
-                long[] allTagIds,
+                TermId[] allTagIds,
                 bool sortAscendingByDate,
                 int pageNumber,
                 int postsPerPage ) {
         public string? BodyPattern { get; } = bodyPattern;
-        public long[] AllTagIds { get; } = allTagIds;
+        public TermId[] AllTagIds { get; } = allTagIds;
         public bool SortAscendingByDate { get; } = sortAscendingByDate;
         public int PageNumber { get; } = pageNumber;
         public int PostsPerPage { get; } = postsPerPage;

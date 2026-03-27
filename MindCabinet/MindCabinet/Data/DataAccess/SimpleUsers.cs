@@ -107,7 +107,11 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, SimpleUserId id ) {
+    public async Task<SimpleUserObject.User_Raw?> GetById_Async( IDbConnection dbCon, SimpleUserId id ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+
         if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
             return this.SimpleUsersById_Cache[id];
         }
@@ -125,9 +129,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
 
-    public async Task<SimpleUserObject.User_Raw?> GetSimpleUser_Async( IDbConnection dbCon, string userName ) {
-        if( string.IsNullOrEmpty(userName) ) {
-            throw new ArgumentException( "userName is empty." );
+    public async Task<SimpleUserObject.User_Raw?> GetByName_Async( IDbConnection dbCon, string userName ) {
+        if( SimpleUserObject.GetUserNameStatus(userName) != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( "Invalid user name." );
         }
         
         SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
@@ -147,11 +151,11 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 string sessionId,
                 string ipAddress,
                 bool destroyIfSessionExpiredOrInvalid ) {
-        if( UserSessionObject.ValidateId(sessionId) ) {
-            throw new ArgumentException( "sessionId is empty." );
+        if( !UserSessionObject.ValidateId(sessionId) ) {
+            throw new ArgumentException( $"Invalid session ID ({sessionId})." );
         }
-        if( UserSessionObject.ValidateId(ipAddress) ) {
-            throw new ArgumentException( "ipAddress is empty." );
+        if( !UserSessionObject.ValidateIpAddress(ipAddress) ) {
+            throw new ArgumentException( $"Invalid IP address ({ipAddress})." );
         }
         
         var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(  // Note: MySessions.Id is SessionId to avoid collision

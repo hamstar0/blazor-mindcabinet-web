@@ -46,10 +46,14 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
     public async Task<SimplePostObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                long id ) {
+                SimplePostId id ) {
+        if( id == 0 ) {
+            throw new ArgumentException( "SimplePostId is not valid (must be non-zero)." );
+        }
+
         SimplePostObject.Raw? postRaw = await dbCon.QuerySingleOrDefaultAsync<SimplePostObject.Raw>(
             $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
-            new { Id = id }
+            new { Id = (long)id }
         );
 
         return postRaw;
@@ -120,6 +124,10 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+        if( parameters.AllTagIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
+        }
+
         if( parameters.PostsPerPage == 0 ) {
             return Enumerable.Empty<SimplePostObject.Raw>();
         }
@@ -151,6 +159,10 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+        if( parameters.AllTagIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
+        }
+
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
@@ -183,6 +195,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 bool skipHistory ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( parameters.TermIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
 
         DateTime now = DateTime.UtcNow;

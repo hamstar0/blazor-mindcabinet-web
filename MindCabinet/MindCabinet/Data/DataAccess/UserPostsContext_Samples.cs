@@ -28,7 +28,6 @@ public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
 
         UserPostsContextId usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
-            simpleUserId: defaultUserId,
             parameters: sampleRawCtx
         )).Id;
 

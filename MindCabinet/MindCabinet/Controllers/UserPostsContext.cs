@@ -53,10 +53,13 @@ public class UserPostsContextController : ControllerBase {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
+        if( parameters.SimpleUserId != this.SessionData.UserOfSession.Id ) {
+            throw new InvalidOperationException( "SimpleUserId in parameters does not match user in session." );
+        }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserPostsContextsData.Create_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        return await this.UserPostsContextsData.Create_Async( dbCon, parameters );
     }
 
     [HttpPost(ClientDataAccess_UserPostsContext.UpdateForCurrentUser_Route)]
@@ -64,6 +67,9 @@ public class UserPostsContextController : ControllerBase {
                 UserPostsContextObject.Raw parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
+        }
+        if( parameters.SimpleUserId != this.SessionData.UserOfSession.Id ) {
+            throw new InvalidOperationException( "SimpleUserId in parameters does not match user in session." );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
