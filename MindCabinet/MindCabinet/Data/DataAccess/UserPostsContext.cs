@@ -178,7 +178,7 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
                 IDbConnection dbCon,
                 UserPostsContextObject.Prototype parameters ) {
         if( parameters.Id == 0 || parameters.Id is null ) {
-            throw new ArgumentException( "UserPostsContext Id is not valid (must be non-zero and non-null)." );
+            throw new ArgumentException( "UserPostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
         if( UserPostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "UserPostsContext Name is not valid." );
@@ -202,7 +202,6 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
                 UserPostsContextId = parameters.Id
             }
         );
-this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserPostsContextId {parameters.Id}." );
 
         string sqlInsertEntries = $@"INSERT INTO {EntriesTableName}
             (UserPostsContextId, TermId, Priority, IsRequired) 

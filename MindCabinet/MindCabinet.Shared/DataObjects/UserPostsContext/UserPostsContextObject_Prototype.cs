@@ -7,13 +7,13 @@ namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 public partial class UserPostsContextObject {
     public class Prototype {
-        public UserPostsContextId? Id;
+        public UserPostsContextId? Id { get; set; }
 
-        public string? Name;
+        public string? Name { get; set; }
         
-        public string? Description;
+        public string? Description { get; set; }
 
-        public UserPostsContextTermEntryObject.Raw[] Entries = [];
+        public UserPostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
 
@@ -45,13 +45,18 @@ public partial class UserPostsContextObject {
             return true;
         }
 
-        public bool IsValid() {
+        public bool IsValid( bool includingId ) {
+            if( includingId ) {
+                if( this.Id is null || this.Id == 0 ) {
+                    return false;
+                }
+            }
             return !string.IsNullOrEmpty(this.Name)
-                && this.Entries.Any();
+                && this.Entries.Length > 0;
         }
 
-        public UserPostsContextObject.Raw ToRaw() {
-            if( !this.IsValid() ) {
+        public UserPostsContextObject.Raw ToRaw( bool validateId ) {
+            if( !this.IsValid(validateId) ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
 

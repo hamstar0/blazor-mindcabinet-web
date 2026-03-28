@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
@@ -39,16 +40,6 @@ public partial class UserPostsContextEditor : ComponentBase {
 
 
 
-	protected override void OnInitialized() {
-		base.OnInitialized();
-        
-        this.InitialContextCheck = this.InitialContext;
-
-        this.CurrentContextPrototype = this.InitialContext is not null
-            ? this.InitialContext.ToPrototype()
-            : new UserPostsContextObject.Prototype();
-	}
-    
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
         
@@ -119,23 +110,19 @@ public partial class UserPostsContextEditor : ComponentBase {
 	}
 
 
-    public bool CanSaveCurrentContext() {
-        return this.CurrentContextPrototype.IsValid();
-    }
-    
     private async Task Create_Async() {
-        await this.UserPostsContextsData.CreateForCurrentUser_Async(
-            this.CurrentContextPrototype.ToRaw()
-        );
+        UserPostsContextObject.Raw raw = this.CurrentContextPrototype.ToRaw(false);
+
+        UserPostsContextId id = (await this.UserPostsContextsData.CreateForCurrentUser_Async( raw )).Id;
+
+        this.CurrentContextPrototype.Id = id;
 
         if( this.OnCreate_Async is not null ) {
-            await this.OnCreate_Async.Invoke( this.CurrentContextPrototype! );
+            await this.OnCreate_Async.Invoke( this.CurrentContextPrototype );
         }
     }
     
     private async Task Update_Async() {
-        await this.UserPostsContextsData.UpdateForCurrentUser_Async(
-            this.CurrentContextPrototype.ToRaw()
-        );
+        await this.UserPostsContextsData.UpdateForCurrentUser_Async( this.CurrentContextPrototype );
     }
 }

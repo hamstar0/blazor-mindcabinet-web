@@ -111,9 +111,12 @@ public partial class ClientDataAccess_UserPostsContext(
     public const string UpdateForCurrentUser_Path = "UserPostsContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
+    public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
+        }
+        if( parameters.Id is null || parameters.Id == 0 ) {
+            throw new ArgumentException( "UserPostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(

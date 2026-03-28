@@ -6,6 +6,7 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Data;
+using System.Text.Json;
 
 
 namespace MindCabinet.Controllers;
@@ -13,23 +14,19 @@ namespace MindCabinet.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserPostsContextController : ControllerBase {
-    private readonly DbAccess DbAccess;
-
-    private readonly ServerDataAccess_UserPostsContexts UserPostsContextsData;
-
-    private readonly ServerSessionData SessionData;
-
-
-
-    public UserPostsContextController(
+public class UserPostsContextController(
+                ILogger<UserPostsContextController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_UserPostsContexts userPostsContextsData,
-                ServerSessionData sessionData ) {
-        this.DbAccess = dbAccess;
-        this.UserPostsContextsData = userPostsContextsData;
-        this.SessionData = sessionData;
-    }
+                ServerSessionData sessionData ) : ControllerBase {
+    private readonly ILogger<UserPostsContextController> Logger = logger;
+
+    private readonly DbAccess DbAccess = dbAccess;
+
+    private readonly ServerDataAccess_UserPostsContexts UserPostsContextsData = userPostsContextsData;
+
+    private readonly ServerSessionData SessionData = sessionData;
+
 
 
     [HttpPost(ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Route)]
@@ -52,7 +49,7 @@ public class UserPostsContextController : ControllerBase {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
-        if( !parameters.IsValid() ) {
+        if( !parameters.IsValid(false) ) {
             throw new ArgumentException( "Invalid UserPostsContextObject.Prototype in parameters." );
         }
 

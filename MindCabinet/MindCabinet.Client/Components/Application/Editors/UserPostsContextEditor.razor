@@ -132,6 +132,11 @@
 		}
 	}
 
+
+	public bool CanSaveCurrentContext() {
+		return this.CurrentContextPrototype.IsValid( true );
+	}
+	
 	private async Task SaveContext_UI_Async() {
 		if( this.InitialContext is null ) {
 			await this.Create_Async();

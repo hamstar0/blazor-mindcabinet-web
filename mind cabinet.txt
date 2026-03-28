@@ -34,12 +34,12 @@ v0.6
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Add SimpleUserId to SimplePost
 -	Add landing page when not logged in
+-	Channel API calls through Hub (test)
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	Implement custom posts sorting (via hook?)
 		-	Implement pipe from current context to posts view filter tags
 		-	Finish implementing SQL for querying by priority (sort by priority order)
-		-	Set context tag priority values to exist as a database table (not just session data)
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Add login success message alert popup
 			-	Set modal dialogs to have default input focused onto when open
@@ -47,15 +47,14 @@ v0.6
 			-	Disable tag entry if no user
 			-	Disable post create if no user
 			-	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
-			-	Channel API calls through Hub (test)
+			-	Prevent password entry via enter key when invalid
 			-	Context entry
 			-	Context tag entry
 			-	Content posting
 			-	New tag posting
-			-	Prevent password entry via enter key when invalid
+
+
 			-	Ensure tag widgets work
-
-
 			-	Add data API validators
 			-	User's current context
 			-	Set TermObject to use a DatabaseEntry properties for Alias and Context
@@ -65,6 +64,7 @@ v0.6
 			-	User Register
 			-	User Login
 			-	Install
+		-	Set context tag priority values to exist as a database table (not just session data)
 		-	@Add a default tag to sample posts and to a default context
 		-	@Ensure app runs
 		-	@Plan

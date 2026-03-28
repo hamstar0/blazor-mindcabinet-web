@@ -35,7 +35,7 @@ public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
         protoSampleCtx.Id = usrCtxId;   // annoying!
         protoSampleCtx.Entries[0].UserPostsContextId = usrCtxId;   // annoying!
 
-        var sampleRawCtx = protoSampleCtx.ToRaw();
+        var sampleRawCtx = protoSampleCtx.ToRaw( true );
 
         return (true, sampleRawCtx);
     }
