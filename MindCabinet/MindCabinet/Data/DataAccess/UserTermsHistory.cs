@@ -3,10 +3,9 @@ using Microsoft.Data.SqlClient;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserHistoryTerm;
+using MindCabinet.Shared.DataObjects.UserTermHistory;
 using MindCabinet.Shared.Utility;
 using System.Data;
-
 
 namespace MindCabinet.Data.DataAccess;
 
@@ -39,7 +38,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     
 
 
-    public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetByUserId_Async(
+    public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetByUserId_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
@@ -50,7 +49,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
         string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId;";
         var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", (long)simpleUserId } };
 
-        return await dbCon.QueryAsync<UserHistoryTermObject.Raw>(
+        return await dbCon.QueryAsync<UserTermHistoryObject.Raw>(
             sql,
             new DynamicParameters(sqlParams)
         );

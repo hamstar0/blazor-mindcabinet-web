@@ -6,11 +6,10 @@ using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
-using MindCabinet.Shared.DataObjects.UserHistoryTerm;
+using MindCabinet.Shared.DataObjects.UserTermHistory;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
-
 
 namespace MindCabinet.Controllers;
 

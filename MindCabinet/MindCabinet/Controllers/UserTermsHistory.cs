@@ -5,11 +5,10 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserHistoryTerm;
+using MindCabinet.Shared.DataObjects.UserTermHistory;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
-
 
 namespace MindCabinet.Controllers;
 
@@ -36,7 +35,7 @@ public partial class UserTermsHistoryController : ControllerBase {
 
     
     [HttpPost(ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Route)]
-    public async Task<IEnumerable<UserHistoryTermObject.Raw>> GetForCurrentUserId_Async(
+    public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetForCurrentUserId_Async(
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );

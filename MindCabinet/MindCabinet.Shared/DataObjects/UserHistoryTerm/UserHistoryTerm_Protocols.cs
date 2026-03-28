@@ -2,11 +2,10 @@
 using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Text.Json.Serialization;
 
+namespace MindCabinet.Shared.DataObjects.UserTermHistory;
 
-namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
-
-public partial class UserHistoryTermObject {
+public partial class UserTermHistoryObject {
     public static Raw CreateRaw(
             SimpleUserId simpleUserId,
             TermId termId,
@@ -26,10 +25,10 @@ public partial class UserHistoryTermObject {
 	    public DateTime Created { get; set; }
 
         
-        public async Task<UserHistoryTermObject> CreateDataObject_Async(
+        public async Task<UserTermHistoryObject> CreateDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,
                     Func<TermId, Task<TermObject>> termFactory ) {
-            return new UserHistoryTermObject(
+            return new UserTermHistoryObject(
                 simpleUser: await userFactory( this.SimpleUserId ),
                 created: this.Created,
                 term: await termFactory( this.TermId )

@@ -3,11 +3,10 @@ using MindCabinet.Shared.DataObjects.UserPostsContext;
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
+namespace MindCabinet.Shared.DataObjects.UserTermHistory;
 
-namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
-
-public partial class UserHistoryTermObject( SimpleUserObject simpleUser, DateTime created, TermObject term ) : IDataObject {
+public partial class UserTermHistoryObject( SimpleUserObject simpleUser, DateTime created, TermObject term ) : IDataObject {
 	public SimpleUserObject SimpleUser { get; } = simpleUser;
 
 	public DateTime Created { get; } = created;

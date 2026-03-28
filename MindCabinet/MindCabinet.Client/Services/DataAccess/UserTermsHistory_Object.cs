@@ -6,17 +6,16 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.UserPostsContext;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
-using MindCabinet.Shared.DataObjects.UserHistoryTerm;
-
+using MindCabinet.Shared.DataObjects.UserTermHistory;
 
 namespace MindCabinet.Client.Services.DbAccess;
 
 
 
 public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
-    public static async Task<UserHistoryTermObject.ClientObject[]> ToClientObjects_Async(
+    public static async Task<UserTermHistoryObject.ClientObject[]> ToClientObjects_Async(
                 ClientDataAccess_Terms termsData,
-                UserHistoryTermObject.Raw[] entriesRaw ) {
+                UserTermHistoryObject.Raw[] entriesRaw ) {
         TermId[] termIds = entriesRaw.Select( t => t.TermId ).ToArray();
         IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
             .Terms;

@@ -5,8 +5,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
-using MindCabinet.Shared.DataObjects.UserHistoryTerm;
-
+using MindCabinet.Shared.DataObjects.UserTermHistory;
 
 namespace MindCabinet.Client.Components.Application.Pickers;
 
@@ -51,7 +50,7 @@ public partial class TermSearch : ComponentBase {
 
 
     private IEnumerable<UserTermFavoriteObject.ClientObject> FavoriteTerms_Cache = [];
-    private IEnumerable<UserHistoryTermObject.ClientObject> RecentTerms_Cache = [];
+    private IEnumerable<UserTermHistoryObject.ClientObject> RecentTerms_Cache = [];
 
 
 
@@ -64,7 +63,7 @@ public partial class TermSearch : ComponentBase {
 
         IEnumerable<UserTermFavoriteObject.Raw> favTerms
             = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
-        IEnumerable<UserHistoryTermObject.Raw> histTerms
+        IEnumerable<UserTermHistoryObject.Raw> histTerms
             = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
 
         this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ToClientObjects_Async(
