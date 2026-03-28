@@ -158,12 +158,12 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             }
         );
 
-        var newTerm = new TermObject.Raw {
-			Id = (TermId)newId,
-			Term = parameters.TermPattern,
-			ContextTermId = parameters.Context?.Id,
-			AliasTermId = parameters.Alias?.Id
-		};
+        var newTerm = TermObject.CreateRaw(
+			id: (TermId)newId,
+			term: parameters.TermPattern,
+			contextTermId: parameters.Context?.Id,
+			aliasTermId: parameters.Alias?.Id
+		);
 		this.TermsById_Cache[ (TermId)newId ] = newTerm;
 
         return new ClientDataAccess_Terms.Create_Return( true, newTerm );

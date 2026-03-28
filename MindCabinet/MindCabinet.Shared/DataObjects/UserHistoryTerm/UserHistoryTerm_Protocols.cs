@@ -7,6 +7,17 @@ namespace MindCabinet.Shared.DataObjects.UserHistoryTerm;
 
 
 public partial class UserHistoryTermObject {
+    public static Raw CreateRaw(
+            SimpleUserId simpleUserId,
+            TermId termId,
+            DateTime created ) {
+        return new Raw {
+            SimpleUserId = simpleUserId,
+            TermId = termId,
+            Created = created
+        };
+    }
+
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
 
@@ -14,7 +25,6 @@ public partial class UserHistoryTermObject {
         
 	    public DateTime Created { get; set; }
 
-        
         
         public async Task<UserHistoryTermObject> CreateDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,

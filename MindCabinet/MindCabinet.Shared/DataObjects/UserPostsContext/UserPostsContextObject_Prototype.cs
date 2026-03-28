@@ -7,6 +7,8 @@ namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 public partial class UserPostsContextObject {
     public class Prototype {
+        public UserPostsContextId? Id;
+
         public string? Name;
         
         public string? Description;
@@ -16,6 +18,9 @@ public partial class UserPostsContextObject {
 
 
         public bool Matches( UserPostsContextObject other ) {
+            if( this.Id != other.Id ) {
+                return false;
+            }
             if( this.Name != other.Name ) {
                 return false;
             }
@@ -49,12 +54,31 @@ public partial class UserPostsContextObject {
             if( !this.IsValid() ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
+
+            foreach( UserPostsContextTermEntryObject.Raw entry in this.Entries ) {
+                if( entry.UserPostsContextId != this.Id ) {
+                    throw new InvalidOperationException("All entries must have the same UserPostsContextId as the prototype.");
+                }
+            }
             
-            return new UserPostsContextObject.Raw {
-                Name = this.Name ?? "",
-                Description = this.Description,
-                Entries = this.Entries
-            };
+            return UserPostsContextObject.CreateRaw(
+                id: this.Id ?? throw new InvalidOperationException("Cannot create raw entry from prototype with null Id."),
+                name: this.Name ?? "",
+                description: this.Description,
+                entries: this.Entries
+            );
         }
+    }
+    
+
+    public Prototype ToPrototype() {
+        return new Prototype {
+            Id = this.Id,
+            Name = this.Name,
+            Description = this.Description,
+            Entries = this.Entries
+                .Select( e => e.ToRaw(this.Id) )
+                .ToArray()
+        };
     }
 }

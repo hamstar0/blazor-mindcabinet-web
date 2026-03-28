@@ -7,12 +7,20 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class UserAppDataObject {
+    public static Raw CreateRaw(
+            SimpleUserId simpleUserId,
+            UserPostsContextId userPostsContextId ) {
+        return new Raw {
+            SimpleUserId = simpleUserId,
+            UserPostsContextId = userPostsContextId
+        };
+    }
+
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
         
 		public UserPostsContextId UserPostsContextId { get; set; }
 
-        
         
         public async Task<UserAppDataObject> CreateDataObject_Async(
                     Func<UserPostsContextId, Task<UserPostsContextObject>> userPostsContextFactory ) {

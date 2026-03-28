@@ -38,8 +38,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public class SimpleUserQueryResult( SimpleUserObject.User_Raw? user, bool alreadyExists ) {
-        public SimpleUserObject.User_Raw? User = user;
+    public class SimpleUserQueryResult( SimpleUserObject.Raw? user, bool alreadyExists ) {
+        public SimpleUserObject.Raw? User = user;
         public bool AlreadyExists = alreadyExists;
     }
 
@@ -70,7 +70,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             parameters: new ClientDataAccess_SimpleUsers.Create_Params(
                 name: "hamstar",   // temporary!!!!!
                 email: "hamstarhelper@gmail.com",
-                password: "12345",
+                password: "12345A",
                 isValidated: true
             ),
             detectCollision: false
@@ -103,11 +103,11 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         this.Logger = logger;
     }
 
-    private IDictionary<SimpleUserId, SimpleUserObject.User_Raw> SimpleUsersById_Cache = new Dictionary<SimpleUserId, SimpleUserObject.User_Raw>();
+    private IDictionary<SimpleUserId, SimpleUserObject.Raw> SimpleUsersById_Cache = new Dictionary<SimpleUserId, SimpleUserObject.Raw>();
 
 
 
-    public async Task<SimpleUserObject.User_Raw?> GetById_Async( IDbConnection dbCon, SimpleUserId id ) {
+    public async Task<SimpleUserObject.Raw?> GetById_Async( IDbConnection dbCon, SimpleUserId id ) {
         if( id == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -116,7 +116,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             return this.SimpleUsersById_Cache[id];
         }
 
-        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
+        SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
             new { Id = (long)id }
         );
@@ -129,12 +129,12 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
 
-    public async Task<SimpleUserObject.User_Raw?> GetByName_Async( IDbConnection dbCon, string userName ) {
+    public async Task<SimpleUserObject.Raw?> GetByName_Async( IDbConnection dbCon, string userName ) {
         if( SimpleUserObject.GetUserNameStatus(userName) != SimpleUserObject.StatusCode.OK ) {
             throw new ArgumentException( "Invalid user name." );
         }
         
-        SimpleUserObject.User_Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw>(
+        SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Name = @Name",
             new { Name = userName }
         );
@@ -146,7 +146,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         return userRaw;
     }
 
-    public async Task<SimpleUserObject.User_Raw?> GetSimpleUserBySession_Async(
+    public async Task<SimpleUserObject.Raw?> GetSimpleUserBySession_Async(
                 IDbConnection dbCon,
                 string sessionId,
                 string ipAddress,
@@ -158,7 +158,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             throw new ArgumentException( $"Invalid IP address ({ipAddress})." );
         }
         
-        var userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw?>(  // Note: MySessions.Id is SessionId to avoid collision
+        var userAndSessRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw>(  // Note: MySessions.Id is SessionId to avoid collision
             $@"SELECT
                     MyUsers.*,
                     MySessions.Id AS SessionId,
@@ -174,13 +174,13 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             new { SessionId = sessionId }
         );
 
-        if( userRaw is null ) {
+        if( userAndSessRaw is null ) {
             return null;
         }
 
         if( destroyIfSessionExpiredOrInvalid ) {
-            bool isValidIp = userRaw.LatestIpAddress == ipAddress;
-            bool isExpired = (DateTime.UtcNow - userRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
+            bool isValidIp = userAndSessRaw.LatestIpAddress == ipAddress;
+            bool isExpired = (DateTime.UtcNow - userAndSessRaw.LatestVisit) > this.ServerSettings.SessionExpirationDuration;
 
             if( !isValidIp ) {
                 throw new Exception( "Hax!" );  //TODO
@@ -205,7 +205,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             }
         }
 
-        this.SimpleUsersById_Cache.Add( userRaw.Id, userRaw );
+        SimpleUserObject.Raw userRaw = userAndSessRaw.GetUserRaw();
+
+        this.SimpleUsersById_Cache.Add( userAndSessRaw.Id, userRaw );
 
         return userRaw;
     }
@@ -215,20 +217,24 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
-        if( SimpleUserObject.GetUserNameStatus(parameters.Name) != SimpleUserObject.StatusCode.OK ) {
-            throw new ArgumentException( "User name is not valid." );
+        SimpleUserObject.StatusCode code;
+        code = SimpleUserObject.GetUserNameStatus(parameters.Name);
+        if( code != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( $"User name is not valid ({code.ToString()})." );
         }
-        if( SimpleUserObject.GetEmailStatus(parameters.Email) != SimpleUserObject.StatusCode.OK ) {
-            throw new ArgumentException( "Email is not valid." );
+        code = SimpleUserObject.GetEmailStatus(parameters.Email);
+        if( code != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( $"Email is not valid ({code.ToString()})." );
         }
-        if( SimpleUserObject.GetPasswordStatus(parameters.Password) != SimpleUserObject.StatusCode.OK ) {
-            throw new ArgumentException( "Password is not valid." );
+        code = SimpleUserObject.GetPasswordStatus(parameters.Password);
+        if( code != SimpleUserObject.StatusCode.OK ) {
+            throw new ArgumentException( $"Password is not valid ({code.ToString()})." );
         }
 
-        SimpleUserObject.User_Raw? user;
+        SimpleUserObject.Raw? user;
 
         if( detectCollision ) {
-            user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.User_Raw?>(
+            user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw?>(
                 $"SELECT * FROM {TableName} WHERE Name = @Name",
                 new { Name = parameters.Name }
             );
@@ -256,15 +262,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             }
         );
 
-        var newUser = new SimpleUserObject.User_Raw {
-            Id = (SimpleUserId)newUserId,
-            Created = now,
-            Name = parameters.Name,
-            Email = parameters.Email,
-            PwHash = pwHash,
-            PwSalt = pwSalt,    // note: not for client
-            IsValidated = parameters.IsValidated
-        };
+        var newUser = SimpleUserObject.CreateRaw(
+            id: (SimpleUserId)newUserId,
+            created: now,
+            name: parameters.Name,
+            email: parameters.Email,
+            pwHash: pwHash,
+            pwSalt: pwSalt,
+            isValidated: parameters.IsValidated    // note: not for client
+            //isPrivileged: isPrivileged
+        );
 
         return new SimpleUserQueryResult( newUser, false );
     }

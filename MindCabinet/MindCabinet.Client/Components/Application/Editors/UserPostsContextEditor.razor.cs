@@ -23,9 +23,6 @@ public partial class UserPostsContextEditor : ComponentBase {
     [Inject]
     private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
-    [Inject]
-    private ClientSessionData SessionsData { get; set; } = null!;
-
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -45,10 +42,11 @@ public partial class UserPostsContextEditor : ComponentBase {
 	protected override void OnInitialized() {
 		base.OnInitialized();
         
-        if( this.InitialContext is null ) {
-            this.InitialContextCheck = this.InitialContext;
-            this.CurrentContextPrototype = new UserPostsContextObject.Prototype();
-        }
+        this.InitialContextCheck = this.InitialContext;
+
+        this.CurrentContextPrototype = this.InitialContext is not null
+            ? this.InitialContext.ToPrototype()
+            : new UserPostsContextObject.Prototype();
 	}
     
 	protected override void OnParametersSet() {
@@ -57,27 +55,25 @@ public partial class UserPostsContextEditor : ComponentBase {
         if( this.InitialContext != this.InitialContextCheck ) {
             this.InitialContextCheck = this.InitialContext;
             
-            if( this.InitialContext is not null ) {
-                this.CurrentContextPrototype = new UserPostsContextObject.Prototype {
-                    Name = this.InitialContext?.Name,
-                    Description = this.InitialContext?.Description,
-                    Entries = this.InitialContext?.Entries
-                        .Select( e => e.ToRaw(this.InitialContext.Id) ).ToArray()
-                        ?? []
-                };
-            } else {
-                this.CurrentContextPrototype = new UserPostsContextObject.Prototype();
-            }
+            this.CurrentContextPrototype = this.InitialContext is not null
+                ? this.InitialContext.ToPrototype()
+                : new UserPostsContextObject.Prototype();
         }
 	}
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
-        this.CurrentContextPrototype.Entries.Append( new UserPostsContextTermEntryObject.Raw {
-            TermId = newTag.Id,
-            Priority = 0d,
-            IsRequired = false
-        } );
+        UserPostsContextId id = this.InitialContext?.Id
+            ?? throw new InvalidOperationException("Invalid prototype id.");
+
+        this.CurrentContextPrototype.Entries.Append(
+            UserPostsContextTermEntryObject.CreateRaw(
+                userPostsContextId: id,
+                termId: newTag.Id,
+                priority: 0d,
+                isRequired: false
+            )
+        );
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
@@ -95,9 +91,7 @@ public partial class UserPostsContextEditor : ComponentBase {
 
     
 	private async Task<bool> HasUnsavedChanges() {
-        UserPostsContextObject? currentCtx = this.SessionsData.GetCurrentContext();
-        
-        if( currentCtx is null ) {
+        if( this.InitialContext is null ) {
             return this.CurrentContextPrototype.Name is not null
                 || this.CurrentContextPrototype.Description is not null
                 || this.CurrentContextPrototype.Entries.Any();
@@ -105,13 +99,13 @@ public partial class UserPostsContextEditor : ComponentBase {
 
         ClientDataAccess_UserPostsContext.Get_Return contexts = await this.UserPostsContextsData.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params {
-                Ids = [ currentCtx.Id ]
+                Ids = [ this.InitialContext.Id ]
             }
         );
 
         UserPostsContextObject.Raw currentContextRaw = contexts
             .Contexts
-            .First( ctx => ctx.Id == currentCtx.Id );
+            .First( ctx => ctx.Id == this.InitialContext.Id );
         UserPostsContextObject currentContext = await ClientDataAccess_UserPostsContext.ToObject_Async( this.TermsData, currentContextRaw );
 
 		return currentContext is not null

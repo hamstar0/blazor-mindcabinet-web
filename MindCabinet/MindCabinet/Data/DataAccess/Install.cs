@@ -56,11 +56,11 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        (success, sampleUsrCtx) = await userPostsContextData.Install_Async( dbCon, sampleTerm, defaultUserId );
+        (success, sampleUsrCtx) = await userPostsContextData.Install_Async( dbCon, sampleTerm );
         if( !success ) {
             return false;
         }
-        success = await userAppData.Install_Async( dbCon, defaultUserId, sampleUsrCtx );
+        success = await userAppData.Install_Async( dbCon, defaultUserId, sampleUsrCtx.Id );
         if( !success ) {
             return false;
         }

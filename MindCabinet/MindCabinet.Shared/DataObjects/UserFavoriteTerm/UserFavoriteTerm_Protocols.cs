@@ -7,6 +7,17 @@ namespace MindCabinet.Shared.DataObjects.UserTermFavorite;
 
 
 public partial class UserTermFavoriteObject {
+    public static Raw CreateRaw(
+            SimpleUserId simpleUserId,
+            TermId favTermId,
+            int favor ) {
+        return new Raw {
+            SimpleUserId = simpleUserId,
+            FavTermId = favTermId,
+            Favor = favor
+        };
+    }
+
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
 
@@ -14,7 +25,6 @@ public partial class UserTermFavoriteObject {
 
 	    public int Favor { get; set; }
 
-        
         
         public async Task<UserTermFavoriteObject> CreateDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,

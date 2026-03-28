@@ -23,7 +23,7 @@ public partial class SimpleUserController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimpleUserObject.User_Raw? userRaw = await this.SimpleUsersData.GetByName_Async( dbCon, parameters.Name );
+        SimpleUserObject.Raw? userRaw = await this.SimpleUsersData.GetByName_Async( dbCon, parameters.Name );
         if( userRaw is null ) {
             return new ClientDataAccess_SimpleUsers.Login_Return( null, "User not found by name: "+parameters.Name );
         }

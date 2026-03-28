@@ -38,23 +38,22 @@ public class UserPostsContextController : ControllerBase {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<UserPostsContextObject.Raw> contexts = await this.UserPostsContextsData.GetByCriteria_Async(
-            dbCon,
-            this.SessionData.UserOfSession!.Id,
-            parameters,
-            true
+            dbCon: dbCon,
+            parameters: parameters,
+            alsoGetEntries: true
         );
 
         return new ClientDataAccess_UserPostsContext.Get_Return( contexts );
     }
 
     [HttpPost(ClientDataAccess_UserPostsContext.CreateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> CreateForCurrentUser_Async(
-                UserPostsContextObject.Raw parameters ) {
+    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> CreateForCurrentUser_Async(
+                UserPostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
-        if( parameters.SimpleUserId != this.SessionData.UserOfSession.Id ) {
-            throw new InvalidOperationException( "SimpleUserId in parameters does not match user in session." );
+        if( !parameters.IsValid() ) {
+            throw new ArgumentException( "Invalid UserPostsContextObject.Prototype in parameters." );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
@@ -63,13 +62,10 @@ public class UserPostsContextController : ControllerBase {
     }
 
     [HttpPost(ClientDataAccess_UserPostsContext.UpdateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> UpdateForCurrentUser_Async(
-                UserPostsContextObject.Raw parameters ) {
+    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
+                UserPostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
-        }
-        if( parameters.SimpleUserId != this.SessionData.UserOfSession.Id ) {
-            throw new InvalidOperationException( "SimpleUserId in parameters does not match user in session." );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );

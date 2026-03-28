@@ -5,6 +5,19 @@ namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 public partial class UserPostsContextTermEntryObject {
+    public static Raw CreateRaw(
+            UserPostsContextId userPostsContextId,
+            TermId termId,
+            double priority,
+            bool isRequired ) {
+        return new Raw {
+            UserPostsContextId = userPostsContextId,
+            TermId = termId,
+            Priority = priority,
+            IsRequired = isRequired
+        };
+    }
+
     public class Raw : IRawDataObject {
         public UserPostsContextId UserPostsContextId { get; set; } = default;
 

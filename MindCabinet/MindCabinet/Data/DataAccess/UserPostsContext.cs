@@ -20,17 +20,15 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
 
     public async Task<(bool success, UserPostsContextObject.Raw userPostsContext)> Install_Async(
                 IDbConnection dbConnection,
-                TermObject.Raw sampleTerm,
-                SimpleUserId defaultUserId ) {
+                TermObject.Raw sampleTerm ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                SimpleUserId BIGINT NOT NULL,
                 Name VARCHAR(256) NOT NULL,
-                Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
+                Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
             );"
+                //  CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
+                //     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
         );
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {EntriesTableName} (
@@ -46,7 +44,7 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
             );"
         );
 
-        return await this.InstallSamples_Async( dbConnection, sampleTerm, defaultUserId );
+        return await this.InstallSamples_Async( dbConnection, sampleTerm );
     }
 
     
@@ -86,12 +84,8 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
 
     public async Task<IEnumerable<UserPostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
-                SimpleUserId simpleUserId,
                 ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params parameters,
                 bool alsoGetEntries ) {
-        if( simpleUserId == 0 ) {
-            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
-        }
         if( parameters.Ids.Any(id => id == 0) ) {
             throw new ArgumentException( "Some UserPostsContextIds are not valid (must be non-zero)." );
         }
@@ -99,18 +93,25 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
 
         string sql1 = $@"SELECT * FROM {TableName} AS MyContext
             WHERE MyContext.SimpleUserId = @UserId;";
-        var sqlParams1 = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
+        var sqlParams1 = new Dictionary<string, object>();
 
+        bool needsAnd = false;
+        
         if( parameters.Ids.Length >= 2 ) {
-            sql1 += " AND MyContext.Id IN @Ids;";
+            sql1 += " MyContext.Id IN @Ids;";
             sqlParams1.Add( "@Ids", parameters.Ids );
+            needsAnd = true;
         } else if( parameters.Ids.Length == 1 ) {
-            sql1 += " AND MyContext.Id = @Id;";
+            sql1 += " MyContext.Id = @Id;";
             sqlParams1.Add( "@Id", parameters.Ids[0] );
+            needsAnd = true;
         }
 
         if( parameters.NameContains is not null ) {
-            sql1 += " AND MyContext.Name LIKE @NamePattern;";   // TODO: Validate
+            if( needsAnd ) {
+                sql1 += " AND";
+            }
+            sql1 += " MyContext.Name LIKE @NamePattern;";   // TODO: Validate
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
         }
 
@@ -138,22 +139,18 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
     }
 
 
-    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Create_Async(
+    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> Create_Async(
                 IDbConnection dbCon,
-                UserPostsContextObject.Raw parameters ) {
-        if( parameters.SimpleUserId == 0 ) {
-            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
-        }
-        if( UserPostsContextObject.ValidateName(parameters.Name) ) {
+                UserPostsContextObject.Prototype parameters ) {
+        if( UserPostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "UserPostsContext Name is not valid." );
         }
 
         long userPostsContextId = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (SimpleUserId, Name, Description) 
-                VALUES (@SimpleUserId, @Name, @Description);
+            $@"INSERT INTO {TableName} (Name, Description) 
+                VALUES (@Name, @Description);
             SELECT LAST_INSERT_ID();",
             new {
-                SimpleUserId = parameters.SimpleUserId,
                 Name = parameters.Name,
                 Description = parameters.Description,
             }
@@ -173,17 +170,17 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
             );
         }
 
-        return new ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return( (UserPostsContextId)userPostsContextId );
+        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return( (UserPostsContextId)userPostsContextId );
     }
 
 
-    public async Task<ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return> Update_Async(
+    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> Update_Async(
                 IDbConnection dbCon,
-                UserPostsContextObject.Raw parameters ) {
-        if( parameters.Id == 0 ) {
-            throw new ArgumentException( "UserPostsContext Id is not valid (must be non-zero)." );
+                UserPostsContextObject.Prototype parameters ) {
+        if( parameters.Id == 0 || parameters.Id is null ) {
+            throw new ArgumentException( "UserPostsContext Id is not valid (must be non-zero and non-null)." );
         }
-        if( UserPostsContextObject.ValidateName(parameters.Name) ) {
+        if( UserPostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "UserPostsContext Name is not valid." );
         }
 
@@ -222,6 +219,8 @@ this.Logger.LogInformation( $"Deleted {rowsAffected} existing entries for UserPo
             );
         }
 
-        return new ClientDataAccess_UserPostsContext.CreateForCurrentUser_Return( parameters.Id );
+        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return(
+            parameters.Id ?? throw new InvalidOperationException("UserPostsContextObject.Prototype.Id cannot be null for update.")
+        );
     }
 }

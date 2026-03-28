@@ -16,16 +16,16 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     private async Task<bool> InstallSamples_Async(
                 IDbConnection dbConnection,
                 SimpleUserId defaultUserId,
-                UserPostsContextObject.Raw sampleContext ) {
-        var sampleRaw = new UserAppDataObject.Raw {
-            SimpleUserId = defaultUserId,
-            UserPostsContextId = sampleContext.Id
-        };
+                UserPostsContextId sampleContextId ) {
+        var sampleRaw = UserAppDataObject.CreateRaw(
+            simpleUserId: defaultUserId,
+            userPostsContextId: sampleContextId
+        );
 
         await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
-            userPostsContextId: sampleContext.Id
+            userPostsContextId: sampleContextId
         );
 
         return true;

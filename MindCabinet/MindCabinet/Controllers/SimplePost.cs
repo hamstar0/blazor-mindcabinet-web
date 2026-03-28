@@ -80,12 +80,12 @@ public class SimplePostController : ControllerBase {
             parameters: parameters,
             skipHistory: false
         );
-        return new SimplePostObject.Raw {
-            Id = simplePostId,
+        return SimplePostObject.CreateRaw(
+            id: simplePostId,
             //SimpleUserId = this.SessionData.UserOfSession.Id,
-            Body = parameters.Body,
-            Created = DateTime.UtcNow,
-            TagsTermIdSet = parameters.TermIds.ToArray()
-        };
+            created: DateTime.UtcNow,
+            body: parameters.Body,
+            tagsTermIdSet: parameters.TermIds.ToArray()
+        );
     }
 }

@@ -28,20 +28,20 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 		this.Id = id;
 		this.Term = term;
 		this.Context = context is not null
-            ? new TermObject.Raw {
-                Id = context.Id,
-                Term = context.Term,
-                ContextTermId = context.Context?.Id,
-                AliasTermId = context.Alias?.Id
-            }
+            ? TermObject.CreateRaw(
+                id: context.Id,
+                term: context.Term,
+                contextTermId: context.Context?.Id,
+                aliasTermId: context.Alias?.Id
+            )
             : null;
 		this.Alias = alias is not null
-            ? new TermObject.Raw {
-                Id = alias.Id,
-                Term = alias.Term,
-                ContextTermId = alias.Context?.Id,
-                AliasTermId = alias.Alias?.Id
-            }
+            ? TermObject.CreateRaw(
+                id: alias.Id,
+                term: alias.Term,
+                contextTermId: alias.Context?.Id,
+                aliasTermId: alias.Alias?.Id
+            )
             : null;
     }
 

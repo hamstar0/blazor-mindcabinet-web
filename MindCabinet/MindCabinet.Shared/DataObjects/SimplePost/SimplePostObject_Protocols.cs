@@ -6,6 +6,19 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public partial class SimplePostObject : IEquatable<SimplePostObject> {
+    public static Raw CreateRaw(
+            SimplePostId id,
+            DateTime created,
+            string body,
+            TermId[] tagsTermIdSet ) {
+        return new Raw {
+            Id = id,
+            Created = created,
+            Body = body,
+            TagsTermIdSet = tagsTermIdSet
+        };
+    }
+
     public class Raw : IRawDataObject {
         public SimplePostId Id { get; set; }
 
@@ -16,7 +29,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
         public TermId[] TagsTermIdSet { get; set; } = [];
 
 
-        
+
         public async Task<SimplePostObject> CreateDataObject_Async(
                     Func<TermId[], Task<TermObject[]>> termsFactory ) {
             return new SimplePostObject(

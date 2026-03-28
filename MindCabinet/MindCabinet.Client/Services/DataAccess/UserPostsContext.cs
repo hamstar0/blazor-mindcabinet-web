@@ -80,14 +80,14 @@ public partial class ClientDataAccess_UserPostsContext(
     //     return ret;
     // }
 
-    public class CreateForCurrentUser_Return( UserPostsContextId id ) {
+    public class CreateOrUpdate_Return( UserPostsContextId id ) {
         public UserPostsContextId Id { get; } = id;
     }
 
     public const string CreateForCurrentUser_Path = "UserPostsContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
+    public async Task<CreateOrUpdate_Return> CreateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -99,7 +99,7 @@ public partial class ClientDataAccess_UserPostsContext(
 
         msg.EnsureSuccessStatusCode();
 
-        CreateForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<CreateForCurrentUser_Return>();
+        CreateOrUpdate_Return? ret = await msg.Content.ReadFromJsonAsync<CreateOrUpdate_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize CreateForCurrentUser_Return" );
         }
@@ -111,7 +111,7 @@ public partial class ClientDataAccess_UserPostsContext(
     public const string UpdateForCurrentUser_Path = "UserPostsContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateForCurrentUser_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
+    public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -123,7 +123,7 @@ public partial class ClientDataAccess_UserPostsContext(
 
         msg.EnsureSuccessStatusCode();
 
-        CreateForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<CreateForCurrentUser_Return>();
+        CreateOrUpdate_Return? ret = await msg.Content.ReadFromJsonAsync<CreateOrUpdate_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize CreateForCurrentUser_Return (Update)" );
         }

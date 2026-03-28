@@ -4,6 +4,19 @@ namespace MindCabinet.Shared.DataObjects.Term;
 
 
 public partial class TermObject {
+    public static Raw CreateRaw(
+            TermId id,
+            string term,
+            TermId? contextTermId = null,
+            TermId? aliasTermId = null ) {
+        return new Raw {
+            Id = id,
+            Term = term,
+            ContextTermId = contextTermId,
+            AliasTermId = aliasTermId
+        };
+    }
+
     public class Raw : IRawDataObject {
         public TermId Id { get; set; } = default;
         public string Term { get; set; } = "";

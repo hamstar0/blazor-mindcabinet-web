@@ -44,16 +44,6 @@ public partial class UserPostsContextObject : IDataObject {
         return this.Entries
             .Where( e => !e.IsRequired );
     }
-    
-
-    public UserPostsContextObject.Raw ToRaw() {
-        return new UserPostsContextObject.Raw {
-            Id = this.Id,
-            Name = this.Name ?? "",
-            Description = this.Description,
-            Entries = this.Entries.Select( e => e.ToRaw(this.Id) ).ToArray()
-        };
-    }
 
 
     public override string ToString() {

@@ -20,7 +20,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
                 SimpleUserId defaultUserId,
-                UserPostsContextObject.Raw sampleContext ) {
+                UserPostsContextId sampleContextId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
@@ -32,7 +32,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             );"
         );
 
-        return await this.InstallSamples_Async( dbConnection, defaultUserId, sampleContext );
+        return await this.InstallSamples_Async( dbConnection, defaultUserId, sampleContextId );
     }
     
 
@@ -64,19 +64,23 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             throw new ArgumentException( "UserPostsContextId is not valid (must be non-zero)." );
         }
 
-        long _ = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (SimpleUserId, UserPostsContextId) 
-                VALUES (@SimpleUserId, @UserPostsContextId);
-            SELECT LAST_INSERT_ID();",
-            new {
-                SimpleUserId = (long)simpleUserId,
-                UserPostsContextId = (long)userPostsContextId
-            }
-        );
+        try {
+            long _ = await dbCon.ExecuteScalarAsync<long>(
+                $@"INSERT INTO {TableName} (SimpleUserId, UserPostsContextId) 
+                    VALUES (@SimpleUserId, @UserPostsContextId);
+                SELECT LAST_INSERT_ID();",
+                new {
+                    SimpleUserId = (long)simpleUserId,
+                    UserPostsContextId = (long)userPostsContextId
+                }
+            );
+        } catch( Exception e ) { //when ( ex.Number == 1062 ) {
+            throw new InvalidOperationException( $"Record could not be created (SimpleUserId: {simpleUserId}, UserPostsContextId: {userPostsContextId})", e );
+        }
 
-        return new UserAppDataObject.Raw {
-            SimpleUserId = simpleUserId,
-            UserPostsContextId = userPostsContextId
-        };
+        return UserAppDataObject.CreateRaw(
+            simpleUserId: simpleUserId,
+            userPostsContextId: userPostsContextId
+        );
     }
 }

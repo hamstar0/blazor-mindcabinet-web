@@ -29,9 +29,9 @@ public partial class UserAppDataObject : IDataObject {
 	}
 
 	public UserAppDataObject.Raw ToRaw() {
-		return new UserAppDataObject.Raw() {
-			SimpleUserId = this.SimpleUserId,
-			UserPostsContextId = this.UserPostsContext.Id
-		};
+		return UserAppDataObject.CreateRaw(
+			simpleUserId: this.SimpleUserId,
+			userPostsContextId: this.UserPostsContext.Id
+		);
 	}
 }

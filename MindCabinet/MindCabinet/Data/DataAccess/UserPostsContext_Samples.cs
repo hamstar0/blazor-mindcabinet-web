@@ -13,14 +13,15 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
     private async Task<(bool success, UserPostsContextObject.Raw userPostsContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
-                TermObject.Raw sampleTerm,
-                SimpleUserId defaultUserId ) {
-        var sampleRawEntry = new UserPostsContextTermEntryObject.Raw {
-            TermId = sampleTerm.Id,
-            Priority = 1.0,
-            IsRequired = true
-        };
-        var sampleRawCtx = new UserPostsContextObject.Raw {
+                TermObject.Raw sampleTerm ) {
+        var sampleRawEntry = UserPostsContextTermEntryObject.CreateRaw(
+            userPostsContextId: (UserPostsContextId)(-1), // special case
+            termId: sampleTerm.Id,
+            priority: 1.0,
+            isRequired: true
+        );
+        var protoSampleCtx = new UserPostsContextObject.Prototype {
+            Id = (UserPostsContextId)(-1),  // special case
             Name = "Default Context",
             Description = "A sample user context.",
             Entries = [sampleRawEntry]
@@ -28,10 +29,13 @@ public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
 
         UserPostsContextId usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
-            parameters: sampleRawCtx
+            parameters: protoSampleCtx
         )).Id;
 
-        sampleRawCtx.Id = usrCtxId;
+        protoSampleCtx.Id = usrCtxId;   // annoying!
+        protoSampleCtx.Entries[0].UserPostsContextId = usrCtxId;   // annoying!
+
+        var sampleRawCtx = protoSampleCtx.ToRaw();
 
         return (true, sampleRawCtx);
     }
