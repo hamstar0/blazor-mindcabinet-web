@@ -67,12 +67,12 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         
         SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
             dbCon: dbConnection,
-            parameters: new ClientDataAccess_SimpleUsers.Create_Params(
-                name: "hamstar",   // temporary!!!!!
-                email: "hamstarhelper@gmail.com",
-                password: "12345A",
-                isValidated: true
-            ),
+            parameters: new ClientDataAccess_SimpleUsers.Create_Params {
+                Name = "hamstar",   // temporary!!!!!
+                Email = "hamstarhelper@gmail.com",
+                Password = "12345A",
+                IsValidated = true
+            },
             detectCollision: false
         );
         //throw new Exception( JsonSerializer.Serialize(obj) );

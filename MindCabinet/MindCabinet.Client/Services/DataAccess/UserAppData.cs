@@ -14,12 +14,12 @@ public partial class ClientDataAccess_UserAppData( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
-    public class GetById_Params( long simpleUserId ) {
-        public long SimpleUserId { get; } = simpleUserId;
+    public class GetById_Params {
+        public long SimpleUserId { get; set; }
     }
 
-    public class GetById_Return( UserAppDataObject.Raw? userAppData ) {
-        public UserAppDataObject.Raw? UserAppData { get; } = userAppData;
+    public class GetById_Return {
+        public UserAppDataObject.Raw? UserAppData { get; set; }
     }
 
     public const string GetById_Path = "UserAppData";

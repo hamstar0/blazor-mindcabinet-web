@@ -170,7 +170,7 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
             );
         }
 
-        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return( (UserPostsContextId)userPostsContextId );
+        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return { Id = (UserPostsContextId)userPostsContextId };
     }
 
 
@@ -218,8 +218,8 @@ public partial class ServerDataAccess_UserPostsContexts( ILogger<ServerDataAcces
             );
         }
 
-        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return(
-            parameters.Id ?? throw new InvalidOperationException("UserPostsContextObject.Prototype.Id cannot be null for update.")
-        );
+        return new ClientDataAccess_UserPostsContext.CreateOrUpdate_Return {
+            Id = parameters.Id ?? throw new InvalidOperationException("UserPostsContextObject.Prototype.Id cannot be null for update.")
+        };
     }
 }

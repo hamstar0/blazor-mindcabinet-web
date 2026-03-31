@@ -39,16 +39,12 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
     }
 
 
-    public class GetByCriteria_Params(
-                string termPattern,
-                TermId? contextTermId,
-                string? contextTermPattern ) {
-                // PrimitiveOptional<long>? contextContextTermId
-        public string TermPattern { get; } = termPattern;
+    public class GetByCriteria_Params {
+        public string TermPattern { get; set; } = "";
 
-        public TermId? ContextTermId { get; } = contextTermId;
+        public TermId? ContextTermId { get; set; }
 
-        public string? ContextTermPattern { get; } = contextTermPattern;
+        public string? ContextTermPattern { get; set; }
 
         // public PrimitiveOptional<long>? ContextContextTermId { get; } = contextContextTermId;
     }
@@ -81,20 +77,15 @@ public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAcce
     }
 
 
-    public class Create_Params(
-                string termPattern,
-                TermObject? context,
-                TermObject? alias ) {
-        public string TermPattern { get; } = termPattern;
-        public TermObject? Context { get; } = context;
-        public TermObject? Alias { get; } = alias;
+    public class Create_Params {
+        public string TermPattern { get; set; } = "";
+        public TermId? ContextId { get; set; }
+        public TermId? AliasId { get; set; }
     }
 
-    public class Create_Return(
-                bool isAdded,
-                TermObject.Raw term ) {
-        public bool IsAdded { get; } = isAdded;
-        public TermObject.Raw TermRaw { get; } = term;
+    public class Create_Return {
+        public bool IsAdded { get; set; }
+        public TermObject.Raw TermRaw { get; set; } = null!;
     }
 
     public const string Create_Path = "Term";

@@ -53,7 +53,7 @@ public class SimplePostController : ControllerBase {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
-        return new ClientDataAccess_SimplePosts.GetByCriteria_Return( posts );
+        return new ClientDataAccess_SimplePosts.GetByCriteria_Return { Posts = posts };
     }
 
     [HttpPost(ClientDataAccess_SimplePosts.GetCountByCriteria_Route)]

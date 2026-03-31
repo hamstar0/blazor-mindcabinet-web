@@ -10,7 +10,7 @@
 
 
 <div component-name="UserPostsContextEditor" class=@this.AddedClasses>
-	<h4>Enter a name to represent a given circumstance ("context"):</h4>
+	<h4 tooltip="AKA an arbitrary circumstance or phenomenon to be described">Context name:</h4>
 	<input type="text"
 			placeholder="Enter context name"
 			@bind:event="oninput"
@@ -38,12 +38,13 @@
 		</PerTermAffix>
 	</TermSetEditor>
 	<div>
+		<div>Context options:</div>
 		<button @onclick=@(async () => await this.NewContext_UI_Async(false))>
-			New
+			Create New
 		</button>
 		<button disabled=@(!this.CanSaveCurrentContext())
 				@onclick=@this.SaveContext_UI_Async>
-			Save
+			Save Changes
 		</button>
 	</div>
 </div>

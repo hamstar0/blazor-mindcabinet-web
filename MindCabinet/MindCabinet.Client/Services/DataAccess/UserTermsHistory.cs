@@ -14,8 +14,8 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
     private ClientSessionData SessionData = sessionData;
 
 
-    public class GetTermIdsForCurrentUser_Params { //( long userId ) {
-        //public long UserId { get; } = userId;
+    public class GetTermIdsForCurrentUser_Params {
+        //public long UserId { get; set; }
     }
 
     public const string GetTermIdsForCurrentUser_Path = "UserTermsHistory";
@@ -42,11 +42,9 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
     }
 
 
-    public class AddTermsForCurrentUser_Params(
-                //SimpleUserId simpleUserId,
-                TermId termId ) {
-        //public SimpleUserId SimpleUserId { get; } = simpleUserId;
-        public TermId TermId { get; } = termId;
+    public class AddTermsForCurrentUser_Params {
+        //public SimpleUserId SimpleUserId { get; set; }
+        public TermId TermId { get; set; }
     }
 
     public const string AddTermsForCurrentUser_Path = "UserTermsHistory";

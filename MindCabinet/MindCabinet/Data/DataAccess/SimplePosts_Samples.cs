@@ -17,19 +17,19 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 SimpleUserId defaultUserId ) {
         ClientDataAccess_Terms.Create_Return sampleTerm = await termsData.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.Create_Params("Sample", null, null)
+            new ClientDataAccess_Terms.Create_Params { TermPattern = "Sample", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.Create_Return term1 = await termsData.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.Create_Params("Term1", null, null)
+            new ClientDataAccess_Terms.Create_Params { TermPattern = "Term1", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.Create_Return term2 = await termsData.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.Create_Params("Term2", null, null)
+            new ClientDataAccess_Terms.Create_Params { TermPattern = "Term2", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.Create_Return term3 = await termsData.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.Create_Params("Term3", null, null)
+            new ClientDataAccess_Terms.Create_Params { TermPattern = "Term3", ContextId = null, AliasId = null }
         );
         
 // termSetsData.CreateForSimplePost_Async

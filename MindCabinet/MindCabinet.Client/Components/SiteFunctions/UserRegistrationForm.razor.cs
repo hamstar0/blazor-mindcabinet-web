@@ -75,12 +75,12 @@ public partial class UserRegistrationForm : ComponentBase {
         }
 
         ClientDataAccess_SimpleUsers.Create_Return ret = await this.SimpleUsersData.Create_Async(
-            new ClientDataAccess_SimpleUsers.Create_Params(
-                name: userName,
-                email: email,
-                password: password,
-                isValidated: false
-            )
+            new ClientDataAccess_SimpleUsers.Create_Params { 
+                Name = userName,
+                Email = email,
+                Password = password,
+                IsValidated = false
+            }
         );
 
         if( ret.User is not null ) {

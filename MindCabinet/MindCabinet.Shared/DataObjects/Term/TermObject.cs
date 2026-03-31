@@ -67,7 +67,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     public override bool Equals( object? obj ) {
         return obj is TermObject
 			? this.EqualsTermShallow( obj as TermObject )
-            : base.Equals( obj );
+            : base.Equals( obj );   // Equatable anonymous object?
     }
 
 	public bool Equals( TermObject? other ) {
@@ -76,7 +76,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public bool EqualsTermShallow( TermObject? other ) {
 		if( other is null ) { return false; }
-		if( ReferenceEquals(this, other) ) { return true; }
+		if( Object.ReferenceEquals(this, other) ) { return true; }
 
         if( this.Id != other.Id ) {
             return false;

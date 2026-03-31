@@ -62,11 +62,11 @@ public partial class TermRender : ComponentBase {
 
         if( termRaws.Any(t => t.FavTermId == this.Term.Id) ) {
             await this.UserTermFavoritesData.RemoveTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params( [this.Term.Id] )
+                new ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
             );
         } else {
             await this.UserTermFavoritesData.AddTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Params( [this.Term.Id] )
+                new ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
             );
         }
     }

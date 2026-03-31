@@ -24,8 +24,8 @@ public partial class ClientDataAccess_UserPostsContext(
         public UserPostsContextId[] Ids { get; set; } = [];
     }
 
-    public class Get_Return( IEnumerable<UserPostsContextObject.Raw> contexts ) {
-        public IEnumerable<UserPostsContextObject.Raw> Contexts { get; } = contexts;
+    public class Get_Return {
+        public IEnumerable<UserPostsContextObject.Raw> Contexts { get; set; } = [];
     }
 
     public const string GetForCurrentUserByCriteria_Path = "UserPostsContext";
@@ -80,8 +80,8 @@ public partial class ClientDataAccess_UserPostsContext(
     //     return ret;
     // }
 
-    public class CreateOrUpdate_Return( UserPostsContextId id ) {
-        public UserPostsContextId Id { get; } = id;
+    public class CreateOrUpdate_Return {
+        public UserPostsContextId Id { get; set; }
     }
 
     public const string CreateForCurrentUser_Path = "UserPostsContext";

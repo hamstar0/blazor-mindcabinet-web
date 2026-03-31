@@ -117,7 +117,7 @@ public partial class TermEditor : ComponentBase {
 
 
     private async Task<bool> TrySubmitNewTerm_Async( string termText, TermObject? context = null ) {
-        if( termText.Length < 2 ) {
+        if( !TermObject.ValidateTerm(termText) ) {
             return false;
         }
 
@@ -132,11 +132,11 @@ public partial class TermEditor : ComponentBase {
         this.SearchOptions = new List<TermObject>();
         // this.SearchPosition = 0;
 
-        return await this.SubmitNewTerm_Async( termText! );
+        return await this.SubmitNewTerm_Async( termText!, context );
     }
-    private async Task<bool> SubmitNewTerm_Async( string termText ) {
+    private async Task<bool> SubmitNewTerm_Async( string termText, TermObject? contextTerm ) {
         ClientDataAccess_Terms.Create_Return newTermRet = await this.TermsData.Create_Async(
-            new ClientDataAccess_Terms.Create_Params( termText, null, null )
+            new ClientDataAccess_Terms.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
         TermObject newTerm = await ClientDataAccess_Terms.ToObject_Async( this.TermsData, newTermRet.TermRaw );
@@ -166,7 +166,7 @@ public partial class TermEditor : ComponentBase {
         }
 
         IEnumerable<TermObject.Raw> termsRaw = (await this.TermsData.GetByCriteria_Async(
-            new ClientDataAccess_Terms.GetByCriteria_Params( termText!, null, null )
+            new ClientDataAccess_Terms.GetByCriteria_Params { TermPattern = termText!, ContextTermId = null, ContextTermPattern = null }
         )).Terms;
 
         this.SearchOptions = await Task.WhenAll(

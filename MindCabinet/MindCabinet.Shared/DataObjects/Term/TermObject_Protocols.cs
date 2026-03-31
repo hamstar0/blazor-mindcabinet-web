@@ -24,8 +24,7 @@ public partial class TermObject {
         public TermId? AliasTermId { get; set; } = null;
 
         
-        public async Task<TermObject> CreateDataObject_Async(
-                    Func<TermId, Task<TermObject.Raw>> termRawFactory ) {
+        public async Task<TermObject> CreateDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,
@@ -37,5 +36,15 @@ public partial class TermObject {
                     : null
             );
         }
+    }
+
+
+    public TermObject.Raw ToRaw() {
+        return TermObject.CreateRaw(
+            id: this.Id,
+            term: this.Term,
+            contextTermId: this.Context?.Id,
+            aliasTermId: this.Alias?.Id
+        );
     }
 }

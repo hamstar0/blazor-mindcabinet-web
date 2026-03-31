@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using MindCabinet.Client.Components.Application.Renders;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
@@ -11,7 +10,7 @@ using MindCabinet.Shared.DataObjects.UserTermHistory;
 namespace MindCabinet.Client.Components.Application.Pickers;
 
 
-public partial class TermSearch : ComponentBase {
+public partial class _TermSearch : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
@@ -26,9 +25,6 @@ public partial class TermSearch : ComponentBase {
 
     [Inject]
     private ClientSessionData Session { get; set; } = null!;
-
-
-    private MultiTermRender SearchResultsElement = null!;
 
 
     [Parameter]
@@ -80,10 +76,49 @@ public partial class TermSearch : ComponentBase {
             this.TermsData,
             histTerms.ToArray()
         );
+        // this.RecentTerms_Cache = await this.TermsData.GetByIds_Async(
+        //     histTerms
+        //         .OrderByDescending( x => x.Created )
+        //         .Select( x => x.TermId )
+        // );
     }
 
 
-    private async Task SearchTerms_Async( string termText ) {
+    private async Task HandleInput_Async( KeyboardEventArgs arg ) {
+        int optionCount = this.SearchOptions.Count();
+        if( optionCount == 0 ) {
+            return;
+        }
+
+        bool isEnter = arg.Key == "Enter" || arg.Code == "NumpadEnter";
+
+        switch( arg.Key ) {
+        case "ArrowUp":
+            this.IsCurrentInputSuppressed = optionCount > 0;
+            this.SearchPosition--;
+            break;
+        case "ArrowDown":
+            this.IsCurrentInputSuppressed = optionCount > 0;
+            this.SearchPosition++;
+            break;
+        }
+        if( isEnter ) {
+            this.IsCurrentInputSuppressed = optionCount > 0;
+        }
+
+        this.SearchPosition = Math.Clamp( this.SearchPosition, 0, optionCount - 1 );
+
+Console.WriteLine( $"SelectSearchResults_Async 1: {arg.Key}, {optionCount}, {this.SearchPosition}" );
+        if( isEnter && optionCount > 0 ) {
+Console.WriteLine( $"SelectSearchResults_Async 2: '{this.SearchOptions[this.SearchPosition]}'." );
+            await this.SelectSearchResults_Async( this.SearchOptions[this.SearchPosition] );
+        }
+
+        //this.Value = this.SearchOptions[ this.SearchPosition ]?.Term ?? "";
+    }
+
+
+    private async Task SearchAndStoreTerms_Async( string termText ) {
         IEnumerable<TermObject.Raw> rawTerms = (await this.TermsData.GetByCriteria_Async(
             new ClientDataAccess_Terms.GetByCriteria_Params { TermPattern = termText, ContextTermId = null, ContextTermPattern = null }
         )).Terms;
@@ -96,8 +131,11 @@ public partial class TermSearch : ComponentBase {
     private async Task SelectSearchResults_Async( TermObject term ) {
         this.Value = term.Term ?? "";
 
-        this.SearchOptions = new List<TermObject>();
-
         await this.OnTermSelect_Async.Invoke( term );
+
+       // await this.Js.InvokeVoidAsync(
+       //     "window.TermInputComponent.SetTermSearchResult",
+       //     new object[] { this.InputElement, term.ToString() ?? "" }
+       //);
     }
 }

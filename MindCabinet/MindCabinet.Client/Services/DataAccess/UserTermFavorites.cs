@@ -42,8 +42,8 @@ public partial class ClientDataAccess_UserTermFavorites( HttpClient http, Client
     }
 
 
-    public class AddTermsForCurrentUser_Params( TermId[] termIds ) {
-        public TermId[] TermIds { get; } = termIds;
+    public class AddTermsForCurrentUser_Params {
+        public TermId[] TermIds { get; set; } = [];
     }
 
     public const string AddTermsForCurrentUser_Path = "UserTermFavorites";
@@ -63,8 +63,8 @@ public partial class ClientDataAccess_UserTermFavorites( HttpClient http, Client
     }
 
 
-    public class RemoveTermsForCurrentUser_Params( TermId[] termIds ) {
-        public TermId[] TermIds { get; } = termIds;
+    public class RemoveTermsForCurrentUser_Params {
+        public TermId[] TermIds { get; set; } = [];
     }
 
     public const string RemoveTermsForCurrentUser_Path = "UserTermFavorites";

@@ -21,20 +21,16 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
     //    public DateTime? CreatedAfter { get; } = createdAfter;
     //}
 
-    public class Create_Params(
-                string name,
-                string email,
-                string password,
-                bool isValidated ) {
-        public string Name { get; } = name;
-        public string Email { get; } = email;
-        public string Password { get; } = password;
-        public bool IsValidated { get; } = isValidated;
+    public class Create_Params {
+        public string Name { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public bool IsValidated { get; set; }
     }
     
-    public class Create_Return( SimpleUserObject.ClientObject? user, string status ) {
-        public SimpleUserObject.ClientObject? User { get; } = user;
-        public string Status { get; } = status;
+    public class Create_Return {
+        public SimpleUserObject.ClientObject? User { get; set; }
+        public string Status { get; set; } = "";
     }
 
     public const string Create_Path = "SimpleUser";
@@ -57,16 +53,14 @@ public class ClientDataAccess_SimpleUsers( HttpClient http ) : IClientDataAccess
     }
 
 
-    public class Login_Params(
-                string name,
-                string password) {
-        public string Name { get; } = name;
-        public string Password { get; } = password;
+    public class Login_Params {
+        public string Name { get; set; } = "";
+        public string Password { get; set; } = "";
     }
 
-    public class Login_Return( SimpleUserObject.ClientObject? user, string status ) {
-        public SimpleUserObject.ClientObject? User { get; } = user;
-        public string Status { get; } = status;
+    public class Login_Return {
+        public SimpleUserObject.ClientObject? User { get; set; }
+        public string Status { get; set; } = "";
     }
 
     public const string Login_Path = "SimpleUser";

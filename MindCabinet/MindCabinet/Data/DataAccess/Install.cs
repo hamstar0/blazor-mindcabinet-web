@@ -17,6 +17,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
+                ServerDataAccess_UserTermsHistory historyTermsData,
                 ServerDataAccess_UserPostsContexts userPostsContextData,
                 ServerDataAccess_UserAppData userAppData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
@@ -53,6 +54,10 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
         success = await favoriteTermsData.Install_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        success = await historyTermsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }

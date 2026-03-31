@@ -134,14 +134,14 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
 		IEnumerable<TermObject.Raw> matchingTerms = await this.GetTermsByCriteria_Async(
             dbCon: dbCon,
-			parameters: new ClientDataAccess_Terms.GetByCriteria_Params(
-				termPattern: parameters.TermPattern,
-                contextTermId: parameters.Context?.Id,
-                contextTermPattern: parameters.Context?.Term
-			)
+			parameters: new ClientDataAccess_Terms.GetByCriteria_Params {
+				TermPattern = parameters.TermPattern,
+                ContextTermId = parameters.ContextId,
+                ContextTermPattern = null
+            }
 		);
 		if( matchingTerms.Count() == 1 ) {
-			return new ClientDataAccess_Terms.Create_Return( false, matchingTerms.First() );
+			return new ClientDataAccess_Terms.Create_Return { IsAdded = false, TermRaw = matchingTerms.First() };
 		} else if( matchingTerms.Count() >= 2 ) {
             throw new Exception( "Multiple matching terms found." );
         }
@@ -153,19 +153,19 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             //SELECT SCOPE_IDENTITY()
             new {
                 Term = parameters.TermPattern,
-                ContextId = parameters.Context?.Id,
-                AliasId = parameters.Alias?.Id,
+                ContextId = parameters.ContextId,
+                AliasId = parameters.AliasId,
             }
         );
 
         var newTerm = TermObject.CreateRaw(
 			id: (TermId)newId,
 			term: parameters.TermPattern,
-			contextTermId: parameters.Context?.Id,
-			aliasTermId: parameters.Alias?.Id
+			contextTermId: parameters.ContextId,
+			aliasTermId: parameters.AliasId
 		);
 		this.TermsById_Cache[ (TermId)newId ] = newTerm;
 
-        return new ClientDataAccess_Terms.Create_Return( true, newTerm );
+        return new ClientDataAccess_Terms.Create_Return { IsAdded = true, TermRaw = newTerm };
     }
 }

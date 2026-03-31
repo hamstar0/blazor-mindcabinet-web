@@ -54,6 +54,8 @@ public partial class UserPostsContextEditor : ComponentBase {
 
 
 	private async Task AddNewTag_Async( TermObject newTag ) {
+        await Task.CompletedTask;
+        
         UserPostsContextId id = this.InitialContext?.Id
             ?? throw new InvalidOperationException("Invalid prototype id.");
 
@@ -68,6 +70,8 @@ public partial class UserPostsContextEditor : ComponentBase {
 	}
 
 	private async Task RemoveTag_Async( TermObject newTag ) {
+        await Task.CompletedTask;
+        
         List<UserPostsContextTermEntryObject.Raw> entries = this.CurrentContextPrototype.Entries.ToList();
 
         for( int i = 0; i < entries.Count; i++ ) {

@@ -14,17 +14,12 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
-    public class GetByCriteria_Params(
-                string? bodyPattern,
-                TermId[] allTagIds,
-                bool sortAscendingByDate,
-                int pageNumber,
-                int postsPerPage ) {
-        public string? BodyPattern { get; } = bodyPattern;
-        public TermId[] AllTagIds { get; } = allTagIds;
-        public bool SortAscendingByDate { get; } = sortAscendingByDate;
-        public int PageNumber { get; } = pageNumber;
-        public int PostsPerPage { get; } = postsPerPage;
+    public class GetByCriteria_Params {
+        public string? BodyPattern { get; set; }
+        public TermId[] AllTagIds { get; set; } = [];
+        public bool SortAscendingByDate { get; set; }
+        public int PageNumber { get; set; }
+        public int PostsPerPage { get; set; }
 
 
         public override string ToString() {
@@ -37,8 +32,8 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
         }
     }
 
-    public class GetByCriteria_Return( IEnumerable<SimplePostObject.Raw> posts ) {
-        public IEnumerable<SimplePostObject.Raw> Posts { get; } = posts;
+    public class GetByCriteria_Return {
+        public IEnumerable<SimplePostObject.Raw> Posts { get; set; } = [];
     }
 
     public const string GetByCriteria_Path = "SimplePost";
@@ -84,11 +79,9 @@ public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDa
     }
 
 
-    public class Create_Params(
-                string body,
-                TermId[] termIds ) {
-        public string Body { get; } = body;
-        public TermId[] TermIds { get; } = termIds;
+    public class Create_Params {
+        public string Body { get; set; } = "";
+        public TermId[] TermIds { get; set; } = [];
     }
     
     public const string Create_Path = "SimplePost";

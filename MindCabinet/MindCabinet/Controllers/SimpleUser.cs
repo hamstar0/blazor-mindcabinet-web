@@ -49,7 +49,7 @@ public partial class SimpleUserController : ControllerBase {
     public async Task<ClientDataAccess_SimpleUsers.Create_Return> Create_Async(
                 ClientDataAccess_SimpleUsers.Create_Params parameters ) {
         if( parameters.IsValidated ) {
-            return new ClientDataAccess_SimpleUsers.Create_Return( null, "Not permitted." );
+            return new ClientDataAccess_SimpleUsers.Create_Return { User = null, Status = "Not permitted." };
         }
         if( !this.ServerSessionData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
@@ -72,13 +72,13 @@ public partial class SimpleUserController : ControllerBase {
         // }
         this.Logger.LogInformation( $"User already exists? {result.AlreadyExists}" );
 
-        return new ClientDataAccess_SimpleUsers.Create_Return(
-            result.User is not null
+        return new ClientDataAccess_SimpleUsers.Create_Return {
+            User = result.User is not null
                 ? new SimpleUserObject.ClientObject( result.User.Id, result.User.Name, result.User.Created, result.User.Email )
                 : null,
-            result.User is not null
+            Status = result.User is not null
                 ? "User created. Validate email address and log in to complete registration."
                 : "Could not create user."
-        );
+        };
     }
 }

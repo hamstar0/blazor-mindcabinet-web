@@ -40,7 +40,7 @@ public class UserPostsContextController(
             alsoGetEntries: true
         );
 
-        return new ClientDataAccess_UserPostsContext.Get_Return( contexts );
+        return new ClientDataAccess_UserPostsContext.Get_Return { Contexts = contexts };
     }
 
     [HttpPost(ClientDataAccess_UserPostsContext.CreateForCurrentUser_Route)]

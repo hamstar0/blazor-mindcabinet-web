@@ -219,9 +219,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 termHistoryData.AddTerm_Async(
                     dbCon,
                     simpleUserId,
-                    new ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params(
-                        termId: termId
-                    )
+                    new ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params {
+                        TermId = termId
+                    }
                 )
             ) );
         }
