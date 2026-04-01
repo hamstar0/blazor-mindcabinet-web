@@ -11,12 +11,12 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserPostsContext : IClientDataAccess {
+public partial class ClientDataAccess_PostsContext : IClientDataAccess {
     public static async Task<UserPostsContextObject[]> ToObjects_Async(
                 ClientDataAccess_Terms termsData,
                 UserPostsContextObject.Raw[] entriesRaw ) {
         return await Task.WhenAll(
-            entriesRaw.Select( entryRaw => ClientDataAccess_UserPostsContext.ToObject_Async(termsData, entryRaw) )
+            entriesRaw.Select( entryRaw => ClientDataAccess_PostsContext.ToObject_Async(termsData, entryRaw) )
         );
     }
 
@@ -25,7 +25,7 @@ public partial class ClientDataAccess_UserPostsContext : IClientDataAccess {
                 UserPostsContextObject.Raw entryRaw ) {
         Func<UserPostsContextTermEntryObject.Raw[], Task<UserPostsContextTermEntryObject[]>> ctxTermEntriesFactory = 
             async ctxTermEntriesRaw => {
-                return await ClientDataAccess_UserPostsContext.ToTermEntryObjects_Async( termsData, ctxTermEntriesRaw );
+                return await ClientDataAccess_PostsContext.ToTermEntryObjects_Async( termsData, ctxTermEntriesRaw );
             };
 
         return await entryRaw.CreateDataObject_Async( ctxTermEntriesFactory );

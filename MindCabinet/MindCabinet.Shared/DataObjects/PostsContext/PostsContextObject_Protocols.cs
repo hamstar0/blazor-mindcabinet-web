@@ -4,12 +4,12 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserPostsContextObject {
+public partial class PostsContextObject {
     public static Raw CreateRaw(
-            UserPostsContextId id,
+            PostsContextId id,
             string name,
             string? description,
-            UserPostsContextTermEntryObject.Raw[] entries ) {
+            PostsContextTermEntryObject.Raw[] entries ) {
         return new Raw {
             Id = id,
             Name = name,
@@ -19,20 +19,20 @@ public partial class UserPostsContextObject {
     }
 
     public class Raw : IRawDataObject {
-        public UserPostsContextId Id { get; set; } = default;
+        public PostsContextId Id { get; set; } = default;
 
         public string Name { get; set; } = "";
 
         public string? Description { get; set; }
 
-        public UserPostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
+        public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
-        public async Task<UserPostsContextObject> CreateDataObject_Async(
-                    Func<UserPostsContextTermEntryObject.Raw[], Task<UserPostsContextTermEntryObject[]>> ctxTermsFactory ) {
-            UserPostsContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
+        public async Task<PostsContextObject> CreateDataObject_Async(
+                    Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory ) {
+            PostsContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
 
-            return new UserPostsContextObject(
+            return new PostsContextObject(
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
@@ -41,20 +41,20 @@ public partial class UserPostsContextObject {
         }
 
         
-        public IEnumerable<UserPostsContextTermEntryObject.Raw> GetRequiredEntries() {
+        public IEnumerable<PostsContextTermEntryObject.Raw> GetRequiredEntries() {
             return this.Entries
                 .Where( e => e.IsRequired );
         }
 
-        public IEnumerable<UserPostsContextTermEntryObject.Raw> GetOptionalEntries() {
+        public IEnumerable<PostsContextTermEntryObject.Raw> GetOptionalEntries() {
             return this.Entries
                 .Where( e => !e.IsRequired );
         }
     }
     
 
-    public UserPostsContextObject.Raw ToRaw() {
-        return UserPostsContextObject.CreateRaw(
+    public PostsContextObject.Raw ToRaw() {
+        return PostsContextObject.CreateRaw(
             id: this.Id,
             name: this.Name ?? "",
             description: this.Description,

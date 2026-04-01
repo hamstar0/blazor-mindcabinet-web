@@ -5,7 +5,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserPostsContextObject {
+public partial class PostsContextObject {
     public const int MaxNameLength = 64;
 
 

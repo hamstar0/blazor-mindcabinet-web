@@ -1,6 +1,6 @@
 ﻿@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.PostsContext
 @using MindCabinet.Shared.DataObjects.Term;
-@using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 
@@ -9,7 +9,7 @@
         style="background-color: white;"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
-    @foreach( UserPostsContextObject context in this.Contexts ) {
+    @foreach( PostsContextObject context in this.Contexts ) {
         <UserPostsContextRender
                 AddedClasses="ib"
                 Context=@context
@@ -20,7 +20,7 @@
 
 
 @code {
-    private async Task OnClickEach_UI_Async( UserPostsContextObject context, MouseEventArgs args ) {
+    private async Task OnClickEach_UI_Async( PostsContextObject context, MouseEventArgs args ) {
         if( this.OnClick_Async is not null ) {
             //this.HasFocus = await this.OnClickEach_Async( term, args );
             await this.OnClick_Async( context, args );

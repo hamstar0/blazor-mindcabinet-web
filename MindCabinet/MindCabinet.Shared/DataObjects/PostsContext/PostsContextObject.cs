@@ -4,28 +4,28 @@ using MindCabinet.Shared.DataObjects;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public enum UserPostsContextId : long { }
+public enum PostsContextId : long { }
 
 
 
-public partial class UserPostsContextObject : IDataObject {
-    public UserPostsContextId Id { get; }
+public partial class PostsContextObject : IDataObject {
+    public PostsContextId Id { get; }
 
     public string Name { get; }
     
     public string? Description { get; }
 
-    public UserPostsContextTermEntryObject[] Entries { get; }
+    public PostsContextTermEntryObject[] Entries { get; }
 
 
 
-    public UserPostsContextObject(
-            UserPostsContextId id,
+    public PostsContextObject(
+            PostsContextId id,
             string name,
             string? description,
-            UserPostsContextTermEntryObject[] entries ) {
+            PostsContextTermEntryObject[] entries ) {
         if( id == 0 ) {
-            throw new ArgumentException( $"Id cannot be 0 in {nameof(UserPostsContextObject)}." );
+            throw new ArgumentException( $"Id cannot be 0 in {nameof(PostsContextObject)}." );
         }
 
         this.Id = id;
@@ -35,12 +35,12 @@ public partial class UserPostsContextObject : IDataObject {
     }
 
 
-    public IEnumerable<UserPostsContextTermEntryObject> GetRequiredEntries() {
+    public IEnumerable<PostsContextTermEntryObject> GetRequiredEntries() {
         return this.Entries
             .Where( e => e.IsRequired );
     }
 
-    public IEnumerable<UserPostsContextTermEntryObject> GetOptionalEntries() {
+    public IEnumerable<PostsContextTermEntryObject> GetOptionalEntries() {
         return this.Entries
             .Where( e => !e.IsRequired );
     }

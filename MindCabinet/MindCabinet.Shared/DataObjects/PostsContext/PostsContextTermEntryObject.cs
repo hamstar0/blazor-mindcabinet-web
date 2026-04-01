@@ -4,7 +4,7 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserPostsContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
+public partial class PostsContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
     //public UserPostsContextObject UserPostsContext { get; } = userPostsContext;
     public TermObject Term { get; } = term;
 

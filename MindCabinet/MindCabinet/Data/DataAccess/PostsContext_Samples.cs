@@ -10,24 +10,24 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserPostsContexts : IServerDataAccess {
-    private async Task<(bool success, UserPostsContextObject.Raw userPostsContext)> InstallSamples_Async(
+public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
+    private async Task<(bool success, PostsContextObject.Raw userPostsContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm ) {
-        var sampleRawEntry = UserPostsContextTermEntryObject.CreateRaw(
-            userPostsContextId: (UserPostsContextId)(-1), // special case
+        var sampleRawEntry = PostsContextTermEntryObject.CreateRaw(
+            userPostsContextId: (PostsContextId)(-1), // special case
             termId: sampleTerm.Id,
             priority: 1.0,
             isRequired: true
         );
-        var protoSampleCtx = new UserPostsContextObject.Prototype {
-            Id = (UserPostsContextId)(-1),  // special case
+        var protoSampleCtx = new PostsContextObject.Prototype {
+            Id = (PostsContextId)(-1),  // special case
             Name = "Default Context",
             Description = "A sample user context.",
             Entries = [sampleRawEntry]
         };
 
-        UserPostsContextId usrCtxId = (await this.Create_Async(
+        PostsContextId usrCtxId = (await this.Create_Async(
             dbCon: dbConnection,
             parameters: protoSampleCtx
         )).Id;

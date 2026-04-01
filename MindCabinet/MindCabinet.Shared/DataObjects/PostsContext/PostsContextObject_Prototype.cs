@@ -5,19 +5,19 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserPostsContextObject {
+public partial class PostsContextObject {
     public class Prototype {
-        public UserPostsContextId? Id { get; set; }
+        public PostsContextId? Id { get; set; }
 
         public string? Name { get; set; }
         
         public string? Description { get; set; }
 
-        public UserPostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
+        public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
 
-        public bool Matches( UserPostsContextObject other ) {
+        public bool Matches( PostsContextObject other ) {
             if( this.Id != other.Id ) {
                 return false;
             }
@@ -32,8 +32,8 @@ public partial class UserPostsContextObject {
             }
             
             for( int i = 0; i < this.Entries.Length; i++ ) {
-                UserPostsContextTermEntryObject.Raw entryA = this.Entries[i];
-                UserPostsContextTermEntryObject entryB = other.Entries[i];
+                PostsContextTermEntryObject.Raw entryA = this.Entries[i];
+                PostsContextTermEntryObject entryB = other.Entries[i];
 
                 if( entryA.TermId != entryB.Term.Id
                         || entryA.Priority != entryB.Priority
@@ -55,18 +55,18 @@ public partial class UserPostsContextObject {
                 && this.Entries.Length > 0;
         }
 
-        public UserPostsContextObject.Raw ToRaw( bool validateId ) {
+        public PostsContextObject.Raw ToRaw( bool validateId ) {
             if( !this.IsValid(validateId) ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
 
-            foreach( UserPostsContextTermEntryObject.Raw entry in this.Entries ) {
+            foreach( PostsContextTermEntryObject.Raw entry in this.Entries ) {
                 if( entry.UserPostsContextId != this.Id ) {
                     throw new InvalidOperationException("All entries must have the same UserPostsContextId as the prototype.");
                 }
             }
             
-            return UserPostsContextObject.CreateRaw(
+            return PostsContextObject.CreateRaw(
                 id: this.Id ?? throw new InvalidOperationException("Cannot create raw entry from prototype with null Id."),
                 name: this.Name ?? "",
                 description: this.Description,

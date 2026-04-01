@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserPostsContext(
+public partial class ClientDataAccess_PostsContext(
             HttpClient http,
             ClientSessionData sessionData
         ) : IClientDataAccess {

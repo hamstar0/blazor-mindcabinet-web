@@ -4,9 +4,9 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
-public partial class UserPostsContextTermEntryObject {
+public partial class PostsContextTermEntryObject {
     public static Raw CreateRaw(
-            UserPostsContextId userPostsContextId,
+            PostsContextId userPostsContextId,
             TermId termId,
             double priority,
             bool isRequired ) {
@@ -19,7 +19,7 @@ public partial class UserPostsContextTermEntryObject {
     }
 
     public class Raw : IRawDataObject {
-        public UserPostsContextId UserPostsContextId { get; set; } = default;
+        public PostsContextId UserPostsContextId { get; set; } = default;
 
         public TermId TermId { get; set; } = default;
 
@@ -28,9 +28,9 @@ public partial class UserPostsContextTermEntryObject {
         public bool IsRequired { get; set; } = default;
 
 
-		public async Task<UserPostsContextTermEntryObject> CreateDataObject_Async(
+		public async Task<PostsContextTermEntryObject> CreateDataObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
-            return new UserPostsContextTermEntryObject(
+            return new PostsContextTermEntryObject(
                 term: await termFactory( this.TermId ),
                 priority: this.Priority,
                 isRequired: this.IsRequired
@@ -39,7 +39,7 @@ public partial class UserPostsContextTermEntryObject {
 	}
 
 
-    public Raw ToRaw( UserPostsContextId contextId ) {
+    public Raw ToRaw( PostsContextId contextId ) {
         return new Raw {
             UserPostsContextId = contextId,
             TermId = this.Term.Id,
