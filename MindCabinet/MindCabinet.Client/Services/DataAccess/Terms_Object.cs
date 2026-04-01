@@ -4,7 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess;

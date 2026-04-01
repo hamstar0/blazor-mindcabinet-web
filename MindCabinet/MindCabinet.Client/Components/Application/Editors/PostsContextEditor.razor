@@ -4,12 +4,12 @@
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.PostsContext;
 @using MindCabinet.Shared.DataObjects.Term;
-@using MindCabinet.Shared.DataObjects.UserPostsContext
 
 
 
-<div component-name="UserPostsContextEditor" class=@this.AddedClasses>
+<div component-name="PostsContextEditor" class=@this.AddedClasses>
 	<h4 tooltip="AKA an arbitrary circumstance or phenomenon to be described">Context name:</h4>
 	<input type="text"
 			placeholder="Enter context name"
@@ -49,7 +49,7 @@
 
 <RenderPortal TargetRegion="ModalDialogs">
 	<Modal @ref=@this.ResetPromptDialogComponent
-			ModalId=@( "UserPostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
+			ModalId=@( "PostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
 			Title="Confirm Context Creation">
 		<BodyContent>
 			<i>You have unsaved changes. Remove all changes?</i>
@@ -79,7 +79,7 @@
 			.Priority ?? 0;
 	}
 
-	private UserPostsContextTermEntryObject.Raw GetFirstMatchingPrototypeTagEntry( TermId id ) {
+	private PostsContextTermEntryObject.Raw GetFirstMatchingPrototypeTagEntry( TermId id ) {
 		return this.CurrentContextPrototype
 			.Entries
 			.First( t => t.TermId == id );
@@ -96,7 +96,7 @@
     }
 
 	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
-		UserPostsContextTermEntryObject.Raw? changedTagEntry = null;
+		PostsContextTermEntryObject.Raw? changedTagEntry = null;
 
 		if( isAdded ) {
 			changedTagEntry = await this.AddNewTag_Async( changedTag );
@@ -112,7 +112,7 @@
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
-		UserPostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+		PostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
@@ -123,7 +123,7 @@
 	
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
         await Task.CompletedTask;
-		UserPostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+		PostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 

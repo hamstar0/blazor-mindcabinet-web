@@ -1,5 +1,5 @@
 ﻿using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 

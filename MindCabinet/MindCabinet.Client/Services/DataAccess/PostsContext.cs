@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -21,14 +21,14 @@ public partial class ClientDataAccess_PostsContext(
     public class GetForCurrentUserByCriteria_Params {
         public string? NameContains { get; set; }
 
-        public UserPostsContextId[] Ids { get; set; } = [];
+        public PostsContextId[] Ids { get; set; } = [];
     }
 
     public class Get_Return {
-        public IEnumerable<UserPostsContextObject.Raw> Contexts { get; set; } = [];
+        public IEnumerable<PostsContextObject.Raw> Contexts { get; set; } = [];
     }
 
-    public const string GetForCurrentUserByCriteria_Path = "UserPostsContext";
+    public const string GetForCurrentUserByCriteria_Path = "PostsContext";
     public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
     public async Task<Get_Return> GetForCurrentUserByCriteria_Async(
@@ -57,14 +57,14 @@ public partial class ClientDataAccess_PostsContext(
     //     public SimpleUserId UserId { get; } = userId;
     // }
 
-    // public class GetByUserId_Return( IEnumerable<UserPostsContext.UserPostsContextWithTermEntries_DbData> contexts ) {
-    //     public IEnumerable<UserPostsContext.UserPostsContextWithTermEntries_DbData> Contexts { get; } = contexts;
+    // public class GetByUserId_Return( IEnumerable<PostsContext.PostsContextWithTermEntries_DbData> contexts ) {
+    //     public IEnumerable<PostsContext.PostsContextWithTermEntries_DbData> Contexts { get; } = contexts;
     // }
 
-    // public const string GetByUserId_Path = "UserPostsContext";
+    // public const string GetByUserId_Path = "PostsContext";
     // public const string GetByUserId_Route = "GetByUserId";
 
-    // public async Task<IEnumerable<UserPostsContextObject>> GetByUserId_Async( GetByUserId_Params parameters ) {
+    // public async Task<IEnumerable<PostsContextObject>> GetByUserId_Async( GetByUserId_Params parameters ) {
     //     HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
     //         $"{GetByUserId_Path}/{GetByUserId_Route}",
     //         parameters
@@ -72,22 +72,22 @@ public partial class ClientDataAccess_PostsContext(
         
     //     msg.EnsureSuccessStatusCode();
         
-    //     IEnumerable<UserPostsContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserPostsContextObject>>();
+    //     IEnumerable<PostsContextObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<PostsContextObject>>();
     //     if( ret is null ) {
-    //         throw new InvalidDataException( "Could not deserialize IEnumerable<UserPostsContextObject>" );
+    //         throw new InvalidDataException( "Could not deserialize IEnumerable<PostsContextObject>" );
     //     }
 
     //     return ret;
     // }
 
     public class CreateOrUpdate_Return {
-        public UserPostsContextId Id { get; set; }
+        public PostsContextId Id { get; set; }
     }
 
-    public const string CreateForCurrentUser_Path = "UserPostsContext";
+    public const string CreateForCurrentUser_Path = "PostsContext";
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
-    public async Task<CreateOrUpdate_Return> CreateForCurrentUser_Async( UserPostsContextObject.Raw parameters ) {
+    public async Task<CreateOrUpdate_Return> CreateForCurrentUser_Async( PostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -108,15 +108,15 @@ public partial class ClientDataAccess_PostsContext(
     }
     
 
-    public const string UpdateForCurrentUser_Path = "UserPostsContext";
+    public const string UpdateForCurrentUser_Path = "PostsContext";
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
-    public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( UserPostsContextObject.Prototype parameters ) {
+    public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( PostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( parameters.Id is null || parameters.Id == 0 ) {
-            throw new ArgumentException( "UserPostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
+            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(

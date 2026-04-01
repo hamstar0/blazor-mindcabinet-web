@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -23,7 +23,7 @@ public partial class Sidebar {
     private ClientSessionData SessionData { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
+    private ClientDataAccess_PostsContext PostsContextsData { get; set; } = null!;
 
 
     [Parameter]
@@ -34,6 +34,6 @@ public partial class Sidebar {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterUserPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
+        await this.SessionData.RegisterPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
 	}
 }

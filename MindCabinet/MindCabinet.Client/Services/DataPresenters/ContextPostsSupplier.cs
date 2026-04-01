@@ -7,7 +7,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 namespace MindCabinet.Client.Services.DataPresenters;
 
@@ -16,14 +16,14 @@ namespace MindCabinet.Client.Services.DataPresenters;
 public partial class ContextPostsSupplier(
             ILogger<ContextPostsSupplier> logger,
             ClientSessionData sessionData,
-            ClientDataAccess_UserPostsContext userPostsContextsData,
+            ClientDataAccess_PostsContext postsContextsData,
             ClientDataAccess_PrioritizedPosts postsData
         ) : IClientDataProcessors {
     private ILogger<ContextPostsSupplier> Logger = logger;
 
     private ClientSessionData SessionData = sessionData;
 
-    private ClientDataAccess_UserPostsContext UserPostsContextsData = userPostsContextsData;
+    private ClientDataAccess_PostsContext PostsContextsData = postsContextsData;
     
     private ClientDataAccess_PrioritizedPosts PostsData = postsData;
 
@@ -39,14 +39,14 @@ public partial class ContextPostsSupplier(
     public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
-        UserPostsContextObject? userPostsContext = this.SessionData.GetCurrentContext();
-        if( userPostsContext is null ) {
+        PostsContextObject? postsContext = this.SessionData.GetCurrentContext();
+        if( postsContext is null ) {
             return [];
         }
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
-                userPostsContextId: userPostsContext.Id,
+                postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: true,
@@ -57,12 +57,12 @@ public partial class ContextPostsSupplier(
 
         var postPriorities = posts.Select( post => new KeyValuePair<SimplePostId, double?>(
             key: post.Id,
-            value: this.GetPriority(userPostsContext, post)
+            value: this.GetPriority(postsContext, post)
         ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
 
         if( postPriorities.ContainsValue(null) ) {
             this.Logger.LogWarning(
-                $"Some posts returned for context {userPostsContext.ToString()} have null priority."
+                $"Some posts returned for context {postsContext.ToString()} have null priority."
             );
         }
         
@@ -73,14 +73,14 @@ public partial class ContextPostsSupplier(
 
     public async Task<int> GetCurrentContextPostCount_Async(
                 TermId[] addedFilterTagIds ) {
-        UserPostsContextObject? currCtx = this.SessionData.GetCurrentContext();
+        PostsContextObject? currCtx = this.SessionData.GetCurrentContext();
         if( currCtx is null ) {
             return 0;
         }
 
         int totalPosts = await this.PostsData.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
-                userPostsContextId: currCtx.Id,
+                postsContextId: currCtx.Id,
                 bodyPattern: null,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: true,
@@ -93,11 +93,11 @@ public partial class ContextPostsSupplier(
     }
 
 
-    public double? GetPriority( UserPostsContextObject ctx, SimplePostObject post ) {
+    public double? GetPriority( PostsContextObject ctx, SimplePostObject post ) {
         double totalPriority = 0;
         int matchedCount = 0;
 
-        foreach( UserPostsContextTermEntryObject entry in ctx.Entries ) {
+        foreach( PostsContextTermEntryObject entry in ctx.Entries ) {
             if( post.Tags.FirstOrDefault(t => t.Id == entry.Term.Id) is not null ) {
                 matchedCount++;
                 totalPriority += entry.Priority;

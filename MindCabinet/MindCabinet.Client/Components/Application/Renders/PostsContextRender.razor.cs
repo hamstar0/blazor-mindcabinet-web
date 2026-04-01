@@ -9,7 +9,7 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class UserPostsContextRender : ComponentBase {
+public partial class PostsContextRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 

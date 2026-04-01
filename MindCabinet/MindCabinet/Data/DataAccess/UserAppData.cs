@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -20,15 +20,15 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection,
                 SimpleUserId defaultUserId,
-                UserPostsContextId sampleContextId ) {
+                PostsContextId sampleContextId ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
-                UserPostsContextId BIGINT NOT NULL,
+                PostsContextId BIGINT NOT NULL,
                  CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_UserPostsContextId FOREIGN KEY (UserPostsContextId)
-                    REFERENCES {ServerDataAccess_UserPostsContexts.TableName}(Id)
+                 CONSTRAINT FK_{TableName}_PostsContextId FOREIGN KEY (PostsContextId)
+                    REFERENCES {ServerDataAccess_PostsContexts.TableName}(Id)
             );"
         );
 
@@ -56,31 +56,31 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                UserPostsContextId userPostsContextId ) {
+                PostsContextId postsContextId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
-        if( userPostsContextId == 0 ) {
-            throw new ArgumentException( "UserPostsContextId is not valid (must be non-zero)." );
+        if( postsContextId == 0 ) {
+            throw new ArgumentException( "PostsContextId is not valid (must be non-zero)." );
         }
 
         try {
             long _ = await dbCon.ExecuteScalarAsync<long>(
-                $@"INSERT INTO {TableName} (SimpleUserId, UserPostsContextId) 
-                    VALUES (@SimpleUserId, @UserPostsContextId);
+                $@"INSERT INTO {TableName} (SimpleUserId, PostsContextId) 
+                    VALUES (@SimpleUserId, @PostsContextId);
                 SELECT LAST_INSERT_ID();",
                 new {
                     SimpleUserId = (long)simpleUserId,
-                    UserPostsContextId = (long)userPostsContextId
+                    PostsContextId = (long)postsContextId
                 }
             );
         } catch( Exception e ) { //when ( ex.Number == 1062 ) {
-            throw new InvalidOperationException( $"Record could not be created (SimpleUserId: {simpleUserId}, UserPostsContextId: {userPostsContextId})", e );
+            throw new InvalidOperationException( $"Record could not be created (SimpleUserId: {simpleUserId}, PostsContextId: {postsContextId})", e );
         }
 
         return UserAppDataObject.CreateRaw(
             simpleUserId: simpleUserId,
-            userPostsContextId: userPostsContextId
+            postsContextId: postsContextId
         );
     }
 }

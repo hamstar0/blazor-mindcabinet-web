@@ -3,7 +3,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 
 
@@ -11,11 +11,11 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
-    private async Task<(bool success, PostsContextObject.Raw userPostsContext)> InstallSamples_Async(
+    private async Task<(bool success, PostsContextObject.Raw postsContext)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm ) {
         var sampleRawEntry = PostsContextTermEntryObject.CreateRaw(
-            userPostsContextId: (PostsContextId)(-1), // special case
+            postsContextId: (PostsContextId)(-1), // special case
             termId: sampleTerm.Id,
             priority: 1.0,
             isRequired: true
@@ -27,13 +27,13 @@ public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
             Entries = [sampleRawEntry]
         };
 
-        PostsContextId usrCtxId = (await this.Create_Async(
+        PostsContextId ctxId = (await this.Create_Async(
             dbCon: dbConnection,
             parameters: protoSampleCtx
         )).Id;
 
-        protoSampleCtx.Id = usrCtxId;   // annoying!
-        protoSampleCtx.Entries[0].UserPostsContextId = usrCtxId;   // annoying!
+        protoSampleCtx.Id = ctxId;   // annoying!
+        protoSampleCtx.Entries[0].PostsContextId = ctxId;   // annoying!
 
         var sampleRawCtx = protoSampleCtx.ToRaw( true );
 

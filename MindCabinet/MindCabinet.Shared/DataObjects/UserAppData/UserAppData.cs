@@ -1,5 +1,5 @@
 ﻿using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
@@ -10,28 +10,28 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class UserAppDataObject : IDataObject {
 	public SimpleUserId SimpleUserId { get; private set; }
 
-	public UserPostsContextObject UserPostsContext { get; private set; }
+	public PostsContextObject PostsContext { get; private set; }
 
 
 
-	public UserAppDataObject( SimpleUserId simpleUserId, UserPostsContextObject userPostsContext ) {
+	public UserAppDataObject( SimpleUserId simpleUserId, PostsContextObject postsContext ) {
 		if( simpleUserId == 0 ) {
 			throw new ArgumentException( "SimpleUserId cannot be 0 in UserAppDataObject." );
 		}
 
 		this.SimpleUserId = simpleUserId;
-		this.UserPostsContext = userPostsContext;
+		this.PostsContext = postsContext;
 	}
 
 
-	public void SetUserPostsContext( UserPostsContextObject context ) {	// i hate this
-		this.UserPostsContext = context;
+	public void SetPostsContext( PostsContextObject context ) {	// i hate this
+		this.PostsContext = context;
 	}
 
 	public UserAppDataObject.Raw ToRaw() {
 		return UserAppDataObject.CreateRaw(
 			simpleUserId: this.SimpleUserId,
-			userPostsContextId: this.UserPostsContext.Id
+			postsContextId: this.PostsContext.Id
 		);
 	}
 }

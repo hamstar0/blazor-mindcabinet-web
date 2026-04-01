@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
-namespace MindCabinet.Shared.DataObjects.UserPostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 
 public enum PostsContextId : long { }

@@ -7,7 +7,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 namespace MindCabinet.Client.Components.Application;
 
@@ -64,7 +64,7 @@ public partial class ContextPostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() {
-        UserPostsContextObject? context = this.SessionData.GetCurrentContext();
+        PostsContextObject? context = this.SessionData.GetCurrentContext();
         if( context is null ) {
             return [];
         }

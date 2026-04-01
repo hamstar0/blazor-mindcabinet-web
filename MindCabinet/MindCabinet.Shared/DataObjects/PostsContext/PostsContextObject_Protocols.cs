@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserPostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 
 public partial class PostsContextObject {

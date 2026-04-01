@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -13,12 +13,12 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_PostsContexts> logger ) : IServerDataAccess {
-    public const string TableName = "UserPostsContexts";
-    public const string EntriesTableName = "UserPostsContextEntries";
+    public const string TableName = "PostsContexts";
+    public const string EntriesTableName = "PostsContextEntries";
 
 
 
-    public async Task<(bool success, PostsContextObject.Raw userPostsContext)> Install_Async(
+    public async Task<(bool success, PostsContextObject.Raw postsContext)> Install_Async(
                 IDbConnection dbConnection,
                 TermObject.Raw sampleTerm ) {
         await dbConnection.ExecuteAsync( $@"
@@ -32,12 +32,12 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         );
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {EntriesTableName} (
-                UserPostsContextId BIGINT NOT NULL,
+                PostsContextId BIGINT NOT NULL,
                 TermId BIGINT NOT NULL,
                 Priority DOUBLE NOT NULL,
                 IsRequired BOOLEAN NOT NULL,
-                 PRIMARY KEY (UserPostsContextId, TermId),
-                 CONSTRAINT FK_{EntriesTableName}_UserPostsContextId FOREIGN KEY (UserPostsContextId)
+                 PRIMARY KEY (PostsContextId, TermId),
+                 CONSTRAINT FK_{EntriesTableName}_PostsContextId FOREIGN KEY (PostsContextId)
                     REFERENCES {TableName}(Id),
                  CONSTRAINT FK_{EntriesTableName}_TermId FOREIGN KEY (TermId)
                     REFERENCES {ServerDataAccess_Terms.TableName}(Id)
@@ -55,15 +55,15 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
 
     public async Task<PostsContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                PostsContextId userPostsContextId,
+                PostsContextId postsContextId,
                 bool alsoGetEntries ) {
-        if( userPostsContextId == 0 ) {
-            throw new ArgumentException( "UserPostsContextId is not valid (must be non-zero)." );
+        if( postsContextId == 0 ) {
+            throw new ArgumentException( "PostsContextId is not valid (must be non-zero)." );
         }
 
         var raw = await dbCon.QuerySingleOrDefaultAsync<PostsContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE Id = @Id",
-            new { Id = (long)userPostsContextId }
+            new { Id = (long)postsContextId }
         );
         if( raw is null ) {
             return null;
@@ -71,10 +71,10 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
 
         if( alsoGetEntries ) {
             raw.Entries = (await dbCon.QueryAsync<PostsContextTermEntryObject.Raw>(
-                $@"SELECT MyCtxEntries.UserPostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+                $@"SELECT MyCtxEntries.PostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                     FROM {EntriesTableName} AS MyCtxEntries
-                    WHERE MyCtxEntries.UserPostsContextId = @UserPostsContextId;",
-                new { UserPostsContextId = (long)userPostsContextId }
+                    WHERE MyCtxEntries.PostsContextId = @PostsContextId;",
+                new { PostsContextId = (long)postsContextId }
             )).ToArray();
         }
 
@@ -87,7 +87,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         if( parameters.Ids.Any(id => id == 0) ) {
-            throw new ArgumentException( "Some UserPostsContextIds are not valid (must be non-zero)." );
+            throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
         }
 
 
@@ -122,11 +122,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             );
 
         if( alsoGetEntries ) {
-            string sql2 = $@"SELECT MyCtxEntries.UserPostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
+            string sql2 = $@"SELECT MyCtxEntries.PostsContextId, MyCtxEntries.TermId, MyCtxEntries.Priority, MyCtxEntries.IsRequired
                 FROM {EntriesTableName} AS MyCtxEntries
-                WHERE MyCtxEntries.UserPostsContextId = @UserPostsContextId;";
+                WHERE MyCtxEntries.PostsContextId = @PostsContextId;";
             foreach( PostsContextObject.Raw ctx in contexts ) {
-                var sqlParams2 = new Dictionary<string, object> { { "@UserPostsContextId", ctx.Id } };
+                var sqlParams2 = new Dictionary<string, object> { { "@PostsContextId", ctx.Id } };
 
                 ctx.Entries = (await dbCon.QueryAsync<PostsContextTermEntryObject.Raw>(
                     sql2,
@@ -143,10 +143,10 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 IDbConnection dbCon,
                 PostsContextObject.Prototype parameters ) {
         if( PostsContextObject.ValidateName(parameters.Name ?? "") ) {
-            throw new ArgumentException( "UserPostsContext Name is not valid." );
+            throw new ArgumentException( "PostsContext Name is not valid." );
         }
 
-        long userPostsContextId = await dbCon.ExecuteScalarAsync<long>(
+        long postsContextId = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} (Name, Description) 
                 VALUES (@Name, @Description);
             SELECT LAST_INSERT_ID();",
@@ -156,13 +156,13 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             }
         );
 
-        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (UserPostsContextId, TermId, Priority, IsRequired) 
-                VALUES (@UserPostsContextId, @TermId, @Priority, @IsRequired);";
+        string sqlInsertEntries = $@"INSERT INTO {EntriesTableName} (PostsContextId, TermId, Priority, IsRequired) 
+                VALUES (@PostsContextId, @TermId, @Priority, @IsRequired);";
         foreach( PostsContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    UserPostsContextId = userPostsContextId,
+                    PostsContextId = postsContextId,
                     TermId = entry.TermId,
                     Priority = entry.Priority,
                     IsRequired = entry.IsRequired
@@ -170,7 +170,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             );
         }
 
-        return new ClientDataAccess_PostsContext.CreateOrUpdate_Return { Id = (PostsContextId)userPostsContextId };
+        return new ClientDataAccess_PostsContext.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
     }
 
 
@@ -178,10 +178,10 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 IDbConnection dbCon,
                 PostsContextObject.Prototype parameters ) {
         if( parameters.Id == 0 || parameters.Id is null ) {
-            throw new ArgumentException( "UserPostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
+            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
         if( PostsContextObject.ValidateName(parameters.Name ?? "") ) {
-            throw new ArgumentException( "UserPostsContext Name is not valid." );
+            throw new ArgumentException( "PostsContext Name is not valid." );
         }
 
         await dbCon.ExecuteAsync(
@@ -197,20 +197,20 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         
         int rowsAffected = await dbCon.ExecuteAsync(
             $@"DELETE FROM {EntriesTableName}
-                WHERE UserPostsContextId = @UserPostsContextId;",
+                WHERE PostsContextId = @PostsContextId;",
             new {
-                UserPostsContextId = parameters.Id
+                PostsContextId = parameters.Id
             }
         );
 
         string sqlInsertEntries = $@"INSERT INTO {EntriesTableName}
-            (UserPostsContextId, TermId, Priority, IsRequired) 
-            VALUES (@UserPostsContextId, @TermId, @Priority, @IsRequired);";
+            (PostsContextId, TermId, Priority, IsRequired) 
+            VALUES (@PostsContextId, @TermId, @Priority, @IsRequired);";
         foreach( PostsContextTermEntryObject.Raw entry in parameters.Entries ) {
             await dbCon.ExecuteAsync(
                 sqlInsertEntries,
                 new {
-                    UserPostsContextId = (long)parameters.Id,
+                    PostsContextId = (long)parameters.Id,
                     TermId = (long)entry.TermId,
                     Priority = (long)entry.Priority,
                     IsRequired = entry.IsRequired
@@ -219,7 +219,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         }
 
         return new ClientDataAccess_PostsContext.CreateOrUpdate_Return {
-            Id = parameters.Id ?? throw new InvalidOperationException("UserPostsContextObject.Prototype.Id cannot be null for update.")
+            Id = parameters.Id ?? throw new InvalidOperationException("PostsContextObject.Prototype.Id cannot be null for update.")
         };
     }
 }

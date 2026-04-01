@@ -3,7 +3,7 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.DataObjects;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -44,7 +44,7 @@ public partial class ServerSessionData(
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimpleUsers userData,
                 ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_UserPostsContexts userPostsContextsData,
+                ServerDataAccess_PostsContexts postsContextsData,
                 bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.CurrentSessionId) || this.RespCookies is null ) {
             return false;
@@ -60,7 +60,7 @@ public partial class ServerSessionData(
         if( sessId is null ) {
             this.LoadNewSessionAndNoUser();
         } else {
-            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, termsData, userData, userAppData, userPostsContextsData, sessId, isInstalling );
+            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, termsData, userData, userAppData, postsContextsData, sessId, isInstalling );
         }
 // this.Logger.LogInformation( $"SESS: {sessId}, IP: {this.IpAddress}, User: {this.UserOfSession?.Name} ({isLoggedIn})" );
 
@@ -88,7 +88,7 @@ public partial class ServerSessionData(
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimpleUsers userData,
                 ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_UserPostsContexts userPostsContextsData,
+                ServerDataAccess_PostsContexts postsContextsData,
                 string sessId,
                 bool isInstalling ) {
         this.CurrentSessionId = sessId;
@@ -103,7 +103,7 @@ public partial class ServerSessionData(
             UserAppDataObject.Raw? userAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
 
             this.UserAppDataOfSession = userAppDataRaw is not null
-                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, userPostsContextsData, userAppDataRaw )
+                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, postsContextsData, userAppDataRaw )
                 : null;
         }
 

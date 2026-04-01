@@ -4,7 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -12,18 +12,18 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_PostsContext : IClientDataAccess {
-    public static async Task<UserPostsContextObject[]> ToObjects_Async(
+    public static async Task<PostsContextObject[]> ToObjects_Async(
                 ClientDataAccess_Terms termsData,
-                UserPostsContextObject.Raw[] entriesRaw ) {
+                PostsContextObject.Raw[] entriesRaw ) {
         return await Task.WhenAll(
             entriesRaw.Select( entryRaw => ClientDataAccess_PostsContext.ToObject_Async(termsData, entryRaw) )
         );
     }
 
-    public static async Task<UserPostsContextObject> ToObject_Async(
+    public static async Task<PostsContextObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
-                UserPostsContextObject.Raw entryRaw ) {
-        Func<UserPostsContextTermEntryObject.Raw[], Task<UserPostsContextTermEntryObject[]>> ctxTermEntriesFactory = 
+                PostsContextObject.Raw entryRaw ) {
+        Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermEntriesFactory = 
             async ctxTermEntriesRaw => {
                 return await ClientDataAccess_PostsContext.ToTermEntryObjects_Async( termsData, ctxTermEntriesRaw );
             };
@@ -32,9 +32,9 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
     }
 
 
-    public static async Task<UserPostsContextTermEntryObject[]> ToTermEntryObjects_Async(
+    public static async Task<PostsContextTermEntryObject[]> ToTermEntryObjects_Async(
                 ClientDataAccess_Terms termsData,
-                UserPostsContextTermEntryObject.Raw[] ctxTermEntriesRaw ) {
+                PostsContextTermEntryObject.Raw[] ctxTermEntriesRaw ) {
         TermId[] termIds = ctxTermEntriesRaw.Select( t => t.TermId ).ToArray();
         IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
             .Terms;

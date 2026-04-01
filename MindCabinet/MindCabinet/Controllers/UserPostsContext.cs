@@ -4,7 +4,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using System.Text.Json;
 
@@ -14,59 +14,59 @@ namespace MindCabinet.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserPostsContextController(
-                ILogger<UserPostsContextController> logger,
+public class PostsContextController(
+                ILogger<PostsContextController> logger,
                 DbAccess dbAccess,
-                ServerDataAccess_UserPostsContexts userPostsContextsData,
+                ServerDataAccess_PostsContexts postsContextsData,
                 ServerSessionData sessionData ) : ControllerBase {
-    private readonly ILogger<UserPostsContextController> Logger = logger;
+    private readonly ILogger<PostsContextController> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
 
-    private readonly ServerDataAccess_UserPostsContexts UserPostsContextsData = userPostsContextsData;
+    private readonly ServerDataAccess_PostsContexts PostsContextsData = postsContextsData;
 
     private readonly ServerSessionData SessionData = sessionData;
 
 
 
-    [HttpPost(ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Route)]
-    public async Task<ClientDataAccess_UserPostsContext.Get_Return> GetForCurrentUserByCriteria_Async(
-                ClientDataAccess_UserPostsContext.GetForCurrentUserByCriteria_Params parameters ) {
+    [HttpPost(ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Route)]
+    public async Task<ClientDataAccess_PostsContext.Get_Return> GetForCurrentUserByCriteria_Async(
+                ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<UserPostsContextObject.Raw> contexts = await this.UserPostsContextsData.GetByCriteria_Async(
+        IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsData.GetByCriteria_Async(
             dbCon: dbCon,
             parameters: parameters,
             alsoGetEntries: true
         );
 
-        return new ClientDataAccess_UserPostsContext.Get_Return { Contexts = contexts };
+        return new ClientDataAccess_PostsContext.Get_Return { Contexts = contexts };
     }
 
-    [HttpPost(ClientDataAccess_UserPostsContext.CreateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> CreateForCurrentUser_Async(
-                UserPostsContextObject.Prototype parameters ) {
+    [HttpPost(ClientDataAccess_PostsContext.CreateForCurrentUser_Route)]
+    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> CreateForCurrentUser_Async(
+                PostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( !parameters.IsValid(false) ) {
-            throw new ArgumentException( "Invalid UserPostsContextObject.Prototype in parameters." );
+            throw new ArgumentException( "Invalid PostsContextObject.Prototype in parameters." );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserPostsContextsData.Create_Async( dbCon, parameters );
+        return await this.PostsContextsData.Create_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDataAccess_UserPostsContext.UpdateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_UserPostsContext.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
-                UserPostsContextObject.Prototype parameters ) {
+    [HttpPost(ClientDataAccess_PostsContext.UpdateForCurrentUser_Route)]
+    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
+                PostsContextObject.Prototype parameters ) {
         if( this.SessionData.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserPostsContextsData.Update_Async( dbCon, parameters );
+        return await this.PostsContextsData.Update_Async( dbCon, parameters );
     }
 }

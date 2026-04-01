@@ -4,7 +4,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
 
@@ -14,7 +14,7 @@ namespace MindCabinet.Data.DataAccess.Composite;
 
 public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
-                UserPostsContextObject.Raw userPostsContext,
+                PostsContextObject.Raw postsContext,
                 string? bodyPattern,
                 bool sortAscendingByDate,
                 int postsPerPage,
@@ -45,11 +45,11 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
         //
 
         IEnumerable<TermId> allTagIds = additionalTagIds.Concat(
-            userPostsContext.GetRequiredEntries()
+            postsContext.GetRequiredEntries()
                 .Select( e => e.TermId )
                 .Where( id => !additionalTagIds.Contains(id) )
         );
-        IEnumerable<TermId> anyTagIds = userPostsContext.GetOptionalEntries()
+        IEnumerable<TermId> anyTagIds = postsContext.GetOptionalEntries()
             .Select( e => e.TermId );
 
         if( allTagIds.Count() > 0 ) {
@@ -86,7 +86,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
         //
 
-        // IDictionary<long, double> anyAndAllTagIds = userPostsContext.Entries
+        // IDictionary<long, double> anyAndAllTagIds = postsContext.Entries
         //     .Select( e => new KeyValuePair<long, double>(e.Term.Id, e.Priority) )
         //     .ToDictionary();
         //

@@ -1,16 +1,16 @@
 ﻿@using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.PostsContext
+@using MindCabinet.Shared.DataObjects.PostsContext;
 @using MindCabinet.Shared.DataObjects.Term;
 
 
 
-<div component-name="MultiUserPostsContextRender"
+<div component-name="MultiPostsContextRender"
         class="basic @(this.AddedClasses ?? "")"
         style="background-color: white;"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
     @foreach( PostsContextObject context in this.Contexts ) {
-        <UserPostsContextRender
+        <PostsContextRender
                 AddedClasses="ib"
                 Context=@context
                 OnClick_Async=@(async e => await this.OnClickEach_UI_Async(context, e)) />

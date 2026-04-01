@@ -1,17 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserPostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 
 public partial class PostsContextTermEntryObject {
     public static Raw CreateRaw(
-            PostsContextId userPostsContextId,
+            PostsContextId postsContextId,
             TermId termId,
             double priority,
             bool isRequired ) {
         return new Raw {
-            UserPostsContextId = userPostsContextId,
+            PostsContextId = postsContextId,
             TermId = termId,
             Priority = priority,
             IsRequired = isRequired
@@ -19,7 +19,7 @@ public partial class PostsContextTermEntryObject {
     }
 
     public class Raw : IRawDataObject {
-        public PostsContextId UserPostsContextId { get; set; } = default;
+        public PostsContextId PostsContextId { get; set; } = default;
 
         public TermId TermId { get; set; } = default;
 
@@ -41,7 +41,7 @@ public partial class PostsContextTermEntryObject {
 
     public Raw ToRaw( PostsContextId contextId ) {
         return new Raw {
-            UserPostsContextId = contextId,
+            PostsContextId = contextId,
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -16,16 +16,16 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     private async Task<bool> InstallSamples_Async(
                 IDbConnection dbConnection,
                 SimpleUserId defaultUserId,
-                UserPostsContextId sampleContextId ) {
+                PostsContextId sampleContextId ) {
         var sampleRaw = UserAppDataObject.CreateRaw(
             simpleUserId: defaultUserId,
-            userPostsContextId: sampleContextId
+            postsContextId: sampleContextId
         );
 
         await this.Create_Async(
             dbCon: dbConnection,
             simpleUserId: defaultUserId,
-            userPostsContextId: sampleContextId
+            postsContextId: sampleContextId
         );
 
         return true;

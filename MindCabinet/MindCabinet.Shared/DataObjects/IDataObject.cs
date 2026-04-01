@@ -2,7 +2,7 @@ namespace MindCabinet.Shared.DataObjects;
 
 
 public interface IDataObject {
-    // This class tries to validate all its members, and also tries to give foreign data members (e.g. UserPostsContext in UserAppDataObject)
+    // This class tries to validate all its members, and also tries to give foreign data members (e.g. PostsContext in UserAppDataObject)
     // as much data as possible, so that the client doesn't have to make additional API calls to get the data it needs.
 }
 

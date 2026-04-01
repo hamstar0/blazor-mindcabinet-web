@@ -26,7 +26,7 @@ public class PrioritizedPostController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerDataAccess_UserPostsContexts UserPostsContextData;
+    private readonly ServerDataAccess_PostsContexts PostsContextData;
 
     private readonly ServerSessionData SessionData;
 
@@ -38,7 +38,7 @@ public class PrioritizedPostController : ControllerBase {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerDataAccess_UserPostsContexts userPostsContextData,
+                ServerDataAccess_PostsContexts postsContextData,
                 ServerSessionData sessData ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
@@ -46,7 +46,7 @@ public class PrioritizedPostController : ControllerBase {
         this.TermsData = termsData;
         this.TermSetsData = termSetsData;
         this.UserTermsHistoryData = userTermsHistoryData;
-        this.UserPostsContextData = userPostsContextData;
+        this.PostsContextData = postsContextData;
         this.SessionData = sessData;
     }
 
@@ -58,7 +58,7 @@ public class PrioritizedPostController : ControllerBase {
 
         return await this.PrioritizedPostsData.GetByCriteria_Async(
             dbCon: dbCon,
-            userPostsContextData: this.UserPostsContextData,
+            postsContextData: this.PostsContextData,
             parameters: parameters
         );
     }
@@ -70,7 +70,7 @@ public class PrioritizedPostController : ControllerBase {
 
         return await this.PrioritizedPostsData.GetCountByCriteria_Async(
             dbCon: dbCon,
-            userPostsContextData: this.UserPostsContextData,
+            postsContextData: this.PostsContextData,
             parameters: parameters
         );
     }

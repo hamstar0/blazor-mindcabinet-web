@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.UserPostsContext;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -16,25 +16,25 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async static Task<UserAppDataObject> ToObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_UserPostsContexts userPostsContextsData,
+                ServerDataAccess_PostsContexts postsContextsData,
                 UserAppDataObject.Raw dbEntry ) {
-        Func<UserPostsContextTermEntryObject.Raw[], Task<UserPostsContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
-            return await ServerDataAccess_UserPostsContexts.ToTermEntriesDataObjects_Async(
+        Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
+            return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
                 dbCon,
                 termsData,
                 ctxTermEntries
             );
         };
 
-        Func<UserPostsContextId, Task<UserPostsContextObject>> userPostsContextFactory = async id => {
-            UserPostsContextObject.Raw? ctxRaw = await userPostsContextsData.GetById_Async( dbCon, id, true );
+        Func<PostsContextId, Task<PostsContextObject>> postsContextFactory = async id => {
+            PostsContextObject.Raw? ctxRaw = await postsContextsData.GetById_Async( dbCon, id, true );
             if( ctxRaw is null ) {
-                throw new Exception( $"UserPostsContext with id {id} not found." );
+                throw new Exception( $"PostsContext with id {id} not found." );
             }
 
             return await ctxRaw.CreateDataObject_Async( ctxTermsFactory );
         };
 
-        return await dbEntry.CreateDataObject_Async( userPostsContextFactory );
+        return await dbEntry.CreateDataObject_Async( postsContextFactory );
     }
 }

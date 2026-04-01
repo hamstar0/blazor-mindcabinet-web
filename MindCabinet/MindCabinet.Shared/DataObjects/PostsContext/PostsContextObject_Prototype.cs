@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.UserPostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 
 public partial class PostsContextObject {
@@ -61,8 +61,8 @@ public partial class PostsContextObject {
             }
 
             foreach( PostsContextTermEntryObject.Raw entry in this.Entries ) {
-                if( entry.UserPostsContextId != this.Id ) {
-                    throw new InvalidOperationException("All entries must have the same UserPostsContextId as the prototype.");
+                if( entry.PostsContextId != this.Id ) {
+                    throw new InvalidOperationException("All entries must have the same PostsContextId as the prototype.");
                 }
             }
             
