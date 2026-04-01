@@ -26,17 +26,14 @@ public partial class Sidebar {
     private ClientDataAccess_UserPostsContext UserPostsContextsData { get; set; } = null!;
 
 
+    [Parameter]
+    public Func<Task>? OnStateChange_Async { get; set; } = null;
+
+
 
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
         await this.SessionData.RegisterUserPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
 	}
-
-
-    private async Task OnContextSelect_Async( UserPostsContextObject context ) {
-        await this.SessionData.SetCurrentContext_Await( context );
-
-        this.StateHasChanged();
-    }
 }

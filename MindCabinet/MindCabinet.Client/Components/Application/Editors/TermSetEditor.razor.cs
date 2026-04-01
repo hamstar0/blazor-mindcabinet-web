@@ -7,15 +7,6 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class TermSetEditor : ComponentBase {
-    public delegate Task OnTermsChange_Func(
-        IEnumerable<TermObject> currentTerms,
-        TermObject changedTerm,
-        bool isAdded
-    );
-
-
-
-    
     [Parameter]
     public List<TermObject> InitialTerms { get; set; } = new List<TermObject>();
 
@@ -38,6 +29,12 @@ public partial class TermSetEditor : ComponentBase {
     public bool AllowFavoritingTerms { get; set; } = true;
 
 
+    public delegate Task OnTermsChange_Func(
+        IEnumerable<TermObject> currentTerms,
+        TermObject changedTerm,
+        bool isAdded
+    );
+
     [Parameter, EditorRequired]
     public OnTermsChange_Func OnTermsChange_Async { get; set; } = null!;
 
@@ -53,13 +50,16 @@ public partial class TermSetEditor : ComponentBase {
         }
     }
 
-    public async Task AddTerm_Async( TermObject term ) {
+    public async Task<bool> AddTerm_Async( TermObject term ) {
         if( this.Terms.Any(t => t.Equals(term)) ) {
-            return;
+            return false;
         }
 
         this._Terms.Add( term );
+
         await this.OnTermsChange_Async( this.Terms, term, true );
+
+        return true;
     }
     
 

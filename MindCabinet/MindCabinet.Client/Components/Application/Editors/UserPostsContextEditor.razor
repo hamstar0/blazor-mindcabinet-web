@@ -18,22 +18,19 @@
             @bind:set=@this.OnInputName_UI_Async />
 	<h4>Enter tags to describe your current "context":</h4>
 	<TermSetEditor Label="Enter tags (at least 1 required)"
-				AddedPerItemClasses="d-block"
-				InitialTerms=@( this.InitialContext?.Entries
-						.Select( e => e.Term )
-						.ToList()
-					?? new List<TermObject>() )
-				AllowFavoritingTerms=@false
-				OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
+			AddedPerItemClasses="d-block"
+			InitialTerms=@( this.InitialContext?.Entries
+					.Select( e => e.Term )
+					.ToList()
+				?? new List<TermObject>() )
+			AllowFavoritingTerms=@false
+			OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
 		<PerTermAffix Context="term">
 			<SliderNumberInput
 					InitialValue=@this.GetTagPriorityValue(term)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(term, val) ) />
 			<input type="checkbox"
-					checked=@(this.CurrentContextPrototype
-						.Entries
-						.First(t => t.TermId == term.Id)
-						.IsRequired)
+					checked=@this.GetFirstMatchingPrototypeTagEntry(term.Id).IsRequired
 					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(term, (bool)e.Value!) ) />
 		</PerTermAffix>
 	</TermSetEditor>
@@ -52,7 +49,7 @@
 
 <RenderPortal TargetRegion="ModalDialogs">
 	<Modal @ref=@this.ResetPromptDialogComponent
-			ModalId=@("UserPostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8))
+			ModalId=@( "UserPostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
 			Title="Confirm Context Creation">
 		<BodyContent>
 			<i>You have unsaved changes. Remove all changes?</i>
@@ -81,6 +78,13 @@
 			.FirstOrDefault( t => t.TermId == tag.Id )?
 			.Priority ?? 0;
 	}
+
+	private UserPostsContextTermEntryObject.Raw GetFirstMatchingPrototypeTagEntry( TermId id ) {
+		return this.CurrentContextPrototype
+			.Entries
+			.First( t => t.TermId == id );
+	}
+
 	
     private async Task OnInputName_UI_Async( string? nameText ) {
         await Task.CompletedTask;
@@ -92,12 +96,18 @@
     }
 
 	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
+		UserPostsContextTermEntryObject.Raw? changedTagEntry = null;
+
 		if( isAdded ) {
-			await this.AddNewTag_Async( changedTag );
+			changedTagEntry = await this.AddNewTag_Async( changedTag );
 		}
 		else {
-			await this.RemoveTag_Async( changedTag );
+			changedTagEntry = await this.RemoveTag_Async( changedTag );
 		}
+
+        if( this.OnEntryEdit_Async is not null && changedTagEntry is not null ) {
+            await this.OnEntryEdit_Async.Invoke( changedTagEntry, isAdded );
+        }
 	}
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
@@ -144,5 +154,7 @@
 		} else {
 			await this.Update_Async();
 		}
+        
+		this.StateHasChanged();
     }
 }

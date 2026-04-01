@@ -19,7 +19,7 @@
 
 <div class="sidebar">
     @if( this.NetMode.IsClientSide ) {
-        <Sidebar />
+        <Sidebar OnStateChange_Async=@this.OnSidebarStateChange_Async />
     } else {
         <h3 style="color:white;">Loading...</h3>
     }
@@ -68,6 +68,10 @@
 
 
 @code {
+    private async Task OnSidebarStateChange_Async() {
+        this.StateHasChanged();
+    }
+    
     private async Task OnLogin_UI_Async( SimpleUserObject.ClientObject user ) {
         await this.SessionData.LocalLogin_Async( user );
 

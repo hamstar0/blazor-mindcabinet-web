@@ -39,22 +39,88 @@
             ModalId=@("termContextSelectorModal_"+Guid.NewGuid().ToString("N").Substring(0, 8))
             Title="Specify Context">
         <BodyContent>
-            <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_Async />
+            <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_UI_Async />
         </BodyContent>
     </Modal>
 </RenderPortal>
 
 
+
 @code {
-    private async Task OnModalDialogTermContextSelect_Async( TermObject contextTerm ) {
-        if( this.InProgressTermEdit is null || !TermObject.ValidateTerm(this.InProgressTermEdit) ) {
+    public void Reset_UI() {
+        this.Value = "";
+        this.SearchOptions = new List<TermObject>();
+    }
+
+
+    private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
+        if( this.Disabled ) {
+            return;
+        }
+        if( !this.IsSeachFocused ) {
+            return;
+        }
+
+        // switch( arg.Key ) {
+        // case "ArrowUp":
+        //     this.SearchPosition = Math.Max( this.SearchPosition - 1, 0 );
+        //     break;
+        // case "ArrowDown":
+        //     this.SearchPosition = Math.Min( this.SearchPosition + 1, this.SearchOptions.Count() - 1 );
+        //     break;
+        // }
+        
+        if( arg.Code == "Enter" || arg.Code == "NumpadEnter" ) {
+            await this.BeginSubmitNewTerm_Async( this.Value );
+
+            return;
+        }
+
+        //Console.WriteLine("key input: "+(int)arg.Key[0]+", value: "+this.Value );
+        //todo arrow key search results navigation
+    }
+
+    
+    private async Task OnInputTermOrSearch_UI_Async( string termText ) {
+        if( this.Disabled ) {
+            return;
+        }
+        
+        if( string.IsNullOrEmpty(termText) ) {
+            this.SearchOptions = new List<TermObject>();
+            // this.SearchPosition = 0;
+            this.Value = "";
+
+            return;
+        }
+
+        bool submitTerm = false;
+
+        if( this.OnAttemptingTermInput_Async is not null ) {
+            (termText, submitTerm) = await this.OnAttemptingTermInput_Async( termText! );
+        }
+
+        this.Value = termText!;
+
+        if( submitTerm ) {
+            await this.BeginSubmitNewTerm_Async( termText! );
+        } else {
+            await this.TrySearchTerm_Async( termText! );
+        }
+    }
+
+
+    private async Task OnModalDialogTermContextSelect_UI_Async( TermObject contextTerm ) {
+        if( this.Value is null || !TermObject.ValidateTerm(this.Value) ) {
             throw new InvalidOperationException( "Invalid term input OnModalDialogTermContextSelect_Async." );
         }
 
         this.ModalDialogComponent.Close();
 
-        await this.SubmitNewTerm_Async( this.InProgressTermEdit, contextTerm );
+        if( await this.SubmitNewTerm_Async(this.Value, contextTerm) ) {
+            this.StateHasChanged();
+        }
 
-        this.InProgressTermEdit = null;
+        this.Reset_UI();
     }
 }

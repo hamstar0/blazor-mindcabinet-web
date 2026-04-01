@@ -20,7 +20,7 @@
         </TermRender>
     }
     <TermEditor AddedClasses="ib"
-            OnTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+            OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
             OnTermConfirm_Async=@this.AddTerm_UI_Async />
 </div>
 
@@ -31,17 +31,16 @@
     public RenderFragment<TermObject>? PerTermAffix  { get; set; }
 
 
-    private async Task<TermObject?> AddTerm_UI_Async( TermObject term, bool isNew ) {
+    private async Task AddTerm_UI_Async( TermObject term, bool isNew ) {
         if( this.Terms.Any(t => t.Equals(term)) ) {
-            return null;
+            return;
         }
 
-        await this.AddTerm_Async( term );
+        if( await this.AddTerm_Async(term) ) {
+            this.StateHasChanged();
+        }
 
-        this.StateHasChanged();
-
-        return null;
-        //return tag;
+        return;
     }
 
 
@@ -58,12 +57,12 @@
             return false;
         }
 
-        bool ret = await this.RemoveTerm_Async( term );
+        bool isRemoved = await this.RemoveTerm_Async( term );
 
-        if( ret ) {
+        if( isRemoved ) {
             this.StateHasChanged();
         }
 
-        return ret;
+        return isRemoved;
     }
 }

@@ -101,9 +101,11 @@ public partial class UserPostsContextPicker : ComponentBase {
 
         await this.OnContextSelect_Async.Invoke( context );
 
-       // await this.Js.InvokeVoidAsync(
-       //     "window.TermInputComponent.SetTermSearchResult",
-       //     new object[] { this.InputElement, term.ToString() ?? "" }
-       //);
+        // await this.Js.InvokeVoidAsync(
+        //     "window.TermInputComponent.SetTermSearchResult",
+        //     new object[] { this.InputElement, term.ToString() ?? "" }
+        //);
+        
+        this.StateHasChanged();
     }
 }

@@ -1,10 +1,44 @@
 ﻿@using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Shared.DataObjects.UserPostsContext;
 
 
 <UserPostsContextPicker
     UniqueName="Sidebar_UserPostsContextPicker"
-    OnContextSelect_Async=@this.OnContextSelect_Async />
+    OnContextSelect_Async=@this.OnContextSelect_UI_Async />
 <UserPostsContextEditor
-    InitialContext=@this.SessionData.GetCurrentContext() />
+    InitialContext=@this.SessionData.GetCurrentContext()
+    OnCreateOrUpdate_Async=@this.OnCreateOrUpdate_UI_Async
+    OnEntryEdit_Async=@this.OnEntryEdit_UI_Async />
+
+
+
+@code {
+    private async Task OnContextSelect_UI_Async( UserPostsContextObject context ) {
+        await this.SessionData.SetCurrentContext_Await( context );
+
+        if( this.OnStateChange_Async is not null ) {
+            await this.OnStateChange_Async.Invoke();
+        }
+
+        this.StateHasChanged();
+    }
+
+
+    private async Task OnCreateOrUpdate_UI_Async( UserPostsContextObject.Raw context ) {
+        this.StateHasChanged();
+
+        if( this.OnStateChange_Async is not null ) {
+            await this.OnStateChange_Async.Invoke();
+        }
+    }
+
+    private async Task OnEntryEdit_UI_Async( UserPostsContextTermEntryObject.Raw changedEntry, bool isAdded ) {
+        //this.StateHasChanged();
+        //
+        //if( this.OnStateChange_Async is not null ) {
+        //    await this.OnStateChange_Async.Invoke();
+        //}
+    }
+}

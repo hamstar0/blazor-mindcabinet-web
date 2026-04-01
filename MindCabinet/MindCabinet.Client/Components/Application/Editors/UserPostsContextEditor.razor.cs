@@ -35,8 +35,16 @@ public partial class UserPostsContextEditor : ComponentBase {
 
 	private UserPostsContextObject.Prototype CurrentContextPrototype = new UserPostsContextObject.Prototype();
 
+
+    public delegate Task OnEntryEdit_Func( UserPostsContextTermEntryObject.Raw entry, bool isAdded );
+
     [Parameter]
-    public Func<UserPostsContextObject.Prototype, Task>? OnCreate_Async { get; set; } = null;
+    public OnEntryEdit_Func? OnEntryEdit_Async { get; set; } = null;
+
+    public delegate Task OnCreateOrUpdate_Func( UserPostsContextObject.Raw context );
+
+    [Parameter]
+    public OnCreateOrUpdate_Func? OnCreateOrUpdate_Async { get; set; } = null;
 
 
 
@@ -53,35 +61,42 @@ public partial class UserPostsContextEditor : ComponentBase {
 	}
 
 
-	private async Task AddNewTag_Async( TermObject newTag ) {
+	private async Task<UserPostsContextTermEntryObject.Raw> AddNewTag_Async( TermObject newTag ) {
         await Task.CompletedTask;
         
         UserPostsContextId id = this.InitialContext?.Id
             ?? throw new InvalidOperationException("Invalid prototype id.");
 
-        this.CurrentContextPrototype.Entries.Append(
-            UserPostsContextTermEntryObject.CreateRaw(
-                userPostsContextId: id,
-                termId: newTag.Id,
-                priority: 0d,
-                isRequired: false
-            )
+        var contextTerm = UserPostsContextTermEntryObject.CreateRaw(
+            userPostsContextId: id,
+            termId: newTag.Id,
+            priority: 0d,
+            isRequired: false
         );
+
+        this.CurrentContextPrototype.Entries.Append( contextTerm );
+
+        return contextTerm;
 	}
 
-	private async Task RemoveTag_Async( TermObject newTag ) {
+	private async Task<UserPostsContextTermEntryObject.Raw?> RemoveTag_Async( TermObject newTag ) {
         await Task.CompletedTask;
         
         List<UserPostsContextTermEntryObject.Raw> entries = this.CurrentContextPrototype.Entries.ToList();
+        UserPostsContextTermEntryObject.Raw? removed = null;
 
         for( int i = 0; i < entries.Count; i++ ) {
             if( entries[i].TermId == newTag.Id ) {
+                removed = entries[i];
+
                 entries.RemoveAt( i );
                 break;
             }
         }
 
         this.CurrentContextPrototype.Entries = entries.ToArray();
+
+        return removed;
 	}
 
     
@@ -119,14 +134,21 @@ public partial class UserPostsContextEditor : ComponentBase {
 
         UserPostsContextId id = (await this.UserPostsContextsData.CreateForCurrentUser_Async( raw )).Id;
 
+        raw.Id = id;
         this.CurrentContextPrototype.Id = id;
 
-        if( this.OnCreate_Async is not null ) {
-            await this.OnCreate_Async.Invoke( this.CurrentContextPrototype );
+        if( this.OnCreateOrUpdate_Async is not null ) {
+            await this.OnCreateOrUpdate_Async.Invoke( raw );
         }
     }
     
     private async Task Update_Async() {
         await this.UserPostsContextsData.UpdateForCurrentUser_Async( this.CurrentContextPrototype );
+
+        UserPostsContextObject.Raw raw = this.CurrentContextPrototype.ToRaw(true);
+
+        if( this.OnCreateOrUpdate_Async is not null ) {
+            await this.OnCreateOrUpdate_Async.Invoke( raw );
+        }
     }
 }
