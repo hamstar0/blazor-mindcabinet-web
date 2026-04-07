@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -10,7 +11,7 @@ public partial class TermSetEditor : ComponentBase {
     [Parameter]
     public List<TermObject> InitialTerms { get; set; } = new List<TermObject>();
 
-    private List<TermObject>? InitialContextCheck = null;
+    private bool IsInitialized = false;
 
     private List<TermObject> _Terms = new List<TermObject>();
 
@@ -43,8 +44,8 @@ public partial class TermSetEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
 
-        if( this.InitialTerms != this.InitialContextCheck ) {
-            this.InitialContextCheck = this.InitialTerms;
+        if( !this.IsInitialized && this.InitialTerms.Count > 0 ) {
+            this.IsInitialized = true;
 
             this._Terms = new List<TermObject>( this.InitialTerms );
         }

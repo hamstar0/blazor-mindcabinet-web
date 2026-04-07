@@ -13,10 +13,10 @@
     @if( this.Label is not null ) {
         <span>@this.Label</span>
     }
-    @foreach( TermObject term in this.Terms ) {
-        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses) Term=@term HasFavoriteButton=@this.AllowFavoritingTerms>
-            @this.PerTermAffix?.Invoke( term )
-            <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(term) )>X</a>
+    @foreach( TermObject termOfSet in this.Terms ) {
+        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses) Term=@termOfSet HasFavoriteButton=@this.AllowFavoritingTerms>
+            @this.PerTermAffix?.Invoke( termOfSet )
+            <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
         </TermRender>
     }
     <TermEditor AddedClasses="ib"

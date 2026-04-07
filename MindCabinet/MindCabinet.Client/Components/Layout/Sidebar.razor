@@ -35,10 +35,10 @@
     }
 
     private async Task OnEntryEdit_UI_Async( PostsContextTermEntryObject.Raw changedEntry, bool isAdded ) {
-        this.StateHasChanged();
-        
-        if( this.OnStateChange_Async is not null ) {
-            await this.OnStateChange_Async.Invoke();
-        }
+        //this.StateHasChanged();
+        //
+        //if( this.OnStateChange_Async is not null ) {
+        //    await this.OnStateChange_Async.Invoke();
+        //}
     }
 }

@@ -51,6 +51,7 @@ v0.6
 			-	Context entry
 			-	Context tag entry
 			-	Content posting
+			-	Fix login submit button
 			-	New tag posting
 
 

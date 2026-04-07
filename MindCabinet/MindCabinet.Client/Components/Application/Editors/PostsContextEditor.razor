@@ -25,13 +25,13 @@
 				?? new List<TermObject>() )
 			AllowFavoritingTerms=@false
 			OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
-		<PerTermAffix Context="term">
+		<PerTermAffix Context="termOfSet">
 			<SliderNumberInput
-					InitialValue=@this.GetTagPriorityValue(term)
-					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(term, val) ) />
+					InitialValue=@this.GetTagPriorityValue(termOfSet)
+					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(termOfSet, val) ) />
 			<input type="checkbox"
-					checked=@this.GetFirstMatchingPrototypeTagEntry(term.Id).IsRequired
-					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(term, (bool)e.Value!) ) />
+					checked=@this.GetFirstMatchingPrototypeTagEntry(termOfSet.Id).IsRequired
+					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(termOfSet, (bool)e.Value!) ) />
 		</PerTermAffix>
 	</TermSetEditor>
 	<div>
@@ -100,8 +100,7 @@
 
 		if( isAdded ) {
 			changedTagEntry = await this.AddNewTag_Async( changedTag );
-		}
-		else {
+		} else {
 			changedTagEntry = await this.RemoveTag_Async( changedTag );
 		}
 

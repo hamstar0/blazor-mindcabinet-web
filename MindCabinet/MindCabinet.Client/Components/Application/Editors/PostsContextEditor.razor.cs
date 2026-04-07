@@ -31,7 +31,7 @@ public partial class PostsContextEditor : ComponentBase {
     [Parameter]
     public PostsContextObject? InitialContext { get; set; } = null;
 
-    private PostsContextObject? InitialContextCheck;
+    private bool IsInitialized;
 
 	private PostsContextObject.Prototype CurrentContextPrototype = new PostsContextObject.Prototype();
 
@@ -51,12 +51,10 @@ public partial class PostsContextEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
         
-        if( this.InitialContext != this.InitialContextCheck ) {
-            this.InitialContextCheck = this.InitialContext;
+        if( !this.IsInitialized && this.InitialContext is not null ) {
+            this.IsInitialized = true;
             
-            this.CurrentContextPrototype = this.InitialContext is not null
-                ? this.InitialContext.ToPrototype()
-                : new PostsContextObject.Prototype();
+            this.CurrentContextPrototype = this.InitialContext.ToPrototype();
         }
 	}
 
@@ -74,7 +72,9 @@ public partial class PostsContextEditor : ComponentBase {
             isRequired: false
         );
 
-        this.CurrentContextPrototype.Entries.Append( contextTerm );
+        this.CurrentContextPrototype.Entries = this.CurrentContextPrototype.Entries
+            .Append( contextTerm )
+            .ToArray();
 
         return contextTerm;
 	}
@@ -145,7 +145,7 @@ public partial class PostsContextEditor : ComponentBase {
     private async Task Update_Async() {
         await this.PostsContextsData.UpdateForCurrentUser_Async( this.CurrentContextPrototype );
 
-        PostsContextObject.Raw raw = this.CurrentContextPrototype.ToRaw(true);
+        PostsContextObject.Raw raw = this.CurrentContextPrototype.ToRaw( true );
 
         if( this.OnCreateOrUpdate_Async is not null ) {
             await this.OnCreateOrUpdate_Async.Invoke( raw );

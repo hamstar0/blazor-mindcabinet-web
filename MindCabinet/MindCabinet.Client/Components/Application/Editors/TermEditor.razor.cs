@@ -104,7 +104,6 @@ public partial class TermEditor : ComponentBase {
     }
 
     private async Task SelectSearchResults_UI_Async( TermObject term ) {
-//Console.WriteLine( "SelectSearchResults_UI_Async "+term.ToString()+", "+this.Disabled );
         if( this.Disabled ) {
             return;
         }

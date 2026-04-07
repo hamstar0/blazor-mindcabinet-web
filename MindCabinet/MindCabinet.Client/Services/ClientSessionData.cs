@@ -89,6 +89,7 @@ public partial class ClientSessionData(
                 ClientDataAccess_ClientSessionBundle sessionBundle,
                 bool triggerEvents ) {
         ClientSessionData.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
+Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize( userAndAppData ) );
 
         //
 
