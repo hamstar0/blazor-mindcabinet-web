@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services.DbAccess.Bundled;
 
 
 public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
-    public class GetCurrent_Return {
+    public class GetCurrentDataBundle_Return {
         public string SessionId { get; set; } = "";
 
         public SimpleUserObject.ClientObject? UserData { get; set; }
@@ -21,7 +21,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
     }
 
     public const string GetCurrent_Path = "Session";
-    public const string GetCurrent_Route = "GetCurrent";
+    public const string GetCurrent_Route = "GetCurrentDataBundle";
 
     public async Task<ClientSessionData.DataBundle> GetCurrent_Async(
                 HttpClient httpClient,
@@ -43,7 +43,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
         //     json: rawData,
         //     options: options
         // );
-        GetCurrent_Return? sessionData = await msg.Content.ReadFromJsonAsync<GetCurrent_Return>();
+        GetCurrentDataBundle_Return? sessionData = await msg.Content.ReadFromJsonAsync<GetCurrentDataBundle_Return>();
         if( sessionData is null ) {
             throw new InvalidDataException( "Could not deserialize ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
         }

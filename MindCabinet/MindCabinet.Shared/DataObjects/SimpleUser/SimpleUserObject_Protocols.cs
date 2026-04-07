@@ -35,8 +35,8 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         public DateTime Created { get; set; }
         public string Name { get; set; } = "";
         public string Email { get; set; } = "";
-        public byte[] PwHash { get; set; } = new byte[SimpleUserObject.PasswordHashLength];
-        public byte[] PwSalt { get; set; } = new byte[SimpleUserObject.PasswordSaltLength];
+        public byte[] PwHash { get; set; } = new byte[ SimpleUserObject.PasswordHashLength ];
+        public byte[] PwSalt { get; set; } = new byte[ SimpleUserObject.PasswordSaltLength ];
         public bool IsValidated { get; set; } = false;
         //public bool IsPrivileged { get; set; } = false;
 

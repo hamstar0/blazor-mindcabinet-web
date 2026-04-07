@@ -84,6 +84,8 @@ public class SimplePostController : ControllerBase {
             id: simplePostId,
             //SimpleUserId = this.SessionData.UserOfSession.Id,
             created: DateTime.UtcNow,
+            modified: DateTime.UtcNow,
+            simpleUserId: this.SessionData.UserOfSession.Id,
             body: parameters.Body,
             tagsTermIdSet: parameters.TermIds.ToArray()
         );

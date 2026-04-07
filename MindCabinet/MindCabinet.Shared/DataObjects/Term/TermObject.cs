@@ -31,16 +31,16 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
             ? TermObject.CreateRaw(
                 id: context.Id,
                 term: context.Term,
-                contextTermId: context.Context?.Id,
-                aliasTermId: context.Alias?.Id
+                contextId: context.Context?.Id,
+                aliasId: context.Alias?.Id
             )
             : null;
 		this.Alias = alias is not null
             ? TermObject.CreateRaw(
                 id: alias.Id,
                 term: alias.Term,
-                contextTermId: alias.Context?.Id,
-                aliasTermId: alias.Alias?.Id
+                contextId: alias.Context?.Id,
+                aliasId: alias.Alias?.Id
             )
             : null;
     }

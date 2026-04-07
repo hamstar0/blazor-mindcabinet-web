@@ -18,19 +18,25 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 
 	public DateTime Created { get; }
 
+	public DateTime Modified { get; }
+
+	public SimpleUserId SimpleUserId { get; }
+
     public string Body { get; }
 
     public SortedSet<TermObject> Tags { get; }
 
 
 
-	public SimplePostObject( SimplePostId id, DateTime created, string body, SortedSet<TermObject> tags ) {
+	public SimplePostObject( SimplePostId id, DateTime created, DateTime modified, SimpleUserId simpleUserId, string body, SortedSet<TermObject> tags ) {
 		if( id == 0 ) {
 			throw new ArgumentException( "Id cannot be 0 in SimplePostObject." );
 		}
 
         this.Id = id;
         this.Created = created;
+        this.Modified = modified;
+        this.SimpleUserId = simpleUserId;
         this.Body = body;
 		this.Tags = tags;
 	}
@@ -45,8 +51,11 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 		return true;
 	}
 
-	public bool ContentEquals( SimplePostObject other, bool includeCreateDate ) {
-        if( includeCreateDate && this.Created != other.Created ) { return false; }
+	public bool ContentEquals( SimplePostObject other, bool includeDates ) {
+        if( includeDates ) {
+			if( this.Created != other.Created ) { return false; }
+			if( this.Modified != other.Modified ) { return false; }
+        }
         if( this.Body != other.Body ) { return false; }
 		if( this.Tags.Count() != other.Tags.Count() ) { return false; }
 		if( this.Tags is not null ) {

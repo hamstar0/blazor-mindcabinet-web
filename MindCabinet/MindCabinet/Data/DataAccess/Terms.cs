@@ -161,8 +161,8 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         var newTerm = TermObject.CreateRaw(
 			id: (TermId)newId,
 			term: parameters.TermPattern,
-			contextTermId: parameters.ContextId,
-			aliasTermId: parameters.AliasId
+			contextId: parameters.ContextId,
+			aliasId: parameters.AliasId
 		);
 		this.TermsById_Cache[ (TermId)newId ] = newTerm;
 

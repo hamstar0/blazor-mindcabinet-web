@@ -22,13 +22,13 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
     public static async Task<PostsContextObject> ToObject_Async(
                 ClientDataAccess_Terms termsData,
-                PostsContextObject.Raw entryRaw ) {
+                PostsContextObject.Raw ctxRaw ) {
         Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermEntriesFactory = 
             async ctxTermEntriesRaw => {
                 return await ClientDataAccess_PostsContext.ToTermEntryObjects_Async( termsData, ctxTermEntriesRaw );
             };
 
-        return await entryRaw.CreateDataObject_Async( ctxTermEntriesFactory );
+        return await ctxRaw.CreateDataObject_Async( ctxTermEntriesFactory );
     }
 
 
@@ -36,14 +36,17 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
                 ClientDataAccess_Terms termsData,
                 PostsContextTermEntryObject.Raw[] ctxTermEntriesRaw ) {
         TermId[] termIds = ctxTermEntriesRaw.Select( t => t.TermId ).ToArray();
+
         IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
             .Terms;
 
         Func<TermId, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
             .ToObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
 
-        return await Task.WhenAll(
+        PostsContextTermEntryObject[] entries = await Task.WhenAll(
             ctxTermEntriesRaw.Select( ctxTermEntryRaw => ctxTermEntryRaw.CreateDataObject_Async(termFactory) )
         );
+
+        return entries;
     }
 }

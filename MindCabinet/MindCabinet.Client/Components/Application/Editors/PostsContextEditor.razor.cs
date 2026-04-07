@@ -51,6 +51,7 @@ public partial class PostsContextEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
         
+//Console.WriteLine( $"PostsContextEditor.OnParametersSet: InitialContext: {JsonSerializer.Serialize(this.InitialContext)}" );
         if( !this.IsInitialized && this.InitialContext is not null ) {
             this.IsInitialized = true;
             

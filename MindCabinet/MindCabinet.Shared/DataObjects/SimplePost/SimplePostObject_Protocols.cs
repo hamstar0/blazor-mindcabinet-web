@@ -9,11 +9,15 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
     public static Raw CreateRaw(
             SimplePostId id,
             DateTime created,
+            DateTime modified,
+            SimpleUserId simpleUserId,
             string body,
             TermId[] tagsTermIdSet ) {
         return new Raw {
             Id = id,
             Created = created,
+            Modified = modified,
+            SimpleUserId = simpleUserId,
             Body = body,
             TagsTermIdSet = tagsTermIdSet
         };
@@ -23,6 +27,10 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
         public SimplePostId Id { get; set; }
 
         public DateTime Created { get; set; }
+
+        public DateTime Modified { get; set; }
+
+        public SimpleUserId SimpleUserId { get; set; }
 
         public string Body { get; set; } = "";
 
@@ -35,6 +43,8 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
             return new SimplePostObject(
                 id: this.Id,
                 created: this.Created,
+                modified: this.Modified,
+                simpleUserId: this.SimpleUserId,
                 body: this.Body,
                 tags: new SortedSet<TermObject>( await termsFactory(this.TagsTermIdSet) )
             );

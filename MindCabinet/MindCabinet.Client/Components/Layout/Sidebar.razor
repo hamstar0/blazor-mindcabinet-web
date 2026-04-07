@@ -7,17 +7,18 @@
 <PostsContextPicker
     UniqueName="Sidebar_PostsContextPicker"
     OnContextSelect_Async=@this.OnContextSelect_UI_Async />
+<hr />
 <PostsContextEditor
     InitialContext=@this.SessionData.GetCurrentContext()
-    OnCreateOrUpdate_Async=@this.OnCreateOrUpdate_UI_Async
-    OnEntryEdit_Async=@this.OnEntryEdit_UI_Async />
+    OnCreateOrUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
+    OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
 
 
 
 @code {
     private async Task OnContextSelect_UI_Async( PostsContextObject context ) {
         await this.SessionData.SetCurrentContext_Await( context );
-
+        
         if( this.OnStateChange_Async is not null ) {
             await this.OnStateChange_Async.Invoke();
         }
@@ -26,7 +27,7 @@
     }
 
 
-    private async Task OnCreateOrUpdate_UI_Async( PostsContextObject.Raw context ) {
+    private async Task OnContextCreateOrUpdate_UI_Async( PostsContextObject.Raw context ) {
         this.StateHasChanged();
 
         if( this.OnStateChange_Async is not null ) {
@@ -34,7 +35,7 @@
         }
     }
 
-    private async Task OnEntryEdit_UI_Async( PostsContextTermEntryObject.Raw changedEntry, bool isAdded ) {
+    private async Task OnContextEntryEdit_UI_Async( PostsContextTermEntryObject.Raw changedEntry, bool isAdded ) {
         //this.StateHasChanged();
         //
         //if( this.OnStateChange_Async is not null ) {

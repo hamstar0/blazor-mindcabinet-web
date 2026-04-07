@@ -16,11 +16,11 @@ public partial class ClientSessionData(
             INetMode netMode,
             IServiceScopeFactory serviceScopeFactory ) {
     public class DataBundle( string sessionId, SimpleUserObject.ClientObject? userData, UserAppDataObject? userAppData ) {
-        public string SessionId = sessionId;
+        public string SessionId { get; set; } = sessionId;
 
-        public SimpleUserObject.ClientObject? UserData = userData;
+        public SimpleUserObject.ClientObject? UserData { get; set; } = userData;
 
-        public UserAppDataObject? UserAppData = userAppData;
+        public UserAppDataObject? UserAppData { get; set; } = userAppData;
     }
 
 

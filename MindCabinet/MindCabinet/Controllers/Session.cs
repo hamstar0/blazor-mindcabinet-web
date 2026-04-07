@@ -34,7 +34,7 @@ public class SessionController(
     
 
     [HttpPost(ClientDataAccess_ClientSessionBundle.GetCurrent_Route)]
-    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrent_Return> GetCurrent_Async( object _ ) {
+    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrentDataBundle_Return> GetCurrent_Async( object _ ) {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -43,8 +43,10 @@ public class SessionController(
         }
 
         UserAppDataObject.Raw? userAppData = this.SessData.UserAppDataOfSession?.ToRaw();
+
         PostsContextObject.Raw? userAppData_PostsContext = this.SessData.UserAppDataOfSession?.PostsContext?.ToRaw();
-        var ret = new ClientDataAccess_ClientSessionBundle.GetCurrent_Return {
+        
+        var ret = new ClientDataAccess_ClientSessionBundle.GetCurrentDataBundle_Return {
             SessionId = this.SessData.CurrentSessionId,
             UserData = this.SessData.UserOfSession is not null
                 ? new SimpleUserObject.ClientObject(
@@ -57,6 +59,7 @@ public class SessionController(
             UserAppData = userAppData,
             UserAppData_PostsContext = userAppData_PostsContext
         };
+//this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsContext) );
 
         return ret;
     }

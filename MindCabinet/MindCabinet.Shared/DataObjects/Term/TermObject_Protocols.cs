@@ -7,32 +7,32 @@ public partial class TermObject {
     public static Raw CreateRaw(
             TermId id,
             string term,
-            TermId? contextTermId = null,
-            TermId? aliasTermId = null ) {
+            TermId? contextId = null,
+            TermId? aliasId = null ) {
         return new Raw {
             Id = id,
             Term = term,
-            ContextTermId = contextTermId,
-            AliasTermId = aliasTermId
+            ContextId = contextId,
+            AliasId = aliasId
         };
     }
 
     public class Raw : IRawDataObject {
         public TermId Id { get; set; } = default;
         public string Term { get; set; } = "";
-        public TermId? ContextTermId { get; set; } = null;
-        public TermId? AliasTermId { get; set; } = null;
+        public TermId? ContextId { get; set; } = null;
+        public TermId? AliasId { get; set; } = null;
 
         
         public async Task<TermObject> CreateDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,
-                context: this.ContextTermId is not null
-                    ? await termRawFactory( this.ContextTermId.Value )
+                context: this.ContextId is not null
+                    ? await termRawFactory( this.ContextId.Value )
                     : null,
-                alias: this.AliasTermId is not null
-                    ? await termRawFactory( this.AliasTermId.Value )
+                alias: this.AliasId is not null
+                    ? await termRawFactory( this.AliasId.Value )
                     : null
             );
         }
@@ -43,8 +43,8 @@ public partial class TermObject {
         return TermObject.CreateRaw(
             id: this.Id,
             term: this.Term,
-            contextTermId: this.Context?.Id,
-            aliasTermId: this.Alias?.Id
+            contextId: this.Context?.Id,
+            aliasId: this.Alias?.Id
         );
     }
 }
