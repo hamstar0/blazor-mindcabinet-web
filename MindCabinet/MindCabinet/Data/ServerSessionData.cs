@@ -103,7 +103,7 @@ public partial class ServerSessionData(
             UserAppDataObject.Raw? userAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
 
             this.UserAppDataOfSession = userAppDataRaw is not null
-                ? await ServerDataAccess_UserAppData.ToObject_Async( dbCon, termsData, postsContextsData, userAppDataRaw )
+                ? await ServerDataAccess_UserAppData.ToDataObject_Async( dbCon, termsData, postsContextsData, userAppDataRaw )
                 : null;
         }
 

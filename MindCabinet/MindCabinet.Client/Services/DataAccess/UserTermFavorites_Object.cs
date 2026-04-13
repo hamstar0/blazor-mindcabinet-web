@@ -13,7 +13,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
-    public static async Task<UserTermFavoriteObject.ClientObject[]> ToClientObjects_Async(
+    public static async Task<UserTermFavoriteObject.ClientObject[]> ConvertRawsToClientObjects_Async(
                 ClientDataAccess_Terms termsData,
                 UserTermFavoriteObject.Raw[] entriesRaw ) {
         TermId[] termIds = entriesRaw.Select( t => t.FavTermId ).ToArray();
@@ -21,10 +21,10 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             .Terms;
         
         Func<TermId, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
-            .ToObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
+            .ConvertRawToDataObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
 
         return await Task.WhenAll(
-            entriesRaw.Select( entryRaw => entryRaw.CreateClientObject_Async(termFactory) )
+            entriesRaw.Select( entryRaw => entryRaw.ToClientObject_Async(termFactory) )
         );
     }
 }

@@ -72,7 +72,7 @@ public partial class TermEditor : ComponentBase {
             new ClientDataAccess_Terms.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
-        TermObject newTerm = await ClientDataAccess_Terms.ToObject_Async( this.TermsData, newTermRet.TermRaw );
+        TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsData, newTermRet.TermRaw );
 
         await this.OnTermConfirm_Async( newTerm, newTermRet.IsAdded );
 
@@ -93,7 +93,7 @@ public partial class TermEditor : ComponentBase {
         )).Terms;
 
         IEnumerable<Task<TermObject>> termTasks = termsRaw.Select(
-            t => t.CreateDataObject_Async(
+            t => t.ToDataObject_Async(
                 async t => (await this.TermsData.GetByIds_Async( new TermId[] { t } ))
                     .Terms
                     .First()

@@ -28,7 +28,7 @@ public partial class PostsContextObject {
         public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
-        public async Task<PostsContextObject> CreateDataObject_Async(
+        public async Task<PostsContextObject> ToDataObject_Async(
                     Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory ) {
             PostsContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
 

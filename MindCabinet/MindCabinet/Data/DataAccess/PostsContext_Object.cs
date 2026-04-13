@@ -20,7 +20,7 @@ public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
         IEnumerable<TermObject.Raw> termRaws = await termsData.GetByIds_Async( dbCon, entriesRaw.Select(e => e.TermId) );
 
         Func<PostsContextTermEntryObject.Raw, Task<PostsContextTermEntryObject>> getTermEntry = async entryRaw => {
-            TermObject term = await ServerDataAccess_Terms.ToObject_Async(
+            TermObject term = await ServerDataAccess_Terms.ToDataObject_Async(
                 dbCon: dbCon,
                 termsData: termsData,
                 termRaw: termRaws.First( t => t.Id == entryRaw.TermId )
@@ -29,6 +29,12 @@ public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
             return new PostsContextTermEntryObject( term, entryRaw.Priority, entryRaw.IsRequired );
         };
 
-        return await Task.WhenAll( entriesRaw.Select( getTermEntry ) );
+        var entries = new PostsContextTermEntryObject[ entriesRaw.Length ];
+        int i = 0;
+        foreach( PostsContextTermEntryObject.Raw entryRaw in entriesRaw ) {
+            entries[i++] = await getTermEntry( entryRaw );
+        }
+        return entries;
+        // Can't just use Task.WhenAll?
     }
 }

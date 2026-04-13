@@ -68,11 +68,11 @@ public partial class _TermSearch : ComponentBase {
         IEnumerable<UserTermHistoryObject.Raw> histTerms
             = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
 
-        this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ToClientObjects_Async(
+        this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ConvertRawsToClientObjects_Async(
             this.TermsData,
             favTerms.ToArray()
         );
-        this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ToClientObjects_Async(
+        this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ConvertRawsToClientObjects_Async(
             this.TermsData,
             histTerms.ToArray()
         );
@@ -123,7 +123,7 @@ Console.WriteLine( $"SelectSearchResults_Async 2: '{this.SearchOptions[this.Sear
             new ClientDataAccess_Terms.GetByCriteria_Params { TermPattern = termText, ContextTermId = null, ContextTermPattern = null }
         )).Terms;
 
-        this.SearchOptions = (await ClientDataAccess_Terms.ToObjects_Async( this.TermsData, rawTerms.ToArray() ))
+        this.SearchOptions = (await ClientDataAccess_Terms.ConvertRawsToDataObjects_Async( this.TermsData, rawTerms.ToArray() ))
             .ToList();
     }
 

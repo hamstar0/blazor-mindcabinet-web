@@ -48,13 +48,15 @@ v0.6
 			-	Disable post create if no user
 			-	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
 			-	Prevent password entry via enter key when invalid
-			-	Context entry
-			-	Context tag entry
-			-	Content posting
 			-	Fix login submit button
+			-	Fix login fail error (don't indicate if user name doesn't exist)
+			-	Context entry
+			-	Content "create new" button action
+			-	Context picker selection (defaults to current)
+
+
+			-	Context "save changes" button state
 			-	New tag posting
-
-
 			-	Ensure tag widgets work
 			-	Add data API validators
 			-	User's current context

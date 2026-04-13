@@ -49,9 +49,9 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
         }
 
         Task<UserAppDataObject>? userAppDataMaybeTask = sessionData.UserAppData_PostsContext is not null
-            ? sessionData.UserAppData?.CreateDataObject_Async(
+            ? sessionData.UserAppData?.ToDataObject_Async(
                 postsContextFactory: async ( _ ) =>
-                    await ClientDataAccess_PostsContext.ToObject_Async( termsData, sessionData.UserAppData_PostsContext! )
+                    await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async( termsData, sessionData.UserAppData_PostsContext! )
             )
             : null;
         UserAppDataObject? userAppDataMaybe = userAppDataMaybeTask is not null

@@ -11,7 +11,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_Terms : IServerDataAccess {
-	public static async Task<TermObject> ToObject_Async(
+	public static async Task<TermObject> ToDataObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 TermObject.Raw termRaw ) {
@@ -23,6 +23,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             return term;
         };
 
-        return await termRaw.CreateDataObject_Async( termRawFactory );
+        return await termRaw.ToDataObject_Async( termRawFactory );
     }
 }

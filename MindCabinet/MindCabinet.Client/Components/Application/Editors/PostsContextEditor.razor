@@ -6,6 +6,7 @@
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.PostsContext;
 @using MindCabinet.Shared.DataObjects.Term;
+@using System.Text.Json
 
 
 
@@ -14,7 +15,7 @@
 	<input type="text"
 			placeholder="Enter context name"
 			@bind:event="oninput"
-            @bind:get=@this.CurrentContextPrototype.Name
+            @bind:get=@this.EditContext_Prototype.Name
             @bind:set=@this.OnInputName_UI_Async />
 	<h4>Enter tags to describe your current "context":</h4>
 	<TermSetEditor Label="Enter tags (at least 1 required)"
@@ -36,10 +37,10 @@
 	</TermSetEditor>
 	<div>
 		<div>Context options:</div>
-		<button @onclick=@(async () => await this.NewContext_UI_Async(false))>
+		<button @onclick=@(() => this.ClearEditContext_UI(false))>
 			Create New
 		</button>
-		<button disabled=@(!this.CanSaveCurrentContext())
+		<button disabled=@( !this.HasUnsavedChanges().HasUnsavedChanges )
 				@onclick=@this.SaveContext_UI_Async>
 			Save Changes
 		</button>
@@ -48,16 +49,16 @@
 
 
 <RenderPortal TargetRegion="ModalDialogs">
-	<Modal @ref=@this.ResetPromptDialogComponent
-			ModalId=@( "PostsContextEditor_Create_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
+	<Modal @ref=@this.ConfirmResetPromptDialogComponent
+			ModalId=@( "PostsContextEditor_Reset_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
 			Title="Confirm Context Creation">
 		<BodyContent>
 			<i>You have unsaved changes. Remove all changes?</i>
 			<div>
-				<button @onclick=@(this.ResetPromptDialogComponent.Close)>
+				<button @onclick=@(this.ConfirmResetPromptDialogComponent.Close)>
 					Cancel
 				</button>
-				<button @onclick=@( async () => await this.NewContext_UI_Async(true))>
+				<button @onclick=@( () => this.ClearEditContext_UI(true))>
 					Confirm
 				</button>
 			</div>
@@ -68,19 +69,19 @@
 
 
 @code {
-    private Modal ResetPromptDialogComponent = null!;
+    private Modal ConfirmResetPromptDialogComponent = null!;
 
 
 
 	private double GetTagPriorityValue( TermObject tag ) {
-		return this.CurrentContextPrototype
+		return this.EditContext_Prototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id )?
 			.Priority ?? 0;
 	}
 
 	private PostsContextTermEntryObject.Raw GetFirstMatchingPrototypeTagEntry( TermId id ) {
-		return this.CurrentContextPrototype
+		return this.EditContext_Prototype
 			.Entries
 			.First( t => t.TermId == id );
 	}
@@ -92,7 +93,7 @@
             return;
         }
 
-		this.CurrentContextPrototype.Name = nameText;
+		this.EditContext_Prototype.Name = nameText;
     }
 
 	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
@@ -107,52 +108,55 @@
         if( this.OnEntryEdit_Async is not null && changedTagEntry is not null ) {
             await this.OnEntryEdit_Async.Invoke( changedTagEntry, isAdded );
         }
+
+		this.StateHasChanged();
 	}
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
-		PostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+		PostsContextTermEntryObject.Raw? entry = this.EditContext_Prototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
 		if( entry is not null ) {
 			entry.Priority = newValue;
 		}
+
+		this.StateHasChanged();
 	}
 	
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
         await Task.CompletedTask;
-		PostsContextTermEntryObject.Raw? entry = this.CurrentContextPrototype
+
+		PostsContextTermEntryObject.Raw? entry = this.EditContext_Prototype
 			.Entries
 			.FirstOrDefault( t => t.TermId == tag.Id );
 
 		if( entry is not null ) {
 			entry.IsRequired = newValue;
 		}
+
+		this.StateHasChanged();
 	}
 
-	private async Task NewContext_UI_Async( bool forceReset ) {
-		if( await this.HasUnsavedChanges() && !forceReset ) {
-			this.ResetPromptDialogComponent.Open();
-		} else {
-			this.ResetCurrentContext();
+	private void ClearEditContext_UI( bool forceReset ) {
+		if( this.HasUnsavedChanges().HasUnsavedChanges && !forceReset ) {
+			this.ConfirmResetPromptDialogComponent.Open();
 
-			@* if( this.ResetPromptDialog.IsOpen ) { *@
-			this.ResetPromptDialogComponent.Close();
+			return;
 		}
+
+		// if( this.ResetPromptDialog.IsOpen ) {
+		this.ConfirmResetPromptDialogComponent.Close();
+
+		this.ClearEditContext();
+
+		this.StateHasChanged();
 	}
 
 
-	public bool CanSaveCurrentContext() {
-		return this.CurrentContextPrototype.IsValid( true );
-	}
-	
 	private async Task SaveContext_UI_Async() {
-		if( this.InitialContext is null ) {
-			await this.Create_Async();
-		} else {
-			await this.Update_Async();
-		}
+		await this.UpdateOrCreate_Async();
         
 		this.StateHasChanged();
     }

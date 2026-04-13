@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserAppData : IServerDataAccess {
-    public async static Task<UserAppDataObject> ToObject_Async(
+    public async static Task<UserAppDataObject> ToDataObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_PostsContexts postsContextsData,
@@ -32,9 +32,9 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 throw new Exception( $"PostsContext with id {id} not found." );
             }
 
-            return await ctxRaw.CreateDataObject_Async( ctxTermsFactory );
+            return await ctxRaw.ToDataObject_Async( ctxTermsFactory );
         };
 
-        return await dbEntry.CreateDataObject_Async( postsContextFactory );
+        return await dbEntry.ToDataObject_Async( postsContextFactory );
     }
 }

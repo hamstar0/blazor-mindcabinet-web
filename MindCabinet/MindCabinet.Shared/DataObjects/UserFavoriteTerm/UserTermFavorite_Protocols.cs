@@ -26,7 +26,7 @@ public partial class UserTermFavoriteObject {
 	    public int Favor { get; set; }
 
         
-        public async Task<UserTermFavoriteObject> CreateDataObject_Async(
+        public async Task<UserTermFavoriteObject> ToDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,
                     Func<TermId, Task<TermObject>> termFactory ) {
             return new UserTermFavoriteObject(
@@ -37,7 +37,7 @@ public partial class UserTermFavoriteObject {
         }
 
         
-        public async Task<ClientObject> CreateClientObject_Async(
+        public async Task<ClientObject> ToClientObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
             return new ClientObject(
                 simpleUserId: this.SimpleUserId,

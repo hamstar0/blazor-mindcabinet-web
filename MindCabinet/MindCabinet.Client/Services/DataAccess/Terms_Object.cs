@@ -12,7 +12,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
-    public static async Task<TermObject> ToObject_Async(
+    public static async Task<TermObject> ConvertRawToDataObject_Async(
                 ClientDataAccess_Terms termsData,
                 TermObject.Raw termRaw ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
@@ -20,11 +20,11 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
             .Terms
             .First();
 
-        return await termRaw.CreateDataObject_Async( termRawFactory );
+        return await termRaw.ToDataObject_Async( termRawFactory );
     }
 
 
-    public static async Task<TermObject[]> ToObjects_Async(
+    public static async Task<TermObject[]> ConvertRawsToDataObjects_Async(
                 ClientDataAccess_Terms termsData,
                 TermObject.Raw[] rawTerms ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
@@ -33,7 +33,7 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
             .First();
 
         return await Task.WhenAll(
-            rawTerms.Select( async rawTerm => await rawTerm.CreateDataObject_Async(termRawFactory) )
+            rawTerms.Select( async rawTerm => await rawTerm.ToDataObject_Async(termRawFactory) )
         );
     }
 }

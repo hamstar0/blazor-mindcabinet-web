@@ -22,7 +22,7 @@ public partial class UserAppDataObject {
 		public PostsContextId PostsContextId { get; set; }
 
         
-        public async Task<UserAppDataObject> CreateDataObject_Async(
+        public async Task<UserAppDataObject> ToDataObject_Async(
                     Func<PostsContextId, Task<PostsContextObject>> postsContextFactory ) {
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,

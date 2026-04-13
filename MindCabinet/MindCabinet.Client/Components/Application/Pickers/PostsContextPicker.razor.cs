@@ -91,7 +91,7 @@ public partial class PostsContextPicker : ComponentBase {
                 NameContains = contextText
             }
         );
-        this.SearchOptions = (await ClientDataAccess_PostsContext.ToObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
+        this.SearchOptions = (await ClientDataAccess_PostsContext.ConvertRawsToDataObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
             .ToList();
     }
 

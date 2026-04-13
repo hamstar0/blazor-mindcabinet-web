@@ -10,7 +10,7 @@
 <hr />
 <PostsContextEditor
     InitialContext=@this.SessionData.GetCurrentContext()
-    OnCreateOrUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
+    OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
     OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
 
 
@@ -36,6 +36,7 @@
     }
 
     private async Task OnContextEntryEdit_UI_Async( PostsContextTermEntryObject.Raw changedEntry, bool isAdded ) {
+await Task.CompletedTask;
         //this.StateHasChanged();
         //
         //if( this.OnStateChange_Async is not null ) {

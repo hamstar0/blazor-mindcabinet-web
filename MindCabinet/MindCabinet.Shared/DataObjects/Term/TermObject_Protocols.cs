@@ -24,7 +24,7 @@ public partial class TermObject {
         public TermId? AliasId { get; set; } = null;
 
         
-        public async Task<TermObject> CreateDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {
+        public async Task<TermObject> ToDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,

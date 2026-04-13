@@ -25,7 +25,7 @@ public partial class UserTermHistoryObject {
 	    public DateTime Created { get; set; }
 
         
-        public async Task<UserTermHistoryObject> CreateDataObject_Async(
+        public async Task<UserTermHistoryObject> ToDataObject_Async(
                     Func<SimpleUserId, Task<SimpleUserObject>> userFactory,
                     Func<TermId, Task<TermObject>> termFactory ) {
             return new UserTermHistoryObject(
@@ -36,7 +36,7 @@ public partial class UserTermHistoryObject {
         }
 
         
-        public async Task<ClientObject> CreateClientObject_Async(
+        public async Task<ClientObject> ToClientObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
             return new ClientObject(
                 simpleUserId: this.SimpleUserId,

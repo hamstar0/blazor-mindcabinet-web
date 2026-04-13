@@ -17,18 +17,27 @@ public partial class PostsContextObject {
 
 
 
-        public bool Matches( PostsContextObject other ) {
-            if( this.Id != other.Id ) {
-                return false;
+        public enum MatchResult {
+            Unknown = -1,
+            Match = 0,
+            IdMismatch = 1,
+            NameMismatch = 2,
+            DescriptionMismatch = 3,
+            EntriesCountMismatch = 4,
+            EntriesMismatch = 5
+        }
+        public MatchResult Matches( PostsContextObject other, bool ignoreId ) {
+            if( !ignoreId && this.Id != other.Id ) {
+                return MatchResult.IdMismatch;
             }
             if( this.Name != other.Name ) {
-                return false;
+                return MatchResult.NameMismatch;
             }
             if( this.Description != other.Description ) {
-                return false;
+                return MatchResult.DescriptionMismatch;
             }
             if( this.Entries.Length != other.Entries.Length ) {
-                return false;
+                return MatchResult.EntriesCountMismatch;
             }
             
             for( int i = 0; i < this.Entries.Length; i++ ) {
@@ -38,11 +47,11 @@ public partial class PostsContextObject {
                 if( entryA.TermId != entryB.Term.Id
                         || entryA.Priority != entryB.Priority
                         || entryA.IsRequired != entryB.IsRequired ) {
-                    return false;
+                    return MatchResult.EntriesMismatch;
                 }
             }
 
-            return true;
+            return MatchResult.Match;
         }
 
         public bool IsValid( bool includingId ) {

@@ -38,7 +38,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject> {
 
 
 
-        public async Task<SimplePostObject> CreateDataObject_Async(
+        public async Task<SimplePostObject> ToDataObject_Async(
                     Func<TermId[], Task<TermObject[]>> termsFactory ) {
             return new SimplePostObject(
                 id: this.Id,
