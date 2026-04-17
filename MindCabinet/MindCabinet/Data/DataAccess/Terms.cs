@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_Terms : IServerDataAccess {
     public const string TableName = "Terms";
 
-	public async Task<bool> Install_Async( IDbConnection dbCon ) {
+	public async Task<(bool success, TermId userConceptTermId)> Install_Async( IDbConnection dbCon ) {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -27,8 +27,10 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                     REFERENCES {TableName}(Id)
             );"
         );
-        
-        return true;
+
+        TermId userConceptTermId = await this.InstallSamples_Async( dbCon );
+
+        return (true, userConceptTermId);
     }
 
     //

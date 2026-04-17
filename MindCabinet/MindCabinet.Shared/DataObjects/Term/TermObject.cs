@@ -9,7 +9,7 @@ public enum TermId : long { }
 
 
 
-public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject {
+public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject, IHasId<TermId> {
     public TermId Id { get; }
 
     public string Term { get; }

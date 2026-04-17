@@ -10,3 +10,8 @@ public interface IDataObject {
 public interface IRawDataObject {
     // This is the raw data object that is used for (de)serialization. It should not contain any logic or validation.
 }
+
+
+public interface IHasId<TId> where TId : System.Enum {
+    public TId Id { get; }
+}

@@ -46,7 +46,7 @@ public class Program {
         // builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddSingleton<ServerSettings>();
+        builder.Services.AddSingleton<ServerSettingsAndData>();
 
         builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection(conn) );
         builder.Services.AddTransient<DbAccess>();  // not AddSingleton, not AddScoped; IDbConnections should be short-lived?

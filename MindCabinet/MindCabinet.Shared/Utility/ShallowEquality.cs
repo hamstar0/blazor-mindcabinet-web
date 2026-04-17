@@ -41,7 +41,7 @@ public static class ShallowEquality {
             PropertyInfo[] props = type.GetProperties(
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly
             );
-            foreach( var prop in props ) {
+            foreach( PropertyInfo prop in props ) {
                 if( prop.GetIndexParameters().Length > 0 ) {
                     continue;
                 }
@@ -49,14 +49,14 @@ public static class ShallowEquality {
                     continue;
                 }
 
-                values[prop.Name] = prop.GetValue( instance );
+                values[ prop.Name ] = prop.GetValue( instance );
             }
 
             FieldInfo[] fields = type.GetFields(
                 BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly
             );
             foreach( var field in fields ) {
-                values[field.Name] = field.GetValue( instance );
+                values[ field.Name ] = field.GetValue( instance );
             }
 
             type = type.BaseType!;

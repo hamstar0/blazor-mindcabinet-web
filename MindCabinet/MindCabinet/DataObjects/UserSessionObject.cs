@@ -16,4 +16,9 @@ public partial class UserSessionObject : IDataObject {
         public DateTime LatestVisit { get; set; }
         public int Visits { get; set; }
     }
+
+
+    public UserSessionObject() {
+        throw new NotImplementedException( "This class is not meant to be instantiated" );
+    }
 }

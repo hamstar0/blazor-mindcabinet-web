@@ -53,6 +53,10 @@ v0.6
 			-	Context entry
 			-	Content "create new" button action
 			-	Context picker selection (defaults to current)
+set sessions to store contexts
+set contexts to reference user id tag(s)
+set posts to have user id tags
+set users to exist as tags (assign them)
 
 
 			-	Context "save changes" button state

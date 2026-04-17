@@ -18,7 +18,7 @@ public partial class PostsContextObject {
         };
     }
 
-    public class Raw : IRawDataObject {
+    public class Raw : IRawDataObject, IHasId<PostsContextId> {
         public PostsContextId Id { get; set; } = default;
 
         public string Name { get; set; } = "";

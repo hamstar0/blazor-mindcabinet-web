@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimplePostObject : IEquatable<SimplePostObject> {
+public partial class SimplePostObject {
     public static Raw CreateRaw(
             SimplePostId id,
             DateTime created,

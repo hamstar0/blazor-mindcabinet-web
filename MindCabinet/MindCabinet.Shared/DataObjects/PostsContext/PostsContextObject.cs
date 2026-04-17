@@ -8,7 +8,7 @@ public enum PostsContextId : long { }
 
 
 
-public partial class PostsContextObject : IDataObject {
+public partial class PostsContextObject : IDataObject, IHasId<PostsContextId> {
     public PostsContextId Id { get; }
 
     public string Name { get; }

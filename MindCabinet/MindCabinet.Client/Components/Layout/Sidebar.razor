@@ -4,15 +4,20 @@
 @using MindCabinet.Shared.DataObjects.PostsContext
 
 
-<PostsContextPicker
-    UniqueName="Sidebar_PostsContextPicker"
-    OnContextSelect_Async=@this.OnContextSelect_UI_Async />
-<hr />
-<PostsContextEditor
-    InitialContext=@this.SessionData.GetCurrentContext()
-    OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
-    OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
-
+@if( this.SessionData.UserId is not null ) {
+    <PostsContextPicker
+        UniqueName="Sidebar_PostsContextPicker"
+        Contexts=@this.Contexts_Cache
+        CurrentContext=@this.SessionData.GetCurrentContext()
+        OnContextSelect_Async=@this.OnContextSelect_UI_Async />
+    <hr />
+    <PostsContextEditor
+        InitialContext=@this.SessionData.GetCurrentContext()
+        OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
+        OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
+} else {
+    <span>...</span>
+}
 
 
 @code {

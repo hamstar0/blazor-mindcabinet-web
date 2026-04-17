@@ -19,17 +19,19 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserTermsHistory historyTermsData,
                 ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_UserAppData userAppData ) {
+                ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_ServerData serverData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
             return true;
         }
         
         bool success;
         SimpleUserId defaultUserId;
+        TermId userConceptTermId;
         TermObject.Raw sampleTerm;
         PostsContextObject.Raw sampleUsrCtx;
 
-        (success, defaultUserId) = await simpleUsersData.Install_Async( dbCon );
+        success = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
@@ -37,7 +39,11 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         if( !success ) {
             return false;
         }
-        success = await termsData.Install_Async( dbCon );
+        (success, userConceptTermId) = await termsData.Install_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+        (success, defaultUserId) = await simpleUsersData.Install_AfterTerms_Async( dbCon );
         if( !success ) {
             return false;
         }
@@ -66,6 +72,10 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
         success = await userAppData.Install_Async( dbCon, defaultUserId, sampleUsrCtx.Id );
+        if( !success ) {
+            return false;
+        }
+        success = await serverData.Install_Async( dbCon, userConceptTermId );
         if( !success ) {
             return false;
         }

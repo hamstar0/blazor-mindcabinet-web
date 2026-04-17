@@ -7,7 +7,7 @@ using static MindCabinet.Shared.DataObjects.SimpleUserObject;
 namespace MindCabinet.Shared.DataObjects;
 
 
-public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
+public partial class SimpleUserObject {
     public static Raw CreateRaw(
             SimpleUserId id,
             DateTime created,
@@ -30,7 +30,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         };
     }
 
-    public class Raw : IRawDataObject {
+    public class Raw : IRawDataObject, IHasId<SimpleUserId> {
         public SimpleUserId Id { get; set; }
         public DateTime Created { get; set; }
         public string Name { get; set; } = "";
@@ -87,7 +87,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
         };
     }
     
-    public class UserAndSession_Raw : IRawDataObject {
+    public class UserAndSession_Raw : IRawDataObject, IHasId<SimpleUserId> {
         public SimpleUserId Id { get; set; }
         public DateTime Created { get; set; }
         public string Name { get; set; } = "";
@@ -123,7 +123,7 @@ public partial class SimpleUserObject : IEquatable<SimpleUserObject> {
 
 
     
-    public class ClientObject( SimpleUserId id, string name, DateTime created, string email ) : IRawDataObject {
+    public class ClientObject( SimpleUserId id, string name, DateTime created, string email ) : IRawDataObject, IHasId<SimpleUserId> {
         public SimpleUserId Id { get; set; } = id;
         public string Name { get; set; } = name;
         public DateTime Created { get; set; } = created;

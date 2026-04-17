@@ -17,7 +17,7 @@ public partial class TermObject {
         };
     }
 
-    public class Raw : IRawDataObject {
+    public class Raw : IRawDataObject, IHasId<TermId> {
         public TermId Id { get; set; } = default;
         public string Term { get; set; } = "";
         public TermId? ContextId { get; set; } = null;

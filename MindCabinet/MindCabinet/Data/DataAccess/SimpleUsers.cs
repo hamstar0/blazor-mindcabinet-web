@@ -49,7 +49,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public const string TableName = "SimpleUsers";
 
-    public async Task<(bool success, SimpleUserId defaultUserId)> Install_Async(
+    public async Task<bool> Install_Async(
                 IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
@@ -65,8 +65,15 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //    ON UPDATE CASCADE
         );
         
+        return true;
+    }
+
+    public async Task<(bool success, SimpleUserId defaultUserId)> Install_AfterTerms_Async(
+                IDbConnection dbConnection,
+                ServerDataAccess_Terms termsData ) {
         SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
             dbCon: dbConnection,
+            termsData: termsData,
             parameters: new ClientDataAccess_SimpleUsers.Create_Params {
                 Name = "hamstar",   // temporary!!!!!
                 Email = "hamstarhelper@gmail.com",
@@ -88,7 +95,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     private readonly ServerSessionData SessionData;
     
-    private readonly ServerSettings ServerSettings;
+    private readonly ServerSettingsAndData ServerSettings;
 
     private readonly ILogger<ServerDataAccess_SimpleUsers> Logger;
 
@@ -96,7 +103,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public ServerDataAccess_SimpleUsers(
                 ServerSessionData sessionData,
-                ServerSettings serverSettings,
+                ServerSettingsAndData serverSettings,
                 ILogger<ServerDataAccess_SimpleUsers> logger ) {
         this.SessionData = sessionData;
         this.ServerSettings = serverSettings;
@@ -215,6 +222,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_ServerData serverData,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
                 bool detectCollision ) {
         SimpleUserObject.StatusCode code;
@@ -272,6 +281,11 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             isValidated: parameters.IsValidated    // note: not for client
             //isPrivileged: isPrivileged
         );
+
+        await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.Create_Params {
+            TermPattern = parameters.Name,
+            ContextId = (await serverData.Get_Async(dbCon)).UsersConceptTermId
+        } );
 
         return new SimpleUserQueryResult( newUser, false );
     }

@@ -90,9 +90,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
         }
 
-
-        string sql1 = $@"SELECT * FROM {TableName} AS MyContext
-            WHERE MyContext.SimpleUserId = @UserId;";
+        string sql1 = $"SELECT * FROM {TableName} AS MyContext WHERE";
         var sqlParams1 = new Dictionary<string, object>();
 
         bool needsAnd = false;
@@ -107,12 +105,13 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             needsAnd = true;
         }
 
-        if( parameters.NameContains is not null ) {
+        if( !string.IsNullOrEmpty(parameters.NameContains) ) {
             if( needsAnd ) {
                 sql1 += " AND";
             }
             sql1 += " MyContext.Name LIKE @NamePattern;";   // TODO: Validate
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
+            needsAnd = true;
         }
 
         IEnumerable<PostsContextObject.Raw> contexts

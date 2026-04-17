@@ -5,6 +5,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.Utility;
 
 
 namespace MindCabinet.Client.Components.Application.Pickers;
@@ -31,6 +32,15 @@ public partial class PostsContextPicker : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
+    [Parameter, EditorRequired]
+    public PostsContextObject[] Contexts { get; set; } = [];
+    private PostsContextObject[] PreviousContexts = [];
+
+
+    [Parameter, EditorRequired]
+    public PostsContextObject CurrentContext { get; set; } = null!;
+
+
     private bool IsSeachFocused = false;
 
     private string Value = "";
@@ -47,6 +57,28 @@ public partial class PostsContextPicker : ComponentBase {
 
     [Parameter, EditorRequired]
     public Func<PostsContextObject, Task> OnContextSelect_Async { get; set; } = null!;
+
+
+
+    protected async override Task OnParametersSetAsync() {
+        await base.OnParametersSetAsync();
+
+        bool contextsChanged = this.Contexts.Length != this.PreviousContexts.Length
+            || this.Contexts
+                .Where( (c, idx) => c.Id == this.PreviousContexts[idx].Id )
+                .Count() != this.Contexts.Length;
+        if( contextsChanged ) {
+            this.PreviousContexts = this.Contexts;
+
+            await this.LoadContextsIntoSearchOptions_Async();
+        }
+    }
+
+    private async Task LoadContextsIntoSearchOptions_Async() {
+        this.Value = this.CurrentContext?.Name ?? "";   // sorta blindly trusting this!
+
+        await this.SearchAndStoreTerms_Async( this.Value );
+    }
 
 
     private async Task HandleInput_Async( KeyboardEventArgs arg ) {
@@ -86,13 +118,23 @@ public partial class PostsContextPicker : ComponentBase {
             return;
         }
 
-        ClientDataAccess_PostsContext.Get_Return contexts = await this.PostsContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params {
-                NameContains = contextText
-            }
-        );
-        this.SearchOptions = (await ClientDataAccess_PostsContext.ConvertRawsToDataObjects_Async( this.TermsData, contexts.Contexts.ToArray() ))
+        if( contextText == "" ) {
+            this.SearchOptions = this.Contexts.ToList();
+
+            return;
+        }
+
+        this.SearchOptions = this.Contexts
+            .Where( c => c.Name?
+                .Contains( contextText, StringComparison.InvariantCultureIgnoreCase ) == true )
             .ToList();
+
+        if( this.SearchOptions.Count > 0 ) {
+            this.SearchPosition = this.SearchOptions
+                .FindIndex( c => c.Id == this.CurrentContext?.Id ); // sorta blindly trusting this!
+        } else {
+            this.SearchPosition = -1;
+        }
     }
 
 

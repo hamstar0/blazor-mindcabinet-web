@@ -12,7 +12,7 @@ public enum SimplePostId : long { }
 
 
 
-public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObject {
+public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObject, IHasId<SimplePostId> {
 	public SimplePostId Id { get; }
 
 

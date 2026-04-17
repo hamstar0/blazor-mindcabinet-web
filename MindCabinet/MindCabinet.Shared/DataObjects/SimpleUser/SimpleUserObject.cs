@@ -12,7 +12,7 @@ public enum SimpleUserId : long { }
 
 
 
-public partial class SimpleUserObject : IEquatable<SimpleUserObject>, IDataObject {
+public partial class SimpleUserObject : IEquatable<SimpleUserObject>, IDataObject, IHasId<SimpleUserId> {
 	public SimpleUserId Id { get; }
 
 	public DateTime Created { get; }
