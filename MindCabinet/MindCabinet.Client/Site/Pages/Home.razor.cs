@@ -31,7 +31,7 @@ public partial class Home : ComponentBase {
     //public ClientDbAccess DbAccess { get; set; } = null!;
 
     [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionManager SessionData { get; set; } = null!;
 
 
 

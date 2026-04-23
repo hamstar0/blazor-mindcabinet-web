@@ -65,7 +65,7 @@ public class SessionController(
     }
 
 
-    [HttpGet(ClientSessionData.Logout_Route)]
+    [HttpGet(ClientSessionManager.Logout_Route)]
     public async Task<string> Logout_Async() {
         if( !this.SessData.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );

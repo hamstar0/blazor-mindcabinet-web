@@ -24,7 +24,7 @@ public partial class _TermSearch : ComponentBase {
     private ClientDataAccess_UserTermsHistory UserTermsHistoryData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionData Session { get; set; } = null!;
+    private ClientSessionManager Session { get; set; } = null!;
 
 
     [Parameter]

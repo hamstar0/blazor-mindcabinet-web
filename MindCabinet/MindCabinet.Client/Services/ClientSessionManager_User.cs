@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData {
+public partial class ClientSessionManager {
     public string? SessionId => this.Data?.SessionId;
 
     public SimpleUserId? UserId => this.Data?.UserData?.Id;

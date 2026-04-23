@@ -20,7 +20,7 @@ public partial class Sidebar {
     //public ClientDbAccess DbAccess { get; set; } = null!;
     
     [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionManager SessionData { get; set; } = null!;
 
     [Inject]
     private ClientDataAccess_Terms TermsData { get; set; } = null!;

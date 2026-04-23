@@ -23,7 +23,7 @@ public partial class ContextPostsBrowser : ComponentBase {
     //public LocalData LocalData { get; set; } = null!;
 
     [Inject]
-    public ClientSessionData SessionData { get; set; } = null!;
+    public ClientSessionManager SessionData { get; set; } = null!;
 
 
     [Parameter]

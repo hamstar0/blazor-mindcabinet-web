@@ -8,10 +8,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientSessionData sessionData ) : IClientDataAccess {
+public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientSessionManager sessionData ) : IClientDataAccess {
     private HttpClient Http = http;
 
-    private ClientSessionData SessionData = sessionData;
+    private ClientSessionManager SessionData = sessionData;
 
 
     public class GetTermIdsForCurrentUser_Params {

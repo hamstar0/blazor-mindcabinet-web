@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData {
+public partial class ClientSessionManager {
     private Dictionary<string, Func<DataBundle?, Task>> OnUserAndAppDataLoaded_Async = new();
     private DataBundle? OnUserAndAppDataLoaded_PromisedData = null;
 

@@ -21,7 +21,7 @@ public partial class UserRegistrationForm : ComponentBase {
     private ClientDataAccess_SimpleUsers SimpleUsersData {get; set; } = null!;
 
     [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionManager SessionData { get; set; } = null!;
 
 
     private string MyModalId => "UserRegistrationForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);

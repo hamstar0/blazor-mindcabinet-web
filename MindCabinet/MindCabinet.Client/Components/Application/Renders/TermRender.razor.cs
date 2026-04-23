@@ -17,7 +17,7 @@ public partial class TermRender : ComponentBase {
     private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionData Session { get; set; } = null!;
+    private ClientSessionManager Session { get; set; } = null!;
 
 
     [Parameter]

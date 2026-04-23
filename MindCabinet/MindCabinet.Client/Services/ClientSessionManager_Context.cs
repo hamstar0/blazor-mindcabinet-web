@@ -8,7 +8,7 @@ using System.Net.Http.Json;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionData {
+public partial class ClientSessionManager {
     public PostsContextObject? GetCurrentContext() {
         return this.Data?.UserAppData?.PostsContext;
     }

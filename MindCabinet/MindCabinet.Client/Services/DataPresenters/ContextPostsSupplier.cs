@@ -15,13 +15,13 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 public partial class ContextPostsSupplier(
             ILogger<ContextPostsSupplier> logger,
-            ClientSessionData sessionData,
+            ClientSessionManager sessionData,
             ClientDataAccess_PostsContext postsContextsData,
             ClientDataAccess_PrioritizedPosts postsData
         ) : IClientDataProcessors {
     private ILogger<ContextPostsSupplier> Logger = logger;
 
-    private ClientSessionData SessionData = sessionData;
+    private ClientSessionManager SessionData = sessionData;
 
     private ClientDataAccess_PostsContext PostsContextsData = postsContextsData;
     

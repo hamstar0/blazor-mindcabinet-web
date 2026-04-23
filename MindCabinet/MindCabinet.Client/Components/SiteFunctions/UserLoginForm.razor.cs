@@ -22,7 +22,7 @@ public partial class UserLoginForm : ComponentBase {
     private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionData SessionData { get; set; } = null!;
+    private ClientSessionManager SessionData { get; set; } = null!;
 
 
     private string MyModalId => "UserLoginForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);

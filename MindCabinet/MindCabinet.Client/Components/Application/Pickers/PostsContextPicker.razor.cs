@@ -22,7 +22,7 @@ public partial class PostsContextPicker : ComponentBase {
     private ClientDataAccess_PostsContext PostsContextsData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionData Session { get; set; } = null!;
+    private ClientSessionManager Session { get; set; } = null!;
 
 
     [Parameter, EditorRequired]

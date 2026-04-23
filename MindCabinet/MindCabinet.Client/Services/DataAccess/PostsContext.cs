@@ -10,11 +10,11 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_PostsContext(
             HttpClient http,
-            ClientSessionData sessionData
+            ClientSessionManager sessionData
         ) : IClientDataAccess {
     private HttpClient Http = http;
 
-    private ClientSessionData SessionData = sessionData;
+    private ClientSessionManager SessionData = sessionData;
 
 
 
