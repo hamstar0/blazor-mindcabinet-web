@@ -55,7 +55,6 @@ v0.6
 			-	Context picker selection (defaults to current)
 set sessions to store contexts
 set posts to have post's user as a tag
-differentiate between ServerSessionData and ServerDataAccess_SessionData (also for client equivalents)
 
 
 			-	Set each user to have a new post context as their session default
