@@ -74,17 +74,17 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
         }
 
-        string sql1 = $"SELECT * FROM {TableName} AS MyContext WHERE";
+        string sql1 = $"SELECT * FROM {TableName} AS MyContext";
         var sqlParams1 = new Dictionary<string, object>();
 
         bool needsAnd = false;
         
         if( parameters.Ids.Length >= 2 ) {
-            sql1 += " MyContext.Id IN @Ids;";
+            sql1 += " WHERE MyContext.Id IN @Ids";
             sqlParams1.Add( "@Ids", parameters.Ids );
             needsAnd = true;
         } else if( parameters.Ids.Length == 1 ) {
-            sql1 += " MyContext.Id = @Id;";
+            sql1 += " WHERE MyContext.Id = @Id";
             sqlParams1.Add( "@Id", parameters.Ids[0] );
             needsAnd = true;
         }
@@ -92,11 +92,14 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         if( !string.IsNullOrEmpty(parameters.NameContains) ) {
             if( needsAnd ) {
                 sql1 += " AND";
+            } else {
+                sql1 += " WHERE";
             }
-            sql1 += " MyContext.Name LIKE @NamePattern;";   // TODO: Validate
+            sql1 += " MyContext.Name LIKE @NamePattern";   // TODO: Validate
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
             needsAnd = true;
         }
+        sql1 += ";";
 
         IEnumerable<PostsContextObject.Raw> contexts
             = await dbCon.QueryAsync<PostsContextObject.Raw>(

@@ -3,10 +3,12 @@
 
 
 
-<div component-name="TermRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
+<div component-name="TermRender"
+        class="basic tooltip-container @(this.AddedClasses ?? "")"
+        @onclick=@this.OnClick_UI_Async>
     @(this.Term?.Term ?? "?")
     @if( this.TermContextContext is not null ) {
-        <div class="tooltiptext">@this.TermContextContext!.Term</div>
+        <div class="tooltip-box">@this.TermContextContext!.Term</div>
     }
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {

@@ -53,8 +53,6 @@ v0.6
 			-	Context entry
 			-	Content "create new" button action
 			-	Context picker selection (defaults to current)
-set sessions to store contexts
-set posts to have post's user as a tag
 
 
 			-	Set each user to have a new post context as their session default

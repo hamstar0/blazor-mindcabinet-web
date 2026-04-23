@@ -3,10 +3,12 @@
 
 
 
-<div component-name="PostsContextRender" class="basic @(this.AddedClasses ?? "")" @onclick=@this.OnClick_UI_Async>
+<div component-name="PostsContextRender"
+        class="basic tooltip-container @(this.AddedClasses ?? "")"
+        @onclick=@this.OnClick_UI_Async>
     @this.Context.Name
-    @if( this.Context.Description is not null ) {
-        <div class="tooltiptext">@this.Context.Description</div>
+    @if( !string.IsNullOrEmpty(this.Context.Description) ) {
+        <div class="tooltip-box">@this.Context.Description</div>
     }
     @this.ChildContent
 </div>
