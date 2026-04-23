@@ -37,10 +37,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 
 
 
-    internal IDictionary<TermId, TermObject.Raw> TermsById_Cache = new Dictionary<TermId, TermObject.Raw>();
-
-
-
     public async Task<TermObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 TermId id ) {
@@ -48,18 +44,10 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             throw new ArgumentException( "TermId is not valid (must be non-zero)." );
         }
 
-        if( this.TermsById_Cache.ContainsKey(id) ) {
-            return this.TermsById_Cache[id];
-        }
-
         TermObject.Raw? termRaw = await dbCon.QuerySingleOrDefaultAsync<TermObject.Raw>(
             $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
             new { Id = id }
         );
-
-        if( termRaw is not null ) {
-            this.TermsById_Cache.Add( id, termRaw );
-        }
 
         return termRaw;
     }
@@ -70,11 +58,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         if( ids.Any(id => id == 0) ) {
             throw new ArgumentException( "TermId is not valid (must be non-zero)." );
         }
-
-        if( ids.All(k => this.TermsById_Cache.ContainsKey(k)) ) {
-            return ids.Select( id => this.TermsById_Cache[id] );
-        }
-        // todo: optimize query to fetch only remaining uncached terms
 
         string sql = $@"SELECT * FROM {TableName} AS MyTerms
             WHERE MyTerms.Id IN @Ids";
@@ -159,6 +142,9 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 AliasId = parameters.AliasId,
             }
         );
+        if( newId == 0 ) {
+            throw new Exception( "Could not declare new term." );
+        }
 
         var newTerm = TermObject.CreateRaw(
 			id: (TermId)newId,
@@ -166,7 +152,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 			contextId: parameters.ContextId,
 			aliasId: parameters.AliasId
 		);
-		this.TermsById_Cache[ (TermId)newId ] = newTerm;
 
         return new ClientDataAccess_Terms.Create_Return { IsAdded = true, TermRaw = newTerm };
     }

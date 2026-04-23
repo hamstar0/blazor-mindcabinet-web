@@ -13,6 +13,20 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
+    public static async Task<PostsContextObject> ToDataObject_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                PostsContextObject.Raw raw ) {
+        return await raw.ToDataObject_Async( ctxTermsFactory: async ctxTermEntries => {
+            return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
+                dbCon: dbCon,
+                termsData: termsData,
+                entriesRaw: raw.Entries
+            );
+        } );
+    }
+
+
     public static async Task<PostsContextTermEntryObject[]> ToTermEntriesDataObjects_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,

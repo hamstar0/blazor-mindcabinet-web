@@ -5,6 +5,8 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Site.Pages;
 using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -66,29 +68,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         );
         
         return true;
-    }
-
-    public async Task<(bool success, SimpleUserId defaultUserId)> Install_AfterTerms_Async(
-                IDbConnection dbConnection,
-                ServerDataAccess_Terms termsData ) {
-        SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
-            dbCon: dbConnection,
-            termsData: termsData,
-            parameters: new ClientDataAccess_SimpleUsers.Create_Params {
-                Name = "hamstar",   // temporary!!!!!
-                Email = "hamstarhelper@gmail.com",
-                Password = "12345A",
-                IsValidated = true
-            },
-            detectCollision: false
-        );
-        //throw new Exception( JsonSerializer.Serialize(obj) );
-
-        if( result.User is null ) {
-            throw new Exception( "Failed to create default user: "+(result.AlreadyExists ? "already exists" : "unknown error") );
-        }
-
-        return (true, result.User.Id);
     }
 
     //
@@ -222,10 +201,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 ServerDataAccess_ServerData serverData,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_PostsContexts postsContextData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_UserAppData userAppData,
                 ClientDataAccess_SimpleUsers.Create_Params parameters,
-                bool detectCollision ) {
+                bool detectCollision,
+                bool createPostsContext ) {
         SimpleUserObject.StatusCode code;
         code = SimpleUserObject.GetUserNameStatus(parameters.Name);
         if( code != SimpleUserObject.StatusCode.OK ) {
@@ -282,11 +265,91 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             //isPrivileged: isPrivileged
         );
 
-        await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.Create_Params {
-            TermPattern = parameters.Name,
-            ContextId = (await serverData.Get_Async(dbCon)).UsersConceptTermId
-        } );
+        //
+
+        if( createPostsContext ) {
+            TermId userTermId = await this.CreateUserTerm_Async(
+                dbCon: dbCon,
+                serverData: serverData,
+                termsData: termsData,
+                userName: parameters.Name
+            );
+
+            PostsContextObject.Prototype userDefaultPostsContext = await this.CreateDefaultUserPostsContext(
+                dbCon,
+                postsContextData,
+                postsContextTermEntryData,
+                parameters,
+                userTermId
+            );
+            
+            await userAppData.Create_Async(
+                dbCon: dbCon,
+                simpleUserId: (SimpleUserId)newUserId,
+                userDefaultPostsContextId: userDefaultPostsContext.Id ?? 0
+            );
+        }
+
+        //
 
         return new SimpleUserQueryResult( newUser, false );
+    }
+
+    internal async Task<TermId> CreateUserTerm_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_ServerData serverData,
+                ServerDataAccess_Terms termsData,
+                string userName ) {
+        ServerDataObject.Raw? serverDataObj = await serverData.Get_Async( dbCon );
+        if( serverDataObj is null ) {
+            throw new Exception( "Server application data not found." );
+        }
+        if( serverDataObj?.UsersConceptTermId is null || serverDataObj?.UsersConceptTermId == 0 ) {
+            throw new Exception( "User Concept term not found." );
+        }
+
+        return (
+            await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.Create_Params {
+                TermPattern = userName,
+                ContextId = serverDataObj?.UsersConceptTermId
+            } )
+        ).TermRaw.Id;
+    }
+
+    
+    internal async Task<PostsContextObject.Prototype> CreateDefaultUserPostsContext(
+                IDbConnection dbCon,
+                ServerDataAccess_PostsContexts postsContextData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ClientDataAccess_SimpleUsers.Create_Params parameters,
+                TermId userAsTermId ) {
+        PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
+            Name = $"{parameters.Name}'s posts",
+            Description = "All posts by the given user.",
+            Entries = new [] {
+                new PostsContextTermEntryObject.Raw {
+                    TermId = userAsTermId,
+                    Priority = 1,
+                    IsRequired = true
+                }
+            }
+        };
+        PostsContextId defaultCtxId = (await postsContextData.Create_Async(
+            dbCon: dbCon,
+            postsContextTermEntryData: postsContextTermEntryData,
+            parameters: proto
+        )).Id;
+
+        proto.Id = defaultCtxId;
+        // PostsContextObject.Raw rawCtx = PostsContextObject.CreateRaw(
+        //     id: defaultCtxId,
+        //     name: proto.Name,
+        //     description: proto.Description,
+        //     entries: proto.Entries
+        // );
+        // PostsContextObject ctx = await ServerDataAccess_PostsContexts
+        //     .ToDataObject_Async( dbCon, termsData, rawCtx );
+
+        return proto;
     }
 }

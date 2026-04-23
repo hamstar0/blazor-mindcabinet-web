@@ -14,17 +14,9 @@ namespace MindCabinet.Data.DataAccess;
 
 public partial class ServerDataAccess_ServerData : IServerDataAccess {
     private async Task<bool> InstallSamples_Async(
-                IDbConnection dbConnection ) {
-        var sampleRaw = UserAppDataObject.CreateRaw(
-            simpleUserId: defaultUserId,
-            postsContextId: sampleContextId
-        );
-
-        await this.Create_Async(
-            dbCon: dbConnection,
-            simpleUserId: defaultUserId,
-            postsContextId: sampleContextId
-        );
+                IDbConnection dbConnection,
+                TermId usersConceptTermId ) {
+        await this.Create_Async( dbConnection, usersConceptTermId );
 
         return true;
     }

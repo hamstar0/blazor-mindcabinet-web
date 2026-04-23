@@ -161,13 +161,24 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             postTags: new TermId[] { sampleTerm.TermRaw.Id, term2.TermRaw.Id, term3.TermRaw.Id }
         ) );
 
-        foreach( var (postData, postTags) in fillerPosts ) {
-            string sql = $@"INSERT INTO {ServerDataAccess_SimplePosts.TableName}
-                        (Body, Created, Modified, SimpleUserId)
-                        VALUES (@Body, @Created, @Modified, @SimpleUserId)";
-            long newPostId = await dbConnection.ExecuteScalarAsync<long>( sql, postData );
+        //
 
-            await termSetsData.CreateForSimplePost_Async( dbConnection, (SimplePostId)newPostId, postTags );
+        string sql = $@"INSERT INTO {ServerDataAccess_SimplePosts.TableName}
+                (Body, Created, Modified, SimpleUserId)
+                VALUES (@Body, @Created, @Modified, @SimpleUserId);
+            SELECT LAST_INSERT_ID();";
+
+        foreach( var (postData, postTags) in fillerPosts ) {
+            long newPostId = await dbConnection.ExecuteScalarAsync<long>(
+                sql,
+                postData
+            );
+
+            await termSetsData.CreateForSimplePost_Async(
+                dbConnection,
+                (SimplePostId)newPostId,
+                postTags
+            );
         }
         
         return (true, sampleTerm.TermRaw);

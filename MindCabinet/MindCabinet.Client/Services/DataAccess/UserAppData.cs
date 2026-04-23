@@ -4,6 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
+using MindCabinet.Shared.DataObjects.PostsContext;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -14,30 +15,48 @@ public partial class ClientDataAccess_UserAppData( HttpClient http ) : IClientDa
     private HttpClient Http = http;
 
 
-    public class GetById_Params {
-        public long SimpleUserId { get; set; }
-    }
-
-    public class GetById_Return {
+    public class GetForCurrentUser_Return {
         public UserAppDataObject.Raw? UserAppData { get; set; }
     }
 
-    public const string GetById_Path = "UserAppData";
-    public const string GetById_Route = "GetById";
+    public const string GetForCurrentUser_Path = "UserAppData";
+    public const string GetForCurrentUser_Route = "GetForCurrentUser";
 
-    public async Task<GetById_Return> GetById_Async( GetById_Params parameters ) {
+    public async Task<GetForCurrentUser_Return> GetForCurrentUser_Async() {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetById_Path}/{GetById_Route}",
-            value: parameters
+            requestUri: $"{GetForCurrentUser_Path}/{GetForCurrentUser_Route}",
+            value: new object()
         );
 
         msg.EnsureSuccessStatusCode();
 
-        GetById_Return? ret = await msg.Content.ReadFromJsonAsync<GetById_Return>();
+        GetForCurrentUser_Return? ret = await msg.Content.ReadFromJsonAsync<GetForCurrentUser_Return>();
         if( ret is null ) {
             throw new InvalidDataException( "Could not deserialize GetById_Return" );
         }
 
         return ret;
+    }
+
+
+    public const string UpdateForCurrentUser_Path = "UserAppData";
+    public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser_Route";
+
+    public async Task UpdateForCurrentUser_Async( UserAppDataObject.Prototype parameters ) {
+        if( parameters.SimpleUserId is null || parameters.SimpleUserId == 0 ) {
+            throw new InvalidOperationException( "No user specified." );
+        }
+
+        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
+            requestUri: $"{UpdateForCurrentUser_Path}/{UpdateForCurrentUser_Route}",
+            value: parameters
+        );
+
+        msg.EnsureSuccessStatusCode();
+
+        object? ret = await msg.Content.ReadFromJsonAsync<object>();
+        if( ret is null ) {
+            throw new InvalidDataException( "Maybe something went wrong?" );
+        }
     }
 }

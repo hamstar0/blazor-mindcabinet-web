@@ -17,10 +17,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
 
 
 
-    public async Task<bool> Install_Async(
-                IDbConnection dbConnection,
-                SimpleUserId defaultUserId,
-                PostsContextId sampleContextId ) {
+    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 SimpleUserId BIGINT NOT NULL PRIMARY KEY,
@@ -32,7 +29,7 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             );"
         );
 
-        return await this.InstallSamples_Async( dbConnection, defaultUserId, sampleContextId );
+        return true;
     }
     
 
@@ -56,6 +53,39 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
+                PostsContextId userDefaultPostsContextId ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( userDefaultPostsContextId == 0 ) {
+            throw new ArgumentException( "PostsContextId is not valid (must be non-zero)." );
+        }
+
+        try {
+            int rows = await dbCon.ExecuteAsync(
+                $@"INSERT INTO {TableName} (SimpleUserId, PostsContextId) 
+                    VALUES (@SimpleUserId, @PostsContextId);",
+                new {
+                    SimpleUserId = (long)simpleUserId,
+                    PostsContextId = (long)userDefaultPostsContextId
+                }
+            );
+        } catch( Exception e ) { //when ( ex.Number == 1062 ) {
+            throw new InvalidOperationException(
+                $@"Record could not be created (SimpleUserId: {simpleUserId}, PostsContextId: {userDefaultPostsContextId})",
+                e
+            );
+        }
+
+        return UserAppDataObject.CreateRaw(
+            simpleUserId: simpleUserId,
+            postsContextId: userDefaultPostsContextId
+        );
+    }
+
+    public async Task Update_Async(
+                IDbConnection dbCon,
+                SimpleUserId simpleUserId,
                 PostsContextId postsContextId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
@@ -65,22 +95,17 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         }
 
         try {
-            long _ = await dbCon.ExecuteScalarAsync<long>(
-                $@"INSERT INTO {TableName} (SimpleUserId, PostsContextId) 
-                    VALUES (@SimpleUserId, @PostsContextId);
-                SELECT LAST_INSERT_ID();",
+            await dbCon.ExecuteAsync(
+                $@"UPDATE {TableName}
+                    SET PostsContextId = @PostsContextId
+                    WHERE SimpleUserId = @SimpleUserId;",
                 new {
-                    SimpleUserId = (long)simpleUserId,
-                    PostsContextId = (long)postsContextId
+                    PostsContextId = postsContextId,
+                    SimpleUserId = simpleUserId
                 }
             );
         } catch( Exception e ) { //when ( ex.Number == 1062 ) {
-            throw new InvalidOperationException( $"Record could not be created (SimpleUserId: {simpleUserId}, PostsContextId: {postsContextId})", e );
+            throw new InvalidOperationException( $"Record could not be updated (SimpleUserId: {simpleUserId}, PostsContextId: {postsContextId})", e );
         }
-
-        return UserAppDataObject.CreateRaw(
-            simpleUserId: simpleUserId,
-            postsContextId: postsContextId
-        );
     }
 }

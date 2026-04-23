@@ -20,11 +20,21 @@ public partial class SimpleUserController : ControllerBase {
 
     private readonly DbAccess DbAccess;
 
+    private readonly ServerDataAccess_ServerData ServerData;
+
+    private readonly ServerDataAccess_Terms TermsData;
+
     private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
 
-    private readonly ServerDataAccess_SimpleUserSessions SessionsData;
+    private readonly ServerDataAccess_PostsContexts PostsContextData;
+
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
+
+    private readonly ServerDataAccess_SimpleUserSessions UserSessionsData;
 
     private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
+
+    private readonly ServerDataAccess_UserAppData UserAppData;
     
     private readonly ServerSessionData ServerSessionData;
 
@@ -33,15 +43,25 @@ public partial class SimpleUserController : ControllerBase {
     public SimpleUserController(
                 ILogger<SimpleUserController> logger,
                 DbAccess dbAccess,
+                ServerDataAccess_ServerData serverData,
+                ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUserSessions sessionsData,
+                ServerDataAccess_PostsContexts postsContextData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_SimpleUserSessions userSessionsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
+                ServerDataAccess_UserAppData userAppData,
                 ServerSessionData sessData ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
+        this.ServerData = serverData;
+        this.TermsData = termsData;
         this.SimpleUsersData = simpleUsersData;
-        this.SessionsData = sessionsData;
+        this.PostsContextData = postsContextData;
+        this.PostsContextTermEntryData = postsContextTermEntryData;
+        this.UserSessionsData = userSessionsData;
         this.FavoriteTermsData = favoriteTermsData;
+        this.UserAppData = userAppData;
         this.ServerSessionData = sessData;
     }
 
@@ -59,8 +79,14 @@ public partial class SimpleUserController : ControllerBase {
 
         ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersData.CreateSimpleUser_Async(
             dbCon: dbCon,
+            serverData: this.ServerData,
+            termsData: this.TermsData,
+            postsContextData: this.PostsContextData,
+            postsContextTermEntryData: this.PostsContextTermEntryData,
+            userAppData: this.UserAppData,
             parameters: parameters,
-            detectCollision: true
+            detectCollision: true,
+            createPostsContext: true
         );
 
         // if( result.User is not null ) {      <- Do not log in automatically!

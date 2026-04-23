@@ -17,6 +17,8 @@ public class SimplePostController : ControllerBase {
 
     private readonly DbAccess DbAccess;
 
+    private readonly ServerDataAccess_ServerData ServerData;
+
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
 
     private readonly ServerDataAccess_Terms TermsData;
@@ -32,6 +34,7 @@ public class SimplePostController : ControllerBase {
     public SimplePostController(
                 ILogger<SimplePostController> logger,
                 DbAccess dbAccess,
+                ServerDataAccess_ServerData serverData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
@@ -39,6 +42,7 @@ public class SimplePostController : ControllerBase {
                 ServerSessionData sessData ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
+        this.ServerData = serverData;
         this.SimplePostsData = simplePostsData;
         this.TermsData = termsData;
         this.TermSetsData = termSetsData;
@@ -74,6 +78,8 @@ public class SimplePostController : ControllerBase {
 
         SimplePostId simplePostId = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
+            serverData: this.ServerData,
+            termsData: this.TermsData,
             termSetsData: this.TermSetsData,
             termHistoryData: this.UserTermsHistoryData,
             simpleUserId: this.SessionData.UserOfSession.Id,

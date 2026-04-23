@@ -23,7 +23,9 @@ public class SetupController : ControllerBase {
     private readonly ServerDataAccess_TermSets TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
     private readonly ServerDataAccess_PostsContexts PostsContextData;
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
     private readonly ServerDataAccess_UserAppData UserAppDataData;
+    private readonly ServerDataAccess_ServerData ServerData;
 
 
 
@@ -37,7 +39,9 @@ public class SetupController : ControllerBase {
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_UserAppData userAppDataData ) {
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_UserAppData userAppDataData,
+                ServerDataAccess_ServerData serverData ) {
         this.DbAccess = dbAccess;
         this.InstallData = installData;
         this.SimpleUsersData = simpleUsersData;
@@ -48,7 +52,9 @@ public class SetupController : ControllerBase {
         this.TermSetsData = termSetsData;
         this.SimplePostsData = simplePostsData;
         this.PostsContextData = postsContextData;
+        this.PostsContextTermEntryData = postsContextTermEntryData;
         this.UserAppDataData = userAppDataData;
+        this.ServerData = serverData;
     }
 
     [HttpGet("Install")]
@@ -69,7 +75,9 @@ public class SetupController : ControllerBase {
             this.FavoriteTermsData,
             this.HistoryTermsData,
             this.PostsContextData,
-            this.UserAppDataData
+            this.PostsContextTermEntryData,
+            this.UserAppDataData,
+            this.ServerData
         );
 
         if( isInstalled ) {

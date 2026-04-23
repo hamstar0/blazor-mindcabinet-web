@@ -9,8 +9,16 @@ namespace MindCabinet.DataObjects;
 
 
 public partial class ServerDataObject : IDataObject {
+    public static ServerDataObject.Raw CreateRaw(
+                TermId usersConceptTermId ) {
+        return new Raw {
+            UsersConceptTermId = usersConceptTermId
+        };
+    }
+
+
     public class Raw : IRawDataObject {
-        public TermId UserConceptTermId { get; set; }
+        public TermId UsersConceptTermId { get; set; }
     }
 
 

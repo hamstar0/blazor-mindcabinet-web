@@ -58,6 +58,8 @@ public partial class TermEditor : ComponentBase {
 
 
     private async Task<bool> BeginSubmitNewTerm_Async( string termText ) {
+        await Task.CompletedTask;
+
         if( !TermObject.ValidateTerm(termText) ) {
             return false;
         }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
@@ -32,7 +33,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
         return true;
     }
 
-    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterTermSets_Async(
+    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterUser_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
@@ -188,6 +189,8 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
 	public async Task<SimplePostId> Create_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_ServerData serverData,
+                ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 SimpleUserId simpleUserId,
@@ -214,17 +217,31 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
         
         await termSetsData.CreateForSimplePost_Async( dbCon, (SimplePostId)newPostId, parameters.TermIds );
 
+        //
+
+        IEnumerable<TermId> termIds = parameters.TermIds;
+        // ServerDataObject.Raw? serverDataObj = await serverData.Get_Async( dbCon );
+        // if( serverDataObj is null ) {
+        //     throw new Exception( "Server application data not found." );
+        // }
+
+        // IEnumerable<TermId> termIds = parameters.TermIds.Append( serverDataObj.UserConceptTermId );
+
+        //
+
         if( !skipHistory ) {
-            await Task.WhenAll( parameters.TermIds.Select( termId =>
-                termHistoryData.AddTerm_Async(
+            foreach( TermId termId in termIds ) {
+                await termHistoryData.AddTerm_Async(
                     dbCon,
                     simpleUserId,
                     new ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params {
                         TermId = termId
                     }
-                )
-            ) );
+                );
+            }
         }
+
+        //
 
         return (SimplePostId)newPostId;
     }

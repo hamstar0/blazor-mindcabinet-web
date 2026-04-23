@@ -40,6 +40,8 @@ public partial class SimplePostEditor : ComponentBase {
     }
 
     private async Task OnTagsChangeHandler_UI_Async( IEnumerable<TermObject> tags, TermObject changedTag, bool isAdded ) {
+        await Task.CompletedTask;
+
         this.Tags = tags.ToList();
 
         this.StateHasChanged();

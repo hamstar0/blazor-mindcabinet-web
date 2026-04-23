@@ -7,6 +7,7 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
+using MindCabinet.DataObjects;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -17,9 +18,7 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
 
 
 
-    public async Task<bool> Install_Async(
-                IDbConnection dbConnection,
-                TermId userConceptTermId ) {
+    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
                 UsersConceptTermId BIGINT NOT NULL,
@@ -28,15 +27,19 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
             );"
         );
 
-        await this.Create_Async( dbConnection, userConceptTermId );
-
         return true;
+    }
+
+    public async Task<bool> Install_After_Async(
+                IDbConnection dbConnection,
+                TermId usersConceptTermId ) {
+        return await this.InstallSamples_Async( dbConnection, usersConceptTermId );
     }
     
 
 
-    public async Task<ServerData.Raw> Get_Async( IDbConnection dbCon ) {
-        ServerData.Raw? serverDataRaw = await dbCon.QuerySingleOrDefaultAsync<ServerData.Raw>(
+    public async Task<ServerDataObject.Raw?> Get_Async( IDbConnection dbCon ) {
+        ServerDataObject.Raw? serverDataRaw = await dbCon.QuerySingleOrDefaultAsync<ServerDataObject.Raw>(
             $"SELECT * FROM {TableName}",
             new { }
         );
@@ -45,11 +48,11 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
     }
 
 
-    public async Task<ServerData.Raw> Create_Async(
+    private async Task<ServerDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
-                TermId userConceptTermId ) {
-        if( userConceptTermId == 0 ) {
-            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+                TermId usersConceptTermId ) {
+        if( usersConceptTermId == 0 ) {
+            throw new ArgumentException( "UsersConceptTermId is not valid (must be non-zero)." );
         }
 
         try {
@@ -58,15 +61,15 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
                     VALUES (@UsersConceptTermId);
                 SELECT LAST_INSERT_ID();",
                 new {
-                    UsersConceptTermId = (long)userConceptTermId
+                    UsersConceptTermId = (long)usersConceptTermId
                 }
             );
         } catch( Exception e ) { //when ( ex.Number == 1062 ) {
-            throw new InvalidOperationException( $"Record could not be created (UsersConceptTermId: {userConceptTermId})", e );
+            throw new InvalidOperationException( $"Record could not be created (UsersConceptTermId: {usersConceptTermId})", e );
         }
 
-        return ServerData.CreateRaw(
-            usersConceptTermId: userConceptTermId
+        return ServerDataObject.CreateRaw(
+            usersConceptTermId: usersConceptTermId
         );
     }
 }

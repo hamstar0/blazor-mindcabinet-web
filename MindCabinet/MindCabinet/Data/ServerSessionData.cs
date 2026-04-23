@@ -45,6 +45,7 @@ public partial class ServerSessionData(
                 ServerDataAccess_SimpleUsers userData,
                 ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_PostsContexts postsContextsData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.CurrentSessionId) || this.RespCookies is null ) {
             return false;
@@ -60,7 +61,16 @@ public partial class ServerSessionData(
         if( sessId is null ) {
             this.LoadNewSessionAndNoUser();
         } else {
-            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async( dbCon, termsData, userData, userAppData, postsContextsData, sessId, isInstalling );
+            isLoggedIn = await this.LoadExistingSessionAndItsUser_Async(
+                dbCon,
+                termsData,
+                userData,
+                userAppData,
+                postsContextsData,
+                postsContextTermEntryData,
+                sessId,
+                isInstalling
+            );
         }
 // this.Logger.LogInformation( $"SESS: {sessId}, IP: {this.IpAddress}, User: {this.UserOfSession?.Name} ({isLoggedIn})" );
 
@@ -89,6 +99,7 @@ public partial class ServerSessionData(
                 ServerDataAccess_SimpleUsers userData,
                 ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_PostsContexts postsContextsData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 string sessId,
                 bool isInstalling ) {
         this.CurrentSessionId = sessId;
@@ -103,7 +114,13 @@ public partial class ServerSessionData(
             UserAppDataObject.Raw? userAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
 
             this.UserAppDataOfSession = userAppDataRaw is not null
-                ? await ServerDataAccess_UserAppData.ToDataObject_Async( dbCon, termsData, postsContextsData, userAppDataRaw )
+                ? await ServerDataAccess_UserAppData.ToDataObject_Async(
+                    dbCon,
+                    termsData,
+                    postsContextsData,
+                    postsContextTermEntryData,
+                    userAppDataRaw
+                )
                 : null;
         }
 

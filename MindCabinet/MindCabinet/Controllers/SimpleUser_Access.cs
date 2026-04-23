@@ -37,7 +37,7 @@ public partial class SimpleUserController : ControllerBase {
             return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "Invalid password." };
         }
 
-        await this.SessionsData.Create_Async( dbCon, userRaw.Id, this.ServerSessionData );
+        await this.UserSessionsData.Create_Async( dbCon, userRaw.Id, this.ServerSessionData );
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.Login_Return {
@@ -54,6 +54,6 @@ public partial class SimpleUserController : ControllerBase {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
+        await this.UserSessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
     }
 }

@@ -18,12 +18,15 @@ public class PostsContextController(
                 ILogger<PostsContextController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 ServerSessionData sessionData ) : ControllerBase {
     private readonly ILogger<PostsContextController> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
 
     private readonly ServerDataAccess_PostsContexts PostsContextsData = postsContextsData;
+
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData = postsContextTermEntryData;
 
     private readonly ServerSessionData SessionData = sessionData;
 
@@ -36,6 +39,7 @@ public class PostsContextController(
 
         IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsData.GetByCriteria_Async(
             dbCon: dbCon,
+            postsContextTermEntryData: this.PostsContextTermEntryData,
             parameters: parameters,
             alsoGetEntries: true
         );
@@ -55,7 +59,11 @@ public class PostsContextController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PostsContextsData.Create_Async( dbCon, parameters );
+        return await this.PostsContextsData.Create_Async(
+            dbCon,
+            this.PostsContextTermEntryData,
+            parameters
+        );
     }
 
     [HttpPost(ClientDataAccess_PostsContext.UpdateForCurrentUser_Route)]
@@ -67,6 +75,10 @@ public class PostsContextController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PostsContextsData.Update_Async( dbCon, parameters );
+        return await this.PostsContextsData.Update_Async(
+            dbCon,
+            this.PostsContextTermEntryData,
+            parameters
+        );
     }
 }

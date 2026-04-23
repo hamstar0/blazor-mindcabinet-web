@@ -15,7 +15,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_Terms {
     private async Task<TermId> InstallSamples_Async(
                 IDbConnection dbConnection ) {
-        TermId id = (await this.Create_Async(
+        TermId userConceptTermId = (await this.Create_Async(
             dbCon: dbConnection,
             parameters: new ClientDataAccess_Terms.Create_Params {
                 TermPattern = "Simple User",
@@ -23,7 +23,10 @@ public partial class ServerDataAccess_Terms {
                 ContextId = null
             }
         )).TermRaw.Id;
+        if( userConceptTermId == 0 ) {
+            throw new Exception( "wtf" );
+        }
 
-        return id;
+        return userConceptTermId;
     }
 }

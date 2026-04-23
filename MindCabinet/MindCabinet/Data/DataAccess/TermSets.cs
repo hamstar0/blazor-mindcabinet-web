@@ -92,10 +92,6 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
             new { SimplePostId = (long)id }
         );
 
-        foreach( TermObject.Raw? termRaw in termSetRaw ) {
-            termsData.TermsById_Cache[ termRaw.Id ] = termRaw;
-        }
-
         return termSetRaw;
     }
 }

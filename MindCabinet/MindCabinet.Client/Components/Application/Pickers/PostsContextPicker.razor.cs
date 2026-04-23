@@ -114,6 +114,8 @@ public partial class PostsContextPicker : ComponentBase {
 
 
     private async Task SearchAndStoreTerms_Async( string contextText ) {
+        await Task.CompletedTask;
+
         if( this.Session.UserId is null ) {
             return;
         }

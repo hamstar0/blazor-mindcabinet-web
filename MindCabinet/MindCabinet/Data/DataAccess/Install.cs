@@ -19,6 +19,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserTermsHistory historyTermsData,
                 ServerDataAccess_PostsContexts postsContextData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_ServerData serverData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
@@ -27,55 +28,84 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         
         bool success;
         SimpleUserId defaultUserId;
-        TermId userConceptTermId;
+        TermId usersConceptTermId;
         TermObject.Raw sampleTerm;
-        PostsContextObject.Raw sampleUsrCtx;
 
         success = await simpleUsersData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
+
         success = await sessionsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        (success, userConceptTermId) = await termsData.Install_Async( dbCon );
+
+        (success, usersConceptTermId) = await termsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        (success, defaultUserId) = await simpleUsersData.Install_AfterTerms_Async( dbCon );
+
+        success = await serverData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
+
         success = await simplePostsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
+
         success = await termSetsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        (success, sampleTerm) = await simplePostsData.Install_AfterTermSets_Async( dbCon, termsData, termSetsData, defaultUserId );
-        if( !success ) {
-            return false;
-        }
+
         success = await favoriteTermsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
+
         success = await historyTermsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        (success, sampleUsrCtx) = await postsContextData.Install_Async( dbCon, sampleTerm );
+
+        success = await postsContextData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        success = await userAppData.Install_Async( dbCon, defaultUserId, sampleUsrCtx.Id );
+
+        success = await postsContextTermEntryData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
-        success = await serverData.Install_Async( dbCon, userConceptTermId );
+
+        success = await userAppData.Install_Async( dbCon );
+        if( !success ) {
+            return false;
+        }
+
+        //
+
+        success = await serverData.Install_After_Async( dbCon, usersConceptTermId );
+        if( !success ) {
+            return false;
+        }
+
+        (success, defaultUserId) = await simpleUsersData.Install_After_Async(
+            dbCon,
+            termsData,
+            postsContextData,
+            postsContextTermEntryData,
+            serverData,
+            userAppData
+        );
+        if( !success ) {
+            return false;
+        }
+
+        (success, sampleTerm) = await simplePostsData.Install_AfterUser_Async( dbCon, termsData, termSetsData, defaultUserId );
         if( !success ) {
             return false;
         }

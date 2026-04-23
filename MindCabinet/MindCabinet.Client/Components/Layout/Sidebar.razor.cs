@@ -28,6 +28,10 @@ public partial class Sidebar {
     [Inject]
     private ClientDataAccess_PostsContext PostsContextsData { get; set; } = null!;
 
+    [Inject]
+    private ClientDataAccess_UserAppData UserAppData { get; set; } = null!;
+
+
 
     [Parameter]
     public Func<Task>? OnStateChange_Async { get; set; } = null;

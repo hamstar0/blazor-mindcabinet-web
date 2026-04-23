@@ -1,6 +1,7 @@
 ﻿@using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Components.SiteFunctions;
+@using MindCabinet.Client.Services.DbAccess
 @using MindCabinet.Shared.DataObjects.PostsContext
 
 
@@ -22,7 +23,7 @@
 
 @code {
     private async Task OnContextSelect_UI_Async( PostsContextObject context ) {
-        await this.SessionData.SetCurrentContext_Await( context );
+        await this.SessionData.SetCurrentContext_Await( this.UserAppData, context );
         
         if( this.OnStateChange_Async is not null ) {
             await this.OnStateChange_Async.Invoke();
