@@ -5,6 +5,7 @@ using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Data.DataAccess.Composite;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using static MindCabinet.Data.DataAccess.Composite.ServerDataAccess_PrioritizedPosts;
@@ -30,8 +31,6 @@ public class PrioritizedPostController : ControllerBase {
     
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
 
-    private readonly ServerSessionData SessionData;
-
 
 
     public PrioritizedPostController(
@@ -41,8 +40,7 @@ public class PrioritizedPostController : ControllerBase {
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerSessionData sessData ) {
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
         this.PrioritizedPostsData = prioritizedPostsData;
@@ -51,7 +49,6 @@ public class PrioritizedPostController : ControllerBase {
         this.UserTermsHistoryData = userTermsHistoryData;
         this.PostsContextData = postsContextData;
         this.PostsContextTermEntryData = postsContextTermEntryData;
-        this.SessionData = sessData;
     }
 
 

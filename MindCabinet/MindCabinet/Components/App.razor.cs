@@ -2,6 +2,7 @@
 using MindCabinet.Client.Services;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using System.Data;
 using System.Text;
 
@@ -16,7 +17,7 @@ public partial class App : ComponentBase {
     private ServerDataAccess_SimpleUserSessions UserSessionsData { get; set; } = null!;
 
     [Inject]
-    private ServerSessionData ServerSessionData { get; set; } = null!;
+    private ServerSessionManager SessionManager { get; set; } = null!;
 
 
 
@@ -25,8 +26,8 @@ public partial class App : ComponentBase {
 
         using IDbConnection dbCon = await this.Db.GetDbConnection_Async( true );
 
-        if( this.ServerSessionData.UserOfSession is not null ) {
-            await this.ServerSessionData.Visit_Async( dbCon, this.UserSessionsData );
+        if( this.SessionManager.UserOfSession is not null ) {
+            await this.SessionManager.Visit_Async( dbCon, this.UserSessionsData );
         }
     }
 }

@@ -3,11 +3,11 @@ using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
 
-namespace MindCabinet.Data;
+namespace MindCabinet.Services;
 
 
 
-public partial class ServerSessionData {
+public partial class ServerSessionManager {
     /**
      * @return `true` if session is a valid user.
      */

@@ -4,6 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
@@ -36,7 +37,7 @@ public partial class SimpleUserController : ControllerBase {
 
     private readonly ServerDataAccess_UserAppData UserAppData;
     
-    private readonly ServerSessionData ServerSessionData;
+    private readonly ServerSessionManager SessionManager;
 
 
 
@@ -51,7 +52,7 @@ public partial class SimpleUserController : ControllerBase {
                 ServerDataAccess_SimpleUserSessions userSessionsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserAppData userAppData,
-                ServerSessionData sessData ) {
+                ServerSessionManager sessMngr ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;
@@ -62,7 +63,7 @@ public partial class SimpleUserController : ControllerBase {
         this.UserSessionsData = userSessionsData;
         this.FavoriteTermsData = favoriteTermsData;
         this.UserAppData = userAppData;
-        this.ServerSessionData = sessData;
+        this.SessionManager = sessMngr;
     }
 
     [HttpPost(ClientDataAccess_SimpleUsers.Create_Route)]
@@ -71,7 +72,7 @@ public partial class SimpleUserController : ControllerBase {
         if( parameters.IsValidated ) {
             return new ClientDataAccess_SimpleUsers.Create_Return { User = null, Status = "Not permitted." };
         }
-        if( !this.ServerSessionData.IsLoaded ) {
+        if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 

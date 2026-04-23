@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
@@ -17,23 +18,23 @@ public class UserAppDataController : ControllerBase {
 
     private readonly ServerDataAccess_UserAppData UserAppData;
 
-    private readonly ServerSessionData ServerSessionData;
+    private readonly ServerSessionManager ServerSessionManager;
 
 
 
     public UserAppDataController(
                 DbAccess dbAccess,
                 ServerDataAccess_UserAppData userAppData,
-                ServerSessionData serverSessionData ) {
+                ServerSessionManager serverSessionManager ) {
         this.DbAccess = dbAccess;
         this.UserAppData = userAppData;
-        this.ServerSessionData = serverSessionData;
+        this.ServerSessionManager = serverSessionManager;
     }
 
 
     [HttpPost(ClientDataAccess_UserAppData.GetForCurrentUser_Route)]
     public async Task<ClientDataAccess_UserAppData.GetForCurrentUser_Return> GetForCurrentUser_Async( object _ ) {
-        if( this.ServerSessionData.UserOfSession is null ) {
+        if( this.ServerSessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
 
@@ -41,7 +42,7 @@ public class UserAppDataController : ControllerBase {
 
         UserAppDataObject.Raw? userAppDataRaw = await this.UserAppData.GetById_Async(
             dbCon,
-            this.ServerSessionData.UserOfSession?.Id ?? 0
+            this.ServerSessionManager.UserOfSession?.Id ?? 0
         );
         if( userAppDataRaw is null ) {
             throw new Exception( "User app data missing for user." );
@@ -55,7 +56,7 @@ public class UserAppDataController : ControllerBase {
     [HttpPost(ClientDataAccess_UserAppData.UpdateForCurrentUser_Route)]
     public async Task<object> UpdateForCurrentUser_Async(
                 UserAppDataObject.Prototype parameters ) {
-        if( this.ServerSessionData.UserOfSession is null ) {
+        if( this.ServerSessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
         if( !parameters.IsValidAsObject(true) ) {
@@ -66,7 +67,7 @@ public class UserAppDataController : ControllerBase {
 
         await this.UserAppData.Update_Async(
             dbCon: dbCon,
-            simpleUserId: this.ServerSessionData.UserOfSession.Id,
+            simpleUserId: this.ServerSessionManager.UserOfSession.Id,
             postsContextId: parameters.PostsContextId ?? 0
         );
 

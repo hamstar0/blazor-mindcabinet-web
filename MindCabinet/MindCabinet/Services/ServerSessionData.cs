@@ -8,14 +8,14 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MindCabinet.Data;
+namespace MindCabinet.Services;
 
 
 
-public partial class ServerSessionData(
-            ILogger<ServerSessionData> logger,
+public partial class ServerSessionManager(
+            ILogger<ServerSessionManager> logger,
             IHttpContextAccessor httpContext ) {
-    private readonly ILogger<ServerSessionData> Logger = logger;
+    private readonly ILogger<ServerSessionManager> Logger = logger;
 
     private readonly IHttpContextAccessor HttpContext = httpContext;
 

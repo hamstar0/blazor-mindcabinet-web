@@ -3,6 +3,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 
@@ -27,7 +28,7 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerSessionData SessionData;
+    private readonly ServerSessionManager SessionManager;
 
 
 
@@ -39,7 +40,7 @@ public class SimplePostController : ControllerBase {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_TermSets termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerSessionData sessData ) {
+                ServerSessionManager sessMngr ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;
@@ -47,7 +48,7 @@ public class SimplePostController : ControllerBase {
         this.TermsData = termsData;
         this.TermSetsData = termSetsData;
         this.UserTermsHistoryData = userTermsHistoryData;
-        this.SessionData = sessData;
+        this.SessionManager = sessMngr;
     }
 
 
@@ -70,7 +71,7 @@ public class SimplePostController : ControllerBase {
 
     [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
     public async Task<SimplePostObject.Raw> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
-        if( this.SessionData.UserOfSession is null ) {
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -82,7 +83,7 @@ public class SimplePostController : ControllerBase {
             termsData: this.TermsData,
             termSetsData: this.TermSetsData,
             termHistoryData: this.UserTermsHistoryData,
-            simpleUserId: this.SessionData.UserOfSession.Id,
+            simpleUserId: this.SessionManager.UserOfSession.Id,
             parameters: parameters,
             skipHistory: false
         );
@@ -91,7 +92,7 @@ public class SimplePostController : ControllerBase {
             //SimpleUserId = this.SessionData.UserOfSession.Id,
             created: DateTime.UtcNow,
             modified: DateTime.UtcNow,
-            simpleUserId: this.SessionData.UserOfSession.Id,
+            simpleUserId: this.SessionManager.UserOfSession.Id,
             body: parameters.Body,
             tagsTermIdSet: parameters.TermIds.ToArray()
         );

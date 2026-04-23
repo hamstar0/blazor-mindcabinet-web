@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.DataObjects;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 
@@ -50,14 +51,14 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     public async Task Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ServerSessionData session ) {
-        if( !session.IsLoaded ) {
+                ServerSessionManager sessionMngr ) {
+        if( !sessionMngr.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
-        if( session.CurrentIpAddress is null ) {
+        if( sessionMngr.CurrentIpAddress is null ) {
             throw new Exception( "Invalid IP address." );
         }
 
@@ -76,8 +77,8 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 (Id, LatestIpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
                 VALUES (@Id, @LatestIpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
-                Id = session.CurrentSessionId,
-                LatestIpAddress = session.CurrentIpAddress,
+                Id = sessionMngr.CurrentSessionId,
+                LatestIpAddress = sessionMngr.CurrentIpAddress,
                 SimpleUserId = (long)simpleUserId,
                 FirstVisit = now,
                 LatestVisit = now,

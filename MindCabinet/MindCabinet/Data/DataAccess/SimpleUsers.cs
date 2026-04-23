@@ -4,6 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Site.Pages;
 using MindCabinet.DataObjects;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
@@ -72,19 +73,19 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     //
 
-    private readonly ServerSessionData SessionData;
+    private readonly ServerSessionManager SessionManager;
     
-    private readonly ServerSettingsAndData ServerSettings;
+    private readonly StaticServerSettings ServerSettings;
 
     private readonly ILogger<ServerDataAccess_SimpleUsers> Logger;
 
 
 
     public ServerDataAccess_SimpleUsers(
-                ServerSessionData sessionData,
-                ServerSettingsAndData serverSettings,
+                ServerSessionManager sessionData,
+                StaticServerSettings serverSettings,
                 ILogger<ServerDataAccess_SimpleUsers> logger ) {
-        this.SessionData = sessionData;
+        this.SessionManager = sessionData;
         this.ServerSettings = serverSettings;
         this.Logger = logger;
     }

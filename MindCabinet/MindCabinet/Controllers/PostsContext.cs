@@ -7,6 +7,7 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using System.Text.Json;
+using MindCabinet.Services;
 
 
 namespace MindCabinet.Controllers;
@@ -19,7 +20,7 @@ public class PostsContextController(
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerSessionData sessionData ) : ControllerBase {
+                ServerSessionManager sessMngr ) : ControllerBase {
     private readonly ILogger<PostsContextController> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
@@ -28,7 +29,7 @@ public class PostsContextController(
 
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData = postsContextTermEntryData;
 
-    private readonly ServerSessionData SessionData = sessionData;
+    private readonly ServerSessionManager SessionManager = sessMngr;
 
 
 
@@ -50,7 +51,7 @@ public class PostsContextController(
     [HttpPost(ClientDataAccess_PostsContext.CreateForCurrentUser_Route)]
     public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> CreateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
-        if( this.SessionData.UserOfSession is null ) {
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( !parameters.IsValid(false) ) {
@@ -69,7 +70,7 @@ public class PostsContextController(
     [HttpPost(ClientDataAccess_PostsContext.UpdateForCurrentUser_Route)]
     public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
-        if( this.SessionData.UserOfSession is null ) {
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 

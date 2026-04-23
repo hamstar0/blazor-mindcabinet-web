@@ -17,7 +17,7 @@ public partial class SimpleUserController : ControllerBase {
     [HttpPost(ClientDataAccess_SimpleUsers.Login_Route)]
     public async Task<ClientDataAccess_SimpleUsers.Login_Return> Login_Async(
                 ClientDataAccess_SimpleUsers.Login_Params parameters ) {
-        if( !this.ServerSessionData.IsLoaded ) {
+        if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
 
@@ -37,7 +37,7 @@ public partial class SimpleUserController : ControllerBase {
             return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "Invalid password." };
         }
 
-        await this.UserSessionsData.Create_Async( dbCon, userRaw.Id, this.ServerSessionData );
+        await this.UserSessionsData.Create_Async( dbCon, userRaw.Id, this.SessionManager );
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.Login_Return {
@@ -48,12 +48,12 @@ public partial class SimpleUserController : ControllerBase {
 
     [HttpPost("Visit")]
     public async Task Visit_Async() {
-        if( !this.ServerSessionData.IsLoaded || this.ServerSessionData.UserOfSession is null ) {
+        if( !this.SessionManager.IsLoaded || this.SessionManager.UserOfSession is null ) {
             return;
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.UserSessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
+        await this.UserSessionsData.VisitSimpleUserSession_Async( dbCon, this.SessionManager );
     }
 }

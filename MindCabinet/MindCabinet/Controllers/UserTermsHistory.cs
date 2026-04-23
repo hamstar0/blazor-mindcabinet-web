@@ -4,6 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserTermHistory;
 using System.Data;
@@ -20,42 +21,42 @@ public partial class UserTermsHistoryController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerSessionData SessionData;
+    private readonly ServerSessionManager SessionManager;
 
 
 
     public UserTermsHistoryController(
                 DbAccess dbAccess,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerSessionData sessionData ) {
+                ServerSessionManager sessionData ) {
         this.DbAccess = dbAccess;
         this.UserTermsHistoryData = userTermsHistoryData;
-        this.SessionData = sessionData;
+        this.SessionManager = sessionData;
     }
 
     
     [HttpPost(ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Route)]
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetForCurrentUserId_Async(
                 ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
-        if( this.SessionData.UserOfSession is null ) {
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
     }
 
 
     [HttpPost(ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Route)]
     public async Task AddFavoriteTermsByIdForCurrentUserId_Async(
                 ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.UserOfSession is null ) {
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.UserTermsHistoryData.AddTerm_Async( dbCon, this.SessionData.UserOfSession.Id, parameters );
+        await this.UserTermsHistoryData.AddTerm_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
     }
 }

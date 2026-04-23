@@ -46,7 +46,7 @@ public class Program {
         // builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.AddSingleton<ServerSettingsAndData>();
+        builder.Services.AddSingleton<StaticServerSettings>();
 
         builder.Services.AddTransient<Func<IDbConnection>>( sp => () => new MySqlConnector.MySqlConnection(conn) );
         builder.Services.AddTransient<DbAccess>();  // not AddSingleton, not AddScoped; IDbConnections should be short-lived?
@@ -56,7 +56,7 @@ public class Program {
             builder.Services.AddScoped( implementation );
         }
 
-        builder.Services.AddScoped<ServerSessionData>();
+        builder.Services.AddScoped<ServerSessionManager>();
         builder.Services.AddTransient<ClientSessionManager>(); // not intended for use on server, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
@@ -87,7 +87,7 @@ public class Program {
         app.Use( async (HttpContext context, Func<Task> next ) => {
             bool isInstalling = context.Request.Path.StartsWithSegments( "/Setup/Install", StringComparison.OrdinalIgnoreCase );
 
-            var sessionData = context.RequestServices.GetRequiredService<ServerSessionData>();
+            var sessionData = context.RequestServices.GetRequiredService<ServerSessionManager>();
             var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
             var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
             var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();

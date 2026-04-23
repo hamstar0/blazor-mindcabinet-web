@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MindCabinet.DataObjects;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 
@@ -10,8 +11,8 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         public async Task VisitSimpleUserSession_Async(
                 IDbConnection dbCon,
-                ServerSessionData session ) {
-        if( !session.IsLoaded ) {
+                ServerSessionManager sessMngr ) {
+        if( !sessMngr.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }
 
@@ -21,7 +22,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
                 WHERE Id = @Id",
             new {
                 Now = DateTime.UtcNow,
-                Id = session.CurrentSessionId
+                Id = sessMngr.CurrentSessionId
             }
         );
         if( rows == 0 ) {
