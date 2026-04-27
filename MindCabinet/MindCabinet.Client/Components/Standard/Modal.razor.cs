@@ -44,6 +44,10 @@ public partial class Modal : ComponentBase {
 
 
 
+    internal new void StateHasChanged() {
+        base.StateHasChanged();
+    }
+
     // public RenderFragment GenerateBackdrop() {
     //     return builder => {
     //         int seq = 0;

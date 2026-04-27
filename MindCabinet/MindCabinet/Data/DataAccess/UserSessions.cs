@@ -92,8 +92,8 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
 
 
     public async Task RemoveSessionById_Async( IDbConnection dbCon, string sessionId ) {
-        if( UserSessionObject.ValidateId(sessionId) ) {
-            throw new ArgumentException( "UserSession Id is not valid." );
+        if( !UserSessionObject.ValidateId(sessionId) ) {
+            throw new ArgumentException( $"UserSession Id is not valid." );
         }
         
         int rows = await dbCon.ExecuteAsync(

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Shared.DataObjects;
 
 
 
@@ -35,7 +36,7 @@
             <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
         </BodyContent>
         <FooterContent>
-            @this.LoginStatus
+            <span>@this.LoginStatus</span>
         </FooterContent>
     </Modal>
 </RenderPortal>
@@ -70,7 +71,10 @@
         this.UserName = val ?? "";
 
         if( hasChanged ) {
-            this.StateHasChanged();
+            SimpleUserObject.StatusCode code = SimpleUserObject.GetUserNameStatus( this.UserName );
+            this.LoginStatus = SimpleUserObject.GetSubmitStatuses( code ).FirstOrDefault() ?? " ";
+
+            this.ModalDialogComponent?.StateHasChanged();
         }
     }
 
@@ -81,7 +85,10 @@
         this.Password = val ?? "";
 
         if( hasChanged ) {
-            this.StateHasChanged();
+            SimpleUserObject.StatusCode code = SimpleUserObject.GetPasswordStatus( this.Password );
+            this.LoginStatus = SimpleUserObject.GetSubmitStatuses( code ).FirstOrDefault() ?? " ";
+
+            this.ModalDialogComponent?.StateHasChanged();
         }
     }
 
@@ -92,9 +99,9 @@
         if( success ) {
             this.UserName = "";
             this.Password = "";
-        }
 
-        this.ModalDialogComponent?.Close();
+            this.ModalDialogComponent?.Close();
+        }
 
         return success;
     }

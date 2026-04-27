@@ -53,7 +53,8 @@ public partial class UserLoginForm : ComponentBase {
 
 
     public bool CanSubmit() {
-        return this.UserName.Length > 0 && this.Password.Length > 0;
+        return SimpleUserObject.GetUserNameStatus( this.UserName ) == SimpleUserObject.StatusCode.OK
+            && SimpleUserObject.GetPasswordStatus( this.Password ) == SimpleUserObject.StatusCode.OK;
     }
 
 

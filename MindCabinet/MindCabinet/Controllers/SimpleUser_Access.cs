@@ -25,7 +25,8 @@ public partial class SimpleUserController : ControllerBase {
 
         SimpleUserObject.Raw? userRaw = await this.SimpleUsersData.GetByName_Async( dbCon, parameters.Name );
         if( userRaw is null ) {
-            return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "User not found by name: "+parameters.Name };
+            // return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "User not found by name: "+parameters.Name };
+            return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "User name or password invalid." };
         }
 
         byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, userRaw.PwSalt );
@@ -34,7 +35,7 @@ public partial class SimpleUserController : ControllerBase {
 // +", user.PwHash: "+Encoding.UTF8.GetString(user.PwHash)
 // +", pwHash: "+Encoding.UTF8.GetString(pwHash) );
         if( !CryptographicOperations.FixedTimeEquals(userRaw.PwHash, pwHash) ) {
-            return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "Invalid password." };
+            return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "User name or password invalid." };
         }
 
         await this.UserSessionsData.Create_Async( dbCon, userRaw.Id, this.SessionManager );

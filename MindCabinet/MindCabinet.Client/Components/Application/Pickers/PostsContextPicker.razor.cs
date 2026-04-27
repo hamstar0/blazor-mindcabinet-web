@@ -41,7 +41,8 @@ public partial class PostsContextPicker : ComponentBase {
     public PostsContextObject CurrentContext { get; set; } = null!;
 
 
-    private bool IsSeachFocused = false;
+    public bool IsSeachFocused { get; private set; } = false;
+    
 
     private string Value = "";
 
