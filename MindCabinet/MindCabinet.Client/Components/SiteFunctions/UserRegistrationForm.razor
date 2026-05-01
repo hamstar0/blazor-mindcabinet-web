@@ -17,7 +17,7 @@
             <input type="text"
                     title="Enter user name"
                     placeholder="User name"
-                    disabled=@this.CanEditInputs
+                    disabled=@(!this.CanEditInputs)
                     @onkeydown=@this.OnInputKey_UI_Async
                     @bind:event="oninput"
                     @bind:get=@this.UserName
@@ -26,7 +26,7 @@
             <input type="email"
                     title="Enter email"
                     placeholder="Email"
-                    disabled=@this.CanEditInputs
+                    disabled=@(!this.CanEditInputs)
                     @onkeydown=@this.OnInputKey_UI_Async
                     @bind:event="oninput"
                     @bind:get=@this.Email
@@ -35,7 +35,7 @@
             <input type="password"
                     title="Enter password"
                     placeholder="Password"
-                    disabled=@this.CanEditInputs
+                    disabled=@(!this.CanEditInputs)
                     @onkeydown=@this.OnInputKey_UI_Async
                     @bind:event="oninput"
                     @bind:get=@this.Password
@@ -46,7 +46,7 @@
             <button disabled=@this.SubmitDisabled @onclick=@this.Submit_UI_Async>Submit</button>
         </BodyContent>
         <FooterContent>
-            @this.RegistrationStatus
+            <span>@this.RegistrationStatus</span>
         </FooterContent>
     </Modal>
 </RenderPortal>
@@ -91,6 +91,7 @@
 
         if( hasChanged ) {
             this.StateHasChanged();
+            this.ModalDialogComponent?.StateHasChanged();
         }
     }
 
@@ -102,6 +103,7 @@
 
         if( hasChanged ) {
             this.StateHasChanged();
+            this.ModalDialogComponent?.StateHasChanged();
         }
     }
 
@@ -113,6 +115,7 @@
 
         if( hasChanged ) {
             this.StateHasChanged();
+            this.ModalDialogComponent?.StateHasChanged();
         }
     }
 
@@ -126,11 +129,14 @@
             //this.Password = "";
 
             this.HasRegistered = true;
+
+            //this.ModalDialogComponent?.Close();
         }
 
         this.RegistrationStatus = status;
 
-        //this.ModalElement.Close();
+        this.StateHasChanged();
+        this.ModalDialogComponent?.StateHasChanged();
 
         return success;
     }

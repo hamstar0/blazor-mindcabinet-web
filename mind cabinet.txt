@@ -35,6 +35,7 @@ v0.6
 -	Add SimpleUserId to SimplePost
 -	Add landing page when not logged in
 -	Channel API calls through Hub (test)
+-	Show user name next to Logout button
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	Implement custom posts sorting (via hook?)
@@ -43,14 +44,15 @@ v0.6
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Add login success message alert popup
 			-	Set modal dialogs to have default input focused onto when open
-			-	Disable login form when logged in
 			-	Disable tag entry if no user
 			-	Disable post create if no user
 			-	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
+			-	On user register, pop up alert for registration success
+
+
+			-	Test registration form
 			-	Test context picker
 			-	Prevent password entry via enter key when invalid
-
-			
 			-	Fix login submit button
 			-	Fix login fail error (don't indicate if user name doesn't exist)
 			-	Context picker selection (defaults to current)
