@@ -36,7 +36,7 @@
 
 <RenderPortal TargetRegion="ModalDialogs">
     <Modal @ref=@this.ModalDialogComponent
-            ModalId=@("termContextSelectorModal_"+Guid.NewGuid().ToString("N").Substring(0, 8))
+            ModalId=@this.ModalDialogId
             Title="Specify Context">
         <BodyContent>
             <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_UI_Async />
@@ -47,6 +47,12 @@
 
 
 @code {
+    private string ModalDialogId => "termContextSelectorModal_" + Guid.NewGuid()
+        .ToString("N")
+        .Substring(0, 8);
+
+
+
     public void Reset_UI() {
         this.Value = "";
         this.SearchOptions = new List<TermObject>();

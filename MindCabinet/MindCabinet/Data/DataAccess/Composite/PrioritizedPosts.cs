@@ -11,12 +11,12 @@ using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
 namespace MindCabinet.Data.DataAccess.Composite;
 
 
-public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
-    public string TableName => ServerDataAccess_SimplePosts.TableName;
+public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess_PrioritizedPosts> logger ) : IServerDataAccess {
+    private readonly ILogger<ServerDataAccess_PrioritizedPosts> Logger = logger;
     
 
     
-    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
+    public async Task<SimplePostObject.Raw[]> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
@@ -50,7 +50,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             sql, new DynamicParameters( sqlParams )
         );
 
-        return posts;
+        return posts.ToArray();
 	}
 
 

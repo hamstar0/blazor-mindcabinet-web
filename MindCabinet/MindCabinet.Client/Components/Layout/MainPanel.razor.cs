@@ -1,16 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application;
+using MindCabinet.Client.Services;
 using System.Text;
 
 namespace MindCabinet.Client.Components.Layout;
 
 
-public partial class Main : ComponentBase {
+public partial class MainPanel : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
-    //[Inject]
-    //public ClientDataAccess Data { get; set; } = null!;
+    [Inject]
+    private ClientSessionManager SessionData { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -25,4 +26,12 @@ public partial class Main : ComponentBase {
 
 
     private ContextPostsBrowser BrowserComponent = null!;
+
+
+
+	protected override async Task OnInitializedAsync() {
+		await base.OnInitializedAsync();
+
+        await this.SessionData.RegisterUserAndAppDataEvent_Async( "MainPanel", async (_) => this.StateHasChanged() );
+	}
 }

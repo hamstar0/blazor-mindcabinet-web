@@ -23,8 +23,8 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 bool countOnly ) {
         string sqlColumns = countOnly
             ? "COUNT(*)"
-            : "*";  //"MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body, MyPosts.TermSetId";
-        string sql = $"SELECT {sqlColumns} FROM {TableName} AS MyPosts ";
+            : "*";      //"MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body, MyPosts.TermSetId";
+        string sql = $"SELECT {sqlColumns} FROM {ServerDataAccess_SimplePosts.TableName} AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
         //
@@ -59,7 +59,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                     (SELECT (@AllTags)) EXCEPT (
                         SELECT MyAllTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAllTerms
                         INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
-                        WHERE MyAllTermSet.SetId = MyPosts.TermSetId
+                        WHERE MyAllTermSet.SimplePostId = MyPosts.Id
                     )
                 ) IS NULL
             ) ";
@@ -75,7 +75,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                     (SELECT (@AnyTags)) INTERSECT (
                         SELECT MyAnyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAnyTerms
                         INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
-                        WHERE MyAnyTermSet.SetId = MyPosts.TermSetId
+                        WHERE MyAnyTermSet.SimplePostId = MyPosts.Id
                     )
                 ) IS NOT NULL
             ) ";

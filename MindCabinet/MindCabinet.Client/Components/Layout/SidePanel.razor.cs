@@ -9,7 +9,7 @@ using System.Text;
 namespace MindCabinet.Client.Components.Layout;
 
 
-public partial class Sidebar {
+public partial class SidePanel {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 

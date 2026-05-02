@@ -175,9 +175,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             );
 
             await termSetsData.CreateForSimplePost_Async(
-                dbConnection,
-                (SimplePostId)newPostId,
-                postTags
+                dbCon: dbConnection,
+                id: (SimplePostId)newPostId,
+                termIds: postTags
             );
         }
         

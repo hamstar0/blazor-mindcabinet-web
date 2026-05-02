@@ -19,7 +19,7 @@
 
 <div class="sidebar">
     @if( this.NetMode.IsClientSide ) {
-        <Sidebar OnStateChange_Async=@this.OnSidebarStateChange_Async />
+        <SidePanel OnStateChange_Async=@this.OnSidebarStateChange_Async />
     } else {
         <h3 style="color:white;">Loading...</h3>
     }
@@ -50,7 +50,7 @@
 
         <div>
             @if( this.Http.BaseAddress is not null ) {
-                <Main />
+                <MainPanel />
             } else {
                 <span>Loading...</span>
             }

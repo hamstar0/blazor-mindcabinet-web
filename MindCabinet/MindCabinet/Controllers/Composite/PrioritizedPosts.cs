@@ -16,7 +16,7 @@ namespace MindCabinet.Controllers.Composite;
 
 [ApiController]
 [Route("[controller]")]
-public class PrioritizedPostController : ControllerBase {
+public class PrioritizedPostsController : ControllerBase {
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_PrioritizedPosts PrioritizedPostsData;
@@ -33,7 +33,7 @@ public class PrioritizedPostController : ControllerBase {
 
 
 
-    public PrioritizedPostController(
+    public PrioritizedPostsController(
                 DbAccess dbAccess,
                 ServerDataAccess_PrioritizedPosts prioritizedPostsData,
                 ServerDataAccess_Terms termsData,
