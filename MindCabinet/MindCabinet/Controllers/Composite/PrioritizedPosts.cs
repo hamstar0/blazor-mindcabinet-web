@@ -23,7 +23,7 @@ public class PrioritizedPostsController : ControllerBase {
 
     private readonly ServerDataAccess_Terms TermsData;
 
-    private readonly ServerDataAccess_TermSets TermSetsData;
+    private readonly ServerDataAccess_SimplePostTags TermSetsData;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
@@ -37,7 +37,7 @@ public class PrioritizedPostsController : ControllerBase {
                 DbAccess dbAccess,
                 ServerDataAccess_PrioritizedPosts prioritizedPostsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData ) {

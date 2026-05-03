@@ -5,6 +5,7 @@ using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
+using System.Text.Json;
 using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
 
 
@@ -36,16 +37,16 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
         }
 
         (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql(
-                postsContext: usrCtx,
-                bodyPattern: parameters.BodyPattern,
-                sortAscendingByDate: parameters.SortAscendingByDate,
-                postsPerPage: parameters.PostsPerPage,
-                pageNumber: parameters.PageNumber,
-                additionalTagIds: parameters.AdditionalTagIds,
-                countOnly: false
+            postsContext: usrCtx,
+            bodyPattern: parameters.BodyPattern,
+            sortAscendingByDate: parameters.SortAscendingByDate,
+            postsPerPage: parameters.PostsPerPage,
+            pageNumber: parameters.PageNumber,
+            additionalRequiredTagIds: parameters.AdditionalTagIds,
+            countOnly: false
         );
 
-        // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
+//this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, JsonSerializer.Serialize(sqlParams) );
         IEnumerable<SimplePostObject.Raw> posts = await dbCon.QueryAsync<SimplePostObject.Raw>(
             sql, new DynamicParameters( sqlParams )
         );
@@ -79,7 +80,7 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
                 sortAscendingByDate: parameters.SortAscendingByDate,
                 postsPerPage: parameters.PostsPerPage,
                 pageNumber: parameters.PageNumber,
-                additionalTagIds: parameters.AdditionalTagIds,
+                additionalRequiredTagIds: parameters.AdditionalTagIds,
                 countOnly: true
         );
 

@@ -24,7 +24,7 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_Terms TermsData;
 
-    private readonly ServerDataAccess_TermSets TermSetsData;
+    private readonly ServerDataAccess_SimplePostTags SimplePostTagsData;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
@@ -38,7 +38,7 @@ public class SimplePostController : ControllerBase {
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags simplePostTagsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
                 ServerSessionManager sessMngr ) {
         this.Logger = logger;
@@ -46,7 +46,7 @@ public class SimplePostController : ControllerBase {
         this.ServerData = serverData;
         this.SimplePostsData = simplePostsData;
         this.TermsData = termsData;
-        this.TermSetsData = termSetsData;
+        this.SimplePostTagsData = simplePostTagsData;
         this.UserTermsHistoryData = userTermsHistoryData;
         this.SessionManager = sessMngr;
     }
@@ -57,7 +57,7 @@ public class SimplePostController : ControllerBase {
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.TermSetsData, parameters );
+        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.SimplePostTagsData, parameters );
         return new ClientDataAccess_SimplePosts.GetByCriteria_Return { Posts = posts };
     }
 
@@ -81,7 +81,7 @@ public class SimplePostController : ControllerBase {
             dbCon: dbCon,
             serverData: this.ServerData,
             termsData: this.TermsData,
-            termSetsData: this.TermSetsData,
+            termSetsData: this.SimplePostTagsData,
             termHistoryData: this.UserTermsHistoryData,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             parameters: parameters,

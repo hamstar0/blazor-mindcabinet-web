@@ -36,9 +36,10 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterUser_Async(
                 IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
-                SimpleUserId defaultUserId ) {
-        return await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId );
+                ServerDataAccess_SimplePostTags termSetsData,
+                SimpleUserId defaultUserId,
+                TermId defaultUserAsTermId ) {
+        return await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId, defaultUserAsTermId );
     }
 
     //
@@ -85,7 +86,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 (
                     (SELECT (@Tags)) EXCEPT (
                         SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
-                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
                         WHERE MyTermSet.SetId = MyPosts.TermSetId
                     )
                 ) IS NULL
@@ -123,7 +124,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags termSetsData,
                 ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
         if( parameters.AllTagIds.Any(id => id == 0) ) {
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
@@ -191,7 +192,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_SimplePosts.Create_Params parameters,

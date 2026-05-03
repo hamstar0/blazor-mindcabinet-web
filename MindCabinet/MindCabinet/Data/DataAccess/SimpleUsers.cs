@@ -41,8 +41,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public class SimpleUserQueryResult( SimpleUserObject.Raw? user, bool alreadyExists ) {
+    public class SimpleUserQueryResult( SimpleUserObject.Raw? user, PostsContextObject.Raw? defaultPostsContext, TermObject.Raw? asTerm, bool alreadyExists ) {
         public SimpleUserObject.Raw? User = user;
+        public PostsContextObject.Raw? UserDefaultPostsContextId = defaultPostsContext;
+        public TermObject.Raw? UserAsTermId = asTerm;
         public bool AlreadyExists = alreadyExists;
     }
 
@@ -232,7 +234,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 new { Name = parameters.Name }
             );
             if( user is not null ) {
-                return new SimpleUserQueryResult( null, true );
+                return new SimpleUserQueryResult( null, null, null, true );
             }
         }
 
@@ -268,35 +270,39 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
+        TermObject.Raw? userTerm = null;
+        PostsContextObject.Raw? userDefaultPostsContext = null;
+
         if( createPostsContext ) {
-            TermId userTermId = await this.CreateUserTerm_Async(
+            userTerm = await this.CreateUserTerm_Async(
                 dbCon: dbCon,
                 serverData: serverData,
                 termsData: termsData,
                 userName: parameters.Name
             );
 
-            PostsContextObject.Prototype userDefaultPostsContext = await this.CreateDefaultUserPostsContext(
+            PostsContextObject.Prototype userDefaultPostsContextProto = await this.CreateDefaultUserPostsContext(
                 dbCon,
                 postsContextData,
                 postsContextTermEntryData,
                 parameters,
-                userTermId
+                userTerm.Id
             );
+            userDefaultPostsContext = userDefaultPostsContextProto.ToRaw( true );
             
             await userAppData.Create_Async(
                 dbCon: dbCon,
                 simpleUserId: (SimpleUserId)newUserId,
-                userDefaultPostsContextId: userDefaultPostsContext.Id ?? 0
+                userDefaultPostsContextId: userDefaultPostsContext.Id
             );
         }
 
         //
 
-        return new SimpleUserQueryResult( newUser, false );
+        return new SimpleUserQueryResult( newUser, userDefaultPostsContext, userTerm, false );
     }
 
-    internal async Task<TermId> CreateUserTerm_Async(
+    internal async Task<TermObject.Raw> CreateUserTerm_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_Terms termsData,
@@ -314,7 +320,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 TermPattern = userName,
                 ContextId = serverDataObj?.UsersConceptTermId
             } )
-        ).TermRaw.Id;
+        ).TermRaw;
     }
 
     

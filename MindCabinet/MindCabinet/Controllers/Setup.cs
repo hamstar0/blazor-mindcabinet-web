@@ -20,7 +20,7 @@ public class SetupController : ControllerBase {
     private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
     private readonly ServerDataAccess_UserTermsHistory HistoryTermsData;
     private readonly ServerDataAccess_Terms TermsData;
-    private readonly ServerDataAccess_TermSets TermSetsData;
+    private readonly ServerDataAccess_SimplePostTags TermSetsData;
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
     private readonly ServerDataAccess_PostsContexts PostsContextData;
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
@@ -36,7 +36,7 @@ public class SetupController : ControllerBase {
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserTermsHistory historyTermsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,

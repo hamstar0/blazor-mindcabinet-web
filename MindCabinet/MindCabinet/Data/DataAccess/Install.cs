@@ -14,7 +14,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
+                ServerDataAccess_SimplePostTags simplePostTagsData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserTermsHistory historyTermsData,
@@ -29,6 +29,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         bool success;
         SimpleUserId defaultUserId;
         TermId usersConceptTermId;
+        TermId defaultUserAsTermId;
         TermObject.Raw sampleTerm;
 
         success = await simpleUsersData.Install_Async( dbCon );
@@ -56,7 +57,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
 
-        success = await termSetsData.Install_Async( dbCon );
+        success = await simplePostTagsData.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
@@ -93,7 +94,7 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
 
-        (success, defaultUserId) = await simpleUsersData.Install_After_Async(
+        (success, defaultUserId, defaultUserAsTermId) = await simpleUsersData.Install_After_Async(
             dbCon,
             termsData,
             postsContextData,
@@ -105,7 +106,13 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
 
-        (success, sampleTerm) = await simplePostsData.Install_AfterUser_Async( dbCon, termsData, termSetsData, defaultUserId );
+        (success, sampleTerm) = await simplePostsData.Install_AfterUser_Async(
+            dbCon,
+            termsData,
+            simplePostTagsData,
+            defaultUserId,
+            defaultUserAsTermId
+        );
         if( !success ) {
             return false;
         }

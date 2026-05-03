@@ -9,9 +9,8 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_TermSets : IServerDataAccess {
-    public const string TableName = "TermSet";
-    // public const string IdSupplierTableName = "TermSetIdSupplier";
+public partial class ServerDataAccess_SimplePostTags : IServerDataAccess {
+    public const string TableName = "SimplePostTags";
 
 
 	public async Task<bool> Install_Async( IDbConnection dbCon ) {
@@ -76,7 +75,7 @@ public partial class ServerDataAccess_TermSets : IServerDataAccess {
 
 
 
-    public async Task<IEnumerable<TermObject.Raw>> GetTermSet_Async(
+    public async Task<IEnumerable<TermObject.Raw>> Get_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 SimplePostId id ) {

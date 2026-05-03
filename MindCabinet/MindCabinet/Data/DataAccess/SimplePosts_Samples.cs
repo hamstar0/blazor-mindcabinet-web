@@ -13,8 +13,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     private async Task<(bool success, TermObject.Raw sampleTerm)> InstallSamples_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
-                ServerDataAccess_TermSets termSetsData,
-                SimpleUserId defaultUserId ) {
+                ServerDataAccess_SimplePostTags termSetsData,
+                SimpleUserId defaultUserId,
+                TermId defaultUserAsTermId ) {
         ClientDataAccess_Terms.Create_Return sampleTerm = await termsData.Create_Async(
             dbConnection,
             new ClientDataAccess_Terms.Create_Params { TermPattern = "Sample", ContextId = null, AliasId = null }
@@ -177,7 +178,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             await termSetsData.CreateForSimplePost_Async(
                 dbCon: dbConnection,
                 id: (SimplePostId)newPostId,
-                termIds: postTags
+                termIds: postTags.Concat( [defaultUserAsTermId] ).ToArray()
             );
         }
         

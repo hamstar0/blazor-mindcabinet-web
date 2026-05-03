@@ -16,7 +16,7 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
-    public async Task<(bool success, SimpleUserId defaultUserId)> Install_After_Async(
+    public async Task<(bool success, SimpleUserId defaultUserId, TermId defaultUserAsTermId)> Install_After_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_PostsContexts postsContextData,
@@ -45,6 +45,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             throw new Exception( "Failed to create default user: "+(result.AlreadyExists ? "already exists" : "unknown error") );
         }
 
-        return (true, result.User.Id);
+        return (true, result.User.Id, result.UserAsTermId!.Id);
     }
 }

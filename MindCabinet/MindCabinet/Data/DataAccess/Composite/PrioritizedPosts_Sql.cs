@@ -19,11 +19,10 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 bool sortAscendingByDate,
                 int postsPerPage,
                 int pageNumber,
-                TermId[] additionalTagIds,
+                TermId[] additionalRequiredTagIds,
                 bool countOnly ) {
-        string sqlColumns = countOnly
-            ? "COUNT(*)"
-            : "*";      //"MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body, MyPosts.TermSetId";
+        string sqlColumns = "MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body";
+        
         string sql = $"SELECT {sqlColumns} FROM {ServerDataAccess_SimplePosts.TableName} AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
 
@@ -44,28 +43,36 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
         //
 
-        IEnumerable<TermId> allTagIds = additionalTagIds.Concat(
+        IEnumerable<TermId> allTagIds = additionalRequiredTagIds.Concat(
             postsContext.GetRequiredEntries()
                 .Select( e => e.TermId )
-                .Where( id => !additionalTagIds.Contains(id) )
+                .Where( id => !additionalRequiredTagIds.Contains(id) )
         );
         IEnumerable<TermId> anyTagIds = postsContext.GetOptionalEntries()
             .Select( e => e.TermId );
 
         if( allTagIds.Count() > 0 ) {
-            sql += hasWhere ? "AND" : "WHERE";
-            sql += $@" (
-                (
-                    (SELECT (@AllTags)) EXCEPT (
-                        SELECT MyAllTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAllTerms
-                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
-                        WHERE MyAllTermSet.SimplePostId = MyPosts.Id
-                    )
-                ) IS NULL
-            ) ";
+            // sql += hasWhere ? "AND" : "WHERE";
+            // sql += $@" (
+            //     (
+            //         (SELECT (@AllTags)) EXCEPT (
+            //             SELECT MyAllTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAllTerms
+            //             INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
+            //             WHERE MyAllTermSet.SimplePostId = MyPosts.Id
+            //         )
+            //     ) IS NULL
+            // ) ";
+            //
+            // hasWhere = true;
+
+            sql += $@"
+                INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAllTermSet
+                    ON MyAllTermSet.SimplePostId = MyPosts.Id
+                WHERE MyAllTermSet.TermId IN (@AllTags)
+                GROUP BY MyPosts.Id
+                HAVING COUNT(DISTINCT MyAllTermSet.TermId) = @AllTagsCount ";
             sqlParams["@AllTags"] = allTagIds;
-            
-            hasWhere = true;
+            sqlParams["@AllTagsCount"] = allTagIds.Count();
         }
         
         if( anyTagIds.Count() > 0 ) {
@@ -74,7 +81,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 (
                     (SELECT (@AnyTags)) INTERSECT (
                         SELECT MyAnyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAnyTerms
-                        INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
+                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
                         WHERE MyAnyTermSet.SimplePostId = MyPosts.Id
                     )
                 ) IS NOT NULL
@@ -109,6 +116,10 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             sql += $"\n LIMIT @Offset, @Quantity";
             sqlParams["@Offset"] = pageNumber * postsPerPage;
             sqlParams["@Quantity"] = postsPerPage;
+        }
+
+        if( countOnly ) {
+            sql = $"SELECT COUNT(*) FROM ({sql}) AS CountQuery";
         }
 
         sql += ";";

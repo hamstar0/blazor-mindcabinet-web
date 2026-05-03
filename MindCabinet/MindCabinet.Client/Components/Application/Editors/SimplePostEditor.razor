@@ -16,13 +16,13 @@
 			@bind:event="oninput"
 			@bind:get=@this.PostText
 			@bind:set=@this.OnInputHandler_UI_Async></textarea>
-			@* @oninput=@(async args => this.PostText = args.Value?.ToString() ?? "")></textarea> *@
+			 @* @oninput=@(async args => this.PostText = args.Value?.ToString() ?? "")></textarea> *@
 	<br/>
 	<TermSetEditor
 			Label="Enter tags (at least 1 required)"
 			OnTermsChange_Async=@this.OnTagsChangeHandler_UI_Async />
 	<button
-			disabled=@( this.CanSubmit() ? false : true )
+			disabled=@( !this.CanSubmit() )
 			@onclick=@this.Submit_UI_Async>
 		Submit
 	</button>

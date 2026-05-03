@@ -28,7 +28,13 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 
 
 
-	public SimplePostObject( SimplePostId id, DateTime created, DateTime modified, SimpleUserId simpleUserId, string body, SortedSet<TermObject> tags ) {
+	public SimplePostObject(
+				SimplePostId id,
+				DateTime created,
+				DateTime modified,
+				SimpleUserId simpleUserId,
+				string body,
+				SortedSet<TermObject> tags ) {
 		if( id == 0 ) {
 			throw new ArgumentException( "Id cannot be 0 in SimplePostObject." );
 		}
