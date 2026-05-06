@@ -5,6 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using System.Text.Json;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
@@ -46,7 +47,7 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
     public const string GetByCriteria_Path = "PrioritizedPosts";
     public const string GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<IEnumerable<SimplePostObject>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
+    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
             requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
             value: parameters
@@ -54,10 +55,11 @@ public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : ICli
 
         msg.EnsureSuccessStatusCode();
 
-        IEnumerable<SimplePostObject>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject>>();
+        IEnumerable<SimplePostObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject.Raw>>();
         if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<SimplePostObject>" );
+            throw new InvalidDataException( "Could not deserialize IEnumerable<SimplePostObject.Raw>" );
         }
+// Console.WriteLine( $"Result: {JsonSerializer.Serialize(ret)}" );
 
         return ret;
     }

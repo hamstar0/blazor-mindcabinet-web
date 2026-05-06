@@ -19,6 +19,8 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
     
     public async Task<SimplePostObject.Raw[]> GetByCriteria_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_Terms termsData,
+                ServerDataAccess_SimplePostTags postTagsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
@@ -46,11 +48,18 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
             countOnly: false
         );
 
-//this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, JsonSerializer.Serialize(sqlParams) );
+// this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, JsonSerializer.Serialize(sqlParams) );
         IEnumerable<SimplePostObject.Raw> posts = await dbCon.QueryAsync<SimplePostObject.Raw>(
             sql, new DynamicParameters( sqlParams )
         );
+        
+        foreach( SimplePostObject.Raw post in posts ) {
+            post.TagsTermIdSet = (await postTagsData.Get_Async( dbCon, termsData, post.Id ))
+                .Select( t => t.Id )
+                .ToArray();
+        }
 
+// this.Logger.LogInformation( "Result: {posts}", JsonSerializer.Serialize(posts) );
         return posts.ToArray();
 	}
 

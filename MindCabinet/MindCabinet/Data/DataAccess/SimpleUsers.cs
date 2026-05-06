@@ -348,6 +348,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         )).Id;
 
         proto.Id = defaultCtxId;
+        proto.Entries[0].PostsContextId = defaultCtxId;
         // PostsContextObject.Raw rawCtx = PostsContextObject.CreateRaw(
         //     id: defaultCtxId,
         //     name: proto.Name,
@@ -356,7 +357,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         // );
         // PostsContextObject ctx = await ServerDataAccess_PostsContexts
         //     .ToDataObject_Async( dbCon, termsData, rawCtx );
-
+        
         return proto;
     }
 }

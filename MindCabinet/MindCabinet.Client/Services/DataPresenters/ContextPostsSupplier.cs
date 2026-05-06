@@ -25,7 +25,7 @@ public partial class ContextPostsSupplier(
 
     private ClientDataAccess_PostsContext PostsContextsData = postsContextsData;
     
-    private ClientDataAccess_PrioritizedPosts PostsData = postsData;
+    private ClientDataAccess_PrioritizedPosts PrioritizedPostsData = postsData;
 
 
     private int CurrentPage = 0;
@@ -37,6 +37,7 @@ public partial class ContextPostsSupplier(
 
 
     public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
+                ClientDataAccess_Terms termsData,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
         PostsContextObject? postsContext = this.SessionData.GetCurrentContext();
@@ -44,7 +45,7 @@ public partial class ContextPostsSupplier(
             return [];
         }
 
-        IEnumerable<SimplePostObject> posts = await this.PostsData.GetByCriteria_Async(
+        IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsData.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
                 postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
@@ -55,7 +56,7 @@ public partial class ContextPostsSupplier(
             )
         );
 
-        var postPriorities = posts.Select( post => new KeyValuePair<SimplePostId, double?>(
+        var postPriorities = postsRaw.Select( post => new KeyValuePair<SimplePostId, double?>(
             key: post.Id,
             value: this.GetPriority(postsContext, post)
         ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
@@ -65,7 +66,12 @@ public partial class ContextPostsSupplier(
                 $"Some posts returned for context {postsContext.ToString()} have null priority."
             );
         }
-        
+
+        SimplePostObject[] posts = new SimplePostObject[ postsRaw.Count() ];
+        for( int i = 0; i < postsRaw.Count(); i++ ) {
+            posts[i] = await ClientDataAccess_SimplePosts.ConvertRawToDataObject_Async( termsData, postsRaw.ElementAt(i) );
+        }
+
         return posts
             .Where( post => postPriorities[post.Id] is not null )
             .OrderBy( post => postPriorities[post.Id] );
@@ -78,7 +84,7 @@ public partial class ContextPostsSupplier(
             return 0;
         }
 
-        int totalPosts = await this.PostsData.GetCountByCriteria_Async(
+        int totalPosts = await this.PrioritizedPostsData.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
                 postsContextId: currCtx.Id,
                 bodyPattern: null,
@@ -93,12 +99,12 @@ public partial class ContextPostsSupplier(
     }
 
 
-    public double? GetPriority( PostsContextObject ctx, SimplePostObject post ) {
+    public double? GetPriority( PostsContextObject ctx, SimplePostObject.Raw post ) {
         double totalPriority = 0;
         int matchedCount = 0;
 
         foreach( PostsContextTermEntryObject entry in ctx.Entries ) {
-            if( post.Tags.FirstOrDefault(t => t.Id == entry.Term.Id) is not null ) {
+            if( post.TagsTermIdSet.FirstOrDefault(tid => tid == entry.Term.Id) != 0 ) {
                 matchedCount++;
                 totalPriority += entry.Priority;
             } else if( entry.IsRequired ) {

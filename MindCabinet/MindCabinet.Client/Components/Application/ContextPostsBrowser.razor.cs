@@ -25,6 +25,9 @@ public partial class ContextPostsBrowser : ComponentBase {
     [Inject]
     public ClientSessionManager SessionData { get; set; } = null!;
 
+    [Inject]
+    public ClientDataAccess_Terms TermsData { get; set; } = null!;
+
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -70,6 +73,7 @@ public partial class ContextPostsBrowser : ComponentBase {
         }
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetCurrentContextPosts_Async(
+            termsData: this.TermsData,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
