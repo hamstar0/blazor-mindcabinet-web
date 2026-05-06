@@ -7,32 +7,13 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
+using MindCabinet.Services;
 
 
 namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_PostsContexts> logger ) : IServerDataAccess {
-    public const string TableName = "PostsContexts";
-
-
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Name VARCHAR(256) NOT NULL,
-                Description MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
-            );"
-                //  CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                //     REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
-        );
-
-        return true;
-    }
-
-    
-
     private readonly ILogger<ServerDataAccess_PostsContexts> Logger = logger;
 
 
@@ -47,7 +28,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         }
 
         var raw = await dbCon.QuerySingleOrDefaultAsync<PostsContextObject.Raw>(
-            $"SELECT * FROM {TableName} WHERE Id = @Id",
+            $"SELECT * FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new { Id = (long)postsContextId }
         );
         if( raw is null ) {
@@ -80,11 +61,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         bool needsAnd = false;
         
         if( parameters.Ids.Length >= 2 ) {
-            sql1 += " WHERE MyContext.Id IN @Ids";
+            sql1 += " WHERE MyContext.{TableColumn_Id} IN @Ids";
             sqlParams1.Add( "@Ids", parameters.Ids );
             needsAnd = true;
         } else if( parameters.Ids.Length == 1 ) {
-            sql1 += " WHERE MyContext.Id = @Id";
+            sql1 += " WHERE MyContext.{TableColumn_Id} = @Id";
             sqlParams1.Add( "@Id", parameters.Ids[0] );
             needsAnd = true;
         }
@@ -95,7 +76,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             } else {
                 sql1 += " WHERE";
             }
-            sql1 += " MyContext.Name LIKE @NamePattern";   // TODO: Validate
+            sql1 += " MyContext.{TableColumn_Name} LIKE @NamePattern";   // TODO: Validate
             sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
             needsAnd = true;
         }
@@ -129,7 +110,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         }
 
         long postsContextId = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (Name, Description) 
+            $@"INSERT INTO {TableName} ({TableColumn_Name}, {TableColumn_Description})
                 VALUES (@Name, @Description);
             SELECT LAST_INSERT_ID();",
             new {
@@ -163,8 +144,8 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
 
         await dbCon.ExecuteAsync(
             $@"UPDATE {TableName}
-                SET Name = @Name, Description = @Description
-                WHERE Id = @Id;",
+                SET {TableColumn_Name} = @Name, {TableColumn_Description} = @Description
+                WHERE {TableColumn_Id} = @Id;",
             new {
                 Name = parameters.Name,
                 Description = parameters.Description,

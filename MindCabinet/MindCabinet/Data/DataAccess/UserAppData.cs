@@ -13,27 +13,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserAppData : IServerDataAccess {
-    public const string TableName = "UserAppData";
-
-
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                SimpleUserId BIGINT NOT NULL PRIMARY KEY,
-                PostsContextId BIGINT NOT NULL,
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_PostsContextId FOREIGN KEY (PostsContextId)
-                    REFERENCES {ServerDataAccess_PostsContexts.TableName}(Id)
-            );"
-        );
-
-        return true;
-    }
-    
-
-
     public async Task<UserAppDataObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 SimpleUserId id ) {

@@ -37,8 +37,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         return argon2id.GetBytes( SimpleUserObject.PasswordHashLength );
     }
 
-    //
-
 
 
     public class SimpleUserQueryResult( SimpleUserObject.Raw? user, PostsContextObject.Raw? defaultPostsContext, TermObject.Raw? asTerm, bool alreadyExists ) {
@@ -48,32 +46,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         public bool AlreadyExists = alreadyExists;
     }
 
-    //
 
-
-
-    public const string TableName = "SimpleUsers";
-
-    public async Task<bool> Install_Async(
-                IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Created DATETIME(2) NOT NULL,
-                Name VARCHAR(128) NOT NULL,
-                Email VARCHAR(320) NOT NULL,
-                PwHash BINARY({SimpleUserObject.PasswordHashLength}) NOT NULL,
-                PwSalt BINARY({SimpleUserObject.PasswordSaltLength}) NOT NULL,
-                IsValidated BOOLEAN NOT NULL
-            );"
-        //    ON DELETE CASCADE
-        //    ON UPDATE CASCADE
-        );
-        
-        return true;
-    }
-
-    //
 
     private readonly ServerSessionManager SessionManager;
     
@@ -106,7 +79,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
-            $"SELECT * FROM {TableName} WHERE Id = @Id",
+            $"SELECT * FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new { Id = (long)id }
         );
 
@@ -124,7 +97,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
         
         SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
-            $"SELECT * FROM {TableName} WHERE Name = @Name",
+            $"SELECT * FROM {TableName} WHERE {TableColumn_Name} = @Name",
             new { Name = userName }
         );
 
@@ -150,16 +123,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         var userAndSessRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.UserAndSession_Raw>(  // Note: MySessions.Id is SessionId to avoid collision
             $@"SELECT
                     MyUsers.*,
-                    MySessions.Id AS SessionId,
-                    MySessions.LatestIpAddress AS LatestIpAddress,
-                    MySessions.SimpleUserId AS SimpleUserId,
-                    MySessions.FirstVisit AS FirstVisit,
-                    MySessions.LatestVisit AS LatestVisit,
-                    MySessions.Visits AS Visits
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_Id} AS SessionId,
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_LatestIpAddress} AS LatestIpAddress,
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_SimpleUserId} AS SimpleUserId,
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_FirstVisit} AS FirstVisit,
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_LatestVisit} AS LatestVisit,
+                    MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_Visits} AS Visits
                 FROM {TableName} AS MyUsers
                 INNER JOIN {ServerDataAccess_SimpleUserSessions.TableName} AS MySessions
-                    ON (MyUsers.Id = MySessions.SimpleUserId) 
-                WHERE MySessions.Id = @SessionId",
+                    ON (MyUsers.{TableColumn_Id} = MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_SimpleUserId}) 
+                WHERE MySessions.{ServerDataAccess_SimpleUserSessions.TableColumn_Id} = @SessionId",
             new { SessionId = sessionId }
         );
 
@@ -184,7 +157,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 //     );
                 // if( entry is not null ) {
                 await dbCon.ExecuteAsync(
-                    $"DELETE FROM {ServerDataAccess_SimpleUserSessions.TableName} WHERE Id = @Id",
+                    $"DELETE FROM {ServerDataAccess_SimpleUserSessions.TableName} WHERE {ServerDataAccess_SimpleUserSessions.TableColumn_Id} = @Id",
                     new {
                         Id = sessionId
                     }
@@ -230,7 +203,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         if( detectCollision ) {
             user = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw?>(
-                $"SELECT * FROM {TableName} WHERE Name = @Name",
+                $"SELECT * FROM {TableName} WHERE {TableColumn_Name} = @Name",
                 new { Name = parameters.Name }
             );
             if( user is not null ) {
@@ -243,8 +216,15 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         byte[] pwSalt = ServerDataAccess_SimpleUsers.GeneratePasswordSalt();
         byte[] pwHash = ServerDataAccess_SimpleUsers.GeneratePasswordHash( parameters.Password, pwSalt );
 
-        long newUserId = await dbCon.ExecuteScalarAsync<long>(   //QuerySingleAsync
-            $@"INSERT INTO {TableName} (Created, Name, Email, PwHash, PwSalt, IsValidated) 
+        long newUserId = await dbCon.ExecuteScalarAsync<long>(
+            $@"INSERT INTO {TableName} (
+                    {TableColumn_Created},
+                    {TableColumn_Name},
+                    {TableColumn_Email},
+                    {TableColumn_PwHash},
+                    {TableColumn_PwSalt},
+                    {TableColumn_IsValidated}
+                ) 
                 VALUES (@Created, @Name, @Email, @PwHash, @PwSalt, @IsValidated);
             SELECT LAST_INSERT_ID();",  //OUTPUT INSERTED.Id 
             new {

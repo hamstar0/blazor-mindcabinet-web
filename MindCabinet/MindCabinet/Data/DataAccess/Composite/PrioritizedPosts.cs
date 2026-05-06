@@ -54,7 +54,7 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
         );
         
         foreach( SimplePostObject.Raw post in posts ) {
-            post.TagsTermIdSet = (await postTagsData.Get_Async( dbCon, termsData, post.Id ))
+            post.TagsTermIdSet = (await postTagsData.Get_Async( dbCon, post.Id ))
                 .Select( t => t.Id )
                 .ToArray();
         }

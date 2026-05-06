@@ -9,30 +9,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
-    public const string TableName = "SimpleUserSessions";
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                Id VARCHAR(36) NOT NULL,
-                LatestIpAddress VARCHAR(45) NOT NULL,
-                SimpleUserId BIGINT NOT NULL,
-                FirstVisit DATETIME(2) NOT NULL,
-                LatestVisit DATETIME(2) NOT NULL,
-                Visits INT NOT NULL,
-                 PRIMARY KEY (Id),
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
-            );"
-        //    ON DELETE CASCADE
-        //    ON UPDATE CASCADE
-        );
-
-        return true;
-    }
-
-
-
     public async Task<UserSessionObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 string sessionId ) {
@@ -41,7 +17,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         }
 
         UserSessionObject.Raw? sessionData = await dbCon.QuerySingleOrDefaultAsync<UserSessionObject.Raw>(
-            $@"SELECT * FROM {TableName} WHERE Id = @Id",
+            $@"SELECT * FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new { Id = sessionId }
         );
 
@@ -73,8 +49,13 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         DateTime now = DateTime.UtcNow;
 
         int rows = await dbCon.ExecuteAsync(
-            $@"INSERT INTO {TableName}
-                (Id, LatestIpAddress, SimpleUserId, FirstVisit, LatestVisit, Visits) 
+            $@"INSERT INTO {TableName} (
+                    {TableColumn_Id},
+                    {TableColumn_LatestIpAddress},
+                    {TableColumn_SimpleUserId},
+                    {TableColumn_FirstVisit},
+                    {TableColumn_LatestVisit},
+                    {TableColumn_Visits}) 
                 VALUES (@Id, @LatestIpAddress, @SimpleUserId, @FirstVisit, @LatestVisit, @Visits)",
             new {
                 Id = sessionMngr.CurrentSessionId,
@@ -97,7 +78,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         }
         
         int rows = await dbCon.ExecuteAsync(
-            $@"DELETE FROM {TableName} WHERE Id = @Id",
+            $@"DELETE FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new {
                 Id = sessionId
             }

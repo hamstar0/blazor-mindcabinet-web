@@ -12,40 +12,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
-    public const string TableName = "SimplePosts";
-
-    public async Task<bool> Install_Async(
-                IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Created DATETIME(2) NOT NULL,
-                Modified DATETIME(2) NOT NULL,
-                SimpleUserId BIGINT NOT NULL,
-                Body MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id)
-            );"
-            //    ON DELETE CASCADE
-            //    ON UPDATE CASCADE
-        );
-
-        return true;
-    }
-
-    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterUser_Async(
-                IDbConnection dbConnection, 
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags termSetsData,
-                SimpleUserId defaultUserId,
-                TermId defaultUserAsTermId ) {
-        return await this.InstallSamples_Async( dbConnection, termsData, termSetsData, defaultUserId, defaultUserAsTermId );
-    }
-
-    //
-
-
-
     public async Task<SimplePostObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 SimplePostId id ) {
@@ -54,7 +20,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
         }
 
         SimplePostObject.Raw? postRaw = await dbCon.QuerySingleOrDefaultAsync<SimplePostObject.Raw>(
-            $"SELECT * FROM {TableName} AS MyPosts WHERE Id = @Id",
+            $"SELECT * FROM {TableName} AS MyPosts WHERE {TableColumn_Id} = @Id",
             new { Id = (long)id }
         );
 
@@ -74,23 +40,29 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             body = body.Replace( "_", "\\_" );
             //body = body.Replace( "[", "\\[" );
 
-            // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\' ";
+            // sql += "WHERE MyPosts.{TableColumn_Body} LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
+            sql += "\nWHERE MyPosts.{TableColumn_Body} LIKE @Body ESCAPE '\\\\' ";
             sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
             hasWhere = true;
         }
 
         if( parameters.AllTagIds.Length > 0 ) {
             sql += hasWhere ? "AND" : "WHERE";
+
             sql += $@" (
                 (
                     (SELECT (@Tags)) EXCEPT (
-                        SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
-                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
-                        WHERE MyTermSet.SetId = MyPosts.TermSetId
+                        SELECT MyTerms.{ServerDataAccess_Terms.TableColumn_Id} FROM {ServerDataAccess_Terms.TableName} AS MyTerms
+                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyPostTags
+                            ON (MyPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId} = MyTerms.{ServerDataAccess_Terms.TableColumn_Id})
+                        WHERE MyPostTags.{ServerDataAccess_SimplePostTags.TableColumn_SimplePostId} = MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}
                     )
                 ) IS NULL
             ) ";
+                        // SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
+                        // INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
+                        // WHERE MyTermSet.SetId = MyPosts.TermSetId
+
             sqlParams["@Tags"] = parameters.AllTagIds;
             //      ) ALL (";
             //int i = 1;
@@ -101,6 +73,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             //    i++;
             //}
             //sql += ")";
+
             hasWhere = true;
         }
 

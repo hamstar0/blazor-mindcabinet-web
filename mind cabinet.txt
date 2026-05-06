@@ -44,9 +44,9 @@ v0.6
 		-	Implement custom posts sorting (via hook?)
 		-	Implement pipe from current context to posts view filter tags
 		-	@Implement table builder
+
+
 		-	Finish implementing SQL for querying by priority (sort by priority order)
-
-
 		-	Add user-as-tag to their posts' tags
 		-	@Ensure functionality (install, post create, user register, user login, context tags, contexts)
 			-	Disable tag entry if no user

@@ -10,38 +10,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePostTags : IServerDataAccess {
-    public const string TableName = "SimplePostTags";
-
-
-	public async Task<bool> Install_Async( IDbConnection dbCon ) {
-        await dbCon.ExecuteAsync($@"
-            CREATE TABLE {TableName} (
-                SimplePostId BIGINT NOT NULL,
-                TermId BIGINT NOT NULL,
-                 CONSTRAINT PK_{TableName}_SetAndTermId PRIMARY KEY (SimplePostId, TermId),
-                 CONSTRAINT FK_{TableName}_SimplePostId FOREIGN KEY (SimplePostId)
-                    REFERENCES {ServerDataAccess_SimplePosts.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id)
-            )"
-                // SetId INT NOT NULL,
-            //    ON DELETE CASCADE
-            //    ON UPDATE CASCADE
-        );
-        // await dbCon.ExecuteAsync( $@"
-        //     CREATE TABLE {IdSupplierTableName} (
-        //         Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        //         Bogus BOOLEAN
-        //     );"
-        // );
-        
-        return true;
-    }
-
-    //
-
-
-
     public async Task CreateForSimplePost_Async(
                 IDbConnection dbCon,
                 SimplePostId id,
@@ -61,7 +29,7 @@ public partial class ServerDataAccess_SimplePostTags : IServerDataAccess {
 
         foreach( TermId termId in termIds ) {
             await dbCon.ExecuteAsync(
-                $@"INSERT INTO {TableName} (SimplePostId, TermId) 
+                $@"INSERT INTO {TableName} ({TableColumn_SimplePostId}, {TableColumn_TermId}) 
                     VALUES (@SimplePostId, @TermId)",
                 new {
                     SimplePostId = (long)id,
@@ -77,17 +45,21 @@ public partial class ServerDataAccess_SimplePostTags : IServerDataAccess {
 
     public async Task<IEnumerable<TermObject.Raw>> Get_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 SimplePostId id ) {
         if( id == 0 ) {
             throw new ArgumentException( "SimplePostId is not valid (must be non-zero)." );
         }
 
         IEnumerable<TermObject.Raw> termSetRaw = await dbCon.QueryAsync<TermObject.Raw>(
-            $@"SELECT MyTerms.Id, MyTerms.Term, MyTerms.ContextId, MyTerms.AliasId
+            $@"SELECT
+                    MyTerms.{ServerDataAccess_Terms.TableColumn_Id},
+                    MyTerms.{ServerDataAccess_Terms.TableColumn_Term},
+                    MyTerms.{ServerDataAccess_Terms.TableColumn_ContextId},
+                    MyTerms.{ServerDataAccess_Terms.TableColumn_AliasId}
                 FROM {ServerDataAccess_Terms.TableName} AS MyTerms
-                INNER JOIN {TableName} AS MyTermSet ON (MyTerms.Id = MyTermSet.TermId)
-                WHERE MyTermSet.SimplePostId = @SimplePostId",
+                INNER JOIN {TableName} AS MyPostTags
+                    ON (MyTerms.{ServerDataAccess_Terms.TableColumn_Id} = MyPostTags.{TableColumn_TermId})
+                WHERE MyPostTags.{TableColumn_SimplePostId} = @SimplePostId",
             new { SimplePostId = (long)id }
         );
 

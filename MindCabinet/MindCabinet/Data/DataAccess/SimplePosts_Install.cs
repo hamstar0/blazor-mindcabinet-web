@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
@@ -9,9 +10,37 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
+
 public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
-    private async Task<(bool success, TermObject.Raw sampleTerm)> InstallSamples_Async(
-                IDbConnection dbConnection,
+    public const string TableName = "SimplePosts";
+    public const string TableColumn_Id = "Id";
+    public const string TableColumn_Created = "Created";
+    public const string TableColumn_Modified = "Modified";
+    public const string TableColumn_SimpleUserId = "SimpleUserId";
+    public const string TableColumn_Body = "Body";
+
+    public async Task<bool> Install_Async(
+                IDbConnection dbConnection ) {
+        await dbConnection.ExecuteAsync( $@"
+            CREATE TABLE {TableName} (
+                {TableColumn_Id} BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                {TableColumn_Created} DATETIME(2) NOT NULL,
+                {TableColumn_Modified} DATETIME(2) NOT NULL,
+                {TableColumn_SimpleUserId} BIGINT NOT NULL,
+                {TableColumn_Body} MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                 CONSTRAINT FK_{TableName}_{TableColumn_SimpleUserId} FOREIGN KEY ({TableColumn_SimpleUserId})
+                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}({ServerDataAccess_SimpleUsers.TableColumn_Id})
+            );"
+            //    ON DELETE CASCADE
+            //    ON UPDATE CASCADE
+        );
+
+        return true;
+    }
+
+
+    public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterUser_Async(
+                IDbConnection dbConnection, 
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags termSetsData,
                 SimpleUserId defaultUserId,
@@ -164,8 +193,12 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
         //
 
-        string sql = $@"INSERT INTO {ServerDataAccess_SimplePosts.TableName}
-                (Body, Created, Modified, SimpleUserId)
+        string sql = $@"INSERT INTO {ServerDataAccess_SimplePosts.TableName} (
+                    {ServerDataAccess_SimplePosts.TableColumn_Body},
+                    {ServerDataAccess_SimplePosts.TableColumn_Created},
+                    {ServerDataAccess_SimplePosts.TableColumn_Modified},
+                    {ServerDataAccess_SimplePosts.TableColumn_SimpleUserId}
+                )
                 VALUES (@Body, @Created, @Modified, @SimpleUserId);
             SELECT LAST_INSERT_ID();";
 

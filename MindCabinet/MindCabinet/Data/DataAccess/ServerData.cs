@@ -8,36 +8,13 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 using MindCabinet.DataObjects;
+using MindCabinet.Services;
 
 
 namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_ServerData : IServerDataAccess {
-    public const string TableName = "ServerData";
-
-
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                UsersConceptTermId BIGINT NOT NULL,
-                 CONSTRAINT FK_{TableName}_UsersConceptTermId FOREIGN KEY (UsersConceptTermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id)
-            );"
-        );
-
-        return true;
-    }
-
-    public async Task<bool> Install_After_Async(
-                IDbConnection dbConnection,
-                TermId usersConceptTermId ) {
-        return await this.InstallSamples_Async( dbConnection, usersConceptTermId );
-    }
-    
-
-
     public async Task<ServerDataObject.Raw?> Get_Async( IDbConnection dbCon ) {
         ServerDataObject.Raw? serverDataRaw = await dbCon.QuerySingleOrDefaultAsync<ServerDataObject.Raw>(
             $"SELECT * FROM {TableName}",
@@ -57,7 +34,7 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
 
         try {
             long _ = await dbCon.ExecuteScalarAsync<long>(
-                $@"INSERT INTO {TableName} (UsersConceptTermId) 
+                $@"INSERT INTO {TableName} ({TableColumn_UsersConceptTermId}) 
                     VALUES (@UsersConceptTermId);
                 SELECT LAST_INSERT_ID();",
                 new {

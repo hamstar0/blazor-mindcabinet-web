@@ -12,29 +12,6 @@ namespace MindCabinet.Data.DataAccess;
 
 public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     public const int HistoryMaxEntries = 100;
-
-
-    public const string TableName = "UserTermsHistory";
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                SimpleUserId BIGINT NOT NULL,
-                TermId BIGINT NOT NULL,
-                Created DATETIME(2) NOT NULL,
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id),
-                 INDEX IDX_User (SimpleUserId),
-                 INDEX IDX_UserCreated (SimpleUserId, Created)
-            );"
-        //    ON DELETE CASCADE
-        //    ON UPDATE CASCADE
-        );
-
-        return true;
-    }
     
 
 
@@ -46,7 +23,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
 
-        string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @SimpleUserId;";
+        string sql = $"SELECT * FROM {TableName} WHERE {TableColumn_SimpleUserId} = @SimpleUserId;";
         var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", (long)simpleUserId } };
 
         return await dbCon.QueryAsync<UserTermHistoryObject.Raw>(
@@ -68,7 +45,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
         }
 
         await dbCon.ExecuteAsync(
-            $@"INSERT INTO {TableName} (SimpleUserId, TermId, Created) 
+            $@"INSERT INTO {TableName} ({TableColumn_SimpleUserId}, {TableColumn_TermId}, {TableColumn_Created}) 
                 VALUES (@SimpleUserId, @TermId, @Created);",
             new {
                 SimpleUserId = (long)simpleUserId,
@@ -88,11 +65,11 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
 
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName} AS Trimmed
-                WHERE Trimmed.SimpleUserId = @SimpleUserId
-                AND Trimmed.Created NOT IN (
-                    SELECT Kept.Created FROM {TableName} AS Kept
-                    WHERE Kept.SimpleUserId = @SimpleUserId
-                    ORDER BY Kept.Created ASC
+                WHERE Trimmed.{TableColumn_SimpleUserId} = @SimpleUserId
+                AND Trimmed.{TableColumn_Created} NOT IN (
+                    SELECT Kept.{TableColumn_Created} FROM {TableName} AS Kept
+                    WHERE Kept.{TableColumn_SimpleUserId} = @SimpleUserId
+                    ORDER BY Kept.{TableColumn_Created} ASC
                     LIMIT @AllowedCount
                 );",
             new {

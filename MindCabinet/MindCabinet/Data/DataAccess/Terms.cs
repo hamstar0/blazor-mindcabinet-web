@@ -11,32 +11,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_Terms : IServerDataAccess {
-    public const string TableName = "Terms";
-
-	public async Task<(bool success, TermId userConceptTermId)> Install_Async( IDbConnection dbCon ) {
-        // todo: fulltext index on 'Term'
-        await dbCon.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                Id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                Term VARCHAR(64) NOT NULL,
-                ContextId BIGINT,
-                AliasId BIGINT,
-                 CONSTRAINT FK_{TableName}_ContextId FOREIGN KEY (ContextId)
-                    REFERENCES {TableName}(Id),
-                 CONSTRAINT FK_{TableName}_AliasId FOREIGN KEY (AliasId)
-                    REFERENCES {TableName}(Id)
-            );"
-        );
-
-        TermId userConceptTermId = await this.InstallSamples_Async( dbCon );
-
-        return (true, userConceptTermId);
-    }
-
-    //
-
-
-
     public async Task<TermObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 TermId id ) {
@@ -45,7 +19,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         }
 
         TermObject.Raw? termRaw = await dbCon.QuerySingleOrDefaultAsync<TermObject.Raw>(
-            $"SELECT * FROM {TableName} AS MyTerms WHERE Id = @Id",
+            $"SELECT * FROM {TableName} AS MyTerms WHERE {TableColumn_Id} = @Id",
             new { Id = id }
         );
 
@@ -60,7 +34,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         }
 
         string sql = $@"SELECT * FROM {TableName} AS MyTerms
-            WHERE MyTerms.Id IN @Ids";
+            WHERE MyTerms.{TableColumn_Id} IN @Ids";
         var sqlParams = new Dictionary<string, object> { { "@Ids", ids } };
 
         IEnumerable<TermObject.Raw> termsRaw = await dbCon.QueryAsync<TermObject.Raw>(
@@ -89,9 +63,9 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 sqlParams["@ContextTerm"] = parameters.ContextTermPattern!;
             }
 
-            sql += " AND MyTerms.Term LIKE @Term";
+            sql += $" AND MyTerms.{TableColumn_Term} LIKE @Term";
         } else {
-            sql += " WHERE MyTerms.Term LIKE @Term";
+            sql += $" WHERE MyTerms.{TableColumn_Term} LIKE @Term";
         }
         sqlParams["@Term"] = $"%{parameters.TermPattern}%";
 
@@ -132,7 +106,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         }
 
         long newId = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} (Term, ContextId, AliasId) 
+            $@"INSERT INTO {TableName} ({TableColumn_Term}, {TableColumn_ContextId}, {TableColumn_AliasId}) 
                 VALUES (@Term, @ContextId, @AliasId);
             SELECT LAST_INSERT_ID();",
             //SELECT SCOPE_IDENTITY()

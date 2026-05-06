@@ -13,31 +13,6 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
-    public const string TableName = "UserTermFavorites";
-
-    public async Task<bool> Install_Async( IDbConnection dbConnection ) {
-        await dbConnection.ExecuteAsync( $@"
-            CREATE TABLE {TableName} (
-                SimpleUserId BIGINT NOT NULL,
-                FavTermId BIGINT NOT NULL,
-                Favor INT NOT NULL,
-                 PRIMARY KEY (SimpleUserId, FavTermId),
-                 CONSTRAINT FK_{TableName}_SimpleUserId FOREIGN KEY (SimpleUserId)
-                    REFERENCES {ServerDataAccess_SimpleUsers.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_FavTermId FOREIGN KEY (FavTermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id),
-                 INDEX IDX_SimpleUserId (SimpleUserId),
-                 INDEX IDX_SimpleUserIdAndFavor (SimpleUserId, Favor)
-            );"
-        //    ON DELETE CASCADE
-        //    ON UPDATE CASCADE
-        );
-
-        return true;
-    }
-    
-
-
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
@@ -46,7 +21,7 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
 
-        string sql = $"SELECT * FROM {TableName} WHERE SimpleUserId = @UserId;";
+        string sql = $"SELECT * FROM {TableName} WHERE {TableColumn_SimpleUserId} = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
         return await dbCon.QueryAsync<UserTermFavoriteObject.Raw>(
@@ -68,9 +43,9 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
         }
 
         var dataTable = new DataTable();
-        dataTable.Columns.Add("SimpleUserId", typeof(long));
-        dataTable.Columns.Add("FavTermId", typeof(long));
-        dataTable.Columns.Add("Favor", typeof(int));
+        dataTable.Columns.Add(TableColumn_SimpleUserId, typeof(long));
+        dataTable.Columns.Add(TableColumn_FavTermId, typeof(long));
+        dataTable.Columns.Add(TableColumn_Favor, typeof(int));
 
         for( int i=0; i<favTermIds.Length; i++ ) {
             dataTable.Rows.Add( (long)simpleUserId, (long)favTermIds[i], 0 );
@@ -97,8 +72,8 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
 
         await dbCon.ExecuteAsync(
             $@"DELETE FROM {TableName}
-                WHERE SimpleUserId = @SimpleUserId
-                    AND FavTermId IN @TermIds",
+                WHERE {TableColumn_SimpleUserId} = @SimpleUserId
+                    AND {TableColumn_FavTermId} IN @TermIds",
             new {
                 SimpleUserId = (long)simpleUserId,
                 TermIds = parameters.TermIds
