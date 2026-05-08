@@ -78,6 +78,7 @@ public partial class ContextPostsSupplier(
     }
 
     public async Task<int> GetCurrentContextPostCount_Async(
+                string? searchTerm,
                 TermId[] addedFilterTagIds ) {
         PostsContextObject? currCtx = this.SessionData.GetCurrentContext();
         if( currCtx is null ) {
@@ -87,7 +88,7 @@ public partial class ContextPostsSupplier(
         int totalPosts = await this.PrioritizedPostsData.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
                 postsContextId: currCtx.Id,
-                bodyPattern: null,
+                bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: true,
                 pageNumber: 0,

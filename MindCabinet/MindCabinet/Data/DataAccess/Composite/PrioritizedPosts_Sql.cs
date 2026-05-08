@@ -6,7 +6,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
-using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
+using MindCabinet.Utility;
 
 
 namespace MindCabinet.Data.DataAccess.Composite;
@@ -21,24 +21,30 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
                 int pageNumber,
                 TermId[] additionalRequiredTagIds,
                 bool countOnly ) {
-        string sqlColumns = "MyPosts.Id, MyPosts.Created, MyPosts.Modified, MyPosts.SimpleUserId, MyPosts.Body";
-        
-        string sql = $"SELECT {sqlColumns} FROM {ServerDataAccess_SimplePosts.TableName} AS MyPosts ";
+        SimpleSqlSelectBuilder sqlBuilder = new SimpleSqlSelectBuilder(
+            tableName: $"{ServerDataAccess_SimplePosts.TableName} AS MyPosts",
+            columnNames: ServerDataAccess_SimplePosts.TableColumns.Keys
+                .Select( col => $"MyPosts.{col}" )
+            // columnNames: countOnly
+            //     ? new[] { "COUNT(*) AS TotalCount" }
+            //     : ServerDataAccess_SimplePosts.TableColumns.Keys
+        );
+        sqlBuilder.WrapWithCount = countOnly;
+
         var sqlParams = new Dictionary<string, object>();
 
         //
 
-        bool hasWhere = false;
-
         if( !string.IsNullOrEmpty(bodyPattern) ) {
+            // // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
+            // sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\' ";
+            sqlBuilder.AddWhereClause( $"MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Body} LIKE @Body ESCAPE '\\\\'" );
+
             string body = bodyPattern.Replace( "%", "\\%" );
             body = body.Replace( "_", "\\_" );
             //body = body.Replace( "[", "\\[" );
 
-            // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\' ";
             sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
-            hasWhere = true;
         }
 
         //
@@ -57,72 +63,55 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             //     (
             //         (SELECT (@AllTags)) EXCEPT (
             //             SELECT MyAllTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAllTerms
-            //             INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllTermSet ON (MyAllTermSet.TermId = MyAllTerms.Id)
-            //             WHERE MyAllTermSet.SimplePostId = MyPosts.Id
+            //             INNER JOIN {ServerDataAccess_TermSets.TableName} AS MyAllPostTags ON (MyAllPostTags.TermId = MyAllTerms.Id)
+            //             WHERE MyAllPostTags.SimplePostId = MyPosts.Id
             //         )
             //     ) IS NULL
             // ) ";
             //
             // hasWhere = true;
 
-            sql += $@"
-                INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAllTermSet
-                    ON MyAllTermSet.SimplePostId = MyPosts.Id
-                WHERE MyAllTermSet.TermId IN (@AllTags)
-                GROUP BY MyPosts.Id
-                HAVING COUNT(DISTINCT MyAllTermSet.TermId) = @AllTagsCount ";
+            sqlBuilder.JoinClause = $"INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAllPostTags"
+                + $"\n    ON MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_SimplePostId} = MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}";
+            sqlBuilder.AddWhereClause( $"MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId} IN (@AllTags)" );
+            sqlBuilder.GroupByClause = $"MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}";
+            sqlBuilder.HavingClause = $"COUNT(DISTINCT MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId}) = @AllTagsCount";
+
             sqlParams["@AllTags"] = allTagIds;
             sqlParams["@AllTagsCount"] = allTagIds.Count();
         }
         
         if( anyTagIds.Count() > 0 ) {
-            sql += hasWhere ? "AND" : "WHERE";
-            sql += $@" (
+            sqlBuilder.AddWhereClause( $@" (
                 (
                     (SELECT (@AnyTags)) INTERSECT (
-                        SELECT MyAnyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyAnyTerms
-                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAnyTermSet ON (MyAnyTermSet.TermId = MyAnyTerms.Id)
-                        WHERE MyAnyTermSet.SimplePostId = MyPosts.Id
+                        SELECT MyAnyTerms.{ServerDataAccess_Terms.TableColumn_Id} FROM {ServerDataAccess_Terms.TableName} AS MyAnyTerms
+                        INNER JOIN {ServerDataAccess_SimplePostTags.TableName}
+                            AS MyAnyPostTags
+                            ON (MyAnyPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId} = MyAnyTerms.{ServerDataAccess_Terms.TableColumn_Id})
+                        WHERE MyAnyPostTags.{ServerDataAccess_SimplePostTags.TableColumn_SimplePostId} = MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}
                     )
                 ) IS NOT NULL
-            ) ";
-            sqlParams["@AnyTags"] = anyTagIds;
+            )" );
 
-            hasWhere = true;
+            sqlParams["@AnyTags"] = anyTagIds;
         }
 
         //
 
-        // IDictionary<long, double> anyAndAllTagIds = postsContext.Entries
-        //     .Select( e => new KeyValuePair<long, double>(e.Term.Id, e.Priority) )
-        //     .ToDictionary();
-        //
-        // if( anyAndAllTagIds.Count() > 0 ) {
-        //     sql += $@" INNER JOIN ...";
-        //     sqlParams["@AnyAndAllTags"] = anyAndAllTagIds.Keys;
-        //
-        //     hasWhere = true;
-        // }
-
-        //
-
         if( !countOnly ) {
-            sql += $"\n ORDER BY Created {(sortAscendingByDate ? "ASC" : "DESC")}";
+            sqlBuilder.OrderByClause = $"MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Created} {(sortAscendingByDate ? "ASC" : "DESC")}";
         }
 
         //
 
         if( postsPerPage > 0 ) {
-            sql += $"\n LIMIT @Offset, @Quantity";
+            sqlBuilder.LimitClause = "@Offset, @Quantity";
+
             sqlParams["@Offset"] = pageNumber * postsPerPage;
             sqlParams["@Quantity"] = postsPerPage;
         }
 
-        if( countOnly ) {
-            sql = $"SELECT COUNT(*) FROM ({sql}) AS CountQuery";
-        }
-
-        sql += ";";
-        return (sql, sqlParams);
+        return (sqlBuilder.Build(), sqlParams);
     }
 }

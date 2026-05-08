@@ -53,9 +53,13 @@ public partial class ContextPostsBrowser : ComponentBase {
     }
 
     public async Task RefreshPosts_Async() {
-        var task1 = async () => this.CurrentPagePosts_Cache = await this.GetPostsOfCurrentPage_Async();
-        var task2 = async () => (this.TotalPosts_Cache, this.TotalPages_Cache) = await this.GetTotalPostPagesCount_Async();
-        await Task.WhenAll( task1(), task2() );
+        var task1 = async () =>
+            this.CurrentPagePosts_Cache = await this.GetPostsOfCurrentPage_Async();
+        var task2 = async () =>
+            (this.TotalPosts_Cache, this.TotalPages_Cache) = await this.GetTotalPostPagesCount_Async();
+
+        await task1();
+        await task2();
 
         int currPage = this.PostsData.GetCurrentPage();
         if( currPage >= this.TotalPages_Cache ) {
@@ -84,7 +88,8 @@ public partial class ContextPostsBrowser : ComponentBase {
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
         int totalPosts = await this.PostsData.GetCurrentContextPostCount_Async(
-            this.AddedFilterTags.Select( t => t.Id ).ToArray()
+            searchTerm: this.SearchTerm,
+            addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
 
         return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.PostsData.GetMaxPostsPerPage() ) );

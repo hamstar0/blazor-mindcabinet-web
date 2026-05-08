@@ -1,6 +1,6 @@
 using MindCabinet.Shared.Utility;
 
-namespace MindCabinet.Services;
+namespace MindCabinet.Utility;
 
 
 public class SimpleTableBuilder(

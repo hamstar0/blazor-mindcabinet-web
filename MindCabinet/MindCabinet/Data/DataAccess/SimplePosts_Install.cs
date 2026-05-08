@@ -18,16 +18,19 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
     public const string TableColumn_Modified = "Modified";
     public const string TableColumn_SimpleUserId = "SimpleUserId";
     public const string TableColumn_Body = "Body";
+    public static readonly Dictionary<string, string> TableColumns = new() {
+        { TableColumn_Id, "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY" },
+        { TableColumn_Created, "DATETIME(2) NOT NULL" },
+        { TableColumn_Modified, "DATETIME(2) NOT NULL" },
+        { TableColumn_SimpleUserId, "BIGINT NOT NULL" },
+        { TableColumn_Body, "MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL" }
+    };
 
     public async Task<bool> Install_Async(
                 IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                {TableColumn_Id} BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                {TableColumn_Created} DATETIME(2) NOT NULL,
-                {TableColumn_Modified} DATETIME(2) NOT NULL,
-                {TableColumn_SimpleUserId} BIGINT NOT NULL,
-                {TableColumn_Body} MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+                {string.Join(",\n    ", TableColumns.Select( c => $"{c.Key} {c.Value}" ))},
                  CONSTRAINT FK_{TableName}_{TableColumn_SimpleUserId} FOREIGN KEY ({TableColumn_SimpleUserId})
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}({ServerDataAccess_SimpleUsers.TableColumn_Id})
             );"
