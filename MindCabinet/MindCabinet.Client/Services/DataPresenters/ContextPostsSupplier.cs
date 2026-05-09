@@ -50,7 +50,7 @@ public partial class ContextPostsSupplier(
                 postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
-                sortAscendingByDate: true,
+                sortAscendingByDate: this.SortAscendingByDate,
                 pageNumber: this.CurrentPage,
                 postsPerPage: this.MaxPostsPerPage
             )
@@ -90,7 +90,7 @@ public partial class ContextPostsSupplier(
                 postsContextId: currCtx.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
-                sortAscendingByDate: true,
+                sortAscendingByDate: this.SortAscendingByDate,
                 pageNumber: 0,
                 postsPerPage: -1
             )

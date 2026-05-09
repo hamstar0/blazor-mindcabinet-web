@@ -18,23 +18,22 @@
 	<input type="text"
 			placeholder="Enter context name"
 			@bind:event="oninput"
-            @bind:get=@this.EditContext_Prototype.Name
+            @bind:get=@this.EditContext_Name
             @bind:set=@this.OnInputName_UI_Async />
 	<h4>Enter tags to describe your current "context":</h4>
 	<TermSetEditor Label="Enter tags (at least 1 required)"
 			AddedPerItemClasses="d-block"
-			InitialTerms=@( this.InitialContext?.Entries
-					.Select( e => e.Term )
-					.ToList()
-				?? new List<TermObject>() )
+			InitialTerms=@( this.EditContext_Entries
+				.Select( e => e.Term )
+				.ToList() )
 			AllowFavoritingTerms=@false
 			OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
 		<PerTermAffix Context="termOfSet">
 			<SliderNumberInput
-					InitialValue=@this.GetTagPriorityValue(termOfSet)
+					InitialValue=@(this.GetTagPriorityValue(termOfSet) ?? 0)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(termOfSet, val) ) />
 			<input type="checkbox"
-					checked=@this.GetFirstMatchingPrototypeTagEntry(termOfSet.Id).IsRequired
+					checked=@this.GetFirstMatchingTagEntry(termOfSet.Id).IsRequired
 					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(termOfSet, (bool)e.Value!) ) />
 		</PerTermAffix>
 	</TermSetEditor>
@@ -43,7 +42,7 @@
 		<button @onclick=@(() => this.ClearEditContext_UI(false))>
 			Create New
 		</button>
-		<button disabled=@( !this.HasUnsavedChanges().HasUnsavedChanges )
+		<button disabled=@( !this.HasUnsavedChanges() )
 				@onclick=@this.SaveContext_UI_Async>
 			Save Changes
 		</button>
@@ -76,17 +75,21 @@
 
 
 
-	private double GetTagPriorityValue( TermObject tag ) {
-		return this.EditContext_Prototype
-			.Entries
-			.FirstOrDefault( t => t.TermId == tag.Id )?
-			.Priority ?? 0;
+	private double? GetTagPriorityValue( TermObject tag ) {
+		return this.EditContext_Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id )?
+			.Priority;
 	}
 
-	private PostsContextTermEntryObject.Raw GetFirstMatchingPrototypeTagEntry( TermId id ) {
-		return this.EditContext_Prototype
-			.Entries
-			.First( t => t.TermId == id );
+	private PostsContextTermEntryObject GetFirstMatchingTagEntry( TermId id ) {
+		try {
+			return this.EditContext_Entries
+				.First( t => t.Term.Id == id );
+		} catch( InvalidOperationException e ) {
+			IEnumerable<TermId> entryIds = this.EditContext_Entries
+				.Select( e => e.Term.Id );
+			throw new InvalidOperationException( $"Expecting: {id}, Found: {entryIds}", e );
+		}
 	}
 
 	
@@ -96,16 +99,16 @@
             return;
         }
 
-		this.EditContext_Prototype.Name = nameText;
+		this.EditContext_Name = nameText;
     }
 
 	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
-		PostsContextTermEntryObject.Raw? changedTagEntry = null;
+		PostsContextTermEntryObject? changedTagEntry = null;
 
 		if( isAdded ) {
-			changedTagEntry = await this.AddNewTag_Async( changedTag );
+			changedTagEntry = this.AddNewTag( changedTag );
 		} else {
-			changedTagEntry = await this.RemoveTag_Async( changedTag );
+			changedTagEntry = this.RemoveTag( changedTag );
 		}
 
         if( this.OnEntryEdit_Async is not null && changedTagEntry is not null ) {
@@ -117,12 +120,11 @@
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
-		PostsContextTermEntryObject.Raw? entry = this.EditContext_Prototype
-			.Entries
-			.FirstOrDefault( t => t.TermId == tag.Id );
+		PostsContextTermEntryObject? entry = this.EditContext_Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id );
 
 		if( entry is not null ) {
-			entry.Priority = newValue;
+			entry.SetPriority( newValue );
 		}
 
 		this.StateHasChanged();
@@ -131,19 +133,18 @@
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
         await Task.CompletedTask;
 
-		PostsContextTermEntryObject.Raw? entry = this.EditContext_Prototype
-			.Entries
-			.FirstOrDefault( t => t.TermId == tag.Id );
+		PostsContextTermEntryObject? entry = this.EditContext_Entries
+			.FirstOrDefault( t => t.Term.Id == tag.Id );
 
 		if( entry is not null ) {
-			entry.IsRequired = newValue;
+			entry.SetIsRequired( newValue );
 		}
 
 		this.StateHasChanged();
 	}
 
 	private void ClearEditContext_UI( bool forceReset ) {
-		if( this.HasUnsavedChanges().HasUnsavedChanges && !forceReset ) {
+		if( this.HasUnsavedChanges() && !forceReset ) {
 			this.ConfirmResetPromptDialogComponent.Open();
 
 			return;

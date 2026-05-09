@@ -36,6 +36,15 @@ public partial class PostsContextTermEntryObject {
                 isRequired: this.IsRequired
             );
 		}
+
+        public Prototype ToPrototype() {
+            return new Prototype {
+                PostsContextId = this.PostsContextId,
+                TermId = this.TermId,
+                Priority = this.Priority,
+                IsRequired = this.IsRequired
+            };
+        }
 	}
 
 

@@ -25,9 +25,6 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             tableName: $"{ServerDataAccess_SimplePosts.TableName} AS MyPosts",
             columnNames: ServerDataAccess_SimplePosts.TableColumns.Keys
                 .Select( col => $"MyPosts.{col}" )
-            // columnNames: countOnly
-            //     ? new[] { "COUNT(*) AS TotalCount" }
-            //     : ServerDataAccess_SimplePosts.TableColumns.Keys
         );
         sqlBuilder.WrapWithCount = countOnly;
 
@@ -73,7 +70,7 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
             sqlBuilder.JoinClause = $"INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyAllPostTags"
                 + $"\n    ON MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_SimplePostId} = MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}";
-            sqlBuilder.AddWhereClause( $"MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId} IN (@AllTags)" );
+            sqlBuilder.AddWhereClause( $"MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId} IN @AllTags" );
             sqlBuilder.GroupByClause = $"MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}";
             sqlBuilder.HavingClause = $"COUNT(DISTINCT MyAllPostTags.{ServerDataAccess_SimplePostTags.TableColumn_TermId}) = @AllTagsCount";
 

@@ -40,6 +40,17 @@ public partial class PostsContextObject {
             );
         }
 
+        public Prototype ToPrototype() {
+            return new Prototype {
+                Id = this.Id,
+                Name = this.Name,
+                Description = this.Description,
+                Entries = this.Entries
+                    .Select( e => e.ToPrototype() )
+                    .ToArray()
+            };
+        }
+
         
         public IEnumerable<PostsContextTermEntryObject.Raw> GetRequiredEntries() {
             return this.Entries

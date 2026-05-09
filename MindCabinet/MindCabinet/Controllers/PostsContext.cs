@@ -73,13 +73,16 @@ public class PostsContextController(
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
+        if( parameters.Id == 0 ) {
+            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-null and non-zero)." );
+        }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PostsContextsData.Update_Async(
-            dbCon,
-            this.PostsContextTermEntryData,
-            parameters
+            dbCon: dbCon,
+            postsContextTermEntryData: this.PostsContextTermEntryData,
+            parameters: parameters
         );
     }
 }

@@ -314,7 +314,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             Name = $"{parameters.Name}'s posts",
             Description = "All posts by the given user.",
             Entries = new [] {
-                new PostsContextTermEntryObject.Raw {
+                new PostsContextTermEntryObject.Prototype {
                     TermId = userAsTermId,
                     Priority = 1,
                     IsRequired = true

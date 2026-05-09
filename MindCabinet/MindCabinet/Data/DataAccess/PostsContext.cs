@@ -119,11 +119,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             }
         );
 
-        foreach( PostsContextTermEntryObject.Raw entry in parameters.Entries ) {
+        foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
             await postsContextTermEntryData.Create_Async(
                 dbCon: dbCon,
                 postsContextId: (PostsContextId)postsContextId,
-                parameter: entry
+                parameter: entry.ToRaw(false, true)
             );
         }
 
@@ -158,11 +158,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             postsContextId: parameters.Id.Value
         );
 
-        foreach( PostsContextTermEntryObject.Raw entry in parameters.Entries ) {
+        foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
             await postsContextTermEntryData.Create_Async(
                 dbCon: dbCon,
                 postsContextId: parameters.Id.Value,
-                parameter: entry
+                parameter: entry.ToRaw(false, true)
             );
         }
 
