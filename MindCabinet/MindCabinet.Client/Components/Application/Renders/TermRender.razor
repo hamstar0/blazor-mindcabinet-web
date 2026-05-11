@@ -7,8 +7,8 @@
         class="basic tooltip-container @(this.AddedClasses ?? "")"
         @onclick=@this.OnClick_UI_Async>
     @(this.Term?.Term ?? "?")
-    @if( this.TermContextContext is not null ) {
-        <div class="tooltip-box">@this.TermContextContext!.Term</div>
+    @if( this.Term?.Context is not null ) {
+        <div class="tooltip-box">@this.Term.Context.Term</div>
     }
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {

@@ -14,14 +14,16 @@
         <span>@this.Label</span>
     }
     @foreach( TermObject termOfSet in this.Terms ) {
-        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses) Term=@termOfSet HasFavoriteButton=@this.AllowFavoritingTerms>
+        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses)
+                    Term=@termOfSet
+                    HasFavoriteButton=@this.AllowFavoritingTerms>
             @this.PerTermAffix?.Invoke( termOfSet )
             <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
         </TermRender>
     }
     <TermEditor AddedClasses="ib"
-            OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
-            OnTermConfirm_Async=@this.AddTerm_UI_Async />
+                OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+                OnTermConfirm_Async=@this.AddTerm_UI_Async />
 </div>
 
 

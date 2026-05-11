@@ -26,8 +26,7 @@ public partial class PostsContextEditor : ComponentBase {
 
 
     [Parameter]
-    public PostsContextObject? InitialContext { get; set; } = null;
-    private PostsContextObject? CurrentInitialContext = null;
+    public PostsContextObject? DefaultContext { get; set; } = null;
 	
     
     private PostsContextId? EditContext_Id;
@@ -55,18 +54,16 @@ public partial class PostsContextEditor : ComponentBase {
 
 
 
-	protected override void OnParametersSet() {
-		base.OnParametersSet();
+	protected override void OnInitialized() {
+		base.OnInitialized();
         
 //Console.WriteLine( $"PostsContextEditor.OnParametersSet: InitialContext: {JsonSerializer.Serialize(this.InitialContext)}" );
-        if( this.CurrentInitialContext != this.InitialContext ) {
-            this.ResetEditContextToInitialState();
-        }
+        this.ResetEditContextToDefault();
 	}
 
 
 	private PostsContextTermEntryObject AddNewTag( TermObject newTag ) {
-        PostsContextId id = this.InitialContext?.Id
+        PostsContextId id = this.DefaultContext?.Id
             ?? throw new InvalidOperationException("Invalid prototype id.");
         
         var contextTerm = new PostsContextTermEntryObject(
@@ -90,7 +87,7 @@ public partial class PostsContextEditor : ComponentBase {
 
     
 	private bool HasUnsavedChanges() {
-        if( this.InitialContext is null ) {
+        if( this.DefaultContext is null ) {
             return this.EditContext_Name is not null
                     || this.EditContext_Description is not null
                     || this.EditContext_Entries.Any();
@@ -99,34 +96,32 @@ public partial class PostsContextEditor : ComponentBase {
 			return false;
 		}
         
-		return this.InitialContext.Matches(
-            id: this.InitialContext?.Id,
-            name: this.InitialContext?.Name ?? "",
-            description: this.InitialContext?.Description,
-            entries: this.InitialContext?.Entries ?? []
+		return this.DefaultContext.Matches(
+            id: this.DefaultContext?.Id,
+            name: this.DefaultContext?.Name ?? "",
+            description: this.DefaultContext?.Description,
+            entries: this.DefaultContext?.Entries ?? []
         ) == PostsContextObject.MatchResult.Match;
 	}
 
 
     private void ClearEditContext() {
-        this.InitialContext = null;
-        this.ResetEditContextToInitialState();
+        this.DefaultContext = null;
+        this.ResetEditContextToDefault();
     }
 
-	private void ResetEditContextToInitialState() {
-        if( this.InitialContext is null ) {
+	private void ResetEditContextToDefault() {
+        if( this.DefaultContext is null ) {
             this.EditContext_Id = null;
             this.EditContext_Name = null;
             this.EditContext_Description = null;
             this.EditContext_Entries = [];
         } else {
-            this.EditContext_Id = this.InitialContext.Id;
-            this.EditContext_Name = this.InitialContext.Name;
-            this.EditContext_Description = this.InitialContext.Description;
-            this.EditContext_Entries = this.InitialContext.Entries.ToList();
+            this.EditContext_Id = this.DefaultContext.Id;
+            this.EditContext_Name = this.DefaultContext.Name;
+            this.EditContext_Description = this.DefaultContext.Description;
+            this.EditContext_Entries = this.DefaultContext.Entries.ToList();
         }
-            
-        this.CurrentInitialContext = this.InitialContext;
 	}
     
 
@@ -145,11 +140,11 @@ public partial class PostsContextEditor : ComponentBase {
             await this.PostsContextsData.UpdateForCurrentUser_Async( raw.ToPrototype() );
         }
 
-        this.InitialContext = await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(
+        this.DefaultContext = await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(
             termsData: this.TermsData,
             ctxRaw: raw
         );
-        this.ResetEditContextToInitialState();
+        this.ResetEditContextToDefault();
 
         if( this.OnUpdate_Async is not null ) {
             await this.OnUpdate_Async.Invoke( raw );

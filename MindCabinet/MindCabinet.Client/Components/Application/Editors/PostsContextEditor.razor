@@ -88,6 +88,7 @@
 		} catch( InvalidOperationException e ) {
 			IEnumerable<TermId> entryIds = this.EditContext_Entries
 				.Select( e => e.Term.Id );
+
 			throw new InvalidOperationException( $"Expecting: {id}, Found: {entryIds}", e );
 		}
 	}
@@ -102,7 +103,10 @@
 		this.EditContext_Name = nameText;
     }
 
-	private async Task OnTagsChanged_UI_Async( IEnumerable<TermObject> currentTags, TermObject changedTag, bool isAdded ) {
+	private async Task OnTagsChanged_UI_Async(
+				IEnumerable<TermObject> currentTags,
+				TermObject changedTag,
+				bool isAdded ) {
 		PostsContextTermEntryObject? changedTagEntry = null;
 
 		if( isAdded ) {
