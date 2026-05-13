@@ -10,11 +10,13 @@
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
-            @onfocusin=@(e => this.IsSeachFocused = true)
-            @onfocusout=@(e => this.IsSeachFocused = false)
             @bind:event="oninput"
             @bind:get=@this.Value
             @bind:set=@this.OnInputSearch_UI_Async />
+            @*
+            @onfocusin=@(e => this.IsSeachFocused = true)
+            @onfocusout=@(e => this.IsSeachFocused = false)
+            *@
     <div>
         <div style="position: absolute; display: inline-block;">
             @* @if( (this.IsSeachFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@

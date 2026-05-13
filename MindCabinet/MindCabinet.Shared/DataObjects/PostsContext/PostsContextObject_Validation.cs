@@ -28,15 +28,18 @@ public partial class PostsContextObject {
         NameMismatch = 2,
         DescriptionMismatch = 3,
         EntriesCountMismatch = 4,
-        EntriesMismatch = 5
+        EntriesMismatchId = 5,
+        EntriesMismatchPriority = 6,
+        EntriesMismatchIsRequired = 7
     }
 
     public MatchResult Matches(
                 PostsContextId? id,
                 string name,
                 string? description,
-                PostsContextTermEntryObject[] entries ) {
-        if( id is not null && id != this.Id ) {
+                PostsContextTermEntryObject[] entries,
+                bool ignoreId = false ) {
+        if( !ignoreId && id is not null && id != this.Id ) {
             return MatchResult.IdMismatch;
         }
         if( name != this.Name ) {
@@ -53,10 +56,14 @@ public partial class PostsContextObject {
             PostsContextTermEntryObject entryA = entries[i];
             PostsContextTermEntryObject entryB = this.Entries[i];
 
-            if( entryA.Term.Id != entryB.Term.Id
-                    || entryA.Priority != entryB.Priority
-                    || entryA.IsRequired != entryB.IsRequired ) {
-                return MatchResult.EntriesMismatch;
+            if( entryA.Term.Id != entryB.Term.Id ) {
+                return MatchResult.EntriesMismatchId;
+            }
+            if( entryA.Priority != entryB.Priority ) {
+                return MatchResult.EntriesMismatchPriority;
+            }
+            if( entryA.IsRequired != entryB.IsRequired ) {
+                return MatchResult.EntriesMismatchIsRequired;
             }
         }
 

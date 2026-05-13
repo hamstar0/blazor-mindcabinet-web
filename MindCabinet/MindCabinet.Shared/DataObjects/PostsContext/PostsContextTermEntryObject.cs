@@ -13,6 +13,15 @@ public partial class PostsContextTermEntryObject( TermObject term, double priori
     public bool IsRequired { get; private set; } = isRequired;
 
     
+
+    public PostsContextTermEntryObject Clone() {
+        return new PostsContextTermEntryObject(
+            term: this.Term,
+            priority: this.Priority,
+            isRequired: this.IsRequired
+        );
+    }
+    
     public void SetTerm( TermObject newTerm ) {
         this.Term = newTerm;
     }

@@ -35,15 +35,15 @@ public partial class TermSearch : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
-    private bool IsSeachFocused = false;
+    //private bool IsSeachFocused = false;
 
     private string Value = "";
 
-    private bool IsCurrentInputSuppressed = false;
+    //private bool IsCurrentInputSuppressed = false;
 
     private List<TermObject> SearchOptions = new List<TermObject>();
 
-    private int SearchPosition = -1;
+    //private int SearchPosition = -1;
 
 
     [Parameter]

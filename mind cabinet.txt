@@ -45,10 +45,9 @@ v0.6
 		-	@Ensure
 			-	Context switching works
 			-	Context creation
-			-	Context tag editing
+
+
 			-	Set term search choice to bypass context prompt and simply confirm the term input
-
-
 			-	Show term's context in term display components
 			-	Posts sorting works
 		-	@Ensure posts filter tags works

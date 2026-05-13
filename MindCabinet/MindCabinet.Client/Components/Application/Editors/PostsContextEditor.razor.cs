@@ -26,7 +26,9 @@ public partial class PostsContextEditor : ComponentBase {
 
 
     [Parameter]
-    public PostsContextObject? DefaultContext { get; set; } = null;
+    public PostsContextObject? InitialContext { get; set; } = null;
+
+    private PostsContextObject? DefaultContext = null;
 	
     
     private PostsContextId? EditContext_Id;
@@ -57,7 +59,8 @@ public partial class PostsContextEditor : ComponentBase {
 	protected override void OnInitialized() {
 		base.OnInitialized();
         
-//Console.WriteLine( $"PostsContextEditor.OnParametersSet: InitialContext: {JsonSerializer.Serialize(this.InitialContext)}" );
+        this.DefaultContext = this.InitialContext;
+        
         this.ResetEditContextToDefault();
 	}
 
@@ -88,20 +91,25 @@ public partial class PostsContextEditor : ComponentBase {
     
 	private bool HasUnsavedChanges() {
         if( this.DefaultContext is null ) {
-            return this.EditContext_Name is not null
+            return this.EditContext_Id is not null
+                    || this.EditContext_Name is not null
                     || this.EditContext_Description is not null
                     || this.EditContext_Entries.Any();
         }
-		if( this.EditContext_Id is null || this.EditContext_Id == 0 ) {
-			return false;
-		}
         
-		return this.DefaultContext.Matches(
-            id: this.DefaultContext?.Id,
-            name: this.DefaultContext?.Name ?? "",
-            description: this.DefaultContext?.Description,
-            entries: this.DefaultContext?.Entries ?? []
-        ) == PostsContextObject.MatchResult.Match;
+        if( this.EditContext_Id != this.DefaultContext.Id ) {
+            throw new InvalidOperationException( $"Context ID mismatch: {this.EditContext_Id} != {this.DefaultContext.Id}" );
+        }
+
+		PostsContextObject.MatchResult matchResult = this.DefaultContext.Matches(
+            id: this.EditContext_Id,
+            name: this.EditContext_Name ?? "",
+            description: this.EditContext_Description,
+            entries: this.EditContext_Entries.ToArray(),
+            ignoreId: true
+        );
+        
+        return matchResult != PostsContextObject.MatchResult.Match;
 	}
 
 
@@ -120,18 +128,23 @@ public partial class PostsContextEditor : ComponentBase {
             this.EditContext_Id = this.DefaultContext.Id;
             this.EditContext_Name = this.DefaultContext.Name;
             this.EditContext_Description = this.DefaultContext.Description;
-            this.EditContext_Entries = this.DefaultContext.Entries.ToList();
+            this.EditContext_Entries = this.DefaultContext.Entries
+                .Select( e => e.Clone() )
+                .ToList();
         }
 	}
     
 
     private async Task UpdateOrCreate_Async() {
         bool isUpdate = this.EditContext_Id is not null;
+
         PostsContextObject.Raw raw = PostsContextObject.CreateRaw(
             id: this.EditContext_Id ?? 0,
             name: this.EditContext_Name ?? "",
             description: this.EditContext_Description,
-            entries: this.EditContext_Entries.Select( e => e.ToRaw(this.EditContext_Id ?? 0) ).ToArray()
+            entries: this.EditContext_Entries
+                .Select( e => e.ToRaw(this.EditContext_Id ?? 0) )
+                .ToArray()
         );
         
         if( !isUpdate ) {
@@ -144,7 +157,6 @@ public partial class PostsContextEditor : ComponentBase {
             termsData: this.TermsData,
             ctxRaw: raw
         );
-        this.ResetEditContextToDefault();
 
         if( this.OnUpdate_Async is not null ) {
             await this.OnUpdate_Async.Invoke( raw );

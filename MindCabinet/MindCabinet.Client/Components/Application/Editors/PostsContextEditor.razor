@@ -124,12 +124,11 @@
 	
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
-		PostsContextTermEntryObject? entry = this.EditContext_Entries
-			.FirstOrDefault( t => t.Term.Id == tag.Id );
 
-		if( entry is not null ) {
-			entry.SetPriority( newValue );
-		}
+		PostsContextTermEntryObject? entry = this.EditContext_Entries
+			.First( t => t.Term.Id == tag.Id );
+
+		entry.SetPriority( newValue );
 
 		this.StateHasChanged();
 	}
@@ -138,11 +137,9 @@
         await Task.CompletedTask;
 
 		PostsContextTermEntryObject? entry = this.EditContext_Entries
-			.FirstOrDefault( t => t.Term.Id == tag.Id );
+			.First( t => t.Term.Id == tag.Id );
 
-		if( entry is not null ) {
-			entry.SetIsRequired( newValue );
-		}
+		entry.SetIsRequired( newValue );
 
 		this.StateHasChanged();
 	}

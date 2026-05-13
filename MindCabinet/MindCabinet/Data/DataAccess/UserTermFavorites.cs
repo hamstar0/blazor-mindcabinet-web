@@ -54,7 +54,7 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
         using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
             bulkCopy.DestinationTableName = TableName; 
 
-            bulkCopy.WriteToServer( dataTable );
+            await bulkCopy.WriteToServerAsync( dataTable );
         }
     }
 
