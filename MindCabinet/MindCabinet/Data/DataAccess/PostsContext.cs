@@ -8,6 +8,7 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.Utility;
 using System.Data;
 using MindCabinet.Services;
+using System.Text.Json;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -76,12 +77,20 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             } else {
                 sql1 += " WHERE";
             }
-            sql1 += " MyContext.{TableColumn_Name} LIKE @NamePattern";   // TODO: Validate
-            sqlParams1.Add( "@NamePattern", "%"+parameters.NameContains+"%" );
+
+            sql1 += $" MyContext.{TableColumn_Name} LIKE @Body ESCAPE '\\\\'";
+            
+            string body = parameters.NameContains.Replace( "%", "\\%" );
+            body = body.Replace( "_", "\\_" );
+            //body = body.Replace( "[", "\\[" );
+
+            sqlParams1["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
+
             needsAnd = true;
         }
         sql1 += ";";
 
+//this.Logger.LogInformation( "SQL: "+sql1+" PARAMS: "+JsonSerializer.Serialize(sqlParams1) );
         IEnumerable<PostsContextObject.Raw> contexts
             = await dbCon.QueryAsync<PostsContextObject.Raw>(
                 sql1,
@@ -138,11 +147,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 PostsContextObject.Prototype parameters ) {
-        if( parameters.Id == 0 || parameters.Id is null ) {
-            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
+        if( !PostsContextObject.ValidateId(parameters.Id ?? 0) ) {
+            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid." );
         }
-        if( PostsContextObject.ValidateName(parameters.Name ?? "") ) {
-            throw new ArgumentException( "PostsContext Name is not valid." );
+        if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
+            throw new ArgumentException( "PostsContextObject.Prototype Name is not valid." );
         }
 
         await dbCon.ExecuteAsync(
@@ -158,20 +167,19 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
         
         await postsContextTermEntryData.DeleteByPostsContextId_Async(
             dbCon: dbCon,
-            postsContextId: parameters.Id.Value
+            postsContextId: parameters.Id!.Value
         );
 
         foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
             await postsContextTermEntryData.Create_Async(
                 dbCon: dbCon,
-                postsContextId: parameters.Id.Value,
+                postsContextId: parameters.Id!.Value,
                 parameter: entry.ToRaw(false, true)
             );
         }
 
         return new ClientDataAccess_PostsContext.CreateOrUpdate_Return {
-            Id = parameters.Id
-                ?? throw new InvalidOperationException("PostsContextObject.Prototype.Id cannot be null for update.")
+            Id = parameters.Id.Value
         };
     }
 }

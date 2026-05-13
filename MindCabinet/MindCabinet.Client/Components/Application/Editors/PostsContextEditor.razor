@@ -96,6 +96,7 @@
 	
     private async Task OnInputName_UI_Async( string? nameText ) {
         await Task.CompletedTask;
+		
         if( string.IsNullOrEmpty(nameText) ) {
             return;
         }

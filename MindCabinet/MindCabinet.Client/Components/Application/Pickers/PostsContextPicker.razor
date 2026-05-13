@@ -1,8 +1,9 @@
-﻿@using System.Threading.Tasks;
+﻿@using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.PostsContext
+@using MindCabinet.Shared.DataObjects.PostsContext;
 @using MindCabinet.Shared.DataObjects.Term;
 
 
@@ -11,19 +12,18 @@
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
+            title=@this.Description
             @onfocusin=@(e => this.IsSeachFocused = true)
+            @onfocusout=@(e => this.IsSeachFocused = false)
             @onkeydown=@this.OnInputKey_UI_Async
-            @onkeypress:preventDefault=@this.IsCurrentInputSuppressed
             @bind:event="oninput"
             @bind:get=@this.Value
             @bind:set=@this.OnInputSearch_UI_Async />
-            @* @oninput=@(async e => await this.UpdateTermSearchResults_UI_Async(e.Value?.ToString() ?? "")) /> *@
-            @* @onfocusout=@(e => this.IsSeachFocused = false) *@
     <div>
         <div style="position: absolute; display: inline-block;">
-            @if( (this.IsSeachFocused || (this.PostsContextsDisplay?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) {
+            @* @if( (this.IsSeachFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@
+            @if( this.SearchOptions.Count() > 0 ) {
                 <MultiPostsContextRender
-                        @ref=@this.PostsContextsDisplay
                         Contexts=@this.SearchOptions
                         OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
@@ -32,9 +32,12 @@
 </div>
 
 
-@code {
-    private MultiPostsContextRender PostsContextsDisplay { get; set; } = null!;
 
+@code {
+    public void Reset_UI() {
+        this.Value = "";
+        this.SearchOptions = new List<PostsContextObject>();
+    }
 
 
     private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
@@ -45,32 +48,41 @@
             return;
         }
 
-        await this.HandleInput_Async( arg );
+        // switch( arg.Key ) {
+        // case "ArrowUp":
+        //     this.SearchPosition = Math.Max( this.SearchPosition - 1, 0 );
+        //     break;
+        // case "ArrowDown":
+        //     this.SearchPosition = Math.Min( this.SearchPosition + 1, this.SearchOptions.Count() - 1 );
+        //     break;
+        // }
+        
+        //if( arg.Code == "Enter" || arg.Code == "NumpadEnter" ) {
+        //    await this.BeginSubmitNewTerm_Async( this.Value );
+        //
+        //    return;
+        //}
+
+        //Console.WriteLine("key input: "+(int)arg.Key[0]+", value: "+this.Value );
+        //todo arrow key search results navigation
     }
 
-    private async Task OnInputSearch_UI_Async( string? termText ) {
+    
+    private async Task OnInputSearch_UI_Async( string inputText ) {
         if( this.Disabled ) {
             return;
         }
-
-        if( termText is null ) {
+        
+        if( string.IsNullOrEmpty(inputText) ) {
             this.SearchOptions = new List<PostsContextObject>();
-        } else {
-            await this.SearchAndStoreTerms_Async( termText );
-        }
-    }
+            // this.SearchPosition = 0;
+            this.Value = "";
 
-    private async Task SelectSearchResults_UI_Async( PostsContextObject context ) {
-        if( this.Disabled ) {
             return;
         }
-        if( !this.IsSeachFocused ) {
-            return;
-        }
-Console.WriteLine( "Picked: "+context.Name );
 
-        this.SearchOptions = new List<PostsContextObject>();
+        this.Value = inputText;
 
-        await this.SelectSearchResults_Async( context );
+        await this.TrySearchContext_Async( inputText );
     }
 }

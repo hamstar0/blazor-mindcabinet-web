@@ -7,10 +7,10 @@
 
 @if( this.SessionData.UserId is not null ) {
     <PostsContextPicker
-        UniqueName="Sidebar_PostsContextPicker"
-        Contexts=@this.Contexts_Cache
-        CurrentContext=@this.SessionData.GetCurrentContext()
-        OnContextSelect_Async=@this.OnContextSelect_UI_Async />
+        Description="Select the current 'context'"
+        InitialContexts=@this.Contexts_Cache
+        InitialCurrentContext=@this.SessionData.GetCurrentContext()
+        OnContextPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />
     <PostsContextEditor
         InitialContext=@this.SessionData.GetCurrentContext()
