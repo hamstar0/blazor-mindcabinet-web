@@ -7,6 +7,15 @@ namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 public partial class PostsContextObject {
     public class Prototype {
+        public static bool ValidateEntries(
+                    IEnumerable<PostsContextTermEntryObject.Prototype> entries,
+                    bool ignorePostsContextId ) {
+            return entries.Count() > 0
+                && entries.All( e => e.IsValid(ignorePostsContextId) );
+        }
+
+
+
         public PostsContextId? Id { get; set; }
 
         public string? Name { get; set; }
@@ -18,13 +27,17 @@ public partial class PostsContextObject {
 
 
         public bool IsValid( bool includingId ) {
-            if( includingId ) {
-                if( this.Id is null || this.Id == 0 ) {
-                    return false;
-                }
+            if( includingId && !PostsContextObject.ValidateId(this.Id ?? 0) ) {
+                return false;
             }
-            return !string.IsNullOrEmpty(this.Name)
-                && this.Entries.Length > 0;
+            if( !PostsContextObject.ValidateName(this.Name ?? "") ) {
+                return false;
+            }
+            if( PostsContextObject.Prototype.ValidateEntries(this.Entries, !includingId) == false ) {
+                return false;
+            }
+            
+            return true;
         }
 
         public PostsContextObject.Raw ToRaw( bool validateId ) {

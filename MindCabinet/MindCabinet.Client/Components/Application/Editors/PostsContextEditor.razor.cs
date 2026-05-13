@@ -66,9 +66,6 @@ public partial class PostsContextEditor : ComponentBase {
 
 
 	private PostsContextTermEntryObject AddNewTag( TermObject newTag ) {
-        PostsContextId id = this.DefaultContext?.Id
-            ?? throw new InvalidOperationException("Invalid prototype id.");
-        
         var contextTerm = new PostsContextTermEntryObject(
             term: newTag,
             priority: 0d,
@@ -89,6 +86,20 @@ public partial class PostsContextEditor : ComponentBase {
 	}
 
     
+	public bool CanSaveEdits( bool ignoreId ) {
+        if( !ignoreId && !PostsContextObject.ValidateId(this.EditContext_Id ?? default) ) {
+            return false;
+        }
+        if( !PostsContextObject.ValidateName(this.EditContext_Name ?? "") ) {
+            return false;
+        }
+        if( !PostsContextObject.ValidateEntries(this.EditContext_Entries.ToArray()) ) {
+            return false;
+        }
+
+		return this.HasUnsavedChanges();
+	}
+
 	private bool HasUnsavedChanges() {
         if( this.DefaultContext is null ) {
             return this.EditContext_Id is not null

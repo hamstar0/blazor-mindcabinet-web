@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using System.Text.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
@@ -90,6 +91,9 @@ public partial class ClientDataAccess_PostsContext(
     public async Task<CreateOrUpdate_Return> CreateForCurrentUser_Async( PostsContextObject.Raw parameters ) {
         if( this.SessionData.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
+        }
+        if( !parameters.IsValid(true) ) {
+            throw new ArgumentException( $"Invalid PostsContextObject.Raw parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
         HttpResponseMessage msg = await this.Http.PostAsJsonAsync(

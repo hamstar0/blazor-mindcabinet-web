@@ -21,7 +21,16 @@ public partial class PostsContextTermEntryObject( TermObject term, double priori
             isRequired: this.IsRequired
         );
     }
-    
+
+
+    public bool IsValid() {
+        if( this.Term == null || this.Term.Id == default ) {
+            return false;
+        }
+        return true;
+    }
+
+
     public void SetTerm( TermObject newTerm ) {
         this.Term = newTerm;
     }

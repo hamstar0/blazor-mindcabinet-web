@@ -28,6 +28,20 @@ public partial class PostsContextObject {
         public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
+
+        public bool IsValid( bool ignoreId ) {
+            if( !ignoreId && this.Id == default ) {
+                return false;
+            }
+            if( !PostsContextObject.ValidateName(this.Name) ) {
+                return false;
+            }
+            if( this.Entries.Any(e => !e.IsValid(ignoreId)) ) {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<PostsContextObject> ToDataObject_Async(
                     Func<PostsContextTermEntryObject.Raw[],
                     Task<PostsContextTermEntryObject[]>> ctxTermsFactory ) {

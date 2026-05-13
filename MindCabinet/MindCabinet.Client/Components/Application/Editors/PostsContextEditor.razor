@@ -42,7 +42,7 @@
 		<button @onclick=@(() => this.ClearEditContext_UI(false))>
 			Create New
 		</button>
-		<button disabled=@( !this.HasUnsavedChanges() )
+		<button disabled=@( !this.CanSaveEdits(this.DefaultContext is null) )
 				@onclick=@this.SaveContext_UI_Async>
 			Save Changes
 		</button>

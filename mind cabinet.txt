@@ -43,10 +43,10 @@ v0.6
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	@Ensure
-			-	Context switching works
+			-	Context picker
+
+
 			-	Context creation
-
-
 			-	Set term search choice to bypass context prompt and simply confirm the term input
 			-	Show term's context in term display components
 			-	Posts sorting works

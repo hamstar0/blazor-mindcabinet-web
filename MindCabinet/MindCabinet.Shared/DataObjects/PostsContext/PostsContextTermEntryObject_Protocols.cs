@@ -28,6 +28,17 @@ public partial class PostsContextTermEntryObject {
         public bool IsRequired { get; set; } = default;
 
 
+
+        public bool IsValid( bool ignorePostsContextId ) {
+            if( !ignorePostsContextId && this.PostsContextId == default ) {
+                return false;
+            }
+            if( this.TermId == default ) {
+                return false;
+            }
+            return true;
+        }
+
 		public async Task<PostsContextTermEntryObject> ToDataObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
             return new PostsContextTermEntryObject(

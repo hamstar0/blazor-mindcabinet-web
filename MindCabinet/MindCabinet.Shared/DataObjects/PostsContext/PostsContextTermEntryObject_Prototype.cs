@@ -17,6 +17,23 @@ public partial class PostsContextTermEntryObject {
 
 
 
+        public bool IsValid( bool ignorePostsContextId ) {
+            if( !ignorePostsContextId && (this.PostsContextId == null || this.PostsContextId == default) ) {
+                return false;
+            }
+            if( this.TermId == null || this.TermId == default ) {
+                return false;
+            }
+            if( this.Priority == null ) {
+                return false;
+            }
+            if( this.IsRequired == null ) {
+                return false;
+            }
+            return true;
+        }
+
+
         public enum MatchResult {
             Unknown = -1,
             Match = 0,

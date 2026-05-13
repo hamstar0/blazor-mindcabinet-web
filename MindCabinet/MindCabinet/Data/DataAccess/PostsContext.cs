@@ -105,8 +105,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 PostsContextObject.Prototype parameters ) {
-        if( PostsContextObject.ValidateName(parameters.Name ?? "") ) {
+        if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "PostsContext Name is not valid." );
+        }
+        if( !PostsContextObject.Prototype.ValidateEntries(parameters.Entries, true) ) {
+            throw new ArgumentException( "PostsContext Entries are not valid." );
         }
 
         long postsContextId = await dbCon.ExecuteScalarAsync<long>(
