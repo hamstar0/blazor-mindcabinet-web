@@ -31,7 +31,9 @@
 //int posts = await this.Data.GetPostCountByCriteria_Async( search );
 //Console.WriteLine( "OnPostSubmit_UI_Async "+posts+", "+search.ToString() );
 
-        await this.BrowserComponent.RefreshPosts_Async();
+        if( this.BrowserComponent is not null ) {
+            await this.BrowserComponent.RefreshPosts_Async();
+        }
     }
 }
 

@@ -25,7 +25,7 @@ public partial class MainPanel : ComponentBase {
     public string? Source { get; set; } = null;
 
 
-    private ContextPostsBrowser BrowserComponent = null!;
+    private ContextPostsBrowser? BrowserComponent = null!;
 
 
 
@@ -39,7 +39,11 @@ public partial class MainPanel : ComponentBase {
 
         await this.SessionData.RegisterPostsContextEvent_Async(
             name: "MainPanel",
-            callback: async (_) => await this.BrowserComponent.RefreshPosts_Async()
+            callback: async (_) => {
+                if( this.BrowserComponent is not null ) {
+                    await this.BrowserComponent.RefreshPosts_Async();
+                }
+            }
         );
 	}
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Components.Standard;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
@@ -9,9 +10,6 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 public partial class SimplePostEditor : ComponentBase {
-    //[Inject]
-    //private IJSRuntime Js { get; set; } = null!;
-
     [Inject]
     private ClientDataAccess_SimplePosts SimplePostsData { get; set; } = null!;
 

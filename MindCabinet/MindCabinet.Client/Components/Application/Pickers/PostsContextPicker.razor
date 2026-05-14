@@ -41,6 +41,7 @@
 
 
     private async Task OnInputKey_UI_Async( KeyboardEventArgs arg ) {
+await Task.CompletedTask;
         if( this.Disabled ) {
             return;
         }

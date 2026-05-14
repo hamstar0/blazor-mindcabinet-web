@@ -7,7 +7,12 @@ namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 public partial class PostsContextObject {
     public const int MinNameLength = 2;
+    
     public const int MaxNameLength = 64;
+
+    public static ISet<char> AllowedSpecialCharacters = new HashSet<char>(
+        ":;,./<>?|[]{}!@#$%^&*-_=+`~".ToCharArray()    // excludes: '\"()\\
+    );
 
 
 
@@ -38,6 +43,20 @@ public partial class PostsContextObject {
         if( name.Length > MaxNameLength ) {
             return false;
         }
+        
+        int consecWhites = 0;
+        bool keyboardOnly = name.All( c => {
+            if( char.IsLetterOrDigit(c) || PostsContextObject.AllowedSpecialCharacters.Contains(c) ) {
+                consecWhites = 0;
+                return true;
+            }
+            if( char.IsWhiteSpace(c) && consecWhites < 2 ) {
+                consecWhites++;
+                return true;
+            }
+            return false;
+        } );
+
         return true;
     }
 

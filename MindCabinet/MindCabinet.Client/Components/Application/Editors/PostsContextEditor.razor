@@ -51,13 +51,13 @@
 
 
 <RenderPortal TargetRegion="ModalDialogs">
-	<Modal @ref=@this.ConfirmResetPromptDialogComponent
-			ModalId=@( "PostsContextEditor_Reset_"+Guid.NewGuid().ToString("N").Substring(0, 8) )
+	<Modal @ref=@this.ConfirmResetPrompt_DialogComponent
+			ModalId=@this.ConfirmResetPrompt_ModalDialogId
 			Title="Confirm Context Creation">
 		<BodyContent>
 			<i>You have unsaved changes. Remove all changes?</i>
 			<div>
-				<button @onclick=@(this.ConfirmResetPromptDialogComponent.Close)>
+				<button @onclick=@(this.ConfirmResetPrompt_DialogComponent.Close)>
 					Cancel
 				</button>
 				<button @onclick=@( () => this.ClearEditContext_UI(true))>
@@ -70,8 +70,15 @@
 
 
 
+
+
 @code {
-    private Modal ConfirmResetPromptDialogComponent = null!;
+    private string ConfirmResetPrompt_ModalDialogId => "PostsContextEditor_Reset_" + Guid.NewGuid()
+        .ToString("N")
+        .Substring(0, 8);
+
+
+    private Modal ConfirmResetPrompt_DialogComponent = null!;
 
 
 
@@ -147,13 +154,13 @@
 
 	private void ClearEditContext_UI( bool forceReset ) {
 		if( this.HasUnsavedChanges() && !forceReset ) {
-			this.ConfirmResetPromptDialogComponent.Open();
+			this.ConfirmResetPrompt_DialogComponent.Open();
 
 			return;
 		}
 
 		// if( this.ResetPromptDialog.IsOpen ) {
-		this.ConfirmResetPromptDialogComponent.Close();
+		this.ConfirmResetPrompt_DialogComponent.Close();
 
 		this.ClearEditContext();
 

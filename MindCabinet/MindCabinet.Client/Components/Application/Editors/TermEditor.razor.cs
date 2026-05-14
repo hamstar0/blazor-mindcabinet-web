@@ -53,7 +53,9 @@ public partial class TermEditor : ComponentBase {
     public OnTermConfirmFunc_Async OnTermConfirm_Async { get; set; } = null!;
     
 
-    private Modal ModalDialogComponent = null!;
+    private Modal TermContext_ModalDialogComponent = null!;
+
+    private Modal Error_ModalDialogComponent = null!;
 
 
 
@@ -61,10 +63,12 @@ public partial class TermEditor : ComponentBase {
         await Task.CompletedTask;
 
         if( !TermObject.ValidateTerm(termText) ) {
+            this.Error_ModalDialogComponent.Open();
+            
             return false;
         }
 
-        this.ModalDialogComponent.Open();
+        this.TermContext_ModalDialogComponent.Open();
 
         return true;
     }

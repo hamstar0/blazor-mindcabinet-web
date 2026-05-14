@@ -35,8 +35,8 @@
 
 
 <RenderPortal TargetRegion="ModalDialogs">
-    <Modal @ref=@this.ModalDialogComponent
-            ModalId=@this.ModalDialogId
+    <Modal @ref=@this.TermContext_ModalDialogComponent
+            ModalId=@this.TermContextInput_ModalDialogId
             Title="Specify Context">
         <BodyContent>
             <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_UI_Async />
@@ -44,10 +44,24 @@
     </Modal>
 </RenderPortal>
 
+<RenderPortal TargetRegion="ModalDialogs">
+    <Modal @ref=@this.Error_ModalDialogComponent
+            ModalId=@this.Error_ModalDialogId
+            Title="Invalid term string">
+        <BodyContent>
+            <span>Normal keyboard characters only. No quotes or backslashes, either.</span>
+        </BodyContent>
+    </Modal>
+</RenderPortal>
+
 
 
 @code {
-    private string ModalDialogId => "termContextSelectorModal_" + Guid.NewGuid()
+    private string TermContextInput_ModalDialogId => "termContextSelectorModal_" + Guid.NewGuid()
+        .ToString("N")
+        .Substring(0, 8);
+        
+    private string Error_ModalDialogId => "errorModal_" + Guid.NewGuid()
         .ToString("N")
         .Substring(0, 8);
 
@@ -121,7 +135,7 @@
             throw new InvalidOperationException( "Invalid term input OnModalDialogTermContextSelect_Async." );
         }
 
-        this.ModalDialogComponent.Close();
+        this.TermContext_ModalDialogComponent.Close();
 
         if( await this.SubmitNewTerm_Async(this.Value, contextTerm) ) {
             this.StateHasChanged();

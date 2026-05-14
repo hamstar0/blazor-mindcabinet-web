@@ -38,15 +38,13 @@ v0.6
 -	Channel API calls through Hub (test)
 -	Show user name next to Logout button
 -	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
--	Term component
-	-	Prevent invalid character inputs in term editor, context editor, posts editor
+
+
+-	Prevent invalid character inputs in term editor, context editor
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context
 		-	@Ensure
-			-	No uses of Task.WhenAll on client
 			-	Post submit
-			
-
 			-	Store user's term id with user info
 			-	Context picker
 			-	Context creation
