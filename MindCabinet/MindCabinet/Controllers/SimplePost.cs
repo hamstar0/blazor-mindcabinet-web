@@ -20,6 +20,8 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_ServerData ServerData;
 
+    private readonly ServerDataAccess_UserAppData UserAppData;
+
     private readonly ServerDataAccess_SimplePosts SimplePostsData;
 
     private readonly ServerDataAccess_Terms TermsData;
@@ -36,6 +38,7 @@ public class SimplePostController : ControllerBase {
                 ILogger<SimplePostController> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_ServerData serverData,
+                ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_SimplePosts simplePostsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags simplePostTagsData,
@@ -44,6 +47,7 @@ public class SimplePostController : ControllerBase {
         this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;
+        this.UserAppData = userAppData;
         this.SimplePostsData = simplePostsData;
         this.TermsData = termsData;
         this.SimplePostTagsData = simplePostTagsData;
@@ -80,11 +84,13 @@ public class SimplePostController : ControllerBase {
         SimplePostId simplePostId = await this.SimplePostsData.Create_Async(
             dbCon: dbCon,
             serverData: this.ServerData,
+            userData: this.UserAppData,
             termsData: this.TermsData,
             termSetsData: this.SimplePostTagsData,
             termHistoryData: this.UserTermsHistoryData,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             parameters: parameters,
+            addCurrentUserTag: true,
             skipHistory: false
         );
         return SimplePostObject.CreateRaw(

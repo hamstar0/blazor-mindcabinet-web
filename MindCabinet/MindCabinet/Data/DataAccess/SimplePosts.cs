@@ -164,11 +164,13 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 	public async Task<SimplePostId> Create_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_ServerData serverData,
+                ServerDataAccess_UserAppData userData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_SimplePosts.Create_Params parameters,
+                bool addCurrentUserTag,
                 bool skipHistory ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
@@ -180,16 +182,33 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            $@"INSERT INTO {TableName} (Created, Modified, Body) 
-                VALUES (@Created, @Created, @Body);
+            $@"INSERT INTO {TableName} ({TableColumn_Created}, {TableColumn_Modified}, {TableColumn_SimpleUserId}, {TableColumn_Body}) 
+                VALUES (@{TableColumn_Created}, @{TableColumn_Modified}, @{TableColumn_SimpleUserId}, @{TableColumn_Body});
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
+                Modified = now,
+                SimpleUserId = (long)simpleUserId,
                 Body = new DbString { Value = parameters.Body, IsAnsi = true }
             }
         );
+
+        if( addCurrentUserTag ) {
+            UserAppDataObject.Raw? userAppData = await userData.GetById_Async( dbCon, simpleUserId );
+            if( userAppData is null ) {
+                throw new Exception( "User application data not found for user ID: " + simpleUserId );
+            }
+
+            parameters.TermIds = parameters.TermIds
+                .Prepend( userAppData.UserDefaultTermId )
+                .ToArray();
+        }
         
-        await termSetsData.CreateForSimplePost_Async( dbCon, (SimplePostId)newPostId, parameters.TermIds );
+        await termSetsData.CreateForSimplePost_Async(
+            dbCon: dbCon,
+            id: (SimplePostId)newPostId,
+            termIds: parameters.TermIds
+        );
 
         //
 

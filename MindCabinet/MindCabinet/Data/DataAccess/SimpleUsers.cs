@@ -273,7 +273,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             await userAppData.Create_Async(
                 dbCon: dbCon,
                 simpleUserId: (SimpleUserId)newUserId,
-                userDefaultPostsContextId: userDefaultPostsContext.Id
+                userDefaultPostsContextId: userDefaultPostsContext.Id,
+                userDefaultTermId: userTerm.Id
             );
         }
 

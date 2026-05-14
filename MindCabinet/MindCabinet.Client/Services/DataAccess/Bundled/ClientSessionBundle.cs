@@ -2,6 +2,7 @@
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -18,6 +19,8 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
         public UserAppDataObject.Raw? UserAppData { get; set; }
 
         public PostsContextObject.Raw? UserAppData_PostsContext { get; set; }
+
+        public TermObject.Raw? UserAppData_UserDefaultTerm { get; set; }
     }
 
     public const string GetCurrent_Path = "Session";
@@ -48,12 +51,16 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
             throw new InvalidDataException( "Could not deserialize ClientDataAccess_ClientSessionBundle.GetCurrent_Return" );
         }
 
-        Task<UserAppDataObject>? userAppDataMaybeTask = sessionData.UserAppData_PostsContext is not null
-            ? sessionData.UserAppData?.ToDataObject_Async(
+        Task<UserAppDataObject>? userAppDataMaybeTask = null;
+        if( sessionData.UserAppData_PostsContext is not null && sessionData.UserAppData_UserDefaultTerm is not null ) {
+            userAppDataMaybeTask = sessionData.UserAppData?.ToDataObject_Async(
+                termsFactory: async ( _ ) =>
+                    await ClientDataAccess_Terms.ConvertRawToDataObject_Async( termsData, sessionData.UserAppData_UserDefaultTerm! ),
                 postsContextFactory: async ( _ ) =>
                     await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async( termsData, sessionData.UserAppData_PostsContext! )
-            )
-            : null;
+            );
+        }
+        
         UserAppDataObject? userAppDataMaybe = userAppDataMaybeTask is not null
             ? await userAppDataMaybeTask
             : null;

@@ -43,10 +43,6 @@ public class SessionController(
             throw new NullReferenceException( "Session has no ID." );
         }
 
-        UserAppDataObject.Raw? userAppData = this.SessionManager.UserAppDataOfSession?.ToRaw();
-
-        PostsContextObject.Raw? userAppData_PostsContext = this.SessionManager.UserAppDataOfSession?.PostsContext?.ToRaw();
-        
         var ret = new ClientDataAccess_ClientSessionBundle.GetCurrentDataBundle_Return {
             SessionId = this.SessionManager.CurrentSessionId,
             UserData = this.SessionManager.UserOfSession is not null
@@ -57,8 +53,9 @@ public class SessionController(
                     email: this.SessionManager.UserOfSession.Email
                 )
                 : null,
-            UserAppData = userAppData,
-            UserAppData_PostsContext = userAppData_PostsContext
+            UserAppData = this.SessionManager.UserAppDataOfSession?.ToRaw(),
+            UserAppData_PostsContext = this.SessionManager.UserAppDataOfSession?.PostsContext?.ToRaw(),
+            UserAppData_UserDefaultTerm = this.SessionManager.UserAppDataOfSession?.UserDefaultTerm?.ToRaw()
         };
 //this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsContext) );
 

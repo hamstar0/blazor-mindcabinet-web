@@ -19,6 +19,21 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
                 ServerDataAccess_PostsContexts postsContextsData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 UserAppDataObject.Raw dbEntry ) {
+        Func<TermId, Task<TermObject.Raw>> termsRawFactory = async id => {
+            TermObject.Raw? termRaw = await termsData.GetById_Async( dbCon, id );
+            if( termRaw is null ) {
+                throw new Exception( $"Term with id {id} not found." );
+            }
+
+            return termRaw;
+        };
+
+        Func<TermId, Task<TermObject>> termsFactory = async id => {
+            TermObject.Raw? termRaw = await termsRawFactory( id );
+
+            return await termRaw.ToDataObject_Async( termsRawFactory );
+        };
+
         Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
             return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
                 dbCon,
@@ -36,6 +51,6 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             return await ctxRaw.ToDataObject_Async( ctxTermsFactory );
         };
 
-        return await dbEntry.ToDataObject_Async( postsContextFactory );
+        return await dbEntry.ToDataObject_Async( postsContextFactory, termsFactory );
     }
 }

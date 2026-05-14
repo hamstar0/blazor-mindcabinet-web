@@ -12,15 +12,21 @@ public partial class UserAppDataObject : IDataObject {
 
 	public PostsContextObject PostsContext { get; private set; }
 
+	public TermObject UserDefaultTerm { get; private set; }
 
 
-	public UserAppDataObject( SimpleUserId simpleUserId, PostsContextObject postsContext ) {
+
+	public UserAppDataObject(
+			SimpleUserId simpleUserId,
+			PostsContextObject postsContext,
+			TermObject userDefaultTerm ) {
 		if( simpleUserId == 0 ) {
 			throw new ArgumentException( "SimpleUserId cannot be 0 in UserAppDataObject." );
 		}
 
 		this.SimpleUserId = simpleUserId;
 		this.PostsContext = postsContext;
+		this.UserDefaultTerm = userDefaultTerm;
 	}
 
 
@@ -31,7 +37,8 @@ public partial class UserAppDataObject : IDataObject {
 	public UserAppDataObject.Raw ToRaw() {
 		return UserAppDataObject.CreateRaw(
 			simpleUserId: this.SimpleUserId,
-			postsContextId: this.PostsContext.Id
+			postsContextId: this.PostsContext.Id,
+			userDefaultTermId: this.UserDefaultTerm.Id
 		);
 	}
 }

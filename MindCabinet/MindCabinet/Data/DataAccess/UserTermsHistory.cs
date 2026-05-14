@@ -63,18 +63,24 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
         // );
         // if( count > ServerDataAccess_UserTermsHistory.HistoryMaxEntries ) {
 
-        await dbCon.ExecuteAsync(
-            $@"DELETE FROM {TableName} AS Trimmed
-                WHERE Trimmed.{TableColumn_SimpleUserId} = @SimpleUserId
-                AND Trimmed.{TableColumn_Created} NOT IN (
-                    SELECT Kept.{TableColumn_Created} FROM {TableName} AS Kept
-                    WHERE Kept.{TableColumn_SimpleUserId} = @SimpleUserId
-                    ORDER BY Kept.{TableColumn_Created} ASC
-                    LIMIT @AllowedCount
-                );",
+        IEnumerable<long> idsToKeep = await dbCon.QueryAsync<long>(
+            $@"SELECT {TableColumn_TermId} FROM {TableName}
+                WHERE {TableColumn_SimpleUserId} = @SimpleUserId
+                ORDER BY {TableColumn_Created} DESC
+                LIMIT @AllowedCount;",
             new {
                 SimpleUserId = (long)simpleUserId,
-                AllowedCount = ServerDataAccess_UserTermsHistory.HistoryMaxEntries,
+                AllowedCount = ServerDataAccess_UserTermsHistory.HistoryMaxEntries
+            }
+        );
+
+        await dbCon.ExecuteAsync(
+            $@"DELETE FROM {TableName}
+                WHERE {TableColumn_SimpleUserId} = @SimpleUserId
+                AND {TableColumn_TermId} NOT IN @IdsToKeep;",
+            new {
+                SimpleUserId = (long)simpleUserId,
+                IdsToKeep = idsToKeep
             }
         );
     }

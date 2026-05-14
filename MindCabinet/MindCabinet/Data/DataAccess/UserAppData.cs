@@ -32,7 +32,8 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async Task<UserAppDataObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                PostsContextId userDefaultPostsContextId ) {
+                PostsContextId userDefaultPostsContextId,
+                TermId userDefaultTermId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -42,44 +43,52 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
 
         try {
             int rows = await dbCon.ExecuteAsync(
-                $@"INSERT INTO {TableName} (SimpleUserId, PostsContextId) 
-                    VALUES (@SimpleUserId, @PostsContextId);",
+                $@"INSERT INTO {TableName} ({TableColumn_SimpleUserId}, {TableColumn_PostsContextId}, {TableColumn_UserDefaultTermId}) 
+                    VALUES (@SimpleUserId, @PostsContextId, @userDefaultTermId);",
                 new {
                     SimpleUserId = (long)simpleUserId,
-                    PostsContextId = (long)userDefaultPostsContextId
+                    PostsContextId = (long)userDefaultPostsContextId,
+                    userDefaultTermId = (long)userDefaultTermId
                 }
             );
         } catch( Exception e ) { //when ( ex.Number == 1062 ) {
             throw new InvalidOperationException(
-                $@"Record could not be created (SimpleUserId: {simpleUserId}, PostsContextId: {userDefaultPostsContextId})",
-                e
+                message: $@"Record could not be created (SimpleUserId: {simpleUserId}, PostsContextId: {userDefaultPostsContextId})",
+                innerException: e
             );
         }
 
         return UserAppDataObject.CreateRaw(
             simpleUserId: simpleUserId,
-            postsContextId: userDefaultPostsContextId
+            postsContextId: userDefaultPostsContextId,
+            userDefaultTermId: userDefaultTermId
         );
     }
 
     public async Task Update_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                PostsContextId postsContextId ) {
+                PostsContextId postsContextId,
+                TermId userDefaultTermId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
         if( postsContextId == 0 ) {
             throw new ArgumentException( "PostsContextId is not valid (must be non-zero)." );
         }
+        if( userDefaultTermId == 0 ) {
+            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
 
         try {
             await dbCon.ExecuteAsync(
                 $@"UPDATE {TableName}
-                    SET PostsContextId = @PostsContextId
-                    WHERE SimpleUserId = @SimpleUserId;",
+                    SET {TableColumn_PostsContextId} = @PostsContextId,
+                        {TableColumn_UserDefaultTermId} = @UserDefaultTermId
+                    WHERE {TableColumn_SimpleUserId} = @SimpleUserId;",
                 new {
                     PostsContextId = postsContextId,
+                    UserDefaultTermId = userDefaultTermId,
                     SimpleUserId = simpleUserId
                 }
             );

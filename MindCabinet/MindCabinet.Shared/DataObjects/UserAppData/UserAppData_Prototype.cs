@@ -12,6 +12,8 @@ public partial class UserAppDataObject {
         
 		public PostsContextId? PostsContextId { get; set; }
 
+        public TermId? UserDefaultTermId { get; set; }
+
 
         
         public bool IsValidAsObject( bool ignoreUserId ) {
@@ -19,6 +21,9 @@ public partial class UserAppDataObject {
                 return false;
             }
             if( this.PostsContextId is null || this.PostsContextId == 0 ) {
+                return false;
+            }
+            if( this.UserDefaultTermId is null || this.UserDefaultTermId == 0 ) {
                 return false;
             }
             return true;

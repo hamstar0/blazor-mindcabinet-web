@@ -68,7 +68,8 @@ public class UserAppDataController : ControllerBase {
         await this.UserAppData.Update_Async(
             dbCon: dbCon,
             simpleUserId: this.ServerSessionManager.UserOfSession.Id,
-            postsContextId: parameters.PostsContextId ?? 0
+            postsContextId: parameters.PostsContextId ?? 0,
+            userDefaultTermId: parameters.UserDefaultTermId ?? 0
         );
 
         return new {};
