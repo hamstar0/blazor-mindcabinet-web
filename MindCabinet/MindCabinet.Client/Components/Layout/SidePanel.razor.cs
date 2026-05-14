@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Components.Application.Editors;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
@@ -10,15 +11,9 @@ namespace MindCabinet.Client.Components.Layout;
 
 
 public partial class SidePanel {
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    private PostsContextEditor PostsContextEditorComponent { get; set; } = null!;
 
-    //[Inject]
-    //public HttpClient Http { get; set; } = null!;
 
-    //[Inject]
-    //public ClientDbAccess DbAccess { get; set; } = null!;
-    
     [Inject]
     private ClientSessionManager SessionData { get; set; } = null!;
 
@@ -69,5 +64,15 @@ public partial class SidePanel {
             this.TermsData,
             ctxs
         );
+    }
+    
+    private async Task SetContext_Async( PostsContextObject context ) {
+        await this.SessionData.SetCurrentContext_Await( this.UserAppData, context );
+        
+        this.PostsContextEditorComponent.SetDefaultContext( context );
+
+        if( this.OnStateChange_Async is not null ) {
+            await this.OnStateChange_Async.Invoke();
+        }
     }
 }

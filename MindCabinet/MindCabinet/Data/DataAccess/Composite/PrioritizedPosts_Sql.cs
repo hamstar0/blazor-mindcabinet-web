@@ -7,6 +7,7 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using MindCabinet.Utility;
+using System.Text.Json;
 
 
 namespace MindCabinet.Data.DataAccess.Composite;
@@ -109,6 +110,10 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
             sqlParams["@Quantity"] = postsPerPage;
         }
 
+// this.Logger.LogInformation( "Generated SQL: {Sql} with params {Params}",
+//     sqlBuilder.Build(),
+//     JsonSerializer.Serialize(sqlParams)
+// );
         return (sqlBuilder.Build(), sqlParams);
     }
 }

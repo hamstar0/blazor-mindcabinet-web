@@ -65,6 +65,13 @@ public partial class PostsContextEditor : ComponentBase {
 	}
 
 
+    public void SetDefaultContext( PostsContextObject? context ) {
+        this.DefaultContext = context;
+        this.ResetEditContextToDefault();
+        
+        this.StateHasChanged();
+    }
+
 	private PostsContextTermEntryObject AddNewTag( TermObject newTag ) {
         var contextTerm = new PostsContextTermEntryObject(
             term: newTag,

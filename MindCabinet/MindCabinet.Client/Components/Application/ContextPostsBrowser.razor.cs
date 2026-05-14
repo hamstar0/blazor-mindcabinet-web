@@ -53,17 +53,13 @@ public partial class ContextPostsBrowser : ComponentBase {
     }
 
     public async Task RefreshPosts_Async() {
-        var task1 = async () =>
-            this.CurrentPagePosts_Cache = await this.GetPostsOfCurrentPage_Async();
-        var task2 = async () =>
-            (this.TotalPosts_Cache, this.TotalPages_Cache) = await this.GetTotalPostPagesCount_Async();
+        this.CurrentPagePosts_Cache = await this.GetPostsOfCurrentPage_Async();
 
-        await task1();
-        await task2();
+        (this.TotalPosts_Cache, this.TotalPages_Cache) = await this.GetTotalPostPagesCount_Async();
 
         int currPage = this.PostsData.GetCurrentPage();
         if( currPage >= this.TotalPages_Cache ) {
-            this.PostsData.SetCurrentPage( this.TotalPages_Cache - 1 );
+            this.PostsData.SetCurrentPage( Math.Max(0, this.TotalPages_Cache - 1) );
         }
 
         this.StateHasChanged();
@@ -97,7 +93,9 @@ public partial class ContextPostsBrowser : ComponentBase {
 
 
     public async Task ChangePage_Async( int page ) {
-        int maxPages = this.TotalPages_Cache > 0 ? this.TotalPages_Cache - 1 : 0;
+        int maxPages = this.TotalPages_Cache > 0
+            ? this.TotalPages_Cache - 1
+            : 0;
         page = Math.Clamp( page, 0, maxPages );
 
         if( page == this.PostsData.GetCurrentPage() ) {

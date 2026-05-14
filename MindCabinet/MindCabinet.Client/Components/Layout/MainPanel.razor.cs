@@ -32,6 +32,14 @@ public partial class MainPanel : ComponentBase {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterUserAndAppDataEvent_Async( "MainPanel", async (_) => this.StateHasChanged() );
+        await this.SessionData.RegisterUserAndAppDataEvent_Async(
+            name: "MainPanel",
+            callback: async (_) => this.StateHasChanged()
+        );
+
+        await this.SessionData.RegisterPostsContextEvent_Async(
+            name: "MainPanel",
+            callback: async (_) => await this.BrowserComponent.RefreshPosts_Async()
+        );
 	}
 }

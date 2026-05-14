@@ -13,6 +13,7 @@
         OnContextPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />
     <PostsContextEditor
+        @ref=@this.PostsContextEditorComponent
         InitialContext=@this.SessionData.GetCurrentContext()
         OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
         OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
@@ -23,11 +24,7 @@
 
 @code {
     private async Task OnContextSelect_UI_Async( PostsContextObject context ) {
-        await this.SessionData.SetCurrentContext_Await( this.UserAppData, context );
-        
-        if( this.OnStateChange_Async is not null ) {
-            await this.OnStateChange_Async.Invoke();
-        }
+        await this.SetContext_Async( context );
 
         this.StateHasChanged();
     }
