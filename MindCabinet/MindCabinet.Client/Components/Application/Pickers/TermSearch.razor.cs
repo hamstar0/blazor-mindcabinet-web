@@ -25,7 +25,7 @@ public partial class TermSearch : ComponentBase {
     private ClientDataAccess_UserTermsHistory UserTermsHistoryData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionManager Session { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
 
     private MultiTermRender SearchResultsElement = null!;
@@ -61,7 +61,7 @@ public partial class TermSearch : ComponentBase {
 	protected async override Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
 
-        if( this.Session.UserId is not null ) {
+        if( this.MySessionMngr.UserId is not null ) {
             await this.InitializeTermOptions_Async();
         }
     }

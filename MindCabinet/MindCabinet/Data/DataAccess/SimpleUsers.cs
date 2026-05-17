@@ -48,7 +48,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    private readonly ServerSessionManager SessionManager;
+    private readonly Services.ClientSessionManager SessionManager;
     
     private readonly StaticServerSettings ServerSettings;
 
@@ -57,7 +57,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
     public ServerDataAccess_SimpleUsers(
-                ServerSessionManager sessionData,
+				Services.ClientSessionManager sessionData,
                 StaticServerSettings serverSettings,
                 ILogger<ServerDataAccess_SimpleUsers> logger ) {
         this.SessionManager = sessionData;

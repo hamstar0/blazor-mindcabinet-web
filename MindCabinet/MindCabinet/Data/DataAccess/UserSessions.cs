@@ -27,7 +27,7 @@ public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
     public async Task Create_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ServerSessionManager sessionMngr ) {
+                ClientSessionManager sessionMngr ) {
         if( !sessionMngr.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }

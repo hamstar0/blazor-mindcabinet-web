@@ -20,7 +20,7 @@ public class PostsContextController(
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerSessionManager sessMngr ) : ControllerBase {
+				ClientSessionManager sessMngr ) : ControllerBase {
     private readonly ILogger<PostsContextController> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
@@ -29,14 +29,26 @@ public class PostsContextController(
 
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData = postsContextTermEntryData;
 
-    private readonly ServerSessionManager SessionManager = sessMngr;
+    private readonly ClientSessionManager SessionManager = sessMngr;
 
 
 
     [HttpPost(ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Route)]
     public async Task<ClientDataAccess_PostsContext.Get_Return> GetForCurrentUserByCriteria_Async(
-                ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params parameters ) {
+                ClientDataAccess_PostsContext.GetByCriteria_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        TermId currUserTermId = this.SessionManager.UserAppDataOfSession?.UserDefaultTerm.Id ?? 0;
+
+        if( !parameters.TagTermIds.Any(tid => tid == currUserTermId) ) {
+            parameters.TagTermIds = parameters.TagTermIds
+                .Append( currUserTermId )
+                .ToArray();
+        }
 
         IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsData.GetByCriteria_Async(
             dbCon: dbCon,

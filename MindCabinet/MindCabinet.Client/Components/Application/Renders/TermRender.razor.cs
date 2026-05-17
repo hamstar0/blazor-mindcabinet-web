@@ -17,7 +17,7 @@ public partial class TermRender : ComponentBase {
     private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
 
     [Inject]
-    private ClientSessionManager Session { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
 
     [Parameter]
@@ -40,7 +40,7 @@ public partial class TermRender : ComponentBase {
     
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
-        if( this.Session.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             return false;
         }
 
@@ -51,7 +51,7 @@ public partial class TermRender : ComponentBase {
 
 
     private async Task ToggleFavoriteTerm_Async() {
-        if( this.Session.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             return;
         }
 

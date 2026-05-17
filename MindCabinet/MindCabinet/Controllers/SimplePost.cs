@@ -30,7 +30,7 @@ public class SimplePostController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerSessionManager SessionManager;
+    private readonly ClientSessionManager SessionManager;
 
 
 
@@ -43,7 +43,7 @@ public class SimplePostController : ControllerBase {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags simplePostTagsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerSessionManager sessMngr ) {
+				ClientSessionManager sessMngr ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;

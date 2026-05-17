@@ -37,7 +37,7 @@ public partial class SimpleUserController : ControllerBase {
 
     private readonly ServerDataAccess_UserAppData UserAppData;
     
-    private readonly ServerSessionManager SessionManager;
+    private readonly ClientSessionManager SessionManager;
 
 
 
@@ -52,7 +52,7 @@ public partial class SimpleUserController : ControllerBase {
                 ServerDataAccess_SimpleUserSessions userSessionsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
                 ServerDataAccess_UserAppData userAppData,
-                ServerSessionManager sessMngr ) {
+				ClientSessionManager sessMngr ) {
         this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;

@@ -31,8 +31,8 @@
         <a href="about">About</a>
         <div class="vr"></div>
         
-        @if( this.SessionData.IsLoaded ) {
-            @if( this.SessionData.UserName is not null ) {
+        @if( this.MySessionMngr.IsLoaded ) {
+            @if( this.MySessionMngr.UserName is not null ) {
                 <a @onclick:preventDefault=@true @onclick=@this.Logout_Async>Logout</a>
             } else {
                 @this.LoginFormElement?.GenerateDialogOpener();
@@ -60,7 +60,7 @@
 </main>
 
 
-@if( this.SessionData.IsLoaded && this.SessionData.UserId is null ) {
+@if( this.MySessionMngr.IsLoaded && this.MySessionMngr.UserId is null ) {
     <UserLoginForm @ref=this.LoginFormElement Id="MainLogin" OnUserLogin_Async=@this.OnLogin_UI_Async />
     <UserRegistrationForm @ref=this.RegistrationFormElement Id="MainRegistration" OnUserCreate_Async=@this.OnRegistration_UI_Async />
 }
@@ -75,7 +75,7 @@
     }
     
     private async Task OnLogin_UI_Async( SimpleUserObject.ClientObject user ) {
-        await this.SessionData.LocalLogin_Async( user );
+        await this.MySessionMngr.LocalLogin_Async( user );
 
         this.StateHasChanged();
     }
@@ -88,7 +88,7 @@
     }
 
     private async Task Logout_Async() {
-        await this.SessionData.Logout_Async( this.Http );
+        await this.MySessionMngr.Logout_Async( this.Http );
 
         this.StateHasChanged();
     }

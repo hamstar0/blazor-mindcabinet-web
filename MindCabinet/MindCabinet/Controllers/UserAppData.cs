@@ -18,14 +18,14 @@ public class UserAppDataController : ControllerBase {
 
     private readonly ServerDataAccess_UserAppData UserAppData;
 
-    private readonly ServerSessionManager ServerSessionManager;
+    private readonly ClientSessionManager ServerSessionManager;
 
 
 
     public UserAppDataController(
                 DbAccess dbAccess,
                 ServerDataAccess_UserAppData userAppData,
-                ServerSessionManager serverSessionManager ) {
+                ClientSessionManager serverSessionManager ) {
         this.DbAccess = dbAccess;
         this.UserAppData = userAppData;
         this.ServerSessionManager = serverSessionManager;

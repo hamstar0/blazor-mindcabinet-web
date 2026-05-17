@@ -56,8 +56,8 @@ public class Program {
             builder.Services.AddScoped( implementation );
         }
 
-        builder.Services.AddScoped<ServerSessionManager>();
-        builder.Services.AddTransient<ClientSessionManager>(); // not intended for use on server, but needed for components
+        builder.Services.AddScoped<ClientSessionManager>();
+        builder.Services.AddTransient<LocalClientSessionManager>(); // not intended for use on server, but needed for components
         builder.Services.AddHttpClient();
         builder.Services.AddControllers();
         builder.Services.AddScoped<RenderPortalService>();
@@ -87,7 +87,7 @@ public class Program {
         app.Use( async (HttpContext context, Func<Task> next ) => {
             bool isInstalling = context.Request.Path.StartsWithSegments( "/Setup/Install", StringComparison.OrdinalIgnoreCase );
 
-            var sessionData = context.RequestServices.GetRequiredService<ServerSessionManager>();
+            var sessionData = context.RequestServices.GetRequiredService<Services.ClientSessionManager>();
             var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
             var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
             var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();

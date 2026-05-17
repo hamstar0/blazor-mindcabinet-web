@@ -8,10 +8,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermFavorites( HttpClient http, ClientSessionManager sessionData ) : IClientDataAccess {
+public partial class ClientDataAccess_UserTermFavorites( HttpClient http, LocalClientSessionManager mySessionMngr ) : IClientDataAccess {
     private HttpClient Http = http;
 
-    private ClientSessionManager SessionData = sessionData;
+    private LocalClientSessionManager MySessionMngr = mySessionMngr;
 
 
     public class GetTermIdsForCurrentUser_Params {   //( long userId )
@@ -22,7 +22,7 @@ public partial class ClientDataAccess_UserTermFavorites( HttpClient http, Client
     public const string GetFavTermsForCurrentUser_Route = "GetFavoriteTermsForCurrentUser";
 
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -50,7 +50,7 @@ public partial class ClientDataAccess_UserTermFavorites( HttpClient http, Client
     public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
 
     public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -71,7 +71,7 @@ public partial class ClientDataAccess_UserTermFavorites( HttpClient http, Client
     public const string RemoveTermsForCurrentUser_Route = "RemoveTermsForCurrentUser";
 
     public async Task RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 

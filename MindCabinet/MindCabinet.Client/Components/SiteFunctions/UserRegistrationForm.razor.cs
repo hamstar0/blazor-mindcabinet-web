@@ -21,7 +21,7 @@ public partial class UserRegistrationForm : ComponentBase {
     private ClientDataAccess_SimpleUsers SimpleUsersData {get; set; } = null!;
 
     [Inject]
-    private ClientSessionManager SessionData { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
 
     private string MyModalId => "UserRegistrationForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -57,7 +57,7 @@ public partial class UserRegistrationForm : ComponentBase {
         SimpleUserObject.StatusCode code = SimpleUserObject.GetUserNameStatus( this.UserName );
         code |= SimpleUserObject.GetEmailStatus( this.Email );
         code |= SimpleUserObject.GetPasswordStatus( this.Password );
-        code |= this.SessionData.IsLoaded ? 0 : SimpleUserObject.StatusCode.NO_SESSION;
+        code |= this.MySessionMngr.IsLoaded ? 0 : SimpleUserObject.StatusCode.NO_SESSION;
         return code;
     }
 

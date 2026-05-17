@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace MindCabinet.Client.Services;
 
 
-public partial class ClientSessionManager(
+public partial class LocalClientSessionManager(
             INetMode netMode,
             IServiceScopeFactory serviceScopeFactory ) {
     public class DataBundle( string sessionId, SimpleUserObject.ClientObject? userData, UserAppDataObject? userAppData ) {
@@ -35,6 +35,7 @@ public partial class ClientSessionManager(
 
 
     private DataBundle? Data;
+
 
     
     internal async Task<bool> Load_Async() {
@@ -88,7 +89,7 @@ public partial class ClientSessionManager(
                 ClientDataAccess_Terms termsData,
                 ClientDataAccess_ClientSessionBundle sessionBundle,
                 bool triggerEvents ) {
-        ClientSessionManager.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
+        LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
 Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize( userAndAppData ) );
 
         //

@@ -11,7 +11,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimpleUserSessions : IServerDataAccess {
         public async Task VisitSimpleUserSession_Async(
                 IDbConnection dbCon,
-                ServerSessionManager sessMngr ) {
+                ClientSessionManager sessMngr ) {
         if( !sessMngr.IsLoaded ) {
             throw new Exception( "Session not loaded." );
         }

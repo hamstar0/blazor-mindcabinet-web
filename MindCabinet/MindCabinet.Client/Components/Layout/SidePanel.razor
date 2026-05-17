@@ -5,16 +5,16 @@
 @using MindCabinet.Shared.DataObjects.PostsContext
 
 
-@if( this.SessionData.UserId is not null ) {
+@if( this.MySessionMngr.UserId is not null ) {
     <PostsContextPicker
         Description="Select the current 'context'"
         InitialContexts=@this.Contexts_Cache
-        InitialCurrentContext=@this.SessionData.GetCurrentContext()
+        InitialCurrentContext=@this.MySessionMngr.GetCurrentContext()
         OnContextPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />
     <PostsContextEditor
         @ref=@this.PostsContextEditorComponent
-        InitialContext=@this.SessionData.GetCurrentContext()
+        InitialContext=@this.MySessionMngr.GetCurrentContext()
         OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
         OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
 } else {

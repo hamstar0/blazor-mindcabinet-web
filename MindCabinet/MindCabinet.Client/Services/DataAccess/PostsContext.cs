@@ -3,6 +3,7 @@ using System.Text.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.Term;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -11,18 +12,20 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_PostsContext(
             HttpClient http,
-            ClientSessionManager sessionData
+            LocalClientSessionManager mySessionMngr
         ) : IClientDataAccess {
     private HttpClient Http = http;
 
-    private ClientSessionManager SessionData = sessionData;
+    private LocalClientSessionManager MySessionMngr = mySessionMngr;
 
 
 
-    public class GetForCurrentUserByCriteria_Params {
+    public class GetByCriteria_Params {
         public string? NameContains { get; set; }
 
         public PostsContextId[] Ids { get; set; } = [];
+
+        public TermId[] TagTermIds { get; set; } = [];
     }
 
     public class Get_Return {
@@ -33,8 +36,8 @@ public partial class ClientDataAccess_PostsContext(
     public const string GetForCurrentUserByCriteria_Route = "GetForCurrentUserByCriteria";
 
     public async Task<Get_Return> GetForCurrentUserByCriteria_Async(
-                GetForCurrentUserByCriteria_Params parameters ) {
-        if( this.SessionData.UserId is null ) {
+                GetByCriteria_Params parameters ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -89,7 +92,7 @@ public partial class ClientDataAccess_PostsContext(
     public const string CreateForCurrentUser_Route = "CreateForCurrentUser";
     
     public async Task<CreateOrUpdate_Return> CreateForCurrentUser_Async( PostsContextObject.Raw parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( !parameters.IsValid(true) ) {
@@ -116,7 +119,7 @@ public partial class ClientDataAccess_PostsContext(
     public const string UpdateForCurrentUser_Route = "UpdateForCurrentUser";
     
     public async Task<CreateOrUpdate_Return> UpdateForCurrentUser_Async( PostsContextObject.Prototype parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( parameters.Id is null || parameters.Id == 0 ) {

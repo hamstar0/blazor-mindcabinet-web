@@ -9,6 +9,7 @@ using MindCabinet.Shared.Utility;
 using System.Data;
 using MindCabinet.Services;
 using System.Text.Json;
+using MindCabinet.Utility;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -50,52 +51,64 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
     public async Task<IEnumerable<PostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params parameters,
+                ClientDataAccess_PostsContext.GetByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         if( parameters.Ids.Any(id => id == 0) ) {
             throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
         }
+        if( parameters.TagTermIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "Some TagTermIds are not valid (must be non-zero)." );
+        }
 
-        string sql1 = $"SELECT * FROM {TableName} AS MyContext";
+        var sqlBuilder = new SimpleSqlSelectBuilder(
+            tableName: $"{TableName} AS MyContext",
+            columnNames: new[] {
+                $"MyContext.{TableColumn_Id}",
+                $"MyContext.{TableColumn_Name}",
+                $"MyContext.{TableColumn_Description}"
+            }
+        );
         var sqlParams1 = new Dictionary<string, object>();
 
-        bool needsAnd = false;
-        
         if( parameters.Ids.Length >= 2 ) {
-            sql1 += " WHERE MyContext.{TableColumn_Id} IN @Ids";
+            sqlBuilder.AddWhereClause(
+                $"MyContext.{TableColumn_Id} IN @Ids"
+            );
             sqlParams1.Add( "@Ids", parameters.Ids );
-            needsAnd = true;
         } else if( parameters.Ids.Length == 1 ) {
-            sql1 += " WHERE MyContext.{TableColumn_Id} = @Id";
+            sqlBuilder.AddWhereClause(
+                $"MyContext.{TableColumn_Id} = @Id"
+            );
             sqlParams1.Add( "@Id", parameters.Ids[0] );
-            needsAnd = true;
+        }
+
+        if( parameters.TagTermIds.Any() ) {
+            sqlBuilder.JoinClause = $"INNER JOIN {ServerDataAccess_PostsContextTermEntry.TableName} AS MyContextTags";
+            sqlBuilder.JoinClause += $"/n ON MyContext.{TableColumn_Id} = MyContextTags.{ServerDataAccess_PostsContextTermEntry.TableColumn_PostsContextId}";
+
+            sqlBuilder.AddWhereClause(
+                $"MyContextTags.{ServerDataAccess_PostsContextTermEntry.TableColumn_TermId} IN @TagTermIds"
+            );
+            sqlParams1.Add( "@TagTermIds", parameters.TagTermIds );
         }
 
         if( !string.IsNullOrEmpty(parameters.NameContains) ) {
-            if( needsAnd ) {
-                sql1 += " AND";
-            } else {
-                sql1 += " WHERE";
-            }
+            sqlBuilder.AddWhereClause(
+                $"MyContext.{TableColumn_Name} LIKE @NameContains ESCAPE '\\\\'"
+            );
 
-            sql1 += $" MyContext.{TableColumn_Name} LIKE @Body ESCAPE '\\\\'";
-            
-            string body = parameters.NameContains.Replace( "%", "\\%" );
-            body = body.Replace( "_", "\\_" );
-            //body = body.Replace( "[", "\\[" );
+            string nameContains = parameters.NameContains.Replace( "%", "\\%" );
+            nameContains = nameContains.Replace( "_", "\\_" );
+            //nameContains = nameContains.Replace( "[", "\\[" );
 
-            sqlParams1["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
-
-            needsAnd = true;
+            sqlParams1["@NameContains"] = new DbString { Value = $"%{nameContains}%", IsAnsi = true };
         }
-        sql1 += ";";
 
 //this.Logger.LogInformation( "SQL: "+sql1+" PARAMS: "+JsonSerializer.Serialize(sqlParams1) );
-        IEnumerable<PostsContextObject.Raw> contexts
-            = await dbCon.QueryAsync<PostsContextObject.Raw>(
-                sql1,
-                new DynamicParameters(sqlParams1)
-            );
+        IEnumerable<PostsContextObject.Raw> contexts = await dbCon.QueryAsync<PostsContextObject.Raw>(
+            sql: sqlBuilder.Build(),
+            param: new DynamicParameters(sqlParams1)
+        );
 
         if( alsoGetEntries ) {
             foreach( PostsContextObject.Raw ctx in contexts ) {

@@ -26,7 +26,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
     public const string GetCurrent_Path = "Session";
     public const string GetCurrent_Route = "GetCurrentDataBundle";
 
-    public async Task<ClientSessionManager.DataBundle> GetCurrent_Async(
+    public async Task<LocalClientSessionManager.DataBundle> GetCurrent_Async(
                 HttpClient httpClient,
                 ClientDataAccess_Terms termsData ) {
         HttpResponseMessage msg = await httpClient.PostAsJsonAsync(
@@ -65,7 +65,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
             ? await userAppDataMaybeTask
             : null;
 
-        return new ClientSessionManager.DataBundle(
+        return new LocalClientSessionManager.DataBundle(
             sessionId: sessionData.SessionId,
             userData: sessionData.UserData,
             userAppData: userAppDataMaybe

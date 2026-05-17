@@ -41,7 +41,7 @@ public class Program {
             builder.Services.AddScoped( implementation );
         }
 
-        builder.Services.AddSingleton<ClientSessionManager>();
+        builder.Services.AddSingleton<LocalClientSessionManager>();
 
 		var host = builder.Build();
 

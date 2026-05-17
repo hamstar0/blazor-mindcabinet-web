@@ -15,14 +15,8 @@ public partial class UserLoginForm : ComponentBase {
 
 
 
-    //[Inject]
-    //private IJSRuntime Js { get; set; } = null!;
-
     [Inject]
     private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
-
-    [Inject]
-    private ClientSessionManager SessionData { get; set; } = null!;
 
 
     private string MyModalId => "UserLoginForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);

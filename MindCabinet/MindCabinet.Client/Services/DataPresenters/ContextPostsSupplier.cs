@@ -15,15 +15,12 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 public partial class ContextPostsSupplier(
             ILogger<ContextPostsSupplier> logger,
-            ClientSessionManager sessionData,
-            ClientDataAccess_PostsContext postsContextsData,
+            LocalClientSessionManager mySessionMngr,
             ClientDataAccess_PrioritizedPosts postsData
         ) : IClientDataProcessors {
     private ILogger<ContextPostsSupplier> Logger = logger;
 
-    private ClientSessionManager SessionData = sessionData;
-
-    private ClientDataAccess_PostsContext PostsContextsData = postsContextsData;
+    private LocalClientSessionManager MySessionMngr = mySessionMngr;
     
     private ClientDataAccess_PrioritizedPosts PrioritizedPostsData = postsData;
 
@@ -40,7 +37,7 @@ public partial class ContextPostsSupplier(
                 ClientDataAccess_Terms termsData,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
-        PostsContextObject? postsContext = this.SessionData.GetCurrentContext();
+        PostsContextObject? postsContext = this.MySessionMngr.GetCurrentContext();
         if( postsContext is null ) {
             return [];
         }
@@ -80,7 +77,7 @@ public partial class ContextPostsSupplier(
     public async Task<int> GetCurrentContextPostCount_Async(
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
-        PostsContextObject? currCtx = this.SessionData.GetCurrentContext();
+        PostsContextObject? currCtx = this.MySessionMngr.GetCurrentContext();
         if( currCtx is null ) {
             return 0;
         }

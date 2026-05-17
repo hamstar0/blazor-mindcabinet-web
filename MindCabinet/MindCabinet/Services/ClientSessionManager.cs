@@ -12,10 +12,10 @@ namespace MindCabinet.Services;
 
 
 
-public partial class ServerSessionManager(
-            ILogger<ServerSessionManager> logger,
+public partial class ClientSessionManager(
+            ILogger<ClientSessionManager> logger,
             IHttpContextAccessor httpContext ) {
-    private readonly ILogger<ServerSessionManager> Logger = logger;
+    private readonly ILogger<ClientSessionManager> Logger = logger;
 
     private readonly IHttpContextAccessor HttpContext = httpContext;
 

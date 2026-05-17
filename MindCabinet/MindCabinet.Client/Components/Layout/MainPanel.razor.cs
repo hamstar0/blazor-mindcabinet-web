@@ -11,7 +11,7 @@ public partial class MainPanel : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientSessionManager SessionData { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
     //[Inject]
     //public LocalData LocalData { get; set; } = null!;
@@ -32,12 +32,12 @@ public partial class MainPanel : ComponentBase {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterUserAndAppDataEvent_Async(
+        await this.MySessionMngr.RegisterUserAndAppDataEvent_Async(
             name: "MainPanel",
             callback: async (_) => this.StateHasChanged()
         );
 
-        await this.SessionData.RegisterPostsContextEvent_Async(
+        await this.MySessionMngr.RegisterPostsContextEvent_Async(
             name: "MainPanel",
             callback: async (_) => {
                 if( this.BrowserComponent is not null ) {

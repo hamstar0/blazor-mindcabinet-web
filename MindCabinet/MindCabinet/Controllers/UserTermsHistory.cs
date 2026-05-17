@@ -21,14 +21,14 @@ public partial class UserTermsHistoryController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
-    private readonly ServerSessionManager SessionManager;
+    private readonly ClientSessionManager SessionManager;
 
 
 
     public UserTermsHistoryController(
                 DbAccess dbAccess,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-                ServerSessionManager sessionData ) {
+				ClientSessionManager sessionData ) {
         this.DbAccess = dbAccess;
         this.UserTermsHistoryData = userTermsHistoryData;
         this.SessionManager = sessionData;

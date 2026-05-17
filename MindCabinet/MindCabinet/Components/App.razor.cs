@@ -17,7 +17,7 @@ public partial class App : ComponentBase {
     private ServerDataAccess_SimpleUserSessions UserSessionsData { get; set; } = null!;
 
     [Inject]
-    private ServerSessionManager SessionManager { get; set; } = null!;
+    private ClientSessionManager SessionManager { get; set; } = null!;
 
 
 

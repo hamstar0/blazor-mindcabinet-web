@@ -9,7 +9,7 @@
 
 
 <div component-name="Main" class=@this.AddedClasses>
-    @if( this.SessionData.UserName is not null ) {
+    @if( this.MySessionMngr.UserName is not null ) {
 	    <ContextPostsBrowser @ref=this.BrowserComponent />
 	    <SimplePostEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
     } else {

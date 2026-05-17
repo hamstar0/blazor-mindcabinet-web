@@ -23,7 +23,7 @@ public partial class ContextPostsBrowser : ComponentBase {
     //public LocalData LocalData { get; set; } = null!;
 
     [Inject]
-    public ClientSessionManager SessionData { get; set; } = null!;
+    public LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
     [Inject]
     public ClientDataAccess_Terms TermsData { get; set; } = null!;
@@ -67,7 +67,7 @@ public partial class ContextPostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() {
-        PostsContextObject? context = this.SessionData.GetCurrentContext();
+        PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
         if( context is null ) {
             return [];
         }

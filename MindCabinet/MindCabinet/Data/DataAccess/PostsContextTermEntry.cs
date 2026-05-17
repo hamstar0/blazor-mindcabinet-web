@@ -14,21 +14,25 @@ namespace MindCabinet.Data.DataAccess;
 
 public partial class ServerDataAccess_PostsContextTermEntry( ILogger<ServerDataAccess_PostsContextTermEntry> logger ) : IServerDataAccess {
     public const string TableName = "PostsContextEntries";
+    public const string TableColumn_PostsContextId = "PostsContextId";
+    public const string TableColumn_TermId = "TermId";
+    public const string TableColumn_Priority = "Priority";
+    public const string TableColumn_IsRequired = "IsRequired";
 
 
 
     public async Task<bool> Install_Async( IDbConnection dbConnection ) {
         await dbConnection.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                PostsContextId BIGINT NOT NULL,
-                TermId BIGINT NOT NULL,
-                Priority DOUBLE NOT NULL,
-                IsRequired BOOLEAN NOT NULL,
-                 PRIMARY KEY (PostsContextId, TermId),
-                 CONSTRAINT FK_{TableName}_PostsContextId FOREIGN KEY (PostsContextId)
-                    REFERENCES {ServerDataAccess_PostsContexts.TableName}(Id),
-                 CONSTRAINT FK_{TableName}_TermId FOREIGN KEY (TermId)
-                    REFERENCES {ServerDataAccess_Terms.TableName}(Id)
+                {TableColumn_PostsContextId} BIGINT NOT NULL,
+                {TableColumn_TermId} BIGINT NOT NULL,
+                {TableColumn_Priority} DOUBLE NOT NULL,
+                {TableColumn_IsRequired} BOOLEAN NOT NULL,
+                 PRIMARY KEY ({TableColumn_PostsContextId}, {TableColumn_TermId}),
+                 CONSTRAINT FK_{TableName}_{TableColumn_PostsContextId} FOREIGN KEY ({TableColumn_PostsContextId})
+                    REFERENCES {ServerDataAccess_PostsContexts.TableName}({ServerDataAccess_PostsContexts.TableColumn_Id}),
+                 CONSTRAINT FK_{TableName}_{TableColumn_TermId} FOREIGN KEY ({TableColumn_TermId})
+                    REFERENCES {ServerDataAccess_Terms.TableName}({ServerDataAccess_Terms.TableColumn_Id})
             );"
         );
 

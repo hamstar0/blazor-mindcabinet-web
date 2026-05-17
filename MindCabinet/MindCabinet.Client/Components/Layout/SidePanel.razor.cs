@@ -15,7 +15,7 @@ public partial class SidePanel {
 
 
     [Inject]
-    private ClientSessionManager SessionData { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
     [Inject]
     private ClientDataAccess_Terms TermsData { get; set; } = null!;
@@ -38,7 +38,7 @@ public partial class SidePanel {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.SessionData.RegisterPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
+        await this.MySessionMngr.RegisterPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
 	}
 
 	protected override async Task OnParametersSetAsync() {
@@ -49,12 +49,12 @@ public partial class SidePanel {
 
 
     private async Task<PostsContextObject[]> GetContexts_Async() {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             return [];
         }
         
         PostsContextObject.Raw[] ctxs = (await this.PostsContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Params {
+            new ClientDataAccess_PostsContext.GetByCriteria_Params {
                 NameContains = null,
                 Ids = []
             }
@@ -67,7 +67,7 @@ public partial class SidePanel {
     }
     
     private async Task SetContext_Async( PostsContextObject context ) {
-        await this.SessionData.SetCurrentContext_Await( this.UserAppData, context );
+        await this.MySessionMngr.SetCurrentContext_Await( this.UserAppData, context );
         
         this.PostsContextEditorComponent.SetDefaultContext( context );
 

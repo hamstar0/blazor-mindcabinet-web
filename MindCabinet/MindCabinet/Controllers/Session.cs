@@ -22,7 +22,7 @@ public class SessionController(
             ILogger<SessionController> logger,
             DbAccess dbAccess,
             ServerDataAccess_SimpleUserSessions sessionsData,
-            ServerSessionManager sessMngr
+			ClientSessionManager sessMngr
         ) : ControllerBase {
     private readonly ILogger<SessionController> Logger = logger;
 
@@ -30,7 +30,7 @@ public class SessionController(
 
     private readonly ServerDataAccess_SimpleUserSessions SessionsData = sessionsData;
 
-    private readonly ServerSessionManager SessionManager = sessMngr;
+    private readonly ClientSessionManager SessionManager = sessMngr;
 
     
 
@@ -63,7 +63,7 @@ public class SessionController(
     }
 
 
-    [HttpGet(ClientSessionManager.Logout_Route)]
+    [HttpGet( LocalClientSessionManager.Logout_Route)]
     public async Task<string> Logout_Async() {
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );

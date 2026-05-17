@@ -22,7 +22,7 @@ public partial class UserTermFavoritesController : ControllerBase {
 
     private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
 
-    private readonly ServerSessionManager SessionManager;
+    private readonly ClientSessionManager SessionManager;
 
 
 
@@ -31,7 +31,7 @@ public partial class UserTermFavoritesController : ControllerBase {
                 ServerDataAccess_SimpleUsers simpleUsersData,
                 ServerDataAccess_SimpleUserSessions sessionsData,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
-                ServerSessionManager sessMngr ) {
+				ClientSessionManager sessMngr ) {
         this.DbAccess = dbAccess;
         this.FavoriteTermsData = favoriteTermsData;
         this.SessionManager = sessMngr;

@@ -31,14 +31,14 @@ public partial class Home : ComponentBase {
     //public ClientDbAccess DbAccess { get; set; } = null!;
 
     [Inject]
-    private ClientSessionManager SessionData { get; set; } = null!;
+    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
 
 
     protected async override Task OnInitializedAsync() {
         await base.OnInitializedAsync();
 
-        if( await this.SessionData.Load_Async() ) {
+        if( await this.MySessionMngr.Load_Async() ) {
             this.StateHasChanged();
         }
     }

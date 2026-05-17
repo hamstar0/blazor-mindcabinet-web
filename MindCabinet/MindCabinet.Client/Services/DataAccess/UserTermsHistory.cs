@@ -8,10 +8,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientSessionManager sessionData ) : IClientDataAccess {
+public partial class ClientDataAccess_UserTermsHistory( HttpClient http, LocalClientSessionManager mySessionMngr ) : IClientDataAccess {
     private HttpClient Http = http;
 
-    private ClientSessionManager SessionData = sessionData;
+    private LocalClientSessionManager MySessionMngr = mySessionMngr;
 
 
     public class GetTermIdsForCurrentUser_Params {
@@ -22,7 +22,7 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
     public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
@@ -51,7 +51,7 @@ public partial class ClientDataAccess_UserTermsHistory( HttpClient http, ClientS
     public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
 
     public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
-        if( this.SessionData.UserId is null ) {
+        if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 

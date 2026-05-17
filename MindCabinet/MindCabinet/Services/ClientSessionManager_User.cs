@@ -7,7 +7,7 @@ namespace MindCabinet.Services;
 
 
 
-public partial class ServerSessionManager {
+public partial class ClientSessionManager {
     /**
      * @return `true` if session is a valid user.
      */
