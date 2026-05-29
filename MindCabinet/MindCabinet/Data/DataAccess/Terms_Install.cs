@@ -42,7 +42,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                 IDbConnection dbConnection ) {
         TermId userConceptTermId = (await this.Create_Async(
             dbCon: dbConnection,
-            parameters: new ClientDataAccess_Terms.Create_Params {
+            parameters: new ClientDataAccess_Terms.IAPI.Create_Params {
                 TermPattern = "Simple User",
                 //Description = "A term that represents an instance of a 'SimpleUser'.",
                 ContextId = null

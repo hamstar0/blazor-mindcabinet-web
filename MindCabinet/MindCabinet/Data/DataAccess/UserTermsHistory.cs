@@ -17,8 +17,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetByUserId_Async(
                 IDbConnection dbCon,
-                SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
+                SimpleUserId simpleUserId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -36,7 +35,7 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
     public async Task AddTerm_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }

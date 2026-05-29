@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
@@ -6,17 +7,17 @@ using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public partial class SimpleUserController : ControllerBase {
+[HubRoute( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
+public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IAPI {
     private readonly ILogger<SimpleUserController> Logger;
 
     private readonly DbAccess DbAccess;
@@ -66,14 +67,17 @@ public partial class SimpleUserController : ControllerBase {
         this.SessionManager = sessMngr;
     }
 
-    [HttpPost(ClientDataAccess_SimpleUsers.Create_Route)]
-    public async Task<ClientDataAccess_SimpleUsers.Create_Return> Create_Async(
-                ClientDataAccess_SimpleUsers.Create_Params parameters ) {
+
+    public async Task<ClientDataAccess_SimpleUsers.IAPI.Create_Return> Create_Async(
+                ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters ) {
         if( parameters.IsValidated ) {
-            return new ClientDataAccess_SimpleUsers.Create_Return { User = null, Status = "Not permitted." };
+            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "Not permitted." };   // maybe watch this guy from now on
         }
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
+        }
+        if( this.SessionManager.UserOfSession is not null ) {
+            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "User already in session" };
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
@@ -99,7 +103,7 @@ public partial class SimpleUserController : ControllerBase {
         // }
         this.Logger.LogInformation( $"User already exists? {result.AlreadyExists}" );
 
-        return new ClientDataAccess_SimpleUsers.Create_Return {
+        return new ClientDataAccess_SimpleUsers.IAPI.Create_Return {
             User = result.User is not null
                 ? new SimpleUserObject.ClientObject( result.User.Id, result.User.Name, result.User.Created, result.User.Email )
                 : null,

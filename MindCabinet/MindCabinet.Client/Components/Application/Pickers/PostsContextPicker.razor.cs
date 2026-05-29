@@ -74,7 +74,7 @@ public partial class PostsContextPicker : ComponentBase {
         }
 
         IEnumerable<PostsContextObject.Raw> ctxsRaw = (await this.PostsContextData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsContext.GetByCriteria_Params { NameContains = searchText }
+            new ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params { NameContains = searchText }
         )).Contexts;
 
         this.SearchOptions = await ClientDataAccess_PostsContext

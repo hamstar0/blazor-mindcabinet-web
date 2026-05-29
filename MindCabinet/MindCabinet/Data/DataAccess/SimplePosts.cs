@@ -29,7 +29,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
 
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
-                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters,
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters,
                 bool countOnly ) {
         bool hasWhere = false;
         string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM {TableName} AS MyPosts ";
@@ -98,7 +98,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags termSetsData,
-                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.AllTagIds.Any(id => id == 0) ) {
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
@@ -133,7 +133,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.AllTagIds.Any(id => id == 0) ) {
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
@@ -169,7 +169,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_SimplePosts.Create_Params parameters,
+                ClientDataAccess_SimplePosts.IAPI.Create_Params parameters,
                 bool addCurrentUserTag,
                 bool skipHistory ) {
         if( simpleUserId == 0 ) {
@@ -227,7 +227,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 await termHistoryData.AddTerm_Async(
                     dbCon,
                     simpleUserId,
-                    new ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params {
+                    new ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params {
                         TermId = termId
                     }
                 );

@@ -64,11 +64,6 @@ public partial class LocalClientSessionManager(
     private async Task LoadData_Async() {
         using IServiceScope scope = this.ServiceScopeFactory.CreateScope();
 
-        HttpClient? httpClient = scope.ServiceProvider.GetService<HttpClient>();
-        if( httpClient is null ) {
-            throw new InvalidOperationException( "HttpClient service not available in ClientSessionData." );
-        }
-
         ClientDataAccess_Terms? termsData = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
         if( termsData is null ) {
             throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
@@ -81,15 +76,14 @@ public partial class LocalClientSessionManager(
 
         //
 
-        await this.LoadData_Async( httpClient, termsData, sessionBundle, true );
+        await this.LoadData_Async( termsData, sessionBundle, true );
     }
     
     private async Task LoadData_Async(
-                HttpClient httpClient,
                 ClientDataAccess_Terms termsData,
                 ClientDataAccess_ClientSessionBundle sessionBundle,
                 bool triggerEvents ) {
-        LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( httpClient, termsData );
+        LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( termsData );
 Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize( userAndAppData ) );
 
         //

@@ -4,102 +4,52 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
+using Microsoft.AspNetCore.SignalR.Client;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_SimplePosts( HttpClient http ) : IClientDataAccess {
-    private HttpClient Http = http;
+public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
+    private HubConnection HubConnection;
 
 
-    public class GetByCriteria_Params {
-        public string? BodyPattern { get; set; }
-        public TermId[] AllTagIds { get; set; } = [];
-        public bool SortAscendingByDate { get; set; }
-        public int PageNumber { get; set; }
-        public int PostsPerPage { get; set; }
 
-
-        public override string ToString() {
-            return ((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
-                // +($"({string.Join(",", this.Tags.Select(t=>t.Term))}), ")
-                +($"({string.Join(",", this.AllTagIds)}), ")
-                +($"{this.SortAscendingByDate}, ")
-                +($"{this.PageNumber}, ")
-                +($"{this.PostsPerPage}]");
-        }
+    public ClientDataAccess_SimplePosts() {
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl( "/"+IAPI.BaseRoute )
+            .Build();
     }
 
-    public class GetByCriteria_Return {
-        public IEnumerable<SimplePostObject.Raw> Posts { get; set; } = [];
+    public async ValueTask DisposeAsync() {
+        await this.HubConnection.DisposeAsync();
     }
 
-    public const string GetByCriteria_Path = "SimplePost";
-    public const string GetByCriteria_Route = "GetByCriteria";
 
-    public async Task<GetByCriteria_Return> GetByCriteria_Async( GetByCriteria_Params parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
-            value: parameters
+    public async Task<IAPI.GetByCriteria_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        return await IClientDataAccess.CallHub<IAPI.GetByCriteria_Return>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetByCriteria_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        GetByCriteria_Return? ret = await msg.Content.ReadFromJsonAsync<GetByCriteria_Return>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize GetByCriteria_Return" );
-        }
-
-        return ret;
     }
     
-    public const string GetCountByCriteria_Path = "SimplePost";
-    public const string GetCountByCriteria_Route = "GetCountByCriteria";
 
-    public async Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters ) {
-		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
-        
-        //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
-        HttpResponseMessage msg = await this.Http.PostAsync(
-            requestUri: $"{GetCountByCriteria_Path}/{GetCountByCriteria_Route}",
-            content: content,
-            cancellationToken: default
+    public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        return await IClientDataAccess.CallHub<int>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetCountByCriteria_Async ),
+            args: new object[] { parameters }
         );
-
-		msg.EnsureSuccessStatusCode();
-
-        int? ret = await msg.Content.ReadFromJsonAsync<int>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize int" );
-        }
-
-        return ret.Value;
     }
 
 
-    public class Create_Params {
-        public string Body { get; set; } = "";
-        public TermId[] TermIds { get; set; } = [];
-    }
-    
-    public const string Create_Path = "SimplePost";
-    public const string Create_Route = "Create";
-
-    public async Task<SimplePostObject.Raw> Create_Async( Create_Params parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{Create_Path}/{Create_Route}",
-            value: parameters
+    public async Task<SimplePostObject.Raw> Create_Async( IAPI.Create_Params parameters ) {
+        return await IClientDataAccess.CallHub<SimplePostObject.Raw>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.Create_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        SimplePostObject.Raw? ret = await msg.Content.ReadFromJsonAsync<SimplePostObject.Raw>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize SimplePostEntry" );
-        }
-
-        return ret;
     }
 }

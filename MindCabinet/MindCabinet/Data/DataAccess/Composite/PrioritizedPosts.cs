@@ -23,7 +23,7 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
                 ServerDataAccess_SimplePostTags postTagsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return [];
         }
@@ -68,7 +68,7 @@ public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }

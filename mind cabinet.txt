@@ -13,7 +13,8 @@ v1
 -	Implement admin features
 -	Implement invalid session ip handling
 -	Implement email validation on registration
--	Ensure user is validated before using write or sensitive read API calls (including user API itself)
+-	Add manual-unlocked hard limit to API upload content per user (1 MB?)
+-	Ensure (again) user is validated before using write or sensitive read API calls (including user API itself)
 v0.9
 -	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
 -	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
@@ -22,6 +23,7 @@ v0.9
 v0.8
 -	Implement post grid view
 -	Styling!
+-	Show user name next to Logout button
 v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
@@ -36,10 +38,9 @@ v0.6
 -	@Ensure singleton services are thread safe
 -	@Test favorites, recent tags, context sidebar, etc.
 -	Channel API calls through Hub (test)
--	Show user name next to Logout button
+
+
 -	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
-
-
 -	Prevent invalid character inputs in term editor, context editor
 -	Implement "current context" editor + picker (sidebar)
 	-	On picking or editing a context, update the main posts view of that context

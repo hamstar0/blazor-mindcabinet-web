@@ -74,8 +74,8 @@ public partial class UserRegistrationForm : ComponentBase {
             return (false, "Invalid input");
         }
 
-        ClientDataAccess_SimpleUsers.Create_Return ret = await this.SimpleUsersData.Create_Async(
-            new ClientDataAccess_SimpleUsers.Create_Params { 
+        ClientDataAccess_SimpleUsers.IAPI.Create_Return ret = await this.SimpleUsersData.Create_Async(
+            new ClientDataAccess_SimpleUsers.IAPI.Create_Params { 
                 Name = userName,
                 Email = email,
                 Password = password,

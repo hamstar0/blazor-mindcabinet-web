@@ -182,7 +182,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 ServerDataAccess_UserAppData userAppData,
-                ClientDataAccess_SimpleUsers.Create_Params parameters,
+                ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 bool detectCollision,
                 bool createPostsContext ) {
         SimpleUserObject.StatusCode code;
@@ -297,7 +297,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         return (
-            await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.Create_Params {
+            await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.IAPI.Create_Params {
                 TermPattern = userName,
                 ContextId = serverDataObj?.UsersConceptTermId
             } )
@@ -309,7 +309,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ClientDataAccess_SimpleUsers.Create_Params parameters,
+                ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 TermId userAsTermId ) {
         PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
             Name = $"{parameters.Name}'s posts",

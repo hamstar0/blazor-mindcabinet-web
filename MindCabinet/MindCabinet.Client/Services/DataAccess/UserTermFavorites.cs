@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -8,78 +9,48 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermFavorites( HttpClient http, LocalClientSessionManager mySessionMngr ) : IClientDataAccess {
-    private HttpClient Http = http;
+public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
+    private HubConnection HubConnection;
 
-    private LocalClientSessionManager MySessionMngr = mySessionMngr;
+    private LocalClientSessionManager MySessionMngr;
 
 
-    public class GetTermIdsForCurrentUser_Params {   //( long userId )
-        //public long UserId { get; } = userId;
+
+    public ClientDataAccess_UserTermFavorites( LocalClientSessionManager mySessionMngr ) {
+        this.MySessionMngr = mySessionMngr;
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl( "/"+IAPI.BaseRoute )
+            .Build();
     }
 
-    public const string GetFavTermsForCurrentUser_Path = "UserTermFavorites";
-    public const string GetFavTermsForCurrentUser_Route = "GetFavoriteTermsForCurrentUser";
+    public async ValueTask DisposeAsync() {
+        await this.HubConnection.DisposeAsync();
+    }
+
 
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
-        if( this.MySessionMngr.UserId is null ) {
-            throw new InvalidOperationException( "No user in session" );
-        }
-
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetFavTermsForCurrentUser_Path}/{GetFavTermsForCurrentUser_Route}",
-            value: new GetTermIdsForCurrentUser_Params()    //parameters
+        return await IClientDataAccess.CallHub<IEnumerable<UserTermFavoriteObject.Raw>>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetFavTermsForCurrentUser_Async ),
+            args: new object[] { new IAPI.GetFavTermsForCurrentUser_Params() }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        IEnumerable<UserTermFavoriteObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserTermFavoriteObject.Raw>>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<UserTermFavoriteObject.DatabaseEntry>" );
-        }
-
-        return ret;
     }
 
 
-    public class AddTermsForCurrentUser_Params {
-        public TermId[] TermIds { get; set; } = [];
-    }
-
-    public const string AddTermsForCurrentUser_Path = "UserTermFavorites";
-    public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
-
-    public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
-        if( this.MySessionMngr.UserId is null ) {
-            throw new InvalidOperationException( "No user in session" );
-        }
-
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
-            value: parameters
+    public async Task AddTermsForCurrentUser_Async( IAPI.AddTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallHub<object>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.AddTermsForCurrentUser_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
     }
 
 
-    public class RemoveTermsForCurrentUser_Params {
-        public TermId[] TermIds { get; set; } = [];
-    }
-
-    public const string RemoveTermsForCurrentUser_Path = "UserTermFavorites";
-    public const string RemoveTermsForCurrentUser_Route = "RemoveTermsForCurrentUser";
-
-    public async Task RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters ) {
-        if( this.MySessionMngr.UserId is null ) {
-            throw new InvalidOperationException( "No user in session" );
-        }
-
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{RemoveTermsForCurrentUser_Path}/{RemoveTermsForCurrentUser_Route}",
-            value: parameters
+    public async Task RemoveTermsForCurrentUser_Async( IAPI.RemoveTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallHub<object>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.RemoveTermsForCurrentUser_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
@@ -8,16 +9,16 @@ using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.DataObjects.UserTermHistory;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public partial class UserTermFavoritesController : ControllerBase {
+[HubRoute( ClientDataAccess_UserTermFavorites.IAPI.BaseRoute )]
+public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTermFavorites.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
@@ -38,9 +39,8 @@ public partial class UserTermFavoritesController : ControllerBase {
     }
 
     
-    [HttpPost(ClientDataAccess_UserTermFavorites.GetFavTermsForCurrentUser_Route)]
-    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetTermIdsForCurrentUserId_Async(
-                ClientDataAccess_UserTermFavorites.GetTermIdsForCurrentUser_Params parameters ) {
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async(
+                ClientDataAccess_UserTermFavorites.IAPI.GetFavTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -52,9 +52,8 @@ public partial class UserTermFavoritesController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Route)]
-    public async Task AddTermIdsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.AddTermsForCurrentUser_Params parameters ) {
+    public async Task AddTermsForCurrentUser_Async(
+                ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -65,9 +64,8 @@ public partial class UserTermFavoritesController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Route)]
-    public async Task RemoveTermIdsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params parameters ) {
+    public async Task RemoveTermsForCurrentUser_Async(
+                ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

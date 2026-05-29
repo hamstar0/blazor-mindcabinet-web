@@ -1,0 +1,66 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Data;
+using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
+using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Utility.Attributes;
+using System.Data;
+
+
+namespace MindCabinet.Hubs;
+
+
+[HubRoute( ClientDataAccess_Terms.IAPI.BaseRoute )]
+public class TermController : Hub, ClientDataAccess_Terms.IAPI {
+    private readonly DbAccess DbAccess;
+
+    private readonly ServerDataAccess_Terms TermsData;
+
+    private readonly ClientSessionManager SessionManager;
+
+
+
+    public TermController(
+                DbAccess dbAccess,
+                ServerDataAccess_Terms termsData,
+                ClientSessionManager sessionManager ) {
+        this.DbAccess = dbAccess;
+        this.TermsData = termsData;
+        this.SessionManager = sessionManager;
+    }
+
+
+    public async Task<ClientDataAccess_Terms.IAPI.GetByX_Return> GetByCriteria_Async(
+                ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        IEnumerable<TermObject.Raw> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
+
+        return new ClientDataAccess_Terms.IAPI.GetByX_Return( terms );
+    }
+
+
+    public async Task<ClientDataAccess_Terms.IAPI.GetByX_Return> GetByIds_Async(
+                IEnumerable<TermId> ids ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, ids );
+
+        return new ClientDataAccess_Terms.IAPI.GetByX_Return( terms );
+    }
+
+
+    public async Task<ClientDataAccess_Terms.IAPI.Create_Return> Create_Async(
+                ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        return await this.TermsData.Create_Async( dbCon, parameters );
+    }
+}

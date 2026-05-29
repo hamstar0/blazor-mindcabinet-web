@@ -1,19 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public class SimplePostController : ControllerBase {
+[HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
+public class SimplePostController : Hub, ClientDataAccess_SimplePosts.IAPI {
     private readonly ILogger<SimplePostController> Logger;
 
     private readonly DbAccess DbAccess;
@@ -56,25 +57,28 @@ public class SimplePostController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_SimplePosts.GetByCriteria_Route)]
-    public async Task<ClientDataAccess_SimplePosts.GetByCriteria_Return> GetByCriteria_Async(
-                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+    public async Task<ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return> GetByCriteria_Async(
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async( dbCon, this.TermsData, this.SimplePostTagsData, parameters );
-        return new ClientDataAccess_SimplePosts.GetByCriteria_Return { Posts = posts };
+        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async(
+            dbCon,
+            this.TermsData,
+            this.SimplePostTagsData,
+            parameters
+        );
+        return new ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return { Posts = posts };
     }
 
-    [HttpPost(ClientDataAccess_SimplePosts.GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
-                ClientDataAccess_SimplePosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsData.GetCountByCriteria_Async( dbCon, parameters );
     }
 
-    [HttpPost(ClientDataAccess_SimplePosts.Create_Route)]
-    public async Task<SimplePostObject.Raw> Create_Async( ClientDataAccess_SimplePosts.Create_Params parameters ) {
+    public async Task<SimplePostObject.Raw> Create_Async(
+                ClientDataAccess_SimplePosts.IAPI.Create_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

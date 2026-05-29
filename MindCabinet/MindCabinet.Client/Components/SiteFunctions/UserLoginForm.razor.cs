@@ -53,8 +53,8 @@ public partial class UserLoginForm : ComponentBase {
 
 
     private async Task<(bool success, string status)> Submit_Async( string userName, string password ) {
-        ClientDataAccess_SimpleUsers.Login_Return reply = await this.UsersData.Login_Async(
-            new ClientDataAccess_SimpleUsers.Login_Params { 
+        ClientDataAccess_SimpleUsers.IAPI.Login_Return reply = await this.UsersData.Login_Async(
+            new ClientDataAccess_SimpleUsers.IAPI.Login_Params { 
                 Name = userName,
                 Password = password
             }

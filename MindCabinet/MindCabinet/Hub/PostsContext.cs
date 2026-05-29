@@ -8,20 +8,21 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
 using System.Text.Json;
 using MindCabinet.Services;
+using MindCabinet.Utility.Attributes;
+using Microsoft.AspNetCore.SignalR;
 
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public class PostsContextController(
-                ILogger<PostsContextController> logger,
+[HubRoute( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
+public class PostsContextHub(
+                ILogger<PostsContextHub> logger,
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-				ClientSessionManager sessMngr ) : ControllerBase {
-    private readonly ILogger<PostsContextController> Logger = logger;
+				ClientSessionManager sessMngr ) : Hub, ClientDataAccess_PostsContext.IAPI {
+    private readonly ILogger<PostsContextHub> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
 
@@ -33,9 +34,9 @@ public class PostsContextController(
 
 
 
-    [HttpPost(ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Route)]
-    public async Task<ClientDataAccess_PostsContext.Get_Return> GetForCurrentUserByCriteria_Async(
-                ClientDataAccess_PostsContext.GetByCriteria_Params parameters ) {
+    //[HttpPost(ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Route)]
+    public async Task<ClientDataAccess_PostsContext.IAPI.Get_Return> GetForCurrentUserByCriteria_Async(
+                ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -57,11 +58,10 @@ public class PostsContextController(
             alsoGetEntries: true
         );
 
-        return new ClientDataAccess_PostsContext.Get_Return { Contexts = contexts };
+        return new ClientDataAccess_PostsContext.IAPI.Get_Return { Contexts = contexts };
     }
 
-    [HttpPost(ClientDataAccess_PostsContext.CreateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> CreateForCurrentUser_Async(
+    public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -79,8 +79,7 @@ public class PostsContextController(
         );
     }
 
-    [HttpPost(ClientDataAccess_PostsContext.UpdateForCurrentUser_Route)]
-    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
+    public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );

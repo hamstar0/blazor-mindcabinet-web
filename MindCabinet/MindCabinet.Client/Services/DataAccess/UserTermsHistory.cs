@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -8,58 +9,39 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_UserTermsHistory( HttpClient http, LocalClientSessionManager mySessionMngr ) : IClientDataAccess {
-    private HttpClient Http = http;
+public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
+    private HubConnection HubConnection;
 
-    private LocalClientSessionManager MySessionMngr = mySessionMngr;
+    private LocalClientSessionManager MySessionMngr;
 
 
-    public class GetTermIdsForCurrentUser_Params {
-        //public long UserId { get; set; }
+
+    public ClientDataAccess_UserTermsHistory( LocalClientSessionManager mySessionMngr ) {
+        this.MySessionMngr = mySessionMngr;
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl( "/"+IAPI.BaseRoute )
+            .Build();
     }
 
-    public const string GetTermIdsForCurrentUser_Path = "UserTermsHistory";
-    public const string GetTermIdsForCurrentUser_Route = "GetTermIdsForCurrentUser";
+    public async ValueTask DisposeAsync() {
+        await this.HubConnection.DisposeAsync();
+    }
+
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
-        if( this.MySessionMngr.UserId is null ) {
-            throw new InvalidOperationException( "No user in session" );
-        }
-
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{GetTermIdsForCurrentUser_Path}/{GetTermIdsForCurrentUser_Route}",
-            new GetTermIdsForCurrentUser_Params()  //parameters
+        return await IClientDataAccess.CallHub<IEnumerable<UserTermHistoryObject.Raw>>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetHistTermsForCurrentUser_Async ),
+            args: new object[] { }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        IEnumerable<UserTermHistoryObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<UserTermHistoryObject.Raw>>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<UserHistoryTermObject.DatabaseEntry>" );
-        }
-
-        return ret;
     }
 
 
-    public class AddTermsForCurrentUser_Params {
-        //public SimpleUserId SimpleUserId { get; set; }
-        public TermId TermId { get; set; }
-    }
-
-    public const string AddTermsForCurrentUser_Path = "UserTermsHistory";
-    public const string AddTermsForCurrentUser_Route = "AddTermsForCurrentUser";
-
-    public async Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters ) {
-        if( this.MySessionMngr.UserId is null ) {
-            throw new InvalidOperationException( "No user in session" );
-        }
-
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            $"{AddTermsForCurrentUser_Path}/{AddTermsForCurrentUser_Route}",
-            parameters
+    public async Task AddHistTermsForCurrentUser_Async( IAPI.AddHistTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallHub<object>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.AddHistTermsForCurrentUser_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
     }
 }

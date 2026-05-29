@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -10,100 +11,45 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_Terms( HttpClient http ) : IClientDataAccess {
-    private HttpClient Http = http;
+public partial class ClientDataAccess_Terms : IClientDataAccess {
+    private HubConnection HubConnection;
 
 
 
-    public class GetByX_Return( IEnumerable<TermObject.Raw> terms ) {
-        public IEnumerable<TermObject.Raw> Terms { get; } = terms;
+    public ClientDataAccess_Terms() {
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl( "/"+IAPI.BaseRoute )
+            .Build();
     }
 
-    public const string GetByIds_Path = "Term";
-    public const string GetByIds_Route = "GetByIds";
+    public async ValueTask DisposeAsync() {
+        await this.HubConnection.DisposeAsync();
+    }
 
-    public async Task<GetByX_Return> GetByIds_Async( IEnumerable<TermId> termIds ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetByIds_Path}/{GetByIds_Route}",
-            value: termIds
+
+    public async Task<IAPI.GetByX_Return> GetByIds_Async( IEnumerable<TermId> termIds ) {
+        return await IClientDataAccess.CallHub<IAPI.GetByX_Return>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetByIds_Async ),
+            args: new object[] { termIds }
         );
-        
-        msg.EnsureSuccessStatusCode();
-
-        GetByX_Return? ret = await msg.Content.ReadFromJsonAsync<GetByX_Return>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize GetByX_Return" );
-        }
-        
-        return ret;
     }
 
 
-    public class GetByCriteria_Params {
-        public string TermPattern { get; set; } = "";
-
-        public TermId? ContextTermId { get; set; }
-
-        public string? ContextTermPattern { get; set; }
-
-        // public PrimitiveOptional<long>? ContextContextTermId { get; } = contextContextTermId;
-    }
-    
-    public const string GetByCriteria_Path = "Term";
-    public const string GetByCriteria_Route = "GetByCriteria";
-    
-    public async Task<GetByX_Return> GetByCriteria_Async( GetByCriteria_Params parameters ) {
-//Console.WriteLine( "GetTermsByCriteria_Async "+JsonSerializer.Serialize(parameters) );
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
-            value: parameters
+    public async Task<IAPI.GetByX_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        return await IClientDataAccess.CallHub<IAPI.GetByX_Return>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetByCriteria_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-//string jsondata = await msg.Content.ReadAsStringAsync();
-//Console.WriteLine( "Term/GetByCriteria: "+jsondata );
-//return new List<TermEntry>();
-        GetByX_Return? ret = await msg.Content.ReadFromJsonAsync<GetByX_Return>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize GetByX_Return" );
-        }
-
-//if( ret.Count() > 0 ) {
-//Console.WriteLine( "GetTermsByCriteria_Async "+parameters.TermPattern+", "+parameters.Context?.ToString()
-//    +", ["+string.Join( ",", ret.Select(t => t.Term) )+"] ("+ret.Count()+")" );
-//}
-        return ret;
     }
 
 
-    public class Create_Params {
-        public string TermPattern { get; set; } = "";
-        public TermId? ContextId { get; set; }
-        public TermId? AliasId { get; set; }
-    }
-
-    public class Create_Return {
-        public bool IsAdded { get; set; }
-        public TermObject.Raw TermRaw { get; set; } = null!;
-    }
-
-    public const string Create_Path = "Term";
-    public const string Create_Route = "Create";
-    
-    public async Task<Create_Return> Create_Async( Create_Params parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{Create_Path}/{Create_Route}",
-            value: parameters
+    public async Task<IAPI.Create_Return> Create_Async( IAPI.Create_Params parameters ) {
+        return await IClientDataAccess.CallHub<IAPI.Create_Return>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.Create_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        Create_Return? ret = await msg.Content.ReadFromJsonAsync<Create_Return>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize TermEntry" );
-        }
-
-        return ret;
     }
 }

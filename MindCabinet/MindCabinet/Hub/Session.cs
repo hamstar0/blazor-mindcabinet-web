@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess.Bundled;
@@ -7,23 +8,23 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
+[HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
 public class SessionController(
             ILogger<SessionController> logger,
             DbAccess dbAccess,
             ServerDataAccess_SimpleUserSessions sessionsData,
 			ClientSessionManager sessMngr
-        ) : ControllerBase {
+        ) : Hub, ClientDataAccess_ClientSessionBundle.IAPI {
     private readonly ILogger<SessionController> Logger = logger;
 
     private readonly DbAccess DbAccess = dbAccess;
@@ -34,8 +35,7 @@ public class SessionController(
 
     
 
-    [HttpPost(ClientDataAccess_ClientSessionBundle.GetCurrent_Route)]
-    public async Task<ClientDataAccess_ClientSessionBundle.GetCurrentDataBundle_Return> GetCurrent_Async( object _ ) {
+    public async Task<ClientDataAccess_ClientSessionBundle.IAPI.GetCurrentDataBundle_Return> GetCurrent_Async( object _ ) {
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -43,7 +43,7 @@ public class SessionController(
             throw new NullReferenceException( "Session has no ID." );
         }
 
-        var ret = new ClientDataAccess_ClientSessionBundle.GetCurrentDataBundle_Return {
+        var ret = new ClientDataAccess_ClientSessionBundle.IAPI.GetCurrentDataBundle_Return {
             SessionId = this.SessionManager.CurrentSessionId,
             UserData = this.SessionManager.UserOfSession is not null
                 ? new SimpleUserObject.ClientObject(
@@ -63,7 +63,6 @@ public class SessionController(
     }
 
 
-    [HttpGet( LocalClientSessionManager.Logout_Route)]
     public async Task<string> Logout_Async() {
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );

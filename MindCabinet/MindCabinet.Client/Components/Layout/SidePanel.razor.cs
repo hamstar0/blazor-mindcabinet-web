@@ -54,7 +54,7 @@ public partial class SidePanel {
         }
         
         PostsContextObject.Raw[] ctxs = (await this.PostsContextsData.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsContext.GetByCriteria_Params {
+            new ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params {
                 NameContains = null,
                 Ids = []
             }

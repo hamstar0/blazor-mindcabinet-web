@@ -74,8 +74,8 @@ public partial class TermEditor : ComponentBase {
     }
 
     private async Task<bool> SubmitNewTerm_Async( string termText, TermObject? contextTerm ) {
-        ClientDataAccess_Terms.Create_Return newTermRet = await this.TermsData.Create_Async(
-            new ClientDataAccess_Terms.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
+        ClientDataAccess_Terms.IAPI.Create_Return newTermRet = await this.TermsData.Create_Async(
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
         TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsData, newTermRet.TermRaw );
@@ -95,7 +95,7 @@ public partial class TermEditor : ComponentBase {
         }
 
         IEnumerable<TermObject.Raw> termsRaw = (await this.TermsData.GetByCriteria_Async(
-            new ClientDataAccess_Terms.GetByCriteria_Params { TermPattern = termText!, ContextTermId = null, ContextTermPattern = null }
+            new ClientDataAccess_Terms.IAPI.GetByCriteria_Params { TermPattern = termText!, ContextTermId = null, ContextTermPattern = null }
         )).Terms;
 
         IEnumerable<Task<TermObject>> termTasks = termsRaw.Select(

@@ -3,9 +3,9 @@ using MindCabinet.Shared.Utility;
 namespace MindCabinet.Utility;
 
 
-public class SimpleTableBuilder(
+public class SimpleSqlTableBuilder(
                 string name,
-                SimpleTableBuilder.ColumnDefinition[] columnDefinitions,
+                SimpleSqlTableBuilder.ColumnDefinition[] columnDefinitions,
                 string[] postFixs ) {
     public class ColumnDefinition( string name, string type, string? details ) {
         public string Name { get; } = name;

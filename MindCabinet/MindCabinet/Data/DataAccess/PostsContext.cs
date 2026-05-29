@@ -51,7 +51,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
     public async Task<IEnumerable<PostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ClientDataAccess_PostsContext.GetByCriteria_Params parameters,
+                ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         if( parameters.Ids.Any(id => id == 0) ) {
             throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
@@ -123,7 +123,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
     }
 
 
-    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> Create_Async(
+    public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Create_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 PostsContextObject.Prototype parameters ) {
@@ -152,11 +152,11 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             );
         }
 
-        return new ClientDataAccess_PostsContext.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
+        return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
     }
 
 
-    public async Task<ClientDataAccess_PostsContext.CreateOrUpdate_Return> Update_Async(
+    public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Update_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
                 PostsContextObject.Prototype parameters ) {
@@ -191,7 +191,7 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             );
         }
 
-        return new ClientDataAccess_PostsContext.CreateOrUpdate_Return {
+        return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return {
             Id = parameters.Id.Value
         };
     }

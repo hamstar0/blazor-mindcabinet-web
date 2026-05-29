@@ -6,84 +6,43 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Text.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
 
 
 
-public partial class ClientDataAccess_PrioritizedPosts( HttpClient http ) : IClientDataAccess {
-    private HttpClient Http = http;
+public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
+    private HubConnection HubConnection;
 
 
-    public class GetByCriteria_Params(
-                PostsContextId postsContextId,
-                string? bodyPattern,
-                TermId[] additionalTagIds,
-                bool sortAscendingByDate,
-                int pageNumber,
-                int postsPerPage ) {
-        public PostsContextId PostsContextId { get; } = postsContextId;
-        public string? BodyPattern { get; } = bodyPattern;
-        public TermId[] AdditionalTagIds { get; } = additionalTagIds;
-        public bool SortAscendingByDate { get; } = sortAscendingByDate;
-        public int PageNumber { get; } = pageNumber;
-        public int PostsPerPage { get; } = postsPerPage;
+
+    public ClientDataAccess_PrioritizedPosts() {
+        this.HubConnection = new HubConnectionBuilder()
+            .WithUrl( "/"+IAPI.BaseRoute )
+            .Build();
+    }
+
+    public async ValueTask DisposeAsync() {
+        await this.HubConnection.DisposeAsync();
+    }
 
 
-        public override string ToString() {
-            return "Prioritized Posts Params: "
-                +this.PostsContextId+", "
-                +((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
-                +"["+string.Join(",", this.AdditionalTagIds)+"], "
-                +this.SortAscendingByDate+", "
-                +this.PageNumber+", "
-                +this.PostsPerPage;
-        }
+    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        return await IClientDataAccess.CallHub<IEnumerable<SimplePostObject.Raw>>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetByCriteria_Async ),
+            args: new object[] { parameters }
+        );
     }
 
     
-
-    public const string GetByCriteria_Path = "PrioritizedPosts";
-    public const string GetByCriteria_Route = "GetByCriteria";
-
-    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( GetByCriteria_Params parameters ) {
-        HttpResponseMessage msg = await this.Http.PostAsJsonAsync(
-            requestUri: $"{GetByCriteria_Path}/{GetByCriteria_Route}",
-            value: parameters
+    public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        return await IClientDataAccess.CallHub<int>(
+            hubConnection: this.HubConnection,
+            methodName: nameof( IAPI.GetCountByCriteria_Async ),
+            args: new object[] { parameters }
         );
-
-        msg.EnsureSuccessStatusCode();
-
-        IEnumerable<SimplePostObject.Raw>? ret = await msg.Content.ReadFromJsonAsync<IEnumerable<SimplePostObject.Raw>>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize IEnumerable<SimplePostObject.Raw>" );
-        }
-// Console.WriteLine( $"Result: {JsonSerializer.Serialize(ret)}" );
-
-        return ret;
-    }
-    
-    public const string GetCountByCriteria_Path = "PrioritizedPosts";
-    public const string GetCountByCriteria_Route = "GetCountByCriteria";
-
-    public async Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters ) {
-		JsonContent content = JsonContent.Create( parameters, mediaType: null, null );
-        
-        //HttpResponseMessage msg = await this.Http.PostAsJsonAsync( "Post/GetCountByCriteria", parameters );
-        HttpResponseMessage msg = await this.Http.PostAsync(
-            requestUri: $"{GetCountByCriteria_Path}/{GetCountByCriteria_Route}",
-            content: content,
-            cancellationToken: default
-        );
-
-		msg.EnsureSuccessStatusCode();
-
-        int? ret = await msg.Content.ReadFromJsonAsync<int>();
-        if( ret is null ) {
-            throw new InvalidDataException( "Could not deserialize int" );
-        }
-
-        return ret.Value;
     }
 }

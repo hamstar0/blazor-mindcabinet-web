@@ -52,7 +52,7 @@ public partial class SimplePostEditor : ComponentBase {
 
     private async Task Submit_UI_Async() {
         SimplePostObject.Raw post = await this.SimplePostsData.Create_Async(
-            new ClientDataAccess_SimplePosts.Create_Params { Body = this.PostText, TermIds = this.Tags.Select( t => t.Id ).ToArray() }
+            new ClientDataAccess_SimplePosts.IAPI.Create_Params { Body = this.PostText, TermIds = this.Tags.Select( t => t.Id ).ToArray() }
         );
 
         this.PostText = "";

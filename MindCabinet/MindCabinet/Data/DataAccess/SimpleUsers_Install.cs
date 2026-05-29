@@ -60,7 +60,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             postsContextTermEntryData: postsContextTermEntryData,
             serverData: serverData,
             userAppData: userAppData,
-            parameters: new ClientDataAccess_SimpleUsers.Create_Params {
+            parameters: new ClientDataAccess_SimpleUsers.IAPI.Create_Params {
                 Name = "hamstar",   // temporary!!!!!
                 Email = "hamstarhelper@gmail.com",
                 Password = "12345A",

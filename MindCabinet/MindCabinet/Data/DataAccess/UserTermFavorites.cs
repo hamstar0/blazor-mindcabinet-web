@@ -16,7 +16,7 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.GetTermIdsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.GetFavTermsForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -62,7 +62,7 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.RemoveTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }

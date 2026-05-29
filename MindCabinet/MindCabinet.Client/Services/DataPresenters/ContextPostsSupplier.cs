@@ -43,7 +43,7 @@ public partial class ContextPostsSupplier(
         }
 
         IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsData.GetByCriteria_Async(
-            new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
+            new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
                 postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
@@ -83,7 +83,7 @@ public partial class ContextPostsSupplier(
         }
 
         int totalPosts = await this.PrioritizedPostsData.GetCountByCriteria_Async(
-            new ClientDataAccess_PrioritizedPosts.GetByCriteria_Params(
+            new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
                 postsContextId: currCtx.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
@@ -7,16 +8,16 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.UserTermHistory;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public partial class UserTermsHistoryController : ControllerBase {
+[HubRoute( ClientDataAccess_UserTermsHistory.IAPI.BaseRoute )]
+public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTermsHistory.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
@@ -35,22 +36,19 @@ public partial class UserTermsHistoryController : ControllerBase {
     }
 
     
-    [HttpPost(ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Route)]
-    public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetForCurrentUserId_Async(
-                ClientDataAccess_UserTermsHistory.GetTermIdsForCurrentUser_Params parameters ) {
+    public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionManager.UserOfSession.Id );
     }
 
 
-    [HttpPost(ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Route)]
-    public async Task AddFavoriteTermsByIdForCurrentUserId_Async(
-                ClientDataAccess_UserTermsHistory.AddTermsForCurrentUser_Params parameters ) {
+    public async Task AddHistTermsForCurrentUser_Async(
+                ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

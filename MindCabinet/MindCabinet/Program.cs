@@ -4,6 +4,7 @@ using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Components;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Extensions;
 using MindCabinet.Services;
 using MindCabinet.Shared.Utility;
 
@@ -45,6 +46,7 @@ public class Program {
         //} );
         // builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddSignalR();
 
         builder.Services.AddSingleton<StaticServerSettings>();
 
@@ -109,6 +111,7 @@ public class Program {
             await next();
         } );
 
+        app.MapHubs(); 
         app.MapControllers();
         //app.MapFallbackToPage("");
         //app.MapFallbackToFile("404page.html");

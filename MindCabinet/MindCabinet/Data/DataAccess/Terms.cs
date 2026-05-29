@@ -45,7 +45,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     
     public async Task<IEnumerable<TermObject.Raw>> GetTermsByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_Terms.GetByCriteria_Params parameters ) {
+                ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters ) {
         //var terms = this.Terms.Values
         //	.Where( t => t.DeepTest(parameters.TermPattern, parameters.Context) );
 
@@ -84,23 +84,23 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 	}
 
 
-    public async Task<ClientDataAccess_Terms.Create_Return> Create_Async(
+    public async Task<ClientDataAccess_Terms.IAPI.Create_Return> Create_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_Terms.Create_Params parameters ) {
+                ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
         if( !TermObject.ValidateTerm(parameters.TermPattern) ) {
             throw new ArgumentException( "Term is not valid." );
         }
 
 		IEnumerable<TermObject.Raw> matchingTerms = await this.GetTermsByCriteria_Async(
             dbCon: dbCon,
-			parameters: new ClientDataAccess_Terms.GetByCriteria_Params {
+			parameters: new ClientDataAccess_Terms.IAPI.GetByCriteria_Params {
 				TermPattern = parameters.TermPattern,
                 ContextTermId = parameters.ContextId,
                 ContextTermPattern = null
             }
 		);
 		if( matchingTerms.Count() == 1 ) {
-			return new ClientDataAccess_Terms.Create_Return { IsAdded = false, TermRaw = matchingTerms.First() };
+			return new ClientDataAccess_Terms.IAPI.Create_Return { IsAdded = false, TermRaw = matchingTerms.First() };
 		} else if( matchingTerms.Count() >= 2 ) {
             throw new Exception( "Multiple matching terms found." );
         }
@@ -127,6 +127,6 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
 			aliasId: parameters.AliasId
 		);
 
-        return new ClientDataAccess_Terms.Create_Return { IsAdded = true, TermRaw = newTerm };
+        return new ClientDataAccess_Terms.IAPI.Create_Return { IsAdded = true, TermRaw = newTerm };
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
@@ -7,16 +8,16 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Data.DataAccess.Composite;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 using static MindCabinet.Data.DataAccess.Composite.ServerDataAccess_PrioritizedPosts;
 
 
-namespace MindCabinet.Controllers.Composite;
+namespace MindCabinet.Hubs.Composite;
 
 
-[ApiController]
-[Route("[controller]")]
-public class PrioritizedPostsController : ControllerBase {
+[HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
+public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_PrioritizedPosts PrioritizedPostsData;
@@ -52,9 +53,8 @@ public class PrioritizedPostsController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_PrioritizedPosts.GetByCriteria_Route)]
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
-                ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetByCriteria_Async(
@@ -67,9 +67,8 @@ public class PrioritizedPostsController : ControllerBase {
         );
     }
 
-    [HttpPost(ClientDataAccess_PrioritizedPosts.GetCountByCriteria_Route)]
     public async Task<int> GetCountByCriteria_Async(
-                ClientDataAccess_PrioritizedPosts.GetByCriteria_Params parameters ) {
+                ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetCountByCriteria_Async(

@@ -1,19 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Utility.Attributes;
 using System.Data;
 
 
-namespace MindCabinet.Controllers;
+namespace MindCabinet.Hubs;
 
 
-[ApiController]
-[Route("[controller]")]
-public class UserAppDataController : ControllerBase {
+[HubRoute( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
+public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_UserAppData UserAppData;
@@ -32,8 +33,7 @@ public class UserAppDataController : ControllerBase {
     }
 
 
-    [HttpPost(ClientDataAccess_UserAppData.GetForCurrentUser_Route)]
-    public async Task<ClientDataAccess_UserAppData.GetForCurrentUser_Return> GetForCurrentUser_Async( object _ ) {
+    public async Task<ClientDataAccess_UserAppData.IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async( object _ ) {
         if( this.ServerSessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
@@ -48,12 +48,11 @@ public class UserAppDataController : ControllerBase {
             throw new Exception( "User app data missing for user." );
         }
 
-        return new ClientDataAccess_UserAppData.GetForCurrentUser_Return {
+        return new ClientDataAccess_UserAppData.IAPI.GetForCurrentUser_Return {
             UserAppData = userAppDataRaw
         };
     }
 
-    [HttpPost(ClientDataAccess_UserAppData.UpdateForCurrentUser_Route)]
     public async Task<object> UpdateForCurrentUser_Async(
                 UserAppDataObject.Prototype parameters ) {
         if( this.ServerSessionManager.UserOfSession is null ) {
