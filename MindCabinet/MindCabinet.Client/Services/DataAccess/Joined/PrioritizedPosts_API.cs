@@ -15,7 +15,7 @@ namespace MindCabinet.Client.Services.DbAccess.Joined;
 
 public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
     public interface IAPI : IServerDataAccessAPI {
-        public const string BaseRoute = "Terms";
+        public const string BaseRoute = "PrioritizedPosts";
 
 
 

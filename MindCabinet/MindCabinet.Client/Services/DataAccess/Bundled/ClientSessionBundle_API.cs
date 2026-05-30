@@ -13,7 +13,7 @@ namespace MindCabinet.Client.Services.DbAccess.Bundled;
 
 public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
     public interface IAPI : IServerDataAccessAPI {
-        public const string BaseRoute = "Terms";
+        public const string BaseRoute = "Session";
 
 
 

@@ -6,6 +6,7 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -17,9 +18,10 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
 
 
 
-    public ClientDataAccess_UserAppData() {
+    public ClientDataAccess_UserAppData( NavigationManager navigationManager ) {
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -28,7 +30,7 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
     }
 
     public async Task<IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async() {
-        return await IClientDataAccess.CallHub<IAPI.GetForCurrentUser_Return>(
+        return await IClientDataAccess.CallHub_Async<IAPI.GetForCurrentUser_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetForCurrentUser_Async ),
             args: new object[] { }
@@ -37,7 +39,7 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
 
 
     public async Task UpdateForCurrentUser_Async( UserAppDataObject.Prototype parameters ) {
-        await IClientDataAccess.CallHub<object>(
+        await IClientDataAccess.CallHub_Async<object>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.UpdateForCurrentUser_Async ),
             args: new object[] { parameters }

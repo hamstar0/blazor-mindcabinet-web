@@ -13,7 +13,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     public interface IAPI : IServerDataAccessAPI {
-        public const string BaseRoute = "SimplePost";
+        public const string BaseRoute = "SimplePosts";
 
 
 

@@ -5,6 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -20,10 +21,12 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
 
 
-    public ClientDataAccess_PostsContext( LocalClientSessionManager mySessionMngr ) {
+    public ClientDataAccess_PostsContext( LocalClientSessionManager mySessionMngr, NavigationManager navigationManager ) {
         this.MySessionMngr = mySessionMngr;
+
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -38,7 +41,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        return await IClientDataAccess.CallHub<IAPI.Get_Return>(
+        return await IClientDataAccess.CallHub_Async<IAPI.Get_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetForCurrentUserByCriteria_Async ),
             args: new object[] { parameters }
@@ -54,7 +57,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new ArgumentException( $"Invalid PostsContextObject.Raw parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
-        return await IClientDataAccess.CallHub<IAPI.CreateOrUpdate_Return>(
+        return await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.CreateForCurrentUser_Async ),
             args: new object[] { parameters }
@@ -70,7 +73,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
 
-        return await IClientDataAccess.CallHub<IAPI.CreateOrUpdate_Return>(
+        return await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.UpdateForCurrentUser_Async ),
             args: new object[] { parameters }

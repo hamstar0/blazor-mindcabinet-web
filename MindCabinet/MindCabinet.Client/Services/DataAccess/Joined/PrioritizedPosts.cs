@@ -7,6 +7,7 @@ using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Text.Json;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
@@ -18,9 +19,10 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
 
 
 
-    public ClientDataAccess_PrioritizedPosts() {
+    public ClientDataAccess_PrioritizedPosts( NavigationManager navigationManager ) {
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -30,7 +32,7 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
 
 
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub<IEnumerable<SimplePostObject.Raw>>(
+        return await IClientDataAccess.CallHub_Async<IEnumerable<SimplePostObject.Raw>>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetByCriteria_Async ),
             args: new object[] { parameters }
@@ -39,7 +41,7 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
 
     
     public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub<int>(
+        return await IClientDataAccess.CallHub_Async<int>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetCountByCriteria_Async ),
             args: new object[] { parameters }

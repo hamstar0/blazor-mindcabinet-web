@@ -62,21 +62,29 @@ public partial class LocalClientSessionManager(
     }
     
     private async Task LoadData_Async() {
-        using IServiceScope scope = this.ServiceScopeFactory.CreateScope();
+        IServiceScope scope = this.ServiceScopeFactory.CreateScope();
+        
+        try {
+            ClientDataAccess_Terms? termsData = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
+            if( termsData is null ) {
+                throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
+            }
 
-        ClientDataAccess_Terms? termsData = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
-        if( termsData is null ) {
-            throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
+            ClientDataAccess_ClientSessionBundle? sessionBundle = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
+            if( sessionBundle is null ) {
+                throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
+            }
+
+            //
+
+            await this.LoadData_Async( termsData, sessionBundle, true );
+        } finally {
+            if( scope is IAsyncDisposable asyncDisposable ) {
+                await asyncDisposable.DisposeAsync();
+            } else {
+                scope.Dispose();
+            }
         }
-
-        ClientDataAccess_ClientSessionBundle? sessionBundle = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
-        if( sessionBundle is null ) {
-            throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
-        }
-
-        //
-
-        await this.LoadData_Async( termsData, sessionBundle, true );
     }
     
     private async Task LoadData_Async(

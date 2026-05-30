@@ -11,7 +11,7 @@ namespace MindCabinet.Client.Services.DataAccess;
 
 
 public interface IClientDataAccess : IAsyncDisposable {
-    public async static Task<TReturnType> CallHub<TReturnType>(
+    public async static Task<TReturnType> CallHub_Async<TReturnType>(
                 HubConnection hubConnection,
                 string methodName,
                 params object[] args ) {

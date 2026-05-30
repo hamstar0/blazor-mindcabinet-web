@@ -16,9 +16,10 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
 
 
-    public ClientDataAccess_ClientSessionBundle() {
+    public ClientDataAccess_ClientSessionBundle( NavigationManager navigationManager ) {
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -30,7 +31,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
     public async Task<LocalClientSessionManager.DataBundle> GetCurrent_Async(
                 ClientDataAccess_Terms termsData ) {
-        IAPI.GetCurrentDataBundle_Return? sessionData = await IClientDataAccess.CallHub<IAPI.GetCurrentDataBundle_Return>(
+        IAPI.GetCurrentDataBundle_Return? sessionData = await IClientDataAccess.CallHub_Async<IAPI.GetCurrentDataBundle_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetCurrent_Async ),
             args: new object[] { new object() }

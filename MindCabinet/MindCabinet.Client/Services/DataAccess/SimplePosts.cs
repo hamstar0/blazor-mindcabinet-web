@@ -5,6 +5,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -16,9 +17,10 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
 
 
 
-    public ClientDataAccess_SimplePosts() {
+    public ClientDataAccess_SimplePosts( NavigationManager navigationManager ) {
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -28,7 +30,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
 
 
     public async Task<IAPI.GetByCriteria_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub<IAPI.GetByCriteria_Return>(
+        return await IClientDataAccess.CallHub_Async<IAPI.GetByCriteria_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetByCriteria_Async ),
             args: new object[] { parameters }
@@ -37,7 +39,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     
 
     public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub<int>(
+        return await IClientDataAccess.CallHub_Async<int>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetCountByCriteria_Async ),
             args: new object[] { parameters }
@@ -46,7 +48,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
 
 
     public async Task<SimplePostObject.Raw> Create_Async( IAPI.Create_Params parameters ) {
-        return await IClientDataAccess.CallHub<SimplePostObject.Raw>(
+        return await IClientDataAccess.CallHub_Async<SimplePostObject.Raw>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.Create_Async ),
             args: new object[] { parameters }

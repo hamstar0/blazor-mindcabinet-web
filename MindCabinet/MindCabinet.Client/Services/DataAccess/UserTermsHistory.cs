@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -16,10 +17,12 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
 
 
-    public ClientDataAccess_UserTermsHistory( LocalClientSessionManager mySessionMngr ) {
+    public ClientDataAccess_UserTermsHistory( LocalClientSessionManager mySessionMngr, NavigationManager navigationManager ) {
         this.MySessionMngr = mySessionMngr;
+
+        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
         this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( "/"+IAPI.BaseRoute )
+            .WithUrl( hubUrl )
             .Build();
     }
 
@@ -29,7 +32,7 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
-        return await IClientDataAccess.CallHub<IEnumerable<UserTermHistoryObject.Raw>>(
+        return await IClientDataAccess.CallHub_Async<IEnumerable<UserTermHistoryObject.Raw>>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetHistTermsForCurrentUser_Async ),
             args: new object[] { }
@@ -38,7 +41,7 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
 
     public async Task AddHistTermsForCurrentUser_Async( IAPI.AddHistTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallHub<object>(
+        await IClientDataAccess.CallHub_Async<object>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.AddHistTermsForCurrentUser_Async ),
             args: new object[] { parameters }
