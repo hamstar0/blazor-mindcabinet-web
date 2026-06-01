@@ -14,29 +14,9 @@ namespace MindCabinet.Hubs;
 
 
 [HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
-public class SimplePostController : Hub, ClientDataAccess_SimplePosts.IAPI {
-    private readonly ILogger<SimplePostController> Logger;
-
-    private readonly DbAccess DbAccess;
-
-    private readonly ServerDataAccess_ServerData ServerData;
-
-    private readonly ServerDataAccess_UserAppData UserAppData;
-
-    private readonly ServerDataAccess_SimplePosts SimplePostsData;
-
-    private readonly ServerDataAccess_Terms TermsData;
-
-    private readonly ServerDataAccess_SimplePostTags SimplePostTagsData;
-
-    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
-
-    private readonly ClientSessionManager SessionManager;
-
-
-
-    public SimplePostController(
+public class SimplePostController(
                 ILogger<SimplePostController> logger,
+                IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_UserAppData userAppData,
@@ -44,21 +24,40 @@ public class SimplePostController : Hub, ClientDataAccess_SimplePosts.IAPI {
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags simplePostTagsData,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
-				ClientSessionManager sessMngr ) {
-        this.Logger = logger;
-        this.DbAccess = dbAccess;
-        this.ServerData = serverData;
-        this.UserAppData = userAppData;
-        this.SimplePostsData = simplePostsData;
-        this.TermsData = termsData;
-        this.SimplePostTagsData = simplePostTagsData;
-        this.UserTermsHistoryData = userTermsHistoryData;
-        this.SessionManager = sessMngr;
-    }
+                ClientSessionManager sessMngr
+            ) : Hub, ClientDataAccess_SimplePosts.IAPI {
+    private readonly ILogger<SimplePostController> Logger = logger;
+
+    private readonly IServiceProvider ServiceProvider = serviceProvider;
+
+    private readonly DbAccess DbAccess = dbAccess;
+
+    private readonly ServerDataAccess_ServerData ServerData = serverData;
+
+    private readonly ServerDataAccess_UserAppData UserAppData = userAppData;
+
+    private readonly ServerDataAccess_SimplePosts SimplePostsData = simplePostsData;
+
+    private readonly ServerDataAccess_Terms TermsData = termsData;
+
+    private readonly ServerDataAccess_SimplePostTags SimplePostTagsData = simplePostTagsData;
+
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData = userTermsHistoryData;
+
+    private readonly ClientSessionManager SessionManager = sessMngr;
+
 
 
     public async Task<ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return> GetByCriteria_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async(
@@ -72,6 +71,14 @@ public class SimplePostController : Hub, ClientDataAccess_SimplePosts.IAPI {
 
     public async Task<int> GetCountByCriteria_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsData.GetCountByCriteria_Async( dbCon, parameters );
@@ -79,6 +86,14 @@ public class SimplePostController : Hub, ClientDataAccess_SimplePosts.IAPI {
 
     public async Task<SimplePostObject.Raw> Create_Async(
                 ClientDataAccess_SimplePosts.IAPI.Create_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

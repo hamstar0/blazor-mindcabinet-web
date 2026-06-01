@@ -17,24 +17,36 @@ namespace MindCabinet.Hubs;
 public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
     private readonly DbAccess DbAccess;
 
+    private readonly IServiceProvider ServiceProvider;
+
     private readonly ServerDataAccess_UserAppData UserAppData;
 
-    private readonly ClientSessionManager ServerSessionManager;
+    private readonly ClientSessionManager SessionManager;
 
 
 
     public UserAppDataController(
                 DbAccess dbAccess,
+                IServiceProvider serviceProvider,
                 ServerDataAccess_UserAppData userAppData,
                 ClientSessionManager serverSessionManager ) {
         this.DbAccess = dbAccess;
+        this.ServiceProvider = serviceProvider;
         this.UserAppData = userAppData;
-        this.ServerSessionManager = serverSessionManager;
+        this.SessionManager = serverSessionManager;
     }
 
 
     public async Task<ClientDataAccess_UserAppData.IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async( object _ ) {
-        if( this.ServerSessionManager.UserOfSession is null ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
 
@@ -42,7 +54,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
         UserAppDataObject.Raw? userAppDataRaw = await this.UserAppData.GetById_Async(
             dbCon,
-            this.ServerSessionManager.UserOfSession?.Id ?? 0
+            this.SessionManager.UserOfSession?.Id ?? 0
         );
         if( userAppDataRaw is null ) {
             throw new Exception( "User app data missing for user." );
@@ -55,7 +67,15 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
     public async Task<object> UpdateForCurrentUser_Async(
                 UserAppDataObject.Prototype parameters ) {
-        if( this.ServerSessionManager.UserOfSession is null ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
+        if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
         if( !parameters.IsValidAsObject(true) ) {
@@ -66,7 +86,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
         await this.UserAppData.Update_Async(
             dbCon: dbCon,
-            simpleUserId: this.ServerSessionManager.UserOfSession.Id,
+            simpleUserId: this.SessionManager.UserOfSession.Id,
             postsContextId: parameters.PostsContextId ?? 0,
             userDefaultTermId: parameters.UserDefaultTermId ?? 0
         );

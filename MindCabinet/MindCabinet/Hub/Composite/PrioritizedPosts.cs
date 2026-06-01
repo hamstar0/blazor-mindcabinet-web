@@ -10,7 +10,6 @@ using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Utility.Attributes;
 using System.Data;
-using static MindCabinet.Data.DataAccess.Composite.ServerDataAccess_PrioritizedPosts;
 
 
 namespace MindCabinet.Hubs.Composite;
@@ -19,6 +18,8 @@ namespace MindCabinet.Hubs.Composite;
 [HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
 public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts.IAPI {
     private readonly DbAccess DbAccess;
+
+    private readonly IServiceProvider ServiceProvider;
 
     private readonly ServerDataAccess_PrioritizedPosts PrioritizedPostsData;
 
@@ -32,29 +33,43 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
     
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
 
+    private readonly ClientSessionManager SessionManager;
+
 
 
     public PrioritizedPostsController(
                 DbAccess dbAccess,
+                IServiceProvider serviceProvider,
                 ServerDataAccess_PrioritizedPosts prioritizedPostsData,
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags postTagsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_UserTermsHistory userTermsHistoryData ) {
+                ServerDataAccess_UserTermsHistory userTermsHistoryData,
+                ClientSessionManager sessionManager ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
+        this.ServiceProvider = serviceProvider;
         this.PrioritizedPostsData = prioritizedPostsData;
         this.TermsData = termsData;
         this.PostTagsData = postTagsData;
         this.PostsContextData = postsContextData;
         this.PostsContextTermEntryData = postsContextTermEntryData;
         this.UserTermsHistoryData = userTermsHistoryData;
+        this.SessionManager = sessionManager;
     }
 
 
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetByCriteria_Async(
@@ -69,6 +84,14 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
 
     public async Task<int> GetCountByCriteria_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PrioritizedPostsData.GetCountByCriteria_Async(

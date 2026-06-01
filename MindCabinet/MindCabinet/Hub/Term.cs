@@ -16,6 +16,8 @@ namespace MindCabinet.Hubs;
 [HubRoute( ClientDataAccess_Terms.IAPI.BaseRoute )]
 public class TermController : Hub, ClientDataAccess_Terms.IAPI {
     private readonly DbAccess DbAccess;
+    
+    private readonly IServiceProvider ServiceProvider;
 
     private readonly ServerDataAccess_Terms TermsData;
 
@@ -25,9 +27,11 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
     public TermController(
                 DbAccess dbAccess,
+                IServiceProvider serviceProvider,
                 ServerDataAccess_Terms termsData,
                 ClientSessionManager sessionManager ) {
         this.DbAccess = dbAccess;
+        this.ServiceProvider = serviceProvider;
         this.TermsData = termsData;
         this.SessionManager = sessionManager;
     }
@@ -35,6 +39,14 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
     public async Task<ClientDataAccess_Terms.IAPI.GetByX_Return> GetByCriteria_Async(
                 ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<TermObject.Raw> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
@@ -45,6 +57,14 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
     public async Task<ClientDataAccess_Terms.IAPI.GetByX_Return> GetByIds_Async(
                 IEnumerable<TermId> ids ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, ids );
@@ -55,6 +75,14 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
     public async Task<ClientDataAccess_Terms.IAPI.Create_Return> Create_Async(
                 ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

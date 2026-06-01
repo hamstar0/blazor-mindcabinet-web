@@ -19,13 +19,16 @@ namespace MindCabinet.Hubs;
 
 
 [HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
-public class SessionController(
-            ILogger<SessionController> logger,
-            DbAccess dbAccess,
-            ServerDataAccess_SimpleUserSessions sessionsData,
-			ClientSessionManager sessMngr
-        ) : Hub, ClientDataAccess_ClientSessionBundle.IAPI {
-    private readonly ILogger<SessionController> Logger = logger;
+public class SessionHub(
+                ILogger<SessionHub> logger,
+                IServiceProvider serviceProvider,
+                DbAccess dbAccess,
+                ServerDataAccess_SimpleUserSessions sessionsData,
+                ClientSessionManager sessMngr
+            ) : Hub, ClientDataAccess_ClientSessionBundle.IAPI {
+    private readonly ILogger<SessionHub> Logger = logger;
+
+    private readonly IServiceProvider ServiceProvider = serviceProvider;
 
     private readonly DbAccess DbAccess = dbAccess;
 
@@ -36,6 +39,14 @@ public class SessionController(
     
 
     public async Task<ClientDataAccess_ClientSessionBundle.IAPI.GetCurrentDataBundle_Return> GetCurrent_Async( object _ ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -64,6 +75,14 @@ public class SessionController(
 
 
     public async Task<string> Logout_Async() {
+        HttpContext? context = this.Context.GetHttpContext();
+        if( context is null ) {
+            throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+        }
+        if( !this.SessionManager.IsLoaded ) {
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }

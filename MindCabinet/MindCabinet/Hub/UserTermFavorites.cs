@@ -21,6 +21,8 @@ namespace MindCabinet.Hubs;
 public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTermFavorites.IAPI {
     private readonly DbAccess DbAccess;
 
+    private readonly IServiceProvider ServiceProvider;
+
     private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
 
     private readonly ClientSessionManager SessionManager;
@@ -29,11 +31,11 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
     public UserTermFavoritesController(
                 DbAccess dbAccess,
-                ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUserSessions sessionsData,
+                IServiceProvider serviceProvider,
                 ServerDataAccess_UserTermFavorites favoriteTermsData,
 				ClientSessionManager sessMngr ) {
         this.DbAccess = dbAccess;
+        this.ServiceProvider = serviceProvider;
         this.FavoriteTermsData = favoriteTermsData;
         this.SessionManager = sessMngr;
     }
@@ -41,6 +43,14 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
     
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermFavorites.IAPI.GetFavTermsForCurrentUser_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -54,6 +64,14 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
     public async Task AddTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -66,6 +84,14 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
     public async Task RemoveTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

@@ -20,6 +20,8 @@ namespace MindCabinet.Hubs;
 public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IAPI {
     private readonly ILogger<SimpleUserController> Logger;
 
+    private readonly IServiceProvider ServiceProvider;
+
     private readonly DbAccess DbAccess;
 
     private readonly ServerDataAccess_ServerData ServerData;
@@ -44,6 +46,7 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
     public SimpleUserController(
                 ILogger<SimpleUserController> logger,
+                IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_Terms termsData,
@@ -55,6 +58,7 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
                 ServerDataAccess_UserAppData userAppData,
 				ClientSessionManager sessMngr ) {
         this.Logger = logger;
+        this.ServiceProvider = serviceProvider;
         this.DbAccess = dbAccess;
         this.ServerData = serverData;
         this.TermsData = termsData;
@@ -70,14 +74,22 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
     public async Task<ClientDataAccess_SimpleUsers.IAPI.Create_Return> Create_Async(
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters ) {
-        if( parameters.IsValidated ) {
-            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "Not permitted." };   // maybe watch this guy from now on
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }
+        
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
         if( this.SessionManager.UserOfSession is not null ) {
             return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "User already in session" };
+        }
+        if( parameters.IsValidated ) {
+            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "Not permitted." };   // maybe watch this guy from now on
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );

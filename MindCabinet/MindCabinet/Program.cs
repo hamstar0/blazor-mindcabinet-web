@@ -13,7 +13,34 @@ namespace MindCabinet;
 
 
 
-public class Program {
+public partial class Program {
+    private static async Task LoadHttpRequestSessionManager_Async( HttpContext context ) {
+        bool isInstalling = context.Request.Path.StartsWithSegments(
+            "/Setup/Install",
+            StringComparison.OrdinalIgnoreCase
+        );
+
+        var sessionMngr = context.RequestServices.GetRequiredService<Services.ClientSessionManager>();
+        var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
+        var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
+        var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
+        var userAppData = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
+        var postsContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContexts>();
+        var postsContextTermEntryData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
+        using var dbCon = await dbAccess.GetDbConnection_Async( !isInstalling );
+
+        await sessionMngr.LoadForHttpRequest_Async(
+            dbCon,
+            termsData,
+            usersData,
+            userAppData,
+            postsContextsData,
+            postsContextTermEntryData,
+            isInstalling
+        );
+    }
+
+
     private static IEnumerable<Type> GetInterfaceImplementations( Type interfaceType ) {
         IEnumerable<Type> implementations = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany( a => a.GetTypes() )
@@ -21,6 +48,7 @@ public class Program {
 
         return implementations;
     }
+
 
 
     public static void Main( string[] args ) {
@@ -87,27 +115,7 @@ public class Program {
         //app.UseSession();
 
         app.Use( async (HttpContext context, Func<Task> next ) => {
-            bool isInstalling = context.Request.Path.StartsWithSegments( "/Setup/Install", StringComparison.OrdinalIgnoreCase );
-
-            var sessionData = context.RequestServices.GetRequiredService<Services.ClientSessionManager>();
-            var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
-            var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
-            var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
-            var userAppData = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
-            var postsContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContexts>();
-            var postsContextTermEntryData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
-            using var dbCon = await dbAccess.GetDbConnection_Async( !isInstalling );
-
-            await sessionData.Load_Async(
-                dbCon,
-                termsData,
-                usersData,
-                userAppData,
-                postsContextsData,
-                postsContextTermEntryData,
-                isInstalling
-            );
-
+            await Program.LoadHttpRequestSessionManager_Async( context );
             await next();
         } );
 

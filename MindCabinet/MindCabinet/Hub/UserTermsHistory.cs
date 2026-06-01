@@ -20,6 +20,8 @@ namespace MindCabinet.Hubs;
 public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTermsHistory.IAPI {
     private readonly DbAccess DbAccess;
 
+    private readonly IServiceProvider ServiceProvider;
+
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
 
     private readonly ClientSessionManager SessionManager;
@@ -28,15 +30,25 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
 
     public UserTermsHistoryController(
                 DbAccess dbAccess,
+                IServiceProvider serviceProvider,
                 ServerDataAccess_UserTermsHistory userTermsHistoryData,
 				ClientSessionManager sessionData ) {
         this.DbAccess = dbAccess;
+        this.ServiceProvider = serviceProvider;
         this.UserTermsHistoryData = userTermsHistoryData;
         this.SessionManager = sessionData;
     }
 
     
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -49,6 +61,14 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
 
     public async Task AddHistTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

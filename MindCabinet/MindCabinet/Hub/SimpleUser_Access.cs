@@ -5,6 +5,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
+using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using System.Data;
 using System.Security.Cryptography;
@@ -17,6 +18,14 @@ namespace MindCabinet.Hubs;
 public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IAPI {
     public async Task<ClientDataAccess_SimpleUsers.IAPI.Login_Return> Login_Async(
                 ClientDataAccess_SimpleUsers.IAPI.Login_Params parameters ) {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -54,6 +63,14 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
     }
 
     public async Task Visit_Async() {
+        if( !this.SessionManager.IsLoaded ) {
+            HttpContext? context = this.Context.GetHttpContext();
+            if( context is null ) {
+                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
+            }
+            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
+        }
+
         if( !this.SessionManager.IsLoaded || this.SessionManager.UserOfSession is null ) {
             return;
         }
