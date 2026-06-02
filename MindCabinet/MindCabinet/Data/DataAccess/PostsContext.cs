@@ -15,9 +15,17 @@ using MindCabinet.Utility;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_PostsContexts> logger ) : IServerDataAccess {
+public partial class ServerDataAccess_PostsContexts(
+                ILogger<ServerDataAccess_PostsContexts> logger,
+                StaticServerSettings serverSettings
+            ) : IServerDataAccess {
+    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw> Cache_ById = new();
+
+
+
     private readonly ILogger<ServerDataAccess_PostsContexts> Logger = logger;
 
+    private readonly StaticServerSettings ServerSettings = serverSettings;
 
 
     public async Task<PostsContextObject.Raw?> GetById_Async(
@@ -27,6 +35,12 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 bool alsoGetEntries ) {
         if( postsContextId == 0 ) {
             throw new ArgumentException( "PostsContextId is not valid (must be non-zero)." );
+        }
+
+        //
+
+        if( ServerDataAccess_PostsContexts.Cache_ById.TryGet( postsContextId, out var cached ) ) {
+            return cached;
         }
 
         var raw = await dbCon.QuerySingleOrDefaultAsync<PostsContextObject.Raw>(
@@ -43,6 +57,8 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
                 postsContextId: raw.Id
             )).ToArray();
         }
+
+        ServerDataAccess_PostsContexts.Cache_ById.Set( raw.Id, raw, this.ServerSettings.CacheExpirationDuration );
 
         return raw;
     }
@@ -144,13 +160,30 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             }
         );
 
-        foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
+        PostsContextTermEntryObject.Raw[] entries = parameters.Entries
+            .Select( e => e.ToRaw(false, true) )
+            .ToArray();
+
+        foreach( PostsContextTermEntryObject.Raw entry in entries ) {
             await postsContextTermEntryData.Create_Async(
                 dbCon: dbCon,
                 postsContextId: (PostsContextId)postsContextId,
-                parameter: entry.ToRaw(false, true)
+                parameter: entry
             );
         }
+
+        //
+
+        ServerDataAccess_PostsContexts.Cache_ById.Set(
+            key: (PostsContextId)postsContextId,
+            value: PostsContextObject.CreateRaw(
+                id: (PostsContextId)postsContextId,
+                name: parameters.Name!,
+                description: parameters.Description,
+                entries: entries
+            ),
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
     }
@@ -183,13 +216,30 @@ public partial class ServerDataAccess_PostsContexts( ILogger<ServerDataAccess_Po
             postsContextId: parameters.Id!.Value
         );
 
-        foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
+        PostsContextTermEntryObject.Raw[] entries = parameters.Entries
+            .Select( e => e.ToRaw(false, true) )
+            .ToArray();
+
+        foreach( PostsContextTermEntryObject.Raw entry in entries ) {
             await postsContextTermEntryData.Create_Async(
                 dbCon: dbCon,
                 postsContextId: parameters.Id!.Value,
-                parameter: entry.ToRaw(false, true)
+                parameter: entry
             );
         }
+
+        //
+
+        ServerDataAccess_PostsContexts.Cache_ById.Set(
+            key: parameters.Id.Value,
+            value: PostsContextObject.CreateRaw(
+                id: parameters.Id.Value,
+                name: parameters.Name!,
+                description: parameters.Description,
+                entries: entries
+            ),
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return {
             Id = parameters.Id.Value
