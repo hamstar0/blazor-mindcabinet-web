@@ -213,6 +213,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
             await termSetsData.CreateForSimplePost_Async(
                 dbCon: dbConnection,
+                termsData: termsData,
                 id: (SimplePostId)newPostId,
                 termIds: postTags.Concat( [defaultUserAsTermId] ).ToArray()
             );

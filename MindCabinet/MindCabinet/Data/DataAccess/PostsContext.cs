@@ -19,7 +19,7 @@ public partial class ServerDataAccess_PostsContexts(
                 ILogger<ServerDataAccess_PostsContexts> logger,
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw> Cache_ById = new();
+    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw> Cache_ById = new( refreshOnGet: true );
 
 
 
@@ -43,6 +43,8 @@ public partial class ServerDataAccess_PostsContexts(
             return cached;
         }
 
+        //
+
         var raw = await dbCon.QuerySingleOrDefaultAsync<PostsContextObject.Raw>(
             $"SELECT * FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new { Id = (long)postsContextId }
@@ -57,6 +59,8 @@ public partial class ServerDataAccess_PostsContexts(
                 postsContextId: raw.Id
             )).ToArray();
         }
+
+        //
 
         ServerDataAccess_PostsContexts.Cache_ById.Set( raw.Id, raw, this.ServerSettings.CacheExpirationDuration );
 

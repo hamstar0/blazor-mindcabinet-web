@@ -36,7 +36,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 {TableColumn_Email} VARCHAR(320) NOT NULL,
                 {TableColumn_PwHash} BINARY({SimpleUserObject.PasswordHashLength}) NOT NULL,
                 {TableColumn_PwSalt} BINARY({SimpleUserObject.PasswordSaltLength}) NOT NULL,
-                {TableColumn_IsValidated} BOOLEAN NOT NULL
+                {TableColumn_IsValidated} BOOLEAN NOT NULL,
+                 INDEX IDX_{TableColumn_Name} ({TableColumn_Name})
             );"
         //    ON DELETE CASCADE
         //    ON UPDATE CASCADE

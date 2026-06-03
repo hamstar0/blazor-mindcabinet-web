@@ -8,6 +8,7 @@ using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.Utility;
 using System.Data;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,6 +18,10 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
+    private static readonly SimpleCache<SimpleUserId, SimpleUserObject.Raw> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<string, SimpleUserId> Cache_ByName = new( refreshOnGet: true );
+
+
     public static byte[] GeneratePasswordSalt() {
         byte[] pwSalt = new byte[ SimpleUserObject.PasswordSaltLength ];
 
@@ -39,7 +44,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
 
-    public class SimpleUserQueryResult( SimpleUserObject.Raw? user, PostsContextObject.Raw? defaultPostsContext, TermObject.Raw? asTerm, bool alreadyExists ) {
+    public class SimpleUserQueryResult(
+                SimpleUserObject.Raw? user,
+                PostsContextObject.Raw? defaultPostsContext,
+                TermObject.Raw? asTerm, bool alreadyExists ) {
         public SimpleUserObject.Raw? User = user;
         public PostsContextObject.Raw? UserDefaultPostsContextId = defaultPostsContext;
         public TermObject.Raw? UserAsTermId = asTerm;
@@ -49,7 +57,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
     private readonly Services.ClientSessionManager SessionManager;
-    
+
     private readonly StaticServerSettings ServerSettings;
 
     private readonly ILogger<ServerDataAccess_SimpleUsers> Logger;
@@ -65,8 +73,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         this.Logger = logger;
     }
 
-    private IDictionary<SimpleUserId, SimpleUserObject.Raw> SimpleUsersById_Cache = new Dictionary<SimpleUserId, SimpleUserObject.Raw>();
-
 
 
     public async Task<SimpleUserObject.Raw?> GetById_Async( IDbConnection dbCon, SimpleUserId id ) {
@@ -74,17 +80,32 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
 
-        if( this.SimpleUsersById_Cache.ContainsKey( id ) ) {
-            return this.SimpleUsersById_Cache[id];
+        //
+
+        if( ServerDataAccess_SimpleUsers.Cache_ById.TryGet(id, out var cached) ) {
+            return cached;
         }
+
+        //
 
         SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
             $"SELECT * FROM {TableName} WHERE {TableColumn_Id} = @Id",
             new { Id = (long)id }
         );
 
+        //
+
         if( userRaw is not null ) {
-            this.SimpleUsersById_Cache.Add( id, userRaw );
+            ServerDataAccess_SimpleUsers.Cache_ById.Set(
+                key: id,
+                value: userRaw,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
+            ServerDataAccess_SimpleUsers.Cache_ByName.Set(
+                key: userRaw.Name,
+                value: userRaw.Id,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
         }
 
         return userRaw;
@@ -95,14 +116,35 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         if( SimpleUserObject.GetUserNameStatus(userName) != SimpleUserObject.StatusCode.OK ) {
             throw new ArgumentException( "Invalid user name." );
         }
+
+        //
+
+        if( ServerDataAccess_SimpleUsers.Cache_ByName.TryGet(userName, out var cachedId) ) {
+            if( ServerDataAccess_SimpleUsers.Cache_ById.TryGet(cachedId, out var cachedUser) ) {
+                return cachedUser;
+            }
+        }
+
+        //
         
         SimpleUserObject.Raw? userRaw = await dbCon.QuerySingleOrDefaultAsync<SimpleUserObject.Raw>(
             $"SELECT * FROM {TableName} WHERE {TableColumn_Name} = @Name",
             new { Name = userName }
         );
 
+        //
+
         if( userRaw is not null ) {
-            this.SimpleUsersById_Cache[ userRaw.Id ] = userRaw;
+            ServerDataAccess_SimpleUsers.Cache_ById.Set(
+                key: userRaw.Id,
+                value: userRaw,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
+            ServerDataAccess_SimpleUsers.Cache_ByName.Set(
+                key: userRaw.Name,
+                value: userRaw.Id,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
         }
 
         return userRaw;
@@ -167,9 +209,20 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             }
         }
 
+        //
+
         SimpleUserObject.Raw userRaw = userAndSessRaw.GetUserRaw();
 
-        this.SimpleUsersById_Cache.Add( userAndSessRaw.Id, userRaw );
+        ServerDataAccess_SimpleUsers.Cache_ById.Set(
+            key: userRaw.Id,
+            value: userRaw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+        ServerDataAccess_SimpleUsers.Cache_ByName.Set(
+            key: userRaw.Name,
+            value: userRaw.Id,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         return userRaw;
     }
@@ -277,6 +330,29 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 userDefaultTermId: userTerm.Id
             );
         }
+
+        //
+
+        var userRaw = SimpleUserObject.CreateRaw(
+            id: (SimpleUserId)newUserId,
+            created: now,
+            name: parameters.Name,
+            email: parameters.Email,
+            pwHash: pwHash,
+            pwSalt: pwSalt,
+            isValidated: parameters.IsValidated
+        );
+
+        ServerDataAccess_SimpleUsers.Cache_ById.Set(
+            key: userRaw.Id,
+            value: userRaw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+        ServerDataAccess_SimpleUsers.Cache_ByName.Set(
+            key: userRaw.Name,
+            value: userRaw.Id,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         //
 

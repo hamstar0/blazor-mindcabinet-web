@@ -4,6 +4,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
+using MindCabinet.Shared.Utility;
 using System.Data;
 
 
@@ -11,7 +12,17 @@ namespace MindCabinet.Data.DataAccess;
 
 
 
-public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
+public partial class ServerDataAccess_SimplePosts(
+                StaticServerSettings serverSettings
+            ) : IServerDataAccess {
+    private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw> Cache_ById = new( refreshOnGet: true );
+
+
+
+    private readonly StaticServerSettings ServerSettings = serverSettings;
+
+
+
     public async Task<SimplePostObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
                 SimplePostId id ) {
@@ -19,10 +30,28 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             throw new ArgumentException( "SimplePostId is not valid (must be non-zero)." );
         }
 
+        //
+
+        if( ServerDataAccess_SimplePosts.Cache_ById.TryGet( id, out var cached ) ) {
+            return cached;
+        }
+
+        //
+
         SimplePostObject.Raw? postRaw = await dbCon.QuerySingleOrDefaultAsync<SimplePostObject.Raw>(
             $"SELECT * FROM {TableName} AS MyPosts WHERE {TableColumn_Id} = @Id",
             new { Id = (long)id }
         );
+
+        //
+
+        if( postRaw is not null ) {
+            ServerDataAccess_SimplePosts.Cache_ById.Set(
+                key: id,
+                value: postRaw,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
+        }
 
         return postRaw;
     }
@@ -193,6 +222,15 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
             }
         );
 
+        var raw = SimplePostObject.CreateRaw(
+            id: (SimplePostId)newPostId,
+            created: now,
+            modified: now,
+            simpleUserId: simpleUserId,
+            body: parameters.Body,
+            tagsTermIdSet: parameters.TermIds
+        );
+
         if( addCurrentUserTag ) {
             UserAppDataObject.Raw? userAppData = await userData.GetById_Async( dbCon, simpleUserId );
             if( userAppData is null ) {
@@ -206,6 +244,7 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
         
         await termSetsData.CreateForSimplePost_Async(
             dbCon: dbCon,
+            termsData: termsData,
             id: (SimplePostId)newPostId,
             termIds: parameters.TermIds
         );
@@ -233,6 +272,14 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 );
             }
         }
+
+        //
+
+        ServerDataAccess_SimplePosts.Cache_ById.Set(
+            key: (SimplePostId)newPostId,
+            value: raw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         //
 

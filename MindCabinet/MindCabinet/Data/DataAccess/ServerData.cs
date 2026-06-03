@@ -14,12 +14,38 @@ using MindCabinet.Services;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_ServerData : IServerDataAccess {
+public partial class ServerDataAccess_ServerData(
+                StaticServerSettings serverSettings
+            ) : IServerDataAccess {
+    private static readonly SimpleCache<long, ServerDataObject.Raw> Cache_ById = new( refreshOnGet: true );
+
+
+
+    private readonly StaticServerSettings ServerSettings = serverSettings;
+
+
+
     public async Task<ServerDataObject.Raw?> Get_Async( IDbConnection dbCon ) {
+        if( ServerDataAccess_ServerData.Cache_ById.TryGet(0, out var cached) ) {
+            return cached;
+        }
+
+        //
+
         ServerDataObject.Raw? serverDataRaw = await dbCon.QuerySingleOrDefaultAsync<ServerDataObject.Raw>(
             $"SELECT * FROM {TableName}",
             new { }
         );
+
+        //
+
+        if( serverDataRaw is not null ) {
+            ServerDataAccess_ServerData.Cache_ById.Set(
+                0,
+                serverDataRaw,
+                this.ServerSettings.CacheExpirationDuration
+            );
+        }
 
         return serverDataRaw;
     }
@@ -45,8 +71,18 @@ public partial class ServerDataAccess_ServerData : IServerDataAccess {
             throw new InvalidOperationException( $"Record could not be created (UsersConceptTermId: {usersConceptTermId})", e );
         }
 
-        return ServerDataObject.CreateRaw(
+        var raw = ServerDataObject.CreateRaw(
             usersConceptTermId: usersConceptTermId
         );
+
+        //
+
+        ServerDataAccess_ServerData.Cache_ById.Set(
+            key: 0,
+            value: raw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+
+        return raw;
     }
 }
