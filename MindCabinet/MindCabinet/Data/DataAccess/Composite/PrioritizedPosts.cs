@@ -21,7 +21,6 @@ public partial class ServerDataAccess_PrioritizedPosts(
     
     public async Task<SimplePostObject.Raw[]> GetByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags postTagsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,

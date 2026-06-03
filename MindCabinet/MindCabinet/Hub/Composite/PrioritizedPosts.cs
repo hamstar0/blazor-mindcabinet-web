@@ -72,9 +72,13 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
+        // TODO: Properly validate that the requested context belongs to the user in session
+        if( this.SessionManager.UserAppDataOfSession?.PostsContext.Id != parameters.PostsContextId ) {
+            return [];
+        }
+        
         return await this.PrioritizedPostsData.GetByCriteria_Async(
             dbCon: dbCon,
-            termsData: this.TermsData,
             postTagsData: this.PostTagsData,
             postsContextData: this.PostsContextData,
             postsContextTermEntryData: this.PostsContextTermEntryData,

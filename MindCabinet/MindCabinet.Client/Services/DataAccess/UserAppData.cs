@@ -14,6 +14,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_UserAppData : IClientDataAccess {
+    public static UserAppDataObject.Raw? Cache_ForCurrentUser { get; private set; } = null;
+
+
+
     private HubConnection HubConnection;
 
 
@@ -30,11 +34,25 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
     }
 
     public async Task<IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async() {
-        return await IClientDataAccess.CallHub_Async<IAPI.GetForCurrentUser_Return>(
+        if( Cache_ForCurrentUser is not null ) {
+            return new IAPI.GetForCurrentUser_Return { UserAppData = Cache_ForCurrentUser };
+        }
+
+        //
+
+        var ret = await IClientDataAccess.CallHub_Async<IAPI.GetForCurrentUser_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetForCurrentUser_Async ),
             args: new object[] { }
         );
+
+        //
+
+        Cache_ForCurrentUser = ret.UserAppData;
+
+        //
+
+        return ret;
     }
 
 
@@ -44,5 +62,9 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
             methodName: nameof( IAPI.UpdateForCurrentUser_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ForCurrentUser = null;
     }
 }

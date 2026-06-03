@@ -22,6 +22,7 @@ public class SimpleCache<TKey, TValue>( bool refreshOnGet )
         this._LastUpdated[ key ] = DateTime.UtcNow;
     }
 
+
     public bool TryGet( TKey key, out TValue value ) {
         if( this._Cache.TryGetValue(key, out var entry) ) {
             if( (this._LastUpdated[key] + entry.expires) > DateTime.UtcNow ) {
@@ -52,6 +53,16 @@ public class SimpleCache<TKey, TValue>( bool refreshOnGet )
         this._LastUpdated[key] = DateTime.UtcNow;
         return entry.value;
     }
+
+
+    public IEnumerable<TValue> GetMany( IEnumerable<TKey> keys ) {
+        foreach( TKey key in keys ) {
+            if( this.TryGet(key, out var value) ) {
+                yield return value;
+            }
+        }
+    }
+
 
     public bool Remove( TKey key ) {
         bool removed = this._Cache.TryRemove( key, out _ );

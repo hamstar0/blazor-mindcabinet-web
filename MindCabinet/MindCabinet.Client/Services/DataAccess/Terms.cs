@@ -13,6 +13,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
+    private static readonly SimpleCache<TermId, TermObject.Raw?> Cache_ById = new( refreshOnGet: true );
+
+
+    
     private HubConnection HubConnection;
 
 
@@ -30,11 +34,28 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
     public async Task<IAPI.GetByX_Return> GetByIds_Async( IEnumerable<TermId> termIds ) {
-        return await IClientDataAccess.CallHub_Async<IAPI.GetByX_Return>(
+        IEnumerable<TermObject.Raw?> terms = Cache_ById.GetMany( termIds );
+        if( terms.Count() == termIds.Count() ) {
+            return new IAPI.GetByX_Return( terms.Select(t => t!) );
+        }
+
+        //
+
+        IAPI.GetByX_Return ret = await IClientDataAccess.CallHub_Async<IAPI.GetByX_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetByIds_Async ),
             args: new object[] { termIds }
         );
+
+        //
+
+        foreach( TermObject.Raw term in ret.Terms ) {
+            Cache_ById.Set( term.Id, term, TimeSpan.FromDays(365) );
+        }
+
+        //
+        
+        return ret;
     }
 
 
@@ -48,10 +69,18 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
     public async Task<IAPI.Create_Return> Create_Async( IAPI.Create_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<IAPI.Create_Return>(
+        IAPI.Create_Return ret = await IClientDataAccess.CallHub_Async<IAPI.Create_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.Create_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ById.Set( key: ret.TermRaw.Id, ret.TermRaw, TimeSpan.FromDays(365) );
+
+        //
+
+        return ret;
     }
 }

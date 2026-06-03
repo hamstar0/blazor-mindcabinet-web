@@ -6,6 +6,7 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
+using MindCabinet.Shared.Utility;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -13,6 +14,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_PostsContext : IClientDataAccess {
+    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw?> Cache_ById = new( refreshOnGet: true );
+
+
+    
     // private HttpClient Http;
 
     private LocalClientSessionManager MySessionMngr;
@@ -41,11 +46,32 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new InvalidOperationException( "No user in session" );
         }
 
-        return await IClientDataAccess.CallHub_Async<IAPI.Get_Return>(
+        //
+
+        IEnumerable<PostsContextObject.Raw?> contexts = Cache_ById.GetMany( parameters.Ids );
+        if( contexts.Count() == parameters.Ids.Length ) {
+            return new IAPI.Get_Return {
+                Contexts = contexts.Select( c => c! )
+            };
+        }
+
+        //
+
+        IAPI.Get_Return ret = await IClientDataAccess.CallHub_Async<IAPI.Get_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetForCurrentUserByCriteria_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        foreach( PostsContextObject.Raw ctx in ret.Contexts ) {
+            Cache_ById.Set( ctx.Id, ctx, TimeSpan.FromDays(365) );
+        }
+
+        //
+
+        return ret;
     }
 
 
@@ -57,11 +83,19 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new ArgumentException( $"Invalid PostsContextObject.Raw parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
-        return await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
+        IAPI.CreateOrUpdate_Return ret = await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.CreateForCurrentUser_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ById.Set( parameters.Id, parameters, TimeSpan.FromDays(365) );
+
+        //
+
+        return ret;
     }
     
 
@@ -72,6 +106,12 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
         if( parameters.Id is null || parameters.Id == 0 ) {
             throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
+
+        //
+
+        Cache_ById.Remove( parameters.Id.Value );
+
+        //
 
         return await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
             hubConnection: this.HubConnection,

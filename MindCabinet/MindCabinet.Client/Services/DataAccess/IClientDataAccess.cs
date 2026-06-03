@@ -15,7 +15,7 @@ public interface IClientDataAccess : IAsyncDisposable {
                 HubConnection hubConnection,
                 string methodName,
                 params object[] args ) {
-        if( hubConnection.State != HubConnectionState.Connected ) {
+        if( hubConnection.State == HubConnectionState.Disconnected ) {
             await hubConnection.StartAsync();
         }
         if( hubConnection.State != HubConnectionState.Connected ) {

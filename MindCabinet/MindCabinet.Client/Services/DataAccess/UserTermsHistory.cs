@@ -11,6 +11,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
+    private static IEnumerable<UserTermHistoryObject.Raw>? Cache_ForCurrentUser = null;
+
+
+
     private HubConnection HubConnection;
 
     private LocalClientSessionManager MySessionMngr;
@@ -32,11 +36,19 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetHistTermsForCurrentUser_Async() {
-        return await IClientDataAccess.CallHub_Async<IEnumerable<UserTermHistoryObject.Raw>>(
+        if( Cache_ForCurrentUser is not null ) {
+            return Cache_ForCurrentUser;
+        }
+
+        //
+
+        Cache_ForCurrentUser = await IClientDataAccess.CallHub_Async<IEnumerable<UserTermHistoryObject.Raw>>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetHistTermsForCurrentUser_Async ),
             args: new object[] { }
         );
+
+        return Cache_ForCurrentUser;
     }
 
 
@@ -46,5 +58,9 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
             methodName: nameof( IAPI.AddHistTermsForCurrentUser_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ForCurrentUser = null;
     }
 }

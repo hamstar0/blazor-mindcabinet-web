@@ -29,7 +29,6 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
             public TermObject.Raw? UserAppData_UserDefaultTerm { get; set; }
         }
 
-        public Task<GetCurrentDataBundle_Return> GetCurrent_Async(
-                    object _ );
+        public Task<GetCurrentDataBundle_Return> GetCurrent_Async( object _ );
     }
 }

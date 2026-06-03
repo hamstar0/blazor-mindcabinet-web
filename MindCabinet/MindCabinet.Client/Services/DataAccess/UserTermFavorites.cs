@@ -11,6 +11,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
+    private static IEnumerable<UserTermFavoriteObject.Raw>? Cache_ForCurrentUser = null;
+
+
+
     private HubConnection HubConnection;
 
     private LocalClientSessionManager MySessionMngr;
@@ -32,11 +36,19 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
 
 
     public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<IEnumerable<UserTermFavoriteObject.Raw>>(
+        if( Cache_ForCurrentUser is not null ) {
+            return Cache_ForCurrentUser;
+        }
+
+        //
+
+        Cache_ForCurrentUser = await IClientDataAccess.CallHub_Async<IEnumerable<UserTermFavoriteObject.Raw>>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetFavTermsForCurrentUser_Async ),
-            args: new object[] { new IAPI.GetFavTermsForCurrentUser_Params() }
+            args: new object[] { new object()}
         );
+
+        return Cache_ForCurrentUser;
     }
 
 
@@ -46,6 +58,10 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             methodName: nameof( IAPI.AddTermsForCurrentUser_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ForCurrentUser = null;
     }
 
 
@@ -55,5 +71,9 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             methodName: nameof( IAPI.RemoveTermsForCurrentUser_Async ),
             args: new object[] { parameters }
         );
+
+        //
+
+        Cache_ForCurrentUser = null;
     }
 }

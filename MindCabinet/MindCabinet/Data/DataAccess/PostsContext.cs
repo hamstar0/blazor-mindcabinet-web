@@ -108,7 +108,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         if( parameters.TagTermIds.Any() ) {
             sqlBuilder.JoinClause = $"INNER JOIN {ServerDataAccess_PostsContextTermEntry.TableName} AS MyContextTags";
-            sqlBuilder.JoinClause += $"/n ON MyContext.{TableColumn_Id} = MyContextTags.{ServerDataAccess_PostsContextTermEntry.TableColumn_PostsContextId}";
+            sqlBuilder.JoinClause += $"\n ON MyContext.{TableColumn_Id} = MyContextTags.{ServerDataAccess_PostsContextTermEntry.TableColumn_PostsContextId}";
 
             sqlBuilder.AddWhereClause(
                 $"MyContextTags.{ServerDataAccess_PostsContextTermEntry.TableColumn_TermId} IN @TagTermIds"
@@ -128,7 +128,7 @@ public partial class ServerDataAccess_PostsContexts(
             sqlParams1["@NameContains"] = new DbString { Value = $"%{nameContains}%", IsAnsi = true };
         }
 
-//this.Logger.LogInformation( "SQL: "+sql1+" PARAMS: "+JsonSerializer.Serialize(sqlParams1) );
+//this.Logger.LogInformation( "SQL: "+sqlBuilder.Build()+" PARAMS: "+JsonSerializer.Serialize(sqlParams1) );
         IEnumerable<PostsContextObject.Raw> contexts = await dbCon.QueryAsync<PostsContextObject.Raw>(
             sql: sqlBuilder.Build(),
             param: new DynamicParameters(sqlParams1)

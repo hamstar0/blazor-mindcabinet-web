@@ -37,9 +37,11 @@ v0.6
 -	@Ensure user registration input data is valid on server
 -	@Ensure singleton services are thread safe
 -	@Test favorites, recent tags, context sidebar, etc.
--	Implement caching
+-	Sanitize ClientDataAccess_PrioritizedPosts.GetByCriteria_Async, GetCountByCriteria_Async on server
+-	Implement client caching
 
 
+-	Implement server caching
 -	Channel API calls through Hub (test)
 -	Ensure API calls of any 'current user' function validate user and/or session id (if relevant)
 -	Prevent invalid character inputs in term editor, context editor

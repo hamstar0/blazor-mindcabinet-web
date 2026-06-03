@@ -29,8 +29,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
 
 
-    public async Task<LocalClientSessionManager.DataBundle> GetCurrent_Async(
-                ClientDataAccess_Terms termsData ) {
+    public async Task<LocalClientSessionManager.DataBundle> GetCurrent_Async( ClientDataAccess_Terms termsData ) {
         IAPI.GetCurrentDataBundle_Return? sessionData = await IClientDataAccess.CallHub_Async<IAPI.GetCurrentDataBundle_Return>(
             hubConnection: this.HubConnection,
             methodName: nameof( IAPI.GetCurrent_Async ),

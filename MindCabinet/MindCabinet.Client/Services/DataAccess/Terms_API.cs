@@ -18,7 +18,7 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
         public class GetByX_Return( IEnumerable<TermObject.Raw> terms ) {
-            public IEnumerable<TermObject.Raw> Terms { get; } = terms;
+            public IEnumerable<TermObject.Raw> Terms { get; set; } = terms;
         }
 
         public Task<GetByX_Return> GetByIds_Async( IEnumerable<TermId> termIds );
