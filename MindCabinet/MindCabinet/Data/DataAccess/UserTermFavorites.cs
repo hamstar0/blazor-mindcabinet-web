@@ -12,22 +12,51 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
-    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntries_Async(
+public partial class ServerDataAccess_UserTermFavorites(
+                StaticServerSettings serverSettings
+            ) : IServerDataAccess {
+    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermFavoriteObject.Raw>> Cache_BySimpleUserId = new( refreshOnGet: true );
+
+
+
+    private readonly StaticServerSettings ServerSettings = serverSettings;
+
+
+
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermEntriesBySimpleUserId_Async(
                 IDbConnection dbCon,
-                SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.GetFavTermsForCurrentUser_Params parameters ) {
+                SimpleUserId simpleUserId ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
 
+        //
+
+        if( ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.TryGet(simpleUserId, out var cached) ) {
+            return cached;
+        }
+
+        //
+
         string sql = $"SELECT * FROM {TableName} WHERE {TableColumn_SimpleUserId} = @UserId;";
         var sqlParams = new Dictionary<string, object> { { "@UserId", (long)simpleUserId } };
 
-        return await dbCon.QueryAsync<UserTermFavoriteObject.Raw>(
+        var favTermEntries = await dbCon.QueryAsync<UserTermFavoriteObject.Raw>(
             sql,
             new DynamicParameters(sqlParams)
         );
+
+        //
+
+        ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Set(
+            key: simpleUserId,
+            value: favTermEntries,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+
+        //
+
+        return favTermEntries;
 	}
 
 
@@ -56,6 +85,10 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
 
             await bulkCopy.WriteToServerAsync( dataTable );
         }
+
+        //
+
+        ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Remove( simpleUserId );
     }
 
 
@@ -79,5 +112,9 @@ public partial class ServerDataAccess_UserTermFavorites : IServerDataAccess {
                 TermIds = parameters.TermIds
             }
         );
+
+        //
+
+        ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Remove( simpleUserId );
     }
 }

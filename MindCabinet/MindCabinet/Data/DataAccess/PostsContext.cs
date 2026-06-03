@@ -19,7 +19,7 @@ public partial class ServerDataAccess_PostsContexts(
                 ILogger<ServerDataAccess_PostsContexts> logger,
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw?> Cache_ById = new( refreshOnGet: true );
 
 
 
@@ -39,7 +39,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        if( ServerDataAccess_PostsContexts.Cache_ById.TryGet( postsContextId, out var cached ) ) {
+        if( ServerDataAccess_PostsContexts.Cache_ById.TryGet(postsContextId, out var cached) ) {
             return cached;
         }
 
@@ -62,7 +62,11 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        ServerDataAccess_PostsContexts.Cache_ById.Set( raw.Id, raw, this.ServerSettings.CacheExpirationDuration );
+        ServerDataAccess_PostsContexts.Cache_ById.Set(
+            key: raw.Id,
+            value: raw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
 
         return raw;
     }
@@ -188,6 +192,8 @@ public partial class ServerDataAccess_PostsContexts(
             ),
             expiry: this.ServerSettings.CacheExpirationDuration
         );
+
+        //
 
         return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
     }

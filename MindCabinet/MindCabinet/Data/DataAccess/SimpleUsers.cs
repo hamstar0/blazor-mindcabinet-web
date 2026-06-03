@@ -18,8 +18,8 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
-    private static readonly SimpleCache<SimpleUserId, SimpleUserObject.Raw> Cache_ById = new( refreshOnGet: true );
-    private static readonly SimpleCache<string, SimpleUserId> Cache_ByName = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, SimpleUserObject.Raw?> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<string, SimpleUserId?> Cache_ByName = new( refreshOnGet: true );
 
 
     public static byte[] GeneratePasswordSalt() {
@@ -95,18 +95,20 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
+        ServerDataAccess_SimpleUsers.Cache_ById.Set(
+            key: id,
+            value: userRaw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
         if( userRaw is not null ) {
-            ServerDataAccess_SimpleUsers.Cache_ById.Set(
-                key: id,
-                value: userRaw,
-                expiry: this.ServerSettings.CacheExpirationDuration
-            );
             ServerDataAccess_SimpleUsers.Cache_ByName.Set(
                 key: userRaw.Name,
                 value: userRaw.Id,
                 expiry: this.ServerSettings.CacheExpirationDuration
             );
         }
+
+        //
 
         return userRaw;
     }
@@ -119,8 +121,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
-        if( ServerDataAccess_SimpleUsers.Cache_ByName.TryGet(userName, out var cachedId) ) {
-            if( ServerDataAccess_SimpleUsers.Cache_ById.TryGet(cachedId, out var cachedUser) ) {
+        if( ServerDataAccess_SimpleUsers.Cache_ByName.TryGet(userName, out var cachedId) && cachedId is not null ) {
+            if( ServerDataAccess_SimpleUsers.Cache_ById.TryGet(cachedId.Value, out var cachedUser) ) {
                 return cachedUser;
             }
         }
@@ -134,15 +136,15 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
+        ServerDataAccess_SimpleUsers.Cache_ByName.Set(
+            key: userName,
+            value: userRaw?.Id,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
         if( userRaw is not null ) {
             ServerDataAccess_SimpleUsers.Cache_ById.Set(
                 key: userRaw.Id,
                 value: userRaw,
-                expiry: this.ServerSettings.CacheExpirationDuration
-            );
-            ServerDataAccess_SimpleUsers.Cache_ByName.Set(
-                key: userRaw.Name,
-                value: userRaw.Id,
                 expiry: this.ServerSettings.CacheExpirationDuration
             );
         }

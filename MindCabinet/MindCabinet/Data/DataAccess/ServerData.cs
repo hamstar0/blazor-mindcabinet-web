@@ -41,9 +41,9 @@ public partial class ServerDataAccess_ServerData(
 
         if( serverDataRaw is not null ) {
             ServerDataAccess_ServerData.Cache_ById.Set(
-                0,
-                serverDataRaw,
-                this.ServerSettings.CacheExpirationDuration
+                key: 0,
+                value: serverDataRaw,
+                expiry: this.ServerSettings.CacheExpirationDuration
             );
         }
 

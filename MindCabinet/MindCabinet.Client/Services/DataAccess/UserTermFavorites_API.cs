@@ -14,14 +14,7 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
         public const string BaseRoute = "UserTermFavorites";
 
 
-
-        public class GetFavTermsForCurrentUser_Params {   //( long userId )
-            //public long UserId { get; } = userId;
-        }
-
-        public Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async(
-            GetFavTermsForCurrentUser_Params parameters
-        );
+        public Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async( object _ );
 
 
 

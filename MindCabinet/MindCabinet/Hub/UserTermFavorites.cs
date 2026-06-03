@@ -41,8 +41,7 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
     }
 
     
-    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.GetFavTermsForCurrentUser_Params parameters ) {
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async( object _ ) {
         if( !this.SessionManager.IsLoaded ) {
             HttpContext? context = this.Context.GetHttpContext();
             if( context is null ) {
@@ -58,7 +57,7 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.FavoriteTermsData
-            .GetFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+            .GetFavTermEntriesBySimpleUserId_Async( dbCon, this.SessionManager.UserOfSession.Id );
     }
 
 

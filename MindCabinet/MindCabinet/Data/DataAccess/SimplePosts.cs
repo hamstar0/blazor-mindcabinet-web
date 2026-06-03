@@ -15,7 +15,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimplePosts(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw?> Cache_ById = new( refreshOnGet: true );
 
 
 
@@ -45,13 +45,13 @@ public partial class ServerDataAccess_SimplePosts(
 
         //
 
-        if( postRaw is not null ) {
-            ServerDataAccess_SimplePosts.Cache_ById.Set(
-                key: id,
-                value: postRaw,
-                expiry: this.ServerSettings.CacheExpirationDuration
-            );
-        }
+        ServerDataAccess_SimplePosts.Cache_ById.Set(
+            key: id,
+            value: postRaw,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+
+        //
 
         return postRaw;
     }

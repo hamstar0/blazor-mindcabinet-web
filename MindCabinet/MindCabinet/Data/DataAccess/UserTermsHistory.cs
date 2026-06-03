@@ -10,9 +10,18 @@ using System.Data;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
+public partial class ServerDataAccess_UserTermsHistory(
+                StaticServerSettings serverSettings
+            ) : IServerDataAccess {
     public const int HistoryMaxEntries = 100;
-    
+
+
+    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermHistoryObject.Raw>> Cache_BySimpleUserId = new( refreshOnGet: true );
+
+
+
+    private readonly StaticServerSettings ServerSettings = serverSettings;
+
 
 
     public async Task<IEnumerable<UserTermHistoryObject.Raw>> GetByUserId_Async(
@@ -22,13 +31,33 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
 
+        //
+
+        if( ServerDataAccess_UserTermsHistory.Cache_BySimpleUserId.TryGet(simpleUserId, out var cached) ) {
+            return cached;
+        }
+
+        //
+
         string sql = $"SELECT * FROM {TableName} WHERE {TableColumn_SimpleUserId} = @SimpleUserId;";
         var sqlParams = new Dictionary<string, object> { { "@SimpleUserId", (long)simpleUserId } };
 
-        return await dbCon.QueryAsync<UserTermHistoryObject.Raw>(
+        var termsHistory = await dbCon.QueryAsync<UserTermHistoryObject.Raw>(
             sql,
             new DynamicParameters(sqlParams)
         );
+
+        //
+
+        ServerDataAccess_UserTermsHistory.Cache_BySimpleUserId.Set(
+            key: simpleUserId,
+            value: termsHistory,
+            expiry: this.ServerSettings.CacheExpirationDuration
+        );
+
+        //
+
+        return termsHistory;
 	}
 
 
@@ -82,5 +111,9 @@ public partial class ServerDataAccess_UserTermsHistory : IServerDataAccess {
                 IdsToKeep = idsToKeep
             }
         );
+
+        //
+
+        ServerDataAccess_UserTermsHistory.Cache_BySimpleUserId.Remove( simpleUserId );
     }
 }

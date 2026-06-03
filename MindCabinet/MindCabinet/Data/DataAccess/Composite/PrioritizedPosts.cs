@@ -12,7 +12,9 @@ using static MindCabinet.Data.DataAccess.ServerDataAccess_SimplePosts;
 namespace MindCabinet.Data.DataAccess.Composite;
 
 
-public partial class ServerDataAccess_PrioritizedPosts( ILogger<ServerDataAccess_PrioritizedPosts> logger ) : IServerDataAccess {
+public partial class ServerDataAccess_PrioritizedPosts(
+                ILogger<ServerDataAccess_PrioritizedPosts> logger
+            ) : IServerDataAccess {
     private readonly ILogger<ServerDataAccess_PrioritizedPosts> Logger = logger;
     
 
