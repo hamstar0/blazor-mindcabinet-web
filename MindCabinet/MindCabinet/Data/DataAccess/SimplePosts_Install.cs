@@ -44,23 +44,23 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
 
     public async Task<(bool success, TermObject.Raw sampleTerm)> Install_AfterUser_Async(
                 IDbConnection dbConnection, 
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags termSetsData,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags termSetsDataSrc,
                 SimpleUserId defaultUserId,
                 TermId defaultUserAsTermId ) {
-        ClientDataAccess_Terms.IAPI.Create_Return sampleTerm = await termsData.Create_Async(
+        ClientDataAccess_Terms.IAPI.Create_Return sampleTerm = await termsDataSrc.Create_Async(
             dbConnection,
             new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Sample", ContextId = null, AliasId = null }
         );
-        ClientDataAccess_Terms.IAPI.Create_Return term1 = await termsData.Create_Async(
+        ClientDataAccess_Terms.IAPI.Create_Return term1 = await termsDataSrc.Create_Async(
             dbConnection,
             new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term1", ContextId = null, AliasId = null }
         );
-        ClientDataAccess_Terms.IAPI.Create_Return term2 = await termsData.Create_Async(
+        ClientDataAccess_Terms.IAPI.Create_Return term2 = await termsDataSrc.Create_Async(
             dbConnection,
             new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term2", ContextId = null, AliasId = null }
         );
-        ClientDataAccess_Terms.IAPI.Create_Return term3 = await termsData.Create_Async(
+        ClientDataAccess_Terms.IAPI.Create_Return term3 = await termsDataSrc.Create_Async(
             dbConnection,
             new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term3", ContextId = null, AliasId = null }
         );
@@ -211,9 +211,9 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 postData
             );
 
-            await termSetsData.CreateForSimplePost_Async(
+            await termSetsDataSrc.CreateForSimplePost_Async(
                 dbCon: dbConnection,
-                termsData: termsData,
+                termsDataSrc: termsDataSrc,
                 id: (SimplePostId)newPostId,
                 termIds: postTags.Concat( [defaultUserAsTermId] ).ToArray()
             );

@@ -14,12 +14,12 @@ public partial class LocalClientSessionManager {
     }
 
 
-    public async Task SetCurrentContext_Await( ClientDataAccess_UserAppData userAppData, PostsContextObject context ) {
+    public async Task SetCurrentContext_Await( ClientDataAccess_UserAppData userAppDataSrc, PostsContextObject context ) {
         if( this.Data?.UserAppData is null ) {
             throw new InvalidOperationException( "UserAppData is null in SetCurrentContext." );
         }
 
-        await userAppData.UpdateForCurrentUser_Async( new UserAppDataObject.Prototype {
+        await userAppDataSrc.UpdateForCurrentUser_Async( new UserAppDataObject.Prototype {
             SimpleUserId = this.UserId,
             PostsContextId = context.Id
         } );

@@ -21,17 +21,17 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
 
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_PrioritizedPosts PrioritizedPostsData;
+    private readonly ServerDataAccess_PrioritizedPosts PrioritizedPostsDataSrc;
 
-    private readonly ServerDataAccess_Terms TermsData;
+    private readonly ServerDataAccess_Terms TermsDataSrc;
 
-    private readonly ServerDataAccess_SimplePostTags PostTagsData;
+    private readonly ServerDataAccess_SimplePostTags PostTagsDataSrc;
 
-    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryDataSrc;
 
-    private readonly ServerDataAccess_PostsContexts PostsContextData;
+    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
     
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -40,22 +40,22 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
     public PrioritizedPostsController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_PrioritizedPosts prioritizedPostsData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags postTagsData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_UserTermsHistory userTermsHistoryData,
+                ServerDataAccess_PrioritizedPosts prioritizedPostsDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags postTagsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
                 ClientSessionManager sessionManager ) {
         //this.HttpContext
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.PrioritizedPostsData = prioritizedPostsData;
-        this.TermsData = termsData;
-        this.PostTagsData = postTagsData;
-        this.PostsContextData = postsContextData;
-        this.PostsContextTermEntryData = postsContextTermEntryData;
-        this.UserTermsHistoryData = userTermsHistoryData;
+        this.PrioritizedPostsDataSrc = prioritizedPostsDataSrc;
+        this.TermsDataSrc = termsDataSrc;
+        this.PostTagsDataSrc = postTagsDataSrc;
+        this.PostsContextDataSrc = postsContextDataSrc;
+        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.UserTermsHistoryDataSrc = userTermsHistoryDataSrc;
         this.SessionManager = sessionManager;
     }
 
@@ -70,18 +70,18 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
             await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }
 
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
-
         // TODO: Properly validate that the requested context belongs to the user in session
         if( this.SessionManager.UserAppDataOfSession?.PostsContext.Id != parameters.PostsContextId ) {
             return [];
         }
         
-        return await this.PrioritizedPostsData.GetByCriteria_Async(
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        return await this.PrioritizedPostsDataSrc.GetByCriteria_Async(
             dbCon: dbCon,
-            postTagsData: this.PostTagsData,
-            postsContextData: this.PostsContextData,
-            postsContextTermEntryData: this.PostsContextTermEntryData,
+            postTagsDataSrc: this.PostTagsDataSrc,
+            postsContextDataSrc: this.PostsContextDataSrc,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters
         );
     }
@@ -96,12 +96,17 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
             await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }
 
+        // TODO: Properly validate that the requested context belongs to the user in session
+        if( this.SessionManager.UserAppDataOfSession?.PostsContext.Id != parameters.PostsContextId ) {
+            return 0; no
+        }
+        
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PrioritizedPostsData.GetCountByCriteria_Async(
+        return await this.PrioritizedPostsDataSrc.GetCountByCriteria_Async(
             dbCon: dbCon,
-            postsContextData: this.PostsContextData,
-            postsContextTermEntryData: this.PostsContextTermEntryData,
+            postsContextDataSrc: this.PostsContextDataSrc,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters
         );
     }

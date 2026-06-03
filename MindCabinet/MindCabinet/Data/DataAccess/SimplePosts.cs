@@ -244,7 +244,7 @@ public partial class ServerDataAccess_SimplePosts(
         
         await termSetsData.CreateForSimplePost_Async(
             dbCon: dbCon,
-            termsData: termsData,
+            termsDataSrc: termsData,
             id: (SimplePostId)newPostId,
             termIds: parameters.TermIds
         );

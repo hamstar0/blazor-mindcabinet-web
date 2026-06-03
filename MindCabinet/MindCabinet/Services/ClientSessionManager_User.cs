@@ -13,7 +13,7 @@ public partial class ClientSessionManager {
      */
     private async Task<bool> LoadUserOfSession_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_SimpleUsers userData,
+                ServerDataAccess_SimpleUsers userDataSrc,
                 string sessId,
                 string ip ) {
         if( this.UserOfSession is not null ) {
@@ -24,26 +24,26 @@ public partial class ClientSessionManager {
             return true;
         }
 
-        this.UserOfSession = (await userData.GetSimpleUserBySession_Async( dbCon, sessId, ip, true ))?
+        this.UserOfSession = (await userDataSrc.GetSimpleUserBySession_Async( dbCon, sessId, ip, true ))?
             .CreateDataObject();
 
         return this.UserOfSession is not null;
     }
 
 
-    public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
-        await sessionsData.VisitSimpleUserSession_Async( dbCon, this );
+    public async Task Visit_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsDataSrc ) {
+        await sessionsDataSrc.VisitSimpleUserSession_Async( dbCon, this );
     }
 
 
-    public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsData ) {
+    public async Task LogoutUser_Async( IDbConnection dbCon, ServerDataAccess_SimpleUserSessions sessionsDataSrc ) {
         this.UserOfSession = null;
         
         if( this.CurrentSessionId is null ) {
             return;
         }
 
-        await sessionsData.RemoveSessionById_Async( dbCon, this.CurrentSessionId );
+        await sessionsDataSrc.RemoveSessionById_Async( dbCon, this.CurrentSessionId );
         
         //this.CurrentSessionId = null;
     }

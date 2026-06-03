@@ -73,7 +73,7 @@ public partial class ContextPostsBrowser : ComponentBase {
         }
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetCurrentContextPosts_Async(
-            termsData: this.TermsData,
+            termsDataSrc: this.TermsData,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );

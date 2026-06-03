@@ -22,20 +22,20 @@ public partial class Program {
 
         var sessionMngr = context.RequestServices.GetRequiredService<Services.ClientSessionManager>();
         var dbAccess = context.RequestServices.GetRequiredService<DbAccess>();
-        var termsData = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
-        var usersData = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
-        var userAppData = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
-        var postsContextsData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContexts>();
-        var postsContextTermEntryData = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
+        var termsDataSrc = context.RequestServices.GetRequiredService<ServerDataAccess_Terms>();
+        var usersDataSrc = context.RequestServices.GetRequiredService<ServerDataAccess_SimpleUsers>();
+        var userAppDataSrc = context.RequestServices.GetRequiredService<ServerDataAccess_UserAppData>();
+        var postsContextsDataSrc = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContexts>();
+        var postsContextTermEntryDataSrc = context.RequestServices.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
         using var dbCon = await dbAccess.GetDbConnection_Async( !isInstalling );
 
         await sessionMngr.LoadForHttpRequest_Async(
             dbCon,
-            termsData,
-            usersData,
-            userAppData,
-            postsContextsData,
-            postsContextTermEntryData,
+            termsDataSrc,
+            usersDataSrc,
+            userAppDataSrc,
+            postsContextsDataSrc,
+            postsContextTermEntryDataSrc,
             isInstalling
         );
     }

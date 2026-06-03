@@ -62,22 +62,22 @@ public partial class LocalClientSessionManager(
     }
     
     private async Task LoadData_Async() {
-        IServiceScope scope = this.ServiceScopeFactory.CreateScope();
+        IServiceScope scope = this.ServiceScopeFactory.CreateScope(); bad scope?
         
         try {
-            ClientDataAccess_Terms? termsData = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
-            if( termsData is null ) {
+            ClientDataAccess_Terms? termsDataSrc = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
+            if( termsDataSrc is null ) {
                 throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
             }
 
-            ClientDataAccess_ClientSessionBundle? sessionBundle = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
-            if( sessionBundle is null ) {
+            ClientDataAccess_ClientSessionBundle? sessionBundleSrc = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
+            if( sessionBundleSrc is null ) {
                 throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
             }
 
             //
 
-            await this.LoadData_Async( termsData, sessionBundle, true );
+            await this.LoadData_Async( termsDataSrc, sessionBundleSrc, true );
         } finally {
             if( scope is IAsyncDisposable asyncDisposable ) {
                 await asyncDisposable.DisposeAsync();
@@ -88,10 +88,10 @@ public partial class LocalClientSessionManager(
     }
     
     private async Task LoadData_Async(
-                ClientDataAccess_Terms termsData,
-                ClientDataAccess_ClientSessionBundle sessionBundle,
+                ClientDataAccess_Terms termsDataSrc,
+                ClientDataAccess_ClientSessionBundle sessionBundleDataSrc,
                 bool triggerEvents ) {
-        LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundle.GetCurrent_Async( termsData );
+        LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundleDataSrc.GetCurrent_Async( termsDataSrc );
 Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize( userAndAppData ) );
 
         //

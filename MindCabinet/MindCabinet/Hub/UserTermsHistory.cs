@@ -22,7 +22,7 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
 
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData;
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -31,11 +31,11 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
     public UserTermsHistoryController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_UserTermsHistory userTermsHistoryData,
+                ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
 				ClientSessionManager sessionData ) {
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.UserTermsHistoryData = userTermsHistoryData;
+        this.UserTermsHistoryDataSrc = userTermsHistoryDataSrc;
         this.SessionManager = sessionData;
     }
 
@@ -55,7 +55,7 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.UserTermsHistoryData.GetByUserId_Async( dbCon, this.SessionManager.UserOfSession.Id );
+        return await this.UserTermsHistoryDataSrc.GetByUserId_Async( dbCon, this.SessionManager.UserOfSession.Id );
     }
 
 
@@ -75,6 +75,6 @@ public partial class UserTermsHistoryController : Hub, ClientDataAccess_UserTerm
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.UserTermsHistoryData.AddTerm_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+        await this.UserTermsHistoryDataSrc.AddTerm_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
     }
 }

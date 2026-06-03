@@ -23,7 +23,7 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
+    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -32,11 +32,11 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
     public UserTermFavoritesController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_UserTermFavorites favoriteTermsData,
+                ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
 				ClientSessionManager sessMngr ) {
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.FavoriteTermsData = favoriteTermsData;
+        this.FavoriteTermsDataSrc = favoriteTermsDataSrc;
         this.SessionManager = sessMngr;
     }
 
@@ -56,7 +56,7 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.FavoriteTermsData
+        return await this.FavoriteTermsDataSrc
             .GetFavTermEntriesBySimpleUserId_Async( dbCon, this.SessionManager.UserOfSession.Id );
     }
 
@@ -77,7 +77,7 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.AddFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters.TermIds );
+        await this.FavoriteTermsDataSrc.AddFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters.TermIds );
     }
 
 
@@ -97,6 +97,6 @@ public partial class UserTermFavoritesController : Hub, ClientDataAccess_UserTer
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsData.RemoveFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+        await this.FavoriteTermsDataSrc.RemoveFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
     }
 }

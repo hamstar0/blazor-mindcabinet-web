@@ -19,7 +19,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_UserAppData UserAppData;
+    private readonly ServerDataAccess_UserAppData UserAppDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -28,11 +28,11 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
     public UserAppDataController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_UserAppData userAppDataSrc,
                 ClientSessionManager serverSessionManager ) {
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.UserAppData = userAppData;
+        this.UserAppDataSrc = userAppDataSrc;
         this.SessionManager = serverSessionManager;
     }
 
@@ -52,7 +52,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        UserAppDataObject.Raw? userAppDataRaw = await this.UserAppData.GetById_Async(
+        UserAppDataObject.Raw? userAppDataRaw = await this.UserAppDataSrc.GetById_Async(
             dbCon,
             this.SessionManager.UserOfSession?.Id ?? 0
         );
@@ -84,7 +84,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.UserAppData.Update_Async(
+        await this.UserAppDataSrc.Update_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             postsContextId: parameters.PostsContextId ?? 0,

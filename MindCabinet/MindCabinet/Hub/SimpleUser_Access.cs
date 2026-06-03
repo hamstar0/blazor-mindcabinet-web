@@ -32,7 +32,7 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimpleUserObject.Raw? userRaw = await this.SimpleUsersData.GetByName_Async( dbCon, parameters.Name );
+        SimpleUserObject.Raw? userRaw = await this.SimpleUsersDataSrc.GetByName_Async( dbCon, parameters.Name );
         if( userRaw is null ) {
             // return new ClientDataAccess_SimpleUsers.Login_Return { User = null, Status = "User not found by name: "+parameters.Name };
             return new ClientDataAccess_SimpleUsers.IAPI.Login_Return {
@@ -53,7 +53,7 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
             };
         }
 
-        await this.UserSessionsData.Create_Async( dbCon, userRaw.Id, this.SessionManager );
+        await this.UserSessionsDataSrc.Create_Async( dbCon, this.SessionManager, userRaw.Id );
         //await this.SessionsData.VisitSimpleUserSession_Async( dbCon, this.ServerSessionData );
 
         return new ClientDataAccess_SimpleUsers.IAPI.Login_Return {
@@ -77,6 +77,6 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.UserSessionsData.VisitSimpleUserSession_Async( dbCon, this.SessionManager );
+        await this.UserSessionsDataSrc.VisitSimpleUserSession_Async( dbCon, this.SessionManager );
     }
 }

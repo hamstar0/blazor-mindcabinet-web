@@ -13,10 +13,10 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
     public static async Task<TermObject> ConvertRawToDataObject_Async(
-                ClientDataAccess_Terms termsData,
+                ClientDataAccess_Terms termsDataSrc,
                 TermObject.Raw termRaw ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
-            (await termsData.GetByIds_Async( new TermId[] { termId } ))
+            (await termsDataSrc.GetByIds_Async( new TermId[] { termId } ))
             .Terms
             .First();
 
@@ -25,10 +25,10 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
     public static async Task<TermObject[]> ConvertRawsToDataObjects_Async(
-                ClientDataAccess_Terms termsData,
+                ClientDataAccess_Terms termsDataSrc,
                 TermObject.Raw[] rawTerms ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
-            (await termsData.GetByIds_Async( new TermId[] { termId } ))
+            (await termsDataSrc.GetByIds_Async( new TermId[] { termId } ))
             .Terms
             .First();
 

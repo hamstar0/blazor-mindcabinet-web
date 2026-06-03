@@ -14,47 +14,47 @@ namespace MindCabinet.Controllers;
 [Route("[controller]")]
 public class SetupController : ControllerBase {
     private readonly DbAccess DbAccess;
-    private readonly ServerDataAccess_Install InstallData;
-    private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
-    private readonly ServerDataAccess_SimpleUserSessions SessionsData;
-    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
-    private readonly ServerDataAccess_UserTermsHistory HistoryTermsData;
-    private readonly ServerDataAccess_Terms TermsData;
-    private readonly ServerDataAccess_SimplePostTags TermSetsData;
-    private readonly ServerDataAccess_SimplePosts SimplePostsData;
-    private readonly ServerDataAccess_PostsContexts PostsContextData;
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
-    private readonly ServerDataAccess_UserAppData UserAppDataData;
-    private readonly ServerDataAccess_ServerData ServerData;
+    private readonly ServerDataAccess_Install InstallDataSrc;
+    private readonly ServerDataAccess_SimpleUsers SimpleUsersDataSrc;
+    private readonly ServerDataAccess_SimpleUserSessions SessionsDataSrc;
+    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsDataSrc;
+    private readonly ServerDataAccess_UserTermsHistory HistoryTermsDataSrc;
+    private readonly ServerDataAccess_Terms TermsDataSrc;
+    private readonly ServerDataAccess_SimplePostTags TermSetsDataSrc;
+    private readonly ServerDataAccess_SimplePosts SimplePostsDataSrc;
+    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
+    private readonly ServerDataAccess_UserAppData UserAppDataDataSrc;
+    private readonly ServerDataAccess_ServerData ServerDataSrc;
 
 
 
     public SetupController( DbAccess dbAccess,
-                ServerDataAccess_Install installData,
-                ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUserSessions sessionsData,
-                ServerDataAccess_UserTermFavorites favoriteTermsData,
-                ServerDataAccess_UserTermsHistory historyTermsData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags termSetsData,
-                ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_UserAppData userAppDataData,
-                ServerDataAccess_ServerData serverData ) {
+                ServerDataAccess_Install installDataSrc,
+                ServerDataAccess_SimpleUsers simpleUsersDataSrc,
+                ServerDataAccess_SimpleUserSessions sessionsDataSrc,
+                ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
+                ServerDataAccess_UserTermsHistory historyTermsDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags termSetsDataSrc,
+                ServerDataAccess_SimplePosts simplePostsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_UserAppData userAppDataDataSrc,
+                ServerDataAccess_ServerData serverDataSrc ) {
         this.DbAccess = dbAccess;
-        this.InstallData = installData;
-        this.SimpleUsersData = simpleUsersData;
-        this.SessionsData = sessionsData;
-        this.FavoriteTermsData = favoriteTermsData;
-        this.HistoryTermsData = historyTermsData;
-        this.TermsData = termsData;
-        this.TermSetsData = termSetsData;
-        this.SimplePostsData = simplePostsData;
-        this.PostsContextData = postsContextData;
-        this.PostsContextTermEntryData = postsContextTermEntryData;
-        this.UserAppDataData = userAppDataData;
-        this.ServerData = serverData;
+        this.InstallDataSrc = installDataSrc;
+        this.SimpleUsersDataSrc = simpleUsersDataSrc;
+        this.SessionsDataSrc = sessionsDataSrc;
+        this.FavoriteTermsDataSrc = favoriteTermsDataSrc;
+        this.HistoryTermsDataSrc = historyTermsDataSrc;
+        this.TermsDataSrc = termsDataSrc;
+        this.TermSetsDataSrc = termSetsDataSrc;
+        this.SimplePostsDataSrc = simplePostsDataSrc;
+        this.PostsContextDataSrc = postsContextDataSrc;
+        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.UserAppDataDataSrc = userAppDataDataSrc;
+        this.ServerDataSrc = serverDataSrc;
     }
 
     [HttpGet("Install")]
@@ -65,19 +65,19 @@ public class SetupController : ControllerBase {
             return "Already installed.";
         }
         
-        bool isInstalled = await this.InstallData.Install_Async(
+        bool isInstalled = await this.InstallDataSrc.Install_Async(
             dbCon,
-            this.SimpleUsersData,
-            this.SessionsData,
-            this.TermsData,
-            this.TermSetsData,
-            this.SimplePostsData,
-            this.FavoriteTermsData,
-            this.HistoryTermsData,
-            this.PostsContextData,
-            this.PostsContextTermEntryData,
-            this.UserAppDataData,
-            this.ServerData
+            this.SimpleUsersDataSrc,
+            this.SessionsDataSrc,
+            this.TermsDataSrc,
+            this.TermSetsDataSrc,
+            this.SimplePostsDataSrc,
+            this.FavoriteTermsDataSrc,
+            this.HistoryTermsDataSrc,
+            this.PostsContextDataSrc,
+            this.PostsContextTermEntryDataSrc,
+            this.UserAppDataDataSrc,
+            this.ServerDataSrc
         );
 
         if( isInstalled ) {

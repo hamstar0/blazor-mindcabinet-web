@@ -18,12 +18,12 @@ public class SimplePostController(
                 ILogger<SimplePostController> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
-                ServerDataAccess_ServerData serverData,
-                ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags simplePostTagsData,
-                ServerDataAccess_UserTermsHistory userTermsHistoryData,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ServerDataAccess_SimplePosts simplePostsDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags simplePostTagsDataSrc,
+                ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
                 ClientSessionManager sessMngr
             ) : Hub, ClientDataAccess_SimplePosts.IAPI {
     private readonly ILogger<SimplePostController> Logger = logger;
@@ -32,17 +32,17 @@ public class SimplePostController(
 
     private readonly DbAccess DbAccess = dbAccess;
 
-    private readonly ServerDataAccess_ServerData ServerData = serverData;
+    private readonly ServerDataAccess_ServerData ServerDataSrc = serverDataSrc;
 
-    private readonly ServerDataAccess_UserAppData UserAppData = userAppData;
+    private readonly ServerDataAccess_UserAppData UserAppDataSrc = userAppDataSrc;
 
-    private readonly ServerDataAccess_SimplePosts SimplePostsData = simplePostsData;
+    private readonly ServerDataAccess_SimplePosts SimplePostsDataSrc = simplePostsDataSrc;
 
-    private readonly ServerDataAccess_Terms TermsData = termsData;
+    private readonly ServerDataAccess_Terms TermsDataSrc = termsDataSrc;
 
-    private readonly ServerDataAccess_SimplePostTags SimplePostTagsData = simplePostTagsData;
+    private readonly ServerDataAccess_SimplePostTags SimplePostTagsDataSrc = simplePostTagsDataSrc;
 
-    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryData = userTermsHistoryData;
+    private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryDataSrc = userTermsHistoryDataSrc;
 
     private readonly ClientSessionManager SessionManager = sessMngr;
 
@@ -60,10 +60,10 @@ public class SimplePostController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsData.GetByCriteria_Async(
+        IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsDataSrc.GetByCriteria_Async(
             dbCon,
-            this.TermsData,
-            this.SimplePostTagsData,
+            this.TermsDataSrc,
+            this.SimplePostTagsDataSrc,
             parameters
         );
         return new ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return { Posts = posts };
@@ -81,7 +81,7 @@ public class SimplePostController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.SimplePostsData.GetCountByCriteria_Async( dbCon, parameters );
+        return await this.SimplePostsDataSrc.GetCountByCriteria_Async( dbCon, parameters );
     }
 
     public async Task<SimplePostObject.Raw> Create_Async(
@@ -100,13 +100,13 @@ public class SimplePostController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimplePostId simplePostId = await this.SimplePostsData.Create_Async(
+        SimplePostId simplePostId = await this.SimplePostsDataSrc.Create_Async(
             dbCon: dbCon,
-            serverData: this.ServerData,
-            userData: this.UserAppData,
-            termsData: this.TermsData,
-            termSetsData: this.SimplePostTagsData,
-            termHistoryData: this.UserTermsHistoryData,
+            serverData: this.ServerDataSrc,
+            userData: this.UserAppDataSrc,
+            termsData: this.TermsDataSrc,
+            termSetsData: this.SimplePostTagsDataSrc,
+            termHistoryData: this.UserTermsHistoryDataSrc,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             parameters: parameters,
             addCurrentUserTag: true,

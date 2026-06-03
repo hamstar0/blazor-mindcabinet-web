@@ -63,7 +63,7 @@ public partial class ServerDataAccess_SimplePostTags(
 
     public async Task CreateForSimplePost_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms termsDataSrc,
                 SimplePostId id,
                 TermId[] termIds ) {
         if( id == 0 ) {
@@ -94,7 +94,7 @@ public partial class ServerDataAccess_SimplePostTags(
 
         ServerDataAccess_SimplePostTags.Cache_BySimplePostId.Set(
             key: id,
-            value: await termsData.GetByIds_Async( dbCon, termIds ),
+            value: await termsDataSrc.GetByIds_Async( dbCon, termIds ),
             expiry: this.ServerSettings.CacheExpirationDuration
         );
     }

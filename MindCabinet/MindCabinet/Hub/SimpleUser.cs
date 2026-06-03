@@ -24,21 +24,21 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
     private readonly DbAccess DbAccess;
 
-    private readonly ServerDataAccess_ServerData ServerData;
+    private readonly ServerDataAccess_ServerData ServerDataSrc;
 
-    private readonly ServerDataAccess_Terms TermsData;
+    private readonly ServerDataAccess_Terms TermsDataSrc;
 
-    private readonly ServerDataAccess_SimpleUsers SimpleUsersData;
+    private readonly ServerDataAccess_SimpleUsers SimpleUsersDataSrc;
 
-    private readonly ServerDataAccess_PostsContexts PostsContextData;
+    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
 
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData;
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
 
-    private readonly ServerDataAccess_SimpleUserSessions UserSessionsData;
+    private readonly ServerDataAccess_SimpleUserSessions UserSessionsDataSrc;
 
-    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsData;
+    private readonly ServerDataAccess_UserTermFavorites FavoriteTermsDataSrc;
 
-    private readonly ServerDataAccess_UserAppData UserAppData;
+    private readonly ServerDataAccess_UserAppData UserAppDataSrc;
     
     private readonly ClientSessionManager SessionManager;
 
@@ -48,26 +48,26 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
                 ILogger<SimpleUserController> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
-                ServerDataAccess_ServerData serverData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_SimpleUserSessions userSessionsData,
-                ServerDataAccess_UserTermFavorites favoriteTermsData,
-                ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimpleUsers simpleUsersDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_SimpleUserSessions userSessionsDataSrc,
+                ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
 				ClientSessionManager sessMngr ) {
         this.Logger = logger;
         this.ServiceProvider = serviceProvider;
         this.DbAccess = dbAccess;
-        this.ServerData = serverData;
-        this.TermsData = termsData;
-        this.SimpleUsersData = simpleUsersData;
-        this.PostsContextData = postsContextData;
-        this.PostsContextTermEntryData = postsContextTermEntryData;
-        this.UserSessionsData = userSessionsData;
-        this.FavoriteTermsData = favoriteTermsData;
-        this.UserAppData = userAppData;
+        this.ServerDataSrc = serverDataSrc;
+        this.TermsDataSrc = termsDataSrc;
+        this.SimpleUsersDataSrc = simpleUsersDataSrc;
+        this.PostsContextDataSrc = postsContextDataSrc;
+        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.UserSessionsDataSrc = userSessionsDataSrc;
+        this.FavoriteTermsDataSrc = favoriteTermsDataSrc;
+        this.UserAppDataSrc = userAppDataSrc;
         this.SessionManager = sessMngr;
     }
 
@@ -94,13 +94,13 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersData.CreateSimpleUser_Async(
+        ServerDataAccess_SimpleUsers.SimpleUserQueryResult result = await this.SimpleUsersDataSrc.CreateSimpleUser_Async(
             dbCon: dbCon,
-            serverData: this.ServerData,
-            termsData: this.TermsData,
-            postsContextData: this.PostsContextData,
-            postsContextTermEntryData: this.PostsContextTermEntryData,
-            userAppData: this.UserAppData,
+            serverDataSrc: this.ServerDataSrc,
+            termsDataSrc: this.TermsDataSrc,
+            postsContextDataSrc: this.PostsContextDataSrc,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            userAppDataSrc: this.UserAppDataSrc,
             parameters: parameters,
             detectCollision: true,
             createPostsContext: true

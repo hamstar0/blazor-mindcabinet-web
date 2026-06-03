@@ -14,14 +14,14 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
     public static async Task<UserTermHistoryObject.ClientObject[]> ConvertRawsToClientObjects_Async(
-                ClientDataAccess_Terms termsData,
+                ClientDataAccess_Terms termsDataSrc,
                 UserTermHistoryObject.Raw[] entriesRaw ) {
         TermId[] termIds = entriesRaw.Select( t => t.TermId ).ToArray();
-        IEnumerable<TermObject.Raw> termsRaw = (await termsData.GetByIds_Async( termIds ))
+        IEnumerable<TermObject.Raw> termsRaw = (await termsDataSrc.GetByIds_Async( termIds ))
             .Terms;
 
         Func<TermId, Task<TermObject>> termFactory = async termId => await ClientDataAccess_Terms
-            .ConvertRawToDataObject_Async( termsData, termsRaw.First(termRaw => termRaw.Id == termId) );
+            .ConvertRawToDataObject_Async( termsDataSrc, termsRaw.First(termRaw => termRaw.Id == termId) );
         
         return await Task.WhenAll(
             entriesRaw.Select( entryRaw => entryRaw.ToClientObject_Async(termFactory) )

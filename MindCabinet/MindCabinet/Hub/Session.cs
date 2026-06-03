@@ -23,7 +23,7 @@ public class SessionHub(
                 ILogger<SessionHub> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
-                ServerDataAccess_SimpleUserSessions sessionsData,
+                ServerDataAccess_SimpleUserSessions sessionsDataSrc,
                 ClientSessionManager sessMngr
             ) : Hub, ClientDataAccess_ClientSessionBundle.IAPI {
     private readonly ILogger<SessionHub> Logger = logger;
@@ -32,7 +32,7 @@ public class SessionHub(
 
     private readonly DbAccess DbAccess = dbAccess;
 
-    private readonly ServerDataAccess_SimpleUserSessions SessionsData = sessionsData;
+    private readonly ServerDataAccess_SimpleUserSessions SessionsDataSrc = sessionsDataSrc;
 
     private readonly ClientSessionManager SessionManager = sessMngr;
 
@@ -89,7 +89,7 @@ public class SessionHub(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.SessionManager.LogoutSessionAndItsUser_Async( dbCon, this.SessionsData );
+        await this.SessionManager.LogoutSessionAndItsUser_Async( dbCon, this.SessionsDataSrc );
 
         return "Logout successful.";
     }

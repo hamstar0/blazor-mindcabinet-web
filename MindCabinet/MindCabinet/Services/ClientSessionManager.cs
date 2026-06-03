@@ -20,20 +20,20 @@ public partial class ClientSessionManager(
     internal static async Task LoadForHubRequest_Async( IServiceProvider services ) {
         var sessionData = services.GetRequiredService<ClientSessionManager>();
         var dbAccess = services.GetRequiredService<DbAccess>();
-        var termsData = services.GetRequiredService<ServerDataAccess_Terms>();
-        var usersData = services.GetRequiredService<ServerDataAccess_SimpleUsers>();
-        var userAppData = services.GetRequiredService<ServerDataAccess_UserAppData>();
-        var postsContextsData = services.GetRequiredService<ServerDataAccess_PostsContexts>();
-        var postsContextTermEntryData = services.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
+        var termsDataSrc = services.GetRequiredService<ServerDataAccess_Terms>();
+        var usersDataSrc = services.GetRequiredService<ServerDataAccess_SimpleUsers>();
+        var userAppDataSrc = services.GetRequiredService<ServerDataAccess_UserAppData>();
+        var postsContextsDataSrc = services.GetRequiredService<ServerDataAccess_PostsContexts>();
+        var postsContextTermEntryDataSrc = services.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
         using var dbCon = await dbAccess.GetDbConnection_Async( true );
 
         await sessionData.LoadForHubRequest_Async(
             dbCon: dbCon,
-            termsData: termsData,
-            usersData: usersData,
-            userAppData: userAppData,
-            postsContextsData: postsContextsData,
-            postsContextTermEntryData: postsContextTermEntryData
+            termsDataSrc: termsDataSrc,
+            usersDataSrc: usersDataSrc,
+            userAppDataSrc: userAppDataSrc,
+            postsContextsDataSrc: postsContextsDataSrc,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc
         );
     }
 
@@ -65,11 +65,11 @@ public partial class ClientSessionManager(
 
     public async Task<bool> LoadForHttpRequest_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimpleUsers usersData,
-                ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_PostsContexts postsContextsData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimpleUsers usersDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ServerDataAccess_PostsContexts postsContextsDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.CurrentSessionId) ) {
             return false;
@@ -90,11 +90,11 @@ public partial class ClientSessionManager(
         } else {
             isLoggedIn = await this.LoadExistingSessionAndItsUser_Async(
                 dbCon: dbCon,
-                termsData: termsData,
-                usersData: usersData,
-                userAppData: userAppData,
-                postsContextsData: postsContextsData,
-                postsContextTermEntryData: postsContextTermEntryData,
+                termsDataSrc: termsDataSrc,
+                usersDataSrc: usersDataSrc,
+                userAppDataSrc: userAppDataSrc,
+                postsContextsDataSrc: postsContextsDataSrc,
+                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
                 sessId: sessId,
                 isInstalling: isInstalling
             );
@@ -106,11 +106,11 @@ public partial class ClientSessionManager(
 
     public async Task<bool> LoadForHubRequest_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimpleUsers usersData,
-                ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_PostsContexts postsContextsData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData ) {
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimpleUsers usersDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ServerDataAccess_PostsContexts postsContextsDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc ) {
         if( this.IsLoaded ) {
             return false;
         }
@@ -125,11 +125,11 @@ public partial class ClientSessionManager(
 
         bool isLoggedIn = await this.LoadExistingSessionAndItsUser_Async(
             dbCon: dbCon,
-            termsData: termsData,
-            usersData: usersData,
-            userAppData: userAppData,
-            postsContextsData: postsContextsData,
-            postsContextTermEntryData: postsContextTermEntryData,
+            termsDataSrc: termsDataSrc,
+            usersDataSrc: usersDataSrc,
+            userAppDataSrc: userAppDataSrc,
+            postsContextsDataSrc: postsContextsDataSrc,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
             sessId: sessId,
             isInstalling: false
         );
@@ -153,11 +153,11 @@ public partial class ClientSessionManager(
 
     private async Task<bool> LoadExistingSessionAndItsUser_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimpleUsers usersData,
-                ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_PostsContexts postsContextsData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimpleUsers usersDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ServerDataAccess_PostsContexts postsContextsDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 string sessId,
                 bool isInstalling ) {
         this.CurrentSessionId = sessId;
@@ -166,17 +166,17 @@ public partial class ClientSessionManager(
             return false;
         }
 
-        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, usersData, sessId!, this.CurrentIpAddress! );
+        bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, usersDataSrc, sessId!, this.CurrentIpAddress! );
 
         if( isLoggedIn ) {
-            UserAppDataObject.Raw? userAppDataRaw = await userAppData.GetById_Async( dbCon, this.UserOfSession!.Id );
+            UserAppDataObject.Raw? userAppDataRaw = await userAppDataSrc.GetById_Async( dbCon, this.UserOfSession!.Id );
 
             this.UserAppDataOfSession = userAppDataRaw is not null
                 ? await ServerDataAccess_UserAppData.ToDataObject_Async(
                     dbCon,
-                    termsData,
-                    postsContextsData,
-                    postsContextTermEntryData,
+                    termsDataSrc,
+                    postsContextsDataSrc,
+                    postsContextTermEntryDataSrc,
                     userAppDataRaw
                 )
                 : null;

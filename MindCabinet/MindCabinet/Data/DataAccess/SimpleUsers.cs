@@ -65,10 +65,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
 
     public ServerDataAccess_SimpleUsers(
-				Services.ClientSessionManager sessionData,
+				Services.ClientSessionManager sessionMngr,
                 StaticServerSettings serverSettings,
                 ILogger<ServerDataAccess_SimpleUsers> logger ) {
-        this.SessionManager = sessionData;
+        this.SessionManager = sessionMngr;
         this.ServerSettings = serverSettings;
         this.Logger = logger;
     }
@@ -232,11 +232,11 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_ServerData serverData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_UserAppData userAppData,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 bool detectCollision,
                 bool createPostsContext ) {
@@ -311,21 +311,21 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         if( createPostsContext ) {
             userTerm = await this.CreateUserTerm_Async(
                 dbCon: dbCon,
-                serverData: serverData,
-                termsData: termsData,
+                serverDataSrc: serverDataSrc,
+                termsDataSrc: termsDataSrc,
                 userName: parameters.Name
             );
 
             PostsContextObject.Prototype userDefaultPostsContextProto = await this.CreateDefaultUserPostsContext(
                 dbCon,
-                postsContextData,
-                postsContextTermEntryData,
+                postsContextDataSrc,
+                postsContextTermEntryDataSrc,
                 parameters,
                 userTerm.Id
             );
             userDefaultPostsContext = userDefaultPostsContextProto.ToRaw( true );
             
-            await userAppData.Create_Async(
+            await userAppDataSrc.Create_Async(
                 dbCon: dbCon,
                 simpleUserId: (SimpleUserId)newUserId,
                 userDefaultPostsContextId: userDefaultPostsContext.Id,
@@ -363,10 +363,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     internal async Task<TermObject.Raw> CreateUserTerm_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_ServerData serverData,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
                 string userName ) {
-        ServerDataObject.Raw? serverDataObj = await serverData.Get_Async( dbCon );
+        ServerDataObject.Raw? serverDataObj = await serverDataSrc.Get_Async( dbCon );
         if( serverDataObj is null ) {
             throw new Exception( "Server application data not found." );
         }
@@ -375,7 +375,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         }
 
         return (
-            await termsData.Create_Async( dbCon, new ClientDataAccess_Terms.IAPI.Create_Params {
+            await termsDataSrc.Create_Async( dbCon, new ClientDataAccess_Terms.IAPI.Create_Params {
                 TermPattern = userName,
                 ContextId = serverDataObj?.UsersConceptTermId
             } )
@@ -385,8 +385,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     
     internal async Task<PostsContextObject.Prototype> CreateDefaultUserPostsContext(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 TermId userAsTermId ) {
         PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
@@ -400,9 +400,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 }
             }
         };
-        PostsContextId defaultCtxId = (await postsContextData.Create_Async(
+        PostsContextId defaultCtxId = (await postsContextDataSrc.Create_Async(
             dbCon: dbCon,
-            postsContextTermEntryData: postsContextTermEntryData,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
             parameters: proto
         )).Id;
 

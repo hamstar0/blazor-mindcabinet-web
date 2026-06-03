@@ -21,17 +21,17 @@ public partial class ServerDataAccess_PrioritizedPosts(
     
     public async Task<SimplePostObject.Raw[]> GetByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_SimplePostTags postTagsData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_SimplePostTags postTagsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return [];
         }
 
-        PostsContextObject.Raw? usrCtx = await postsContextData.GetById_Async(
+        PostsContextObject.Raw? usrCtx = await postsContextDataSrc.GetById_Async(
             dbCon: dbCon,
-            postsContextTermEntryData: postsContextTermEntryData,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
             postsContextId: parameters.PostsContextId,
             alsoGetEntries: true
         );
@@ -55,7 +55,7 @@ public partial class ServerDataAccess_PrioritizedPosts(
         );
         
         foreach( SimplePostObject.Raw post in posts ) {
-            post.TagsTermIdSet = (await postTagsData.Get_Async( dbCon, post.Id ))
+            post.TagsTermIdSet = (await postTagsDataSrc.Get_Async( dbCon, post.Id ))
                 .Select( t => t.Id )
                 .ToArray();
         }
@@ -67,16 +67,16 @@ public partial class ServerDataAccess_PrioritizedPosts(
 
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return 0;
         }
 
-        PostsContextObject.Raw? usrCtx = await postsContextData.GetById_Async(
+        PostsContextObject.Raw? usrCtx = await postsContextDataSrc.GetById_Async(
             dbCon: dbCon,
-            postsContextTermEntryData: postsContextTermEntryData,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
             postsContextId: parameters.PostsContextId,
             alsoGetEntries: true
         );

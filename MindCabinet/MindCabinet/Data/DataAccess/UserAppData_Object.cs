@@ -15,12 +15,12 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async static Task<UserAppDataObject> ToDataObject_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_PostsContexts postsContextsData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_PostsContexts postsContextsDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 UserAppDataObject.Raw dbEntry ) {
         Func<TermId, Task<TermObject.Raw>> termsRawFactory = async id => {
-            TermObject.Raw? termRaw = await termsData.GetById_Async( dbCon, id );
+            TermObject.Raw? termRaw = await termsDataSrc.GetById_Async( dbCon, id );
             if( termRaw is null ) {
                 throw new Exception( $"Term with id {id} not found." );
             }
@@ -37,13 +37,13 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
             return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
                 dbCon,
-                termsData,
+                termsDataSrc,
                 ctxTermEntries
             );
         };
 
         Func<PostsContextId, Task<PostsContextObject>> postsContextFactory = async id => {
-            PostsContextObject.Raw? ctxRaw = await postsContextsData.GetById_Async( dbCon, postsContextTermEntryData, id, true );
+            PostsContextObject.Raw? ctxRaw = await postsContextsDataSrc.GetById_Async( dbCon, postsContextTermEntryDataSrc, id, true );
             if( ctxRaw is null ) {
                 throw new Exception( $"PostsContext with id {id} not found." );
             }

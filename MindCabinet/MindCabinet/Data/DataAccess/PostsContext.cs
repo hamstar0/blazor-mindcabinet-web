@@ -28,9 +28,10 @@ public partial class ServerDataAccess_PostsContexts(
     private readonly StaticServerSettings ServerSettings = serverSettings;
 
 
+
     public async Task<PostsContextObject.Raw?> GetById_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 PostsContextId postsContextId,
                 bool alsoGetEntries ) {
         if( postsContextId == 0 ) {
@@ -54,7 +55,7 @@ public partial class ServerDataAccess_PostsContexts(
         }
 
         if( alsoGetEntries ) {
-            raw.Entries = (await postsContextTermEntryData.GetByPostsContextId_Async(
+            raw.Entries = (await postsContextTermEntryDataSrc.GetByPostsContextId_Async(
                 dbCon: dbCon,
                 postsContextId: raw.Id
             )).ToArray();
@@ -71,10 +72,10 @@ public partial class ServerDataAccess_PostsContexts(
         return raw;
     }
 
-
+ cache?
     public async Task<IEnumerable<PostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params parameters,
                 bool alsoGetEntries ) {
         if( parameters.Ids.Any(id => id == 0) ) {
@@ -136,7 +137,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         if( alsoGetEntries ) {
             foreach( PostsContextObject.Raw ctx in contexts ) {
-                ctx.Entries = (await postsContextTermEntryData.GetByPostsContextId_Async(
+                ctx.Entries = (await postsContextTermEntryDataSrc.GetByPostsContextId_Async(
                     dbCon: dbCon,
                     postsContextId: ctx.Id
                 )).ToArray();
@@ -149,7 +150,7 @@ public partial class ServerDataAccess_PostsContexts(
 
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Create_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 PostsContextObject.Prototype parameters ) {
         if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "PostsContext Name is not valid." );
@@ -173,7 +174,7 @@ public partial class ServerDataAccess_PostsContexts(
             .ToArray();
 
         foreach( PostsContextTermEntryObject.Raw entry in entries ) {
-            await postsContextTermEntryData.Create_Async(
+            await postsContextTermEntryDataSrc.Create_Async(
                 dbCon: dbCon,
                 postsContextId: (PostsContextId)postsContextId,
                 parameter: entry
@@ -201,7 +202,7 @@ public partial class ServerDataAccess_PostsContexts(
 
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Update_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 PostsContextObject.Prototype parameters ) {
         if( !PostsContextObject.ValidateId(parameters.Id ?? 0) ) {
             throw new ArgumentException( "PostsContextObject.Prototype Id is not valid." );
@@ -221,7 +222,7 @@ public partial class ServerDataAccess_PostsContexts(
             }
         );
         
-        await postsContextTermEntryData.DeleteByPostsContextId_Async(
+        await postsContextTermEntryDataSrc.DeleteByPostsContextId_Async(
             dbCon: dbCon,
             postsContextId: parameters.Id!.Value
         );
@@ -231,7 +232,7 @@ public partial class ServerDataAccess_PostsContexts(
             .ToArray();
 
         foreach( PostsContextTermEntryObject.Raw entry in entries ) {
-            await postsContextTermEntryData.Create_Async(
+            await postsContextTermEntryDataSrc.Create_Async(
                 dbCon: dbCon,
                 postsContextId: parameters.Id!.Value,
                 parameter: entry

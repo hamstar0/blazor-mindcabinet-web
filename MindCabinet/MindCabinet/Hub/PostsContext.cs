@@ -20,8 +20,8 @@ public class PostsContextHub(
                 ILogger<PostsContextHub> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
-                ServerDataAccess_PostsContexts postsContextsData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
+                ServerDataAccess_PostsContexts postsContextsDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
 				ClientSessionManager sessMngr
             ) : Hub, ClientDataAccess_PostsContext.IAPI {
     private readonly ILogger<PostsContextHub> Logger = logger;
@@ -30,9 +30,9 @@ public class PostsContextHub(
 
     private readonly DbAccess DbAccess = dbAccess;
 
-    private readonly ServerDataAccess_PostsContexts PostsContextsData = postsContextsData;
+    private readonly ServerDataAccess_PostsContexts PostsContextsDataSrc = postsContextsDataSrc;
 
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryData = postsContextTermEntryData;
+    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
 
     private readonly ClientSessionManager SessionManager = sessMngr;
 
@@ -63,9 +63,9 @@ public class PostsContextHub(
                 .ToArray();
         }
 
-        IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsData.GetByCriteria_Async(
+        IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsDataSrc.GetByCriteria_Async(
             dbCon: dbCon,
-            postsContextTermEntryData: this.PostsContextTermEntryData,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters,
             alsoGetEntries: true
         );
@@ -92,9 +92,9 @@ public class PostsContextHub(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PostsContextsData.Create_Async(
+        return await this.PostsContextsDataSrc.Create_Async(
             dbCon,
-            this.PostsContextTermEntryData,
+            this.PostsContextTermEntryDataSrc,
             parameters
         );
     }
@@ -118,9 +118,9 @@ public class PostsContextHub(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PostsContextsData.Update_Async(
+        return await this.PostsContextsDataSrc.Update_Async(
             dbCon: dbCon,
-            postsContextTermEntryData: this.PostsContextTermEntryData,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters
         );
     }

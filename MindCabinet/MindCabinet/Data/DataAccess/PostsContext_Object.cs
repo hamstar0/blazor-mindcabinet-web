@@ -15,12 +15,12 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
     public static async Task<PostsContextObject> ToDataObject_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms termsDataSrc,
                 PostsContextObject.Raw raw ) {
         return await raw.ToDataObject_Async( ctxTermsFactory: async ctxTermEntries => {
             return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
                 dbCon: dbCon,
-                termsData: termsData,
+                termsDataSrc: termsDataSrc,
                 entriesRaw: raw.Entries
             );
         } );
@@ -29,14 +29,14 @@ public partial class ServerDataAccess_PostsContexts : IServerDataAccess {
 
     public static async Task<PostsContextTermEntryObject[]> ToTermEntriesDataObjects_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms termsDataSrc,
                 PostsContextTermEntryObject.Raw[] entriesRaw ) {
-        IEnumerable<TermObject.Raw> termRaws = await termsData.GetByIds_Async( dbCon, entriesRaw.Select(e => e.TermId) );
+        IEnumerable<TermObject.Raw> termRaws = await termsDataSrc.GetByIds_Async( dbCon, entriesRaw.Select(e => e.TermId) );
 
         Func<PostsContextTermEntryObject.Raw, Task<PostsContextTermEntryObject>> getTermEntry = async entryRaw => {
             TermObject term = await ServerDataAccess_Terms.ToDataObject_Async(
                 dbCon: dbCon,
-                termsData: termsData,
+                termsDataSrc: termsDataSrc,
                 termRaw: termRaws.First( t => t.Id == entryRaw.TermId )
             );
 

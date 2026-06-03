@@ -13,10 +13,10 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_Terms : IServerDataAccess {
 	public static async Task<TermObject> ToDataObject_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms termsDataSrc,
                 TermObject.Raw termRaw ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async ( TermId termId ) => {
-            TermObject.Raw? term = await termsData.GetById_Async( dbCon, termId );
+            TermObject.Raw? term = await termsDataSrc.GetById_Async( dbCon, termId );
             if( term is null ) {
                 throw new InvalidOperationException("Term not found");
             }

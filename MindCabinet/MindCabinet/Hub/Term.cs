@@ -19,7 +19,7 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
     
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_Terms TermsData;
+    private readonly ServerDataAccess_Terms TermsDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -28,11 +28,11 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
     public TermController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_Terms termsData,
+                ServerDataAccess_Terms termsDataSrc,
                 ClientSessionManager sessionManager ) {
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.TermsData = termsData;
+        this.TermsDataSrc = termsDataSrc;
         this.SessionManager = sessionManager;
     }
 
@@ -49,7 +49,7 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.Raw> terms =  await this.TermsData.GetTermsByCriteria_Async( dbCon, parameters );
+        IEnumerable<TermObject.Raw> terms =  await this.TermsDataSrc.GetTermsByCriteria_Async( dbCon, parameters );
 
         return new ClientDataAccess_Terms.IAPI.GetByX_Return( terms );
     }
@@ -67,7 +67,7 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.Raw> terms = await this.TermsData.GetByIds_Async( dbCon, ids );
+        IEnumerable<TermObject.Raw> terms = await this.TermsDataSrc.GetByIds_Async( dbCon, ids );
 
         return new ClientDataAccess_Terms.IAPI.GetByX_Return( terms );
     }
@@ -89,6 +89,6 @@ public class TermController : Hub, ClientDataAccess_Terms.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.TermsData.Create_Async( dbCon, parameters );
+        return await this.TermsDataSrc.Create_Async( dbCon, parameters );
     }
 }

@@ -16,13 +16,13 @@ namespace MindCabinet.Client.Services.DataPresenters;
 public partial class ContextPostsSupplier(
             ILogger<ContextPostsSupplier> logger,
             LocalClientSessionManager mySessionMngr,
-            ClientDataAccess_PrioritizedPosts postsData
+            ClientDataAccess_PrioritizedPosts postsDataSrc
         ) : IClientDataProcessors {
     private ILogger<ContextPostsSupplier> Logger = logger;
 
     private LocalClientSessionManager MySessionMngr = mySessionMngr;
     
-    private ClientDataAccess_PrioritizedPosts PrioritizedPostsData = postsData;
+    private ClientDataAccess_PrioritizedPosts PrioritizedPostsDataSrc = postsDataSrc;
 
 
     private int CurrentPage = 0;
@@ -34,7 +34,7 @@ public partial class ContextPostsSupplier(
 
 
     public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
-                ClientDataAccess_Terms termsData,
+                ClientDataAccess_Terms termsDataSrc,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
         PostsContextObject? postsContext = this.MySessionMngr.GetCurrentContext();
@@ -42,7 +42,7 @@ public partial class ContextPostsSupplier(
             return [];
         }
 
-        IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsData.GetByCriteria_Async(
+        IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsDataSrc.GetByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
                 postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
@@ -66,7 +66,7 @@ public partial class ContextPostsSupplier(
 
         SimplePostObject[] posts = new SimplePostObject[ postsRaw.Count() ];
         for( int i = 0; i < postsRaw.Count(); i++ ) {
-            posts[i] = await ClientDataAccess_SimplePosts.ConvertRawToDataObject_Async( termsData, postsRaw.ElementAt(i) );
+            posts[i] = await ClientDataAccess_SimplePosts.ConvertRawToDataObject_Async( termsDataSrc, postsRaw.ElementAt(i) );
         }
 
         return posts
@@ -82,7 +82,7 @@ public partial class ContextPostsSupplier(
             return 0;
         }
 
-        int totalPosts = await this.PrioritizedPostsData.GetCountByCriteria_Async(
+        int totalPosts = await this.PrioritizedPostsDataSrc.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
                 postsContextId: currCtx.Id,
                 bodyPattern: searchTerm,
