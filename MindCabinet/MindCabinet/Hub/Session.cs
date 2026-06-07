@@ -65,7 +65,7 @@ public class SessionHub(
                 )
                 : null,
             UserAppData = this.SessionManager.UserAppDataOfSession?.ToRaw(),
-            UserAppData_PostsContext = this.SessionManager.UserAppDataOfSession?.PostsContext?.ToRaw(),
+            UserAppData_PostsContext = this.SessionManager.UserAppDataOfSession?.CurrentPostsContext?.ToRaw(),
             UserAppData_UserDefaultTerm = this.SessionManager.UserAppDataOfSession?.UserDefaultTerm?.ToRaw()
         };
 //this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsContext) );

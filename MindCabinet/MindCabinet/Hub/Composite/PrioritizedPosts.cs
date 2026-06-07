@@ -60,7 +60,7 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
     }
 
 
-    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
+    public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteriaForCurrentUser_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( !this.SessionManager.IsLoaded ) {
             HttpContext? context = this.Context.GetHttpContext();
@@ -70,10 +70,18 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
             await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }
 
-        // TODO: Properly validate that the requested context belongs to the user in session
-        if( this.SessionManager.UserAppDataOfSession?.PostsContext.Id != parameters.PostsContextId ) {
+        if( this.SessionManager.UserAppDataOfSession?.UserDefaultTerm is null ) {
+            //throw new Exception( "Session not loaded." );
+            //this.Logger.LogInformation( "Session not loaded." );
             return [];
         }
+
+        if( !parameters.AdditionalTagIds.Any(id => id == this.SessionManager.UserAppDataOfSession.UserDefaultTerm.Id) ) {
+            parameters.AdditionalTagIds = parameters.AdditionalTagIds
+                .Append( this.SessionManager.UserAppDataOfSession.UserDefaultTerm.Id )
+                .ToArray();
+        }
+        
         
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
@@ -86,7 +94,7 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
         );
     }
 
-    public async Task<int> GetCountByCriteria_Async(
+    public async Task<int> GetCountByCriteriaForCurrentUser_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( !this.SessionManager.IsLoaded ) {
             HttpContext? context = this.Context.GetHttpContext();
@@ -96,9 +104,8 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
             await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }
 
-        // TODO: Properly validate that the requested context belongs to the user in session
-        if( this.SessionManager.UserAppDataOfSession?.PostsContext.Id != parameters.PostsContextId ) {
-            return 0; no
+        if( this.SessionManager.UserAppDataOfSession?.UserDefaultTerm is null ) {
+            return 0;
         }
         
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );

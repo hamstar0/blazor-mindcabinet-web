@@ -10,7 +10,7 @@ public partial class UserAppDataObject {
     public class Prototype : IRawDataObject {
 		public SimpleUserId? SimpleUserId { get; set; }
         
-		public PostsContextId? PostsContextId { get; set; }
+		public PostsContextId? CurrentPostsContextId { get; set; }
 
         public TermId? UserDefaultTermId { get; set; }
 
@@ -20,7 +20,7 @@ public partial class UserAppDataObject {
             if( !ignoreUserId && this.SimpleUserId is null || this.SimpleUserId == 0 ) {
                 return false;
             }
-            if( this.PostsContextId is null || this.PostsContextId == 0 ) {
+            if( this.CurrentPostsContextId is null || this.CurrentPostsContextId == 0 ) {
                 return false;
             }
             if( this.UserDefaultTermId is null || this.UserDefaultTermId == 0 ) {

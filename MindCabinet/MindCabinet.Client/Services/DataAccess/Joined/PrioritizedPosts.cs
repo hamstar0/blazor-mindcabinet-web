@@ -34,7 +34,7 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
         return await IClientDataAccess.CallHub_Async<IEnumerable<SimplePostObject.Raw>>(
             hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetByCriteria_Async ),
+            methodName: nameof( IAPI.GetByCriteriaForCurrentUser_Async ),
             args: new object[] { parameters }
         );
     }
@@ -43,7 +43,7 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
     public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
         return await IClientDataAccess.CallHub_Async<int>(
             hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetCountByCriteria_Async ),
+            methodName: nameof( IAPI.GetCountByCriteriaForCurrentUser_Async ),
             args: new object[] { parameters }
         );
     }

@@ -136,6 +136,18 @@ public partial class ServerDataAccess_Terms(
             sql, new DynamicParameters(sqlParams) );
 //this.Logger.LogInformation( "Retrieved {Count} terms", terms.Count() );
 
+        //
+
+        foreach( TermObject.Raw termRaw in termsRaw ) {
+            ServerDataAccess_Terms.Cache_ById.Set(
+                key: termRaw.Id,
+                value: termRaw,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
+        }
+
+        //
+
         return termsRaw;
 	}
 

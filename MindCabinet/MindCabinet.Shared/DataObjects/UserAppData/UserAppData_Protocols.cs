@@ -9,11 +9,11 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class UserAppDataObject {
     public static Raw CreateRaw(
             SimpleUserId simpleUserId,
-            PostsContextId postsContextId,
+            PostsContextId currentPostsContextId,
             TermId userDefaultTermId ) {
         return new Raw {
             SimpleUserId = simpleUserId,
-            PostsContextId = postsContextId,
+            CurrentPostsContextId = currentPostsContextId,
             UserDefaultTermId = userDefaultTermId
         };
     }
@@ -21,7 +21,7 @@ public partial class UserAppDataObject {
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
         
-		public PostsContextId PostsContextId { get; set; }
+		public PostsContextId CurrentPostsContextId { get; set; }
 
 		public TermId UserDefaultTermId { get; set; }
 
@@ -31,7 +31,7 @@ public partial class UserAppDataObject {
                     Func<TermId, Task<TermObject>> termsFactory ) {
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,
-                postsContext: await postsContextFactory( this.PostsContextId ),
+                currentPostsContext: await postsContextFactory( this.CurrentPostsContextId ),
                 userDefaultTerm: await termsFactory( this.UserDefaultTermId )
             );
         }

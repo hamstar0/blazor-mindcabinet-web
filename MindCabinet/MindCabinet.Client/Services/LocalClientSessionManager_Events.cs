@@ -52,12 +52,12 @@ public partial class LocalClientSessionManager {
         if( this.Data is null ) {
             throw new InvalidOperationException( "Current session UserAndAppData is null in TriggerUserLogin." );
         }
-        if( this.Data.UserAppData?.PostsContext is null ) {
+        if( this.Data.UserAppData?.CurrentPostsContext is null ) {
             throw new InvalidOperationException( "Current session PostsContext is null in TriggerUserLogin." );
         }
 
         await this.TriggerUserAndAppDataLoaded_Async( this.Data );
-        await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.PostsContext! );
+        await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.CurrentPostsContext! );
     }
 
     private async Task TriggerUserLogout_Async( SimpleUserObject.ClientObject user ) {

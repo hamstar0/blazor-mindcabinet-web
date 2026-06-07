@@ -26,12 +26,12 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
                     bool sortAscendingByDate,
                     int pageNumber,
                     int postsPerPage ) {
-            public PostsContextId PostsContextId { get; } = postsContextId;
-            public string? BodyPattern { get; } = bodyPattern;
-            public TermId[] AdditionalTagIds { get; } = additionalTagIds;
-            public bool SortAscendingByDate { get; } = sortAscendingByDate;
-            public int PageNumber { get; } = pageNumber;
-            public int PostsPerPage { get; } = postsPerPage;
+            public PostsContextId PostsContextId { get; set; } = postsContextId;
+            public string? BodyPattern { get; set; } = bodyPattern;
+            public TermId[] AdditionalTagIds { get; set; } = additionalTagIds;
+            public bool SortAscendingByDate { get; set; } = sortAscendingByDate;
+            public int PageNumber { get; set; } = pageNumber;
+            public int PostsPerPage { get; set; } = postsPerPage;
 
 
             public override string ToString() {
@@ -45,9 +45,9 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
             }
         }
 
-        public Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async( GetByCriteria_Params parameters );
+        public Task<IEnumerable<SimplePostObject.Raw>> GetByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
 
         
-        public Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters );
+        public Task<int> GetCountByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
     }
 }

@@ -88,7 +88,7 @@ public partial class ServerDataAccess_UserAppData(
 
         UserAppDataObject.Raw raw = UserAppDataObject.CreateRaw(
             simpleUserId: simpleUserId,
-            postsContextId: userDefaultPostsContextId,
+            currentPostsContextId: userDefaultPostsContextId,
             userDefaultTermId: userDefaultTermId
         );
 

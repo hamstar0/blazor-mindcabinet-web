@@ -87,7 +87,7 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
         await this.UserAppDataSrc.Update_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionManager.UserOfSession.Id,
-            postsContextId: parameters.PostsContextId ?? 0,
+            postsContextId: parameters.CurrentPostsContextId ?? 0,
             userDefaultTermId: parameters.UserDefaultTermId ?? 0
         );
 

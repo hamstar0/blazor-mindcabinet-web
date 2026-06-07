@@ -72,7 +72,7 @@ public partial class ServerDataAccess_PostsContexts(
         return raw;
     }
 
- cache?
+
     public async Task<IEnumerable<PostsContextObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
@@ -136,11 +136,19 @@ public partial class ServerDataAccess_PostsContexts(
         );
 
         if( alsoGetEntries ) {
-            foreach( PostsContextObject.Raw ctx in contexts ) {
-                ctx.Entries = (await postsContextTermEntryDataSrc.GetByPostsContextId_Async(
+            foreach( PostsContextObject.Raw rawCtx in contexts ) {
+                rawCtx.Entries = (await postsContextTermEntryDataSrc.GetByPostsContextId_Async(
                     dbCon: dbCon,
-                    postsContextId: ctx.Id
+                    postsContextId: rawCtx.Id
                 )).ToArray();
+
+                //
+
+                ServerDataAccess_PostsContexts.Cache_ById.Set(
+                    key: rawCtx.Id,
+                    value: rawCtx,
+                    expiry: this.ServerSettings.CacheExpirationDuration
+                );
             }
         }
 

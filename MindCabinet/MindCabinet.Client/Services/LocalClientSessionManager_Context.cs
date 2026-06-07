@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services;
 
 public partial class LocalClientSessionManager {
     public PostsContextObject? GetCurrentContext() {
-        return this.Data?.UserAppData?.PostsContext;
+        return this.Data?.UserAppData?.CurrentPostsContext;
     }
 
 
@@ -21,9 +21,9 @@ public partial class LocalClientSessionManager {
 
         await userAppDataSrc.UpdateForCurrentUser_Async( new UserAppDataObject.Prototype {
             SimpleUserId = this.UserId,
-            PostsContextId = context.Id
+            CurrentPostsContextId = context.Id
         } );
-        this.Data.UserAppData.SetPostsContext( context );
+        this.Data.UserAppData.SetCurrentPostsContext( context );
         
         await this.TriggerPostsContextChanged_Async( context );
     }

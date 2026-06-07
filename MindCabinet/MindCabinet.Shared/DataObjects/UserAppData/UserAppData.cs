@@ -10,7 +10,7 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class UserAppDataObject : IDataObject {
 	public SimpleUserId SimpleUserId { get; private set; }
 
-	public PostsContextObject PostsContext { get; private set; }
+	public PostsContextObject CurrentPostsContext { get; private set; }
 
 	public TermObject UserDefaultTerm { get; private set; }
 
@@ -18,26 +18,26 @@ public partial class UserAppDataObject : IDataObject {
 
 	public UserAppDataObject(
 			SimpleUserId simpleUserId,
-			PostsContextObject postsContext,
+			PostsContextObject currentPostsContext,
 			TermObject userDefaultTerm ) {
 		if( simpleUserId == 0 ) {
 			throw new ArgumentException( "SimpleUserId cannot be 0 in UserAppDataObject." );
 		}
 
 		this.SimpleUserId = simpleUserId;
-		this.PostsContext = postsContext;
+		this.CurrentPostsContext = currentPostsContext;
 		this.UserDefaultTerm = userDefaultTerm;
 	}
 
 
-	public void SetPostsContext( PostsContextObject context ) {	// i hate this
-		this.PostsContext = context;
+	public void SetCurrentPostsContext( PostsContextObject context ) {	// i hate this
+		this.CurrentPostsContext = context;
 	}
 
 	public UserAppDataObject.Raw ToRaw() {
 		return UserAppDataObject.CreateRaw(
 			simpleUserId: this.SimpleUserId,
-			postsContextId: this.PostsContext.Id,
+			currentPostsContextId: this.CurrentPostsContext.Id,
 			userDefaultTermId: this.UserDefaultTerm.Id
 		);
 	}

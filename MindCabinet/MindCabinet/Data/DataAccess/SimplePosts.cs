@@ -143,6 +143,18 @@ public partial class ServerDataAccess_SimplePosts(
             sql, new DynamicParameters( sqlParams )
         );
 
+        //
+
+        foreach( SimplePostObject.Raw rawPost in postsRaw ) {
+            ServerDataAccess_SimplePosts.Cache_ById.Set(
+                key: rawPost.Id,
+                value: rawPost,
+                expiry: this.ServerSettings.CacheExpirationDuration
+            );
+        }
+
+        //
+
         return postsRaw;
 
         //var filteredPosts = this.Posts.Values

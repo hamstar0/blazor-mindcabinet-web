@@ -14,7 +14,7 @@ namespace MindCabinet.Client.Services;
 
 public partial class LocalClientSessionManager(
             INetMode netMode,
-            IServiceScopeFactory serviceScopeFactory ) {
+            IServiceProvider serviceProvider ) {
     public class DataBundle( string sessionId, SimpleUserObject.ClientObject? userData, UserAppDataObject? userAppData ) {
         public string SessionId { get; set; } = sessionId;
 
@@ -27,7 +27,8 @@ public partial class LocalClientSessionManager(
 
     private readonly INetMode NetMode = netMode;
 
-    private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory;
+    // private readonly IServiceScopeFactory ServiceScopeFactory = serviceScopeFactory;
+    private readonly IServiceProvider ServiceProvider = serviceProvider;
 
     public bool IsLoaded { get; private set; } = false;
 
@@ -62,29 +63,19 @@ public partial class LocalClientSessionManager(
     }
     
     private async Task LoadData_Async() {
-        IServiceScope scope = this.ServiceScopeFactory.CreateScope(); bad scope?
-        
-        try {
-            ClientDataAccess_Terms? termsDataSrc = scope.ServiceProvider.GetService<ClientDataAccess_Terms>();
-            if( termsDataSrc is null ) {
-                throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
-            }
-
-            ClientDataAccess_ClientSessionBundle? sessionBundleSrc = scope.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
-            if( sessionBundleSrc is null ) {
-                throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
-            }
-
-            //
-
-            await this.LoadData_Async( termsDataSrc, sessionBundleSrc, true );
-        } finally {
-            if( scope is IAsyncDisposable asyncDisposable ) {
-                await asyncDisposable.DisposeAsync();
-            } else {
-                scope.Dispose();
-            }
+        ClientDataAccess_Terms? termsDataSrc = this.ServiceProvider.GetService<ClientDataAccess_Terms>();
+        if( termsDataSrc is null ) {
+            throw new InvalidOperationException( "ClientDataAccess_Terms service not available in ClientSessionData." );
         }
+
+        ClientDataAccess_ClientSessionBundle? sessionBundleSrc = this.ServiceProvider.GetService<ClientDataAccess_ClientSessionBundle>();
+        if( sessionBundleSrc is null ) {
+            throw new InvalidOperationException( "ClientDataAccess_ClientSessionBundle service not available in ClientSessionData." );
+        }
+
+        //
+
+        await this.LoadData_Async( termsDataSrc, sessionBundleSrc, true );
     }
     
     private async Task LoadData_Async(
@@ -100,7 +91,7 @@ Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize
 
         if( triggerEvents ) {
             await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
-            await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.PostsContext );
+            await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.CurrentPostsContext );
         }
     }
     
