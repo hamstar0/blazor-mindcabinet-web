@@ -34,13 +34,12 @@ v0.7
 -	Implement tabs of posts views
 -	Set modal dialogs to have default input focused onto when open
 v0.6
--	@Ensure user registration input data is valid on server
 -	@Test favorites, recent tags, context sidebar, etc.
+
+
 -	@Ensure singleton services are thread safe
 -	Finish caching for non-id data (mapped to id data)
 -	Sanitize ClientDataAccess_PrioritizedPosts.GetByCriteria_Async, GetCountByCriteria_Async on server
-
-
 -	Implement client caching
 -	Implement server caching
 -	Channel API calls through Hub (test)

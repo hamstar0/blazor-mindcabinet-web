@@ -61,6 +61,7 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
             Status = "User validated."
         };
     }
+    
 
     public async Task Visit_Async() {
         if( !this.SessionManager.IsLoaded ) {

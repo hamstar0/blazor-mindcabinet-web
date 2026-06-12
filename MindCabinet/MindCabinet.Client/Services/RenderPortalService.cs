@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Components;
@@ -7,7 +8,7 @@ namespace MindCabinet.Client.Services;
 
 
 public class RenderPortalService {
-    readonly Dictionary<string, Dictionary<Guid, RenderFragment>> Regions = new();
+    readonly ConcurrentDictionary<string, Dictionary<Guid, RenderFragment>> Regions = new();
 
     public event Action? OnChange;
 
