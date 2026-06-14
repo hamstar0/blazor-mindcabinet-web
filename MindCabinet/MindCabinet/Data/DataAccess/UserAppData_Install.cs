@@ -15,7 +15,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public const string TableName = "UserAppData";
     public const string TableColumn_SimpleUserId = "SimpleUserId";
-    public const string TableColumn_PostsContextId = "PostsContextId";
+    public const string TableColumn_PostsContextId = "CurrentPostsContextId";
     public const string TableColumn_UserDefaultTermId = "UserDefaultTermId";
 
 

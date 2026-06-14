@@ -1,14 +1,7 @@
-﻿using MindCabinet.Client.Services.DbAccess;
-using MindCabinet.Data;
+﻿using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
-using MindCabinet.DataObjects;
-using MindCabinet.Hubs;
-using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Data;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace MindCabinet.Services;
 
@@ -169,15 +162,18 @@ public partial class ClientSessionManager(
         bool isLoggedIn = await this.LoadUserOfSession_Async( dbCon, usersDataSrc, sessId!, this.CurrentIpAddress! );
 
         if( isLoggedIn ) {
-            UserAppDataObject.Raw? userAppDataRaw = await userAppDataSrc.GetById_Async( dbCon, this.UserOfSession!.Id );
+            UserAppDataObject.Raw? userAppDataRaw = await userAppDataSrc.GetById_Async(
+                dbCon: dbCon,
+                id: this.UserOfSession!.Id
+            );
 
             this.UserAppDataOfSession = userAppDataRaw is not null
                 ? await ServerDataAccess_UserAppData.ToDataObject_Async(
-                    dbCon,
-                    termsDataSrc,
-                    postsContextsDataSrc,
-                    postsContextTermEntryDataSrc,
-                    userAppDataRaw
+                    dbCon: dbCon,
+                    termsDataSrc: termsDataSrc,
+                    postsContextsDataSrc: postsContextsDataSrc,
+                    postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                    dbEntry: userAppDataRaw
                 )
                 : null;
         }

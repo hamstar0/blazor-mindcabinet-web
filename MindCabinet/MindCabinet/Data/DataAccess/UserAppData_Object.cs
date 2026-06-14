@@ -43,7 +43,12 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
         };
 
         Func<PostsContextId, Task<PostsContextObject>> postsContextFactory = async id => {
-            PostsContextObject.Raw? ctxRaw = await postsContextsDataSrc.GetById_Async( dbCon, postsContextTermEntryDataSrc, id, true );
+            PostsContextObject.Raw? ctxRaw = await postsContextsDataSrc.GetById_Async(
+                dbCon: dbCon,
+                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                postsContextId: id,
+                alsoGetEntries: true
+            );
             if( ctxRaw is null ) {
                 throw new Exception( $"PostsContext with id {id} not found." );
             }
