@@ -17,8 +17,9 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
 public partial class SimpleUserController : ControllerBase, ClientDataAccess_SimpleUsers.IAPI {
     private readonly ILogger<SimpleUserController> Logger;
 

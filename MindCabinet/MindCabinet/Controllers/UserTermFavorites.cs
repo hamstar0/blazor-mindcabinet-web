@@ -18,8 +18,9 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_UserTermFavorites.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_UserTermFavorites.IAPI.BaseRoute )]
 public partial class UserTermFavoritesController : ControllerBase, ClientDataAccess_UserTermFavorites.IAPI {
     private readonly DbAccess DbAccess;
 

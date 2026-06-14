@@ -19,16 +19,17 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
-public class SessionHub(
-                ILogger<SessionHub> logger,
+[Route( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
+public class SessionController(
+                ILogger<SessionController> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUserSessions sessionsDataSrc,
                 ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_ClientSessionBundle.IAPI {
-    private readonly ILogger<SessionHub> Logger = logger;
+    private readonly ILogger<SessionController> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
 

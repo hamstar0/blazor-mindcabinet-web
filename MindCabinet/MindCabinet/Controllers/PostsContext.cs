@@ -16,17 +16,18 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
-public class PostsContextHub(
-                ILogger<PostsContextHub> logger,
+[Route( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
+public class PostsContextController(
+                ILogger<PostsContextController> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
 				ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_PostsContext.IAPI {
-    private readonly ILogger<PostsContextHub> Logger = logger;
+    private readonly ILogger<PostsContextController> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
 

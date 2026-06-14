@@ -17,12 +17,11 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_UserTermsHistory.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_UserTermsHistory.IAPI.BaseRoute )]
 public partial class UserTermsHistoryController : ControllerBase, ClientDataAccess_UserTermsHistory.IAPI {
     private readonly DbAccess DbAccess;
-
-    private readonly IServiceProvider ServiceProvider;
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryDataSrc;
 
@@ -32,11 +31,9 @@ public partial class UserTermsHistoryController : ControllerBase, ClientDataAcce
 
     public UserTermsHistoryController(
                 DbAccess dbAccess,
-                IServiceProvider serviceProvider,
                 ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
 				ClientSessionManager sessionData ) {
         this.DbAccess = dbAccess;
-        this.ServiceProvider = serviceProvider;
         this.UserTermsHistoryDataSrc = userTermsHistoryDataSrc;
         this.SessionManager = sessionData;
     }

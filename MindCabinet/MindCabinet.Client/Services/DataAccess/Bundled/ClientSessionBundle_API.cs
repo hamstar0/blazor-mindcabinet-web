@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;

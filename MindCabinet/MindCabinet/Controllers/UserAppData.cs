@@ -14,8 +14,9 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
 public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppData.IAPI {
     private readonly DbAccess DbAccess;
 

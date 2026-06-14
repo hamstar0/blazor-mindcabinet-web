@@ -8,7 +8,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_SimpleUsers : IClientDataAccess {
     public interface IAPI : IServerDataAccessAPI {
-        public const string BaseRoute = "SimpleUsers";
+        public const string BaseRoute = "SimpleUser";
 
 
 

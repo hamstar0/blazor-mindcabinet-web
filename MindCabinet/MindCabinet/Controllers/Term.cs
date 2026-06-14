@@ -14,8 +14,9 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_Terms.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_Terms.IAPI.BaseRoute )]
 public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
     private readonly DbAccess DbAccess;
     

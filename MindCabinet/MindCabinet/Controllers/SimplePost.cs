@@ -14,8 +14,9 @@ namespace MindCabinet.Hubs;
 
 
 // [HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
 public class SimplePostController(
                 ILogger<SimplePostController> logger,
                 IServiceProvider serviceProvider,

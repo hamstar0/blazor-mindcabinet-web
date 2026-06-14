@@ -16,8 +16,9 @@ namespace MindCabinet.Hubs.Composite;
 
 
 // [HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
+// [Route("[controller]")]
 [ApiController]
-[Route("[controller]")]
+[Route( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
 public class PrioritizedPostsController : ControllerBase, ClientDataAccess_PrioritizedPosts.IAPI {
     private readonly DbAccess DbAccess;
 

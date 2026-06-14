@@ -12,7 +12,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
     public interface IAPI : IServerDataAccessAPI {
-        public const string BaseRoute = "Terms";
+        public const string BaseRoute = "Term";
 
 
 
