@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -17,6 +16,8 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
 
+        public string GetByX_Route => "GetByX";
+        
         public class GetByX_Return( IEnumerable<TermObject.Raw> terms ) {
             public IEnumerable<TermObject.Raw> Terms { get; set; } = terms;
         }

@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
@@ -15,23 +14,15 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
 
 
 
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
     private LocalClientSessionManager MySessionMngr;
 
 
 
-    public ClientDataAccess_UserTermFavorites( LocalClientSessionManager mySessionMngr, NavigationManager navigationManager ) {
+    public ClientDataAccess_UserTermFavorites( HttpClient http, LocalClientSessionManager mySessionMngr ) {
+        this.Http = http;
         this.MySessionMngr = mySessionMngr;
-
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
     }
 
 
@@ -42,21 +33,24 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
 
         //
 
-        Cache_ForCurrentUser = await IClientDataAccess.CallHub_Async<IEnumerable<UserTermFavoriteObject.Raw>>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetFavTermsForCurrentUser_Async ),
-            args: new object[] { new object()}
+        var ret = await IClientDataAccess.CallAPI_Async<IEnumerable<UserTermFavoriteObject.Raw>>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetFavTermsForCurrentUser_Async)}"
         );
 
-        return Cache_ForCurrentUser;
+        //
+
+        Cache_ForCurrentUser = ret;
+
+        return ret;
     }
 
 
     public async Task AddTermsForCurrentUser_Async( IAPI.AddTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallHub_Async<object>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.AddTermsForCurrentUser_Async ),
-            args: new object[] { parameters }
+        await IClientDataAccess.CallAPI_Async<IAPI.AddTermsForCurrentUser_Params>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.AddTermsForCurrentUser_Async)}",
+            parameters: parameters
         );
 
         //
@@ -66,10 +60,10 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
 
 
     public async Task RemoveTermsForCurrentUser_Async( IAPI.RemoveTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallHub_Async<object>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.RemoveTermsForCurrentUser_Async ),
-            args: new object[] { parameters }
+        await IClientDataAccess.CallAPI_Async<IAPI.RemoveTermsForCurrentUser_Params>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveTermsForCurrentUser_Async)}",
+            parameters: parameters
         );
 
         //

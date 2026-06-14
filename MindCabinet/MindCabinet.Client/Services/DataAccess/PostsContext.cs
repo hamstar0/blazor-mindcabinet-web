@@ -4,7 +4,6 @@ using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Shared.Utility;
 
@@ -18,25 +17,15 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
 
     
-    // private HttpClient Http;
+    private HttpClient Http;
 
     private LocalClientSessionManager MySessionMngr;
 
-    private HubConnection HubConnection;
 
 
-
-    public ClientDataAccess_PostsContext( LocalClientSessionManager mySessionMngr, NavigationManager navigationManager ) {
+    public ClientDataAccess_PostsContext( HttpClient http, LocalClientSessionManager mySessionMngr ) {
         this.MySessionMngr = mySessionMngr;
-
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
+        this.Http = http;
     }
 
 
@@ -57,10 +46,10 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        IAPI.Get_Return ret = await IClientDataAccess.CallHub_Async<IAPI.Get_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetForCurrentUserByCriteria_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.Get_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetForCurrentUserByCriteria_Async)}",
+            parameters: parameters
         );
 
         //
@@ -75,7 +64,8 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
     }
 
 
-    public async Task<IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async( PostsContextObject.Raw parameters ) {
+    public async Task<IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async(
+                PostsContextObject.Raw parameters ) {
         if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -83,10 +73,10 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new ArgumentException( $"Invalid PostsContextObject.Raw parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
-        IAPI.CreateOrUpdate_Return ret = await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.CreateForCurrentUser_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Raw, IAPI.CreateOrUpdate_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.CreateForCurrentUser_Async)}",
+            parameters: parameters
         );
 
         //
@@ -99,7 +89,8 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
     }
     
 
-    public async Task<IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async( PostsContextObject.Prototype parameters ) {
+    public async Task<IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
+                PostsContextObject.Prototype parameters ) {
         if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -113,10 +104,12 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        return await IClientDataAccess.CallHub_Async<IAPI.CreateOrUpdate_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.UpdateForCurrentUser_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Prototype, IAPI.CreateOrUpdate_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateForCurrentUser_Async)}",
+            parameters: parameters
         );
+
+        return ret;
     }
 }

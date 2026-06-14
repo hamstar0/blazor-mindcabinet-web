@@ -18,14 +18,16 @@ using System.Text.Json;
 namespace MindCabinet.Hubs;
 
 
-[HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
+// [HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
 public class SessionHub(
                 ILogger<SessionHub> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUserSessions sessionsDataSrc,
                 ClientSessionManager sessMngr
-            ) : Hub, ClientDataAccess_ClientSessionBundle.IAPI {
+            ) : ControllerBase, ClientDataAccess_ClientSessionBundle.IAPI {
     private readonly ILogger<SessionHub> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
@@ -38,15 +40,8 @@ public class SessionHub(
 
     
 
+    [HttpPost(nameof(GetCurrent_Async))]
     public async Task<ClientDataAccess_ClientSessionBundle.IAPI.GetCurrentDataBundle_Return> GetCurrent_Async( object _ ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }
@@ -74,11 +69,8 @@ public class SessionHub(
     }
 
 
+    [HttpPost(nameof(Logout_Async))]
     public async Task<string> Logout_Async() {
-        HttpContext? context = this.Context.GetHttpContext();
-        if( context is null ) {
-            throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-        }
         if( !this.SessionManager.IsLoaded ) {
             await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
         }

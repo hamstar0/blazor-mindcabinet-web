@@ -6,7 +6,6 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
 using System.Text.Json;
-using Microsoft.AspNetCore.SignalR.Client;
 
 
 namespace MindCabinet.Client.Services.DbAccess.Joined;
@@ -46,7 +45,6 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
         }
 
         public Task<IEnumerable<SimplePostObject.Raw>> GetByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
-
         
         public Task<int> GetCountByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
     }

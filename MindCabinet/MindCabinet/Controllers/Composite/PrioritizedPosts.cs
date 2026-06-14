@@ -15,8 +15,10 @@ using System.Data;
 namespace MindCabinet.Hubs.Composite;
 
 
-[HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
-public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts.IAPI {
+// [HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
+public class PrioritizedPostsController : ControllerBase, ClientDataAccess_PrioritizedPosts.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly IServiceProvider ServiceProvider;
@@ -60,16 +62,9 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
     }
 
 
+    [HttpPost(nameof(GetByCriteriaForCurrentUser_Async))]
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteriaForCurrentUser_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserAppDataOfSession?.UserDefaultTerm is null ) {
             //throw new Exception( "Session not loaded." );
             //this.Logger.LogInformation( "Session not loaded." );
@@ -94,16 +89,10 @@ public class PrioritizedPostsController : Hub, ClientDataAccess_PrioritizedPosts
         );
     }
 
+
+    [HttpPost(nameof(GetCountByCriteriaForCurrentUser_Async))]
     public async Task<int> GetCountByCriteriaForCurrentUser_Async(
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserAppDataOfSession?.UserDefaultTerm is null ) {
             return 0;
         }

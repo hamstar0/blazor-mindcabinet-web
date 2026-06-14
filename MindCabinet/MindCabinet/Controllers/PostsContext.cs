@@ -15,7 +15,9 @@ using Microsoft.AspNetCore.SignalR;
 namespace MindCabinet.Hubs;
 
 
-[HubRoute( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
+// [HubRoute( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
 public class PostsContextHub(
                 ILogger<PostsContextHub> logger,
                 IServiceProvider serviceProvider,
@@ -23,7 +25,7 @@ public class PostsContextHub(
                 ServerDataAccess_PostsContexts postsContextsDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
 				ClientSessionManager sessMngr
-            ) : Hub, ClientDataAccess_PostsContext.IAPI {
+            ) : ControllerBase, ClientDataAccess_PostsContext.IAPI {
     private readonly ILogger<PostsContextHub> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
@@ -38,17 +40,9 @@ public class PostsContextHub(
 
 
 
-    //[HttpPost(ClientDataAccess_PostsContext.GetForCurrentUserByCriteria_Route)]
+    [HttpPost(nameof(GetForCurrentUserByCriteria_Async))]
     public async Task<ClientDataAccess_PostsContext.IAPI.Get_Return> GetForCurrentUserByCriteria_Async(
                 ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -73,16 +67,10 @@ public class PostsContextHub(
         return new ClientDataAccess_PostsContext.IAPI.Get_Return { Contexts = contexts };
     }
 
+
+    [HttpPost(nameof(CreateForCurrentUser_Async))]
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -101,14 +89,6 @@ public class PostsContextHub(
 
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

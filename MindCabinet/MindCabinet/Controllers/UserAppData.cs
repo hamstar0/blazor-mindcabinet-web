@@ -13,8 +13,10 @@ using System.Data;
 namespace MindCabinet.Hubs;
 
 
-[HubRoute( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
-public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
+// [HubRoute( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
+public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppData.IAPI {
     private readonly DbAccess DbAccess;
 
     private readonly IServiceProvider ServiceProvider;
@@ -37,15 +39,8 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
     }
 
 
+    [HttpPost(nameof(GetForCurrentUser_Async))]
     public async Task<ClientDataAccess_UserAppData.IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async( object _ ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
@@ -65,16 +60,10 @@ public class UserAppDataController : Hub, ClientDataAccess_UserAppData.IAPI {
         };
     }
 
+
+    [HttpPost(nameof(UpdateForCurrentUser_Async))]
     public async Task<object> UpdateForCurrentUser_Async(
                 UserAppDataObject.Prototype parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.PostsContext;
@@ -12,28 +11,20 @@ namespace MindCabinet.Client.Services.DbAccess.Bundled;
 
 
 public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
 
 
-    public ClientDataAccess_ClientSessionBundle( NavigationManager navigationManager ) {
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
+    public ClientDataAccess_ClientSessionBundle( HttpClient http ) {
+        this.Http = http;
     }
 
 
 
     public async Task<LocalClientSessionManager.DataBundle> GetCurrent_Async( ClientDataAccess_Terms termsDataSrc ) {
-        IAPI.GetCurrentDataBundle_Return? sessionData = await IClientDataAccess.CallHub_Async<IAPI.GetCurrentDataBundle_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetCurrent_Async ),
-            args: new object[] { new object() }
+        var sessionData = await IClientDataAccess.CallAPI_Async<IAPI.GetCurrentDataBundle_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetCurrent_Async)}"
         );
 
         Task<UserAppDataObject>? userAppDataMaybeTask = null;

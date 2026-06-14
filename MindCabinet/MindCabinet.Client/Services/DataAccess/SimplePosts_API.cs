@@ -4,7 +4,6 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using Microsoft.AspNetCore.SignalR.Client;
 
 
 namespace MindCabinet.Client.Services.DbAccess;
@@ -43,6 +42,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
         
         
         public Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters );
+
 
 
         public class Create_Params {

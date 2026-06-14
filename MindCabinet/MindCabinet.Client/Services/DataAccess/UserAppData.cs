@@ -5,7 +5,6 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects.PostsContext;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 
 
@@ -18,20 +17,14 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
 
 
 
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
 
 
-    public ClientDataAccess_UserAppData( NavigationManager navigationManager ) {
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
+    public ClientDataAccess_UserAppData( HttpClient http ) {
+        this.Http = http;
     }
 
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
-    }
 
     public async Task<IAPI.GetForCurrentUser_Return> GetForCurrentUser_Async() {
         if( Cache_ForCurrentUser is not null ) {
@@ -40,10 +33,9 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
 
         //
 
-        var ret = await IClientDataAccess.CallHub_Async<IAPI.GetForCurrentUser_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetForCurrentUser_Async ),
-            args: new object[] { }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetForCurrentUser_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetForCurrentUser_Async)}"
         );
 
         //
@@ -57,10 +49,10 @@ public partial class ClientDataAccess_UserAppData : IClientDataAccess {
 
 
     public async Task UpdateForCurrentUser_Async( UserAppDataObject.Prototype parameters ) {
-        await IClientDataAccess.CallHub_Async<object>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.UpdateForCurrentUser_Async ),
-            args: new object[] { parameters }
+        await IClientDataAccess.CallAPI_Async<UserAppDataObject.Prototype>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateForCurrentUser_Async)}",
+            parameters: parameters
         );
 
         //

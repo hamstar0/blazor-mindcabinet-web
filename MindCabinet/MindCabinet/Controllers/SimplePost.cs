@@ -13,7 +13,9 @@ using System.Data;
 namespace MindCabinet.Hubs;
 
 
-[HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
+// [HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
 public class SimplePostController(
                 ILogger<SimplePostController> logger,
                 IServiceProvider serviceProvider,
@@ -25,7 +27,7 @@ public class SimplePostController(
                 ServerDataAccess_SimplePostTags simplePostTagsDataSrc,
                 ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
                 ClientSessionManager sessMngr
-            ) : Hub, ClientDataAccess_SimplePosts.IAPI {
+            ) : ControllerBase, ClientDataAccess_SimplePosts.IAPI {
     private readonly ILogger<SimplePostController> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
@@ -48,16 +50,9 @@ public class SimplePostController(
 
 
 
+    [HttpPost(nameof(GetByCriteria_Async))]
     public async Task<ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return> GetByCriteria_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsDataSrc.GetByCriteria_Async(
@@ -69,32 +64,19 @@ public class SimplePostController(
         return new ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return { Posts = posts };
     }
 
+
+    [HttpPost(nameof(GetCountByCriteria_Async))]
     public async Task<int> GetCountByCriteria_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.SimplePostsDataSrc.GetCountByCriteria_Async( dbCon, parameters );
     }
 
 
+    [HttpPost(nameof(Create_Async))]
     public async Task<SimplePostObject.Raw> Create_Async(
                 ClientDataAccess_SimplePosts.IAPI.Create_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

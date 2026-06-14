@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
@@ -17,19 +16,12 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
     
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
 
 
-    public ClientDataAccess_Terms( NavigationManager navigationManager ) {
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
+    public ClientDataAccess_Terms( HttpClient http ) {
+        this.Http = http;
     }
 
 
@@ -41,10 +33,10 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
         //
 
-        IAPI.GetByX_Return ret = await IClientDataAccess.CallHub_Async<IAPI.GetByX_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetByIds_Async ),
-            args: new object[] { termIds }
+        var ret = await IClientDataAccess.CallAPI_Async<IEnumerable<TermId>, IAPI.GetByX_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetByIds_Async)}",
+            parameters: termIds
         );
 
         //
@@ -60,19 +52,21 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
     public async Task<IAPI.GetByX_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<IAPI.GetByX_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetByCriteria_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.GetByX_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetByCriteria_Async)}",
+            parameters: parameters
         );
+        
+        return ret;
     }
 
 
     public async Task<IAPI.Create_Return> Create_Async( IAPI.Create_Params parameters ) {
-        IAPI.Create_Return ret = await IClientDataAccess.CallHub_Async<IAPI.Create_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.Create_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.Create_Params, IAPI.Create_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.Create_Async)}",
+            parameters: parameters
         );
 
         //

@@ -16,8 +16,10 @@ using System.Text;
 namespace MindCabinet.Hubs;
 
 
-[HubRoute( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
-public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IAPI {
+// [HubRoute( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
+[ApiController]
+[Route("[controller]")]
+public partial class SimpleUserController : ControllerBase, ClientDataAccess_SimpleUsers.IAPI {
     private readonly ILogger<SimpleUserController> Logger;
 
     private readonly IServiceProvider ServiceProvider;
@@ -72,16 +74,9 @@ public partial class SimpleUserController : Hub, ClientDataAccess_SimpleUsers.IA
     }
 
 
+    [HttpPost(nameof(Create_Async))]
     public async Task<ClientDataAccess_SimpleUsers.IAPI.Create_Return> Create_Async(
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters ) {
-        if( !this.SessionManager.IsLoaded ) {
-            HttpContext? context = this.Context.GetHttpContext();
-            if( context is null ) {
-                throw new InvalidOperationException( $"No HttpContext in {this.GetType().Name}" );
-            }
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-        
         if( !this.SessionManager.IsLoaded ) {
             throw new NullReferenceException( "Session not loaded." );
         }

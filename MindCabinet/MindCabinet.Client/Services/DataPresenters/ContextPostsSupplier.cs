@@ -42,7 +42,7 @@ public partial class ContextPostsSupplier(
             return [];
         }
 
-        IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsDataSrc.GetByCriteria_Async(
+        IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsDataSrc.GetByCriteriaForCurrentUser_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
                 postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,

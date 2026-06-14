@@ -74,7 +74,6 @@ public partial class Program {
         //} );
         // builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
-        builder.Services.AddSignalR();
 
         builder.Services.AddSingleton<StaticServerSettings>();
 
@@ -119,7 +118,6 @@ public partial class Program {
             await next();
         } );
 
-        app.MapHubs(); 
         app.MapControllers();
         //app.MapFallbackToPage("");
         //app.MapFallbackToFile("404page.html");

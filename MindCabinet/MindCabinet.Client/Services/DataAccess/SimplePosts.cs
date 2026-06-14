@@ -4,7 +4,6 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 
 
@@ -13,45 +12,44 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
 
 
-    public ClientDataAccess_SimplePosts( NavigationManager navigationManager ) {
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
+    public ClientDataAccess_SimplePosts( HttpClient http ) {
+        this.Http = http;
     }
 
 
     public async Task<IAPI.GetByCriteria_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<IAPI.GetByCriteria_Return>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetByCriteria_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.GetByCriteria_Return>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetByCriteria_Async)}",
+            parameters: parameters
         );
+
+        return ret;
     }
     
 
     public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<int>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetCountByCriteria_Async ),
-            args: new object[] { parameters }
+        int ret = await IClientDataAccess.CallAPIManual_Async<IAPI.GetByCriteria_Params, int>(  // needed?
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetCountByCriteria_Async)}",
+            parameters: parameters
         );
+        
+        return ret;
     }
 
 
     public async Task<SimplePostObject.Raw> Create_Async( IAPI.Create_Params parameters ) {
-        return await IClientDataAccess.CallHub_Async<SimplePostObject.Raw>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.Create_Async ),
-            args: new object[] { parameters }
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.Create_Params, SimplePostObject.Raw>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.Create_Async)}",
+            parameters: parameters
         );
+        
+        return ret;
     }
 }

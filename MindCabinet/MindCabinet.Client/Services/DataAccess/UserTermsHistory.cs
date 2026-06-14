@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
@@ -15,23 +14,15 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
 
 
-    private HubConnection HubConnection;
+    private HttpClient Http;
 
     private LocalClientSessionManager MySessionMngr;
 
 
 
-    public ClientDataAccess_UserTermsHistory( LocalClientSessionManager mySessionMngr, NavigationManager navigationManager ) {
+    public ClientDataAccess_UserTermsHistory( HttpClient http, LocalClientSessionManager mySessionMngr ) {
+        this.Http = http;
         this.MySessionMngr = mySessionMngr;
-
-        Uri hubUrl = navigationManager.ToAbsoluteUri( IAPI.BaseRoute );
-        this.HubConnection = new HubConnectionBuilder()
-            .WithUrl( hubUrl )
-            .Build();
-    }
-
-    public async ValueTask DisposeAsync() {
-        await this.HubConnection.DisposeAsync();
     }
 
 
@@ -42,21 +33,24 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
 
         //
 
-        Cache_ForCurrentUser = await IClientDataAccess.CallHub_Async<IEnumerable<UserTermHistoryObject.Raw>>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.GetHistTermsForCurrentUser_Async ),
-            args: new object[] { }
+        var ret = await IClientDataAccess.CallAPI_Async<IEnumerable<UserTermHistoryObject.Raw>>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetHistTermsForCurrentUser_Async)}"
         );
+
+        //
+
+        Cache_ForCurrentUser = ret;
 
         return Cache_ForCurrentUser;
     }
 
 
     public async Task AddHistTermsForCurrentUser_Async( IAPI.AddHistTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallHub_Async<object>(
-            hubConnection: this.HubConnection,
-            methodName: nameof( IAPI.AddHistTermsForCurrentUser_Async ),
-            args: new object[] { parameters }
+        await IClientDataAccess.CallAPI_Async<IAPI.AddHistTermsForCurrentUser_Params>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.AddHistTermsForCurrentUser_Async)}",
+            parameters: parameters
         );
 
         //
