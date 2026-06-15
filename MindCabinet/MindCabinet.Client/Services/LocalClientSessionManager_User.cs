@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
@@ -29,19 +30,16 @@ public partial class LocalClientSessionManager {
     }
 
 
-    public const string Logout_Path = "Session";
-    public const string Logout_Route = "Logout";
-
     public async Task Logout_Async( HttpClient httpClient ) {
         if( this.Data is null ) {
             return;
         }
 
-        HttpResponseMessage msg = await httpClient.GetAsync(
-            $"{Logout_Path}/{Logout_Route}"
+        await IClientDataAccess.CallAPI_Async<int>(
+            http: httpClient,
+            route: $"{ClientDataAccess_UserSession.IAPI.BaseRoute}/{nameof(ClientDataAccess_UserSession.IAPI.Logout_Async)}",
+            parameters: 0
         );
-
-        msg.EnsureSuccessStatusCode();
 
         SimpleUserObject.ClientObject? user = this.Data.UserData;
 

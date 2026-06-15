@@ -21,7 +21,7 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             public TermId[] TermIds { get; set; } = [];
         }
 
-        public Task AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters );
+        public Task<object> AddTermsForCurrentUser_Async( AddTermsForCurrentUser_Params parameters );
 
 
 
@@ -29,6 +29,6 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             public TermId[] TermIds { get; set; } = [];
         }
 
-        public Task RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters );
+        public Task<object> RemoveTermsForCurrentUser_Async( RemoveTermsForCurrentUser_Params parameters );
     }
 }

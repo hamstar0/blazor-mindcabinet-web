@@ -10,28 +10,6 @@ namespace MindCabinet.Services;
 public partial class ClientSessionManager(
             ILogger<ClientSessionManager> logger,
             IHttpContextAccessor httpContext ) {
-    internal static async Task LoadForHubRequest_Async( IServiceProvider services ) {
-        var sessionData = services.GetRequiredService<ClientSessionManager>();
-        var dbAccess = services.GetRequiredService<DbAccess>();
-        var termsDataSrc = services.GetRequiredService<ServerDataAccess_Terms>();
-        var usersDataSrc = services.GetRequiredService<ServerDataAccess_SimpleUsers>();
-        var userAppDataSrc = services.GetRequiredService<ServerDataAccess_UserAppData>();
-        var postsContextsDataSrc = services.GetRequiredService<ServerDataAccess_PostsContexts>();
-        var postsContextTermEntryDataSrc = services.GetRequiredService<ServerDataAccess_PostsContextTermEntry>();
-        using var dbCon = await dbAccess.GetDbConnection_Async( true );
-
-        await sessionData.LoadForHubRequest_Async(
-            dbCon: dbCon,
-            termsDataSrc: termsDataSrc,
-            usersDataSrc: usersDataSrc,
-            userAppDataSrc: userAppDataSrc,
-            postsContextsDataSrc: postsContextsDataSrc,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc
-        );
-    }
-
-
-
     private readonly ILogger<ClientSessionManager> Logger = logger;
 
     private readonly IHttpContextAccessor HttpContext = httpContext;

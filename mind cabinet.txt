@@ -16,6 +16,7 @@ v1
 -	Add manual-unlocked hard limit to API upload content per user (1 MB?)
 -	Ensure (again) user is validated before using write or sensitive read API calls (including user API itself)
 v0.9
+-	Apply mobile device layout accommodations
 -	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
 -	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
 -	(Decide) Add a button to shuffle main view of posts
@@ -33,10 +34,17 @@ v0.7
 -	Save tab state with user session data
 -	Implement tabs of posts views
 -	Set modal dialogs to have default input focused onto when open
+-	Keep post create component fixed to the bottom
+-	Where are favorite tags visible?
 v0.6
+-	Show tag contexts in tag lists
+-	Clear create post fields upon submit (in particular tags entry and list)
+-	Clear tags input for post create after tag submit
+-	Fix context inputs (again)
 -	@Test favorites, recent tags, context sidebar, etc.
 
 
+-	Revert back to REST API (sigh)
 -	@Ensure singleton services are thread safe
 -	Finish caching for non-id data (mapped to id data)
 -	Sanitize ClientDataAccess_PrioritizedPosts.GetByCriteria_Async, GetCountByCriteria_Async on server

@@ -13,7 +13,8 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MindCabinet.Hubs;
+
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_UserTermsHistory.IAPI.BaseRoute )]
@@ -52,7 +53,7 @@ public partial class UserTermsHistoryController : ControllerBase, ClientDataAcce
 
 
     [HttpPost(nameof(AddHistTermsForCurrentUser_Async))]
-    public async Task AddHistTermsForCurrentUser_Async(
+    public async Task<object> AddHistTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -61,5 +62,7 @@ public partial class UserTermsHistoryController : ControllerBase, ClientDataAcce
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.UserTermsHistoryDataSrc.AddTerm_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+
+        return new {};
     }
 }

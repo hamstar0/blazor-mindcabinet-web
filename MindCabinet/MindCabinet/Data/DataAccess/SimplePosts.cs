@@ -6,6 +6,7 @@ using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Data;
+using System.Text.Json;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -13,12 +14,15 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimplePosts(
+                ILogger<ServerDataAccess_SimplePosts> logger,
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
     private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw?> Cache_ById = new( refreshOnGet: true );
 
 
 
+    private readonly ILogger<ServerDataAccess_SimplePosts> Logger = logger;
+    
     private readonly StaticServerSettings ServerSettings = serverSettings;
 
 
@@ -202,7 +206,7 @@ public partial class ServerDataAccess_SimplePosts(
     }
 
 
-	public async Task<SimplePostId> Create_Async(
+	public async Task<SimplePostObject.Raw> Create_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_ServerData serverData,
                 ServerDataAccess_UserAppData userData,
@@ -220,11 +224,15 @@ public partial class ServerDataAccess_SimplePosts(
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
 
+        //
+
         DateTime now = DateTime.UtcNow;
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
-            $@"INSERT INTO {TableName} ({TableColumn_Created}, {TableColumn_Modified}, {TableColumn_SimpleUserId}, {TableColumn_Body}) 
-                VALUES (@{TableColumn_Created}, @{TableColumn_Modified}, @{TableColumn_SimpleUserId}, @{TableColumn_Body});
+            $@"INSERT INTO {TableName}
+                    ({TableColumn_Created}, {TableColumn_Modified}, {TableColumn_SimpleUserId}, {TableColumn_Body}) 
+                VALUES
+                    (@{TableColumn_Created}, @{TableColumn_Modified}, @{TableColumn_SimpleUserId}, @{TableColumn_Body});
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
@@ -232,15 +240,6 @@ public partial class ServerDataAccess_SimplePosts(
                 SimpleUserId = (long)simpleUserId,
                 Body = new DbString { Value = parameters.Body, IsAnsi = true }
             }
-        );
-
-        var raw = SimplePostObject.CreateRaw(
-            id: (SimplePostId)newPostId,
-            created: now,
-            modified: now,
-            simpleUserId: simpleUserId,
-            body: parameters.Body,
-            tagsTermIdSet: parameters.TermIds
         );
 
         if( addCurrentUserTag ) {
@@ -259,6 +258,17 @@ public partial class ServerDataAccess_SimplePosts(
             termsDataSrc: termsData,
             id: (SimplePostId)newPostId,
             termIds: parameters.TermIds
+        );
+
+        //
+
+        SimplePostObject.Raw raw = SimplePostObject.CreateRaw(
+            id: (SimplePostId)newPostId,
+            created: now,
+            modified: now,
+            simpleUserId: simpleUserId,
+            body: parameters.Body,
+            tagsTermIdSet: parameters.TermIds
         );
 
         //
@@ -295,6 +305,6 @@ public partial class ServerDataAccess_SimplePosts(
 
         //
 
-        return (SimplePostId)newPostId;
+        return raw;
     }
 }

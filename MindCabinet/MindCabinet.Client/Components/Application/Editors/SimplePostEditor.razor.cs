@@ -29,6 +29,18 @@ public partial class SimplePostEditor : ComponentBase {
     public Func<SimplePostObject.Raw, Task> OnSubmit_Async { get; set; } = null!;
 
 
+	private TermSetEditor TagsEditor = null!;
+
+
+
+    private void Reset() {
+        this.PostText = "";
+        this.TagsEditor.Reset();
+        this.Tags.Clear();
+
+        this.StateHasChanged();
+    }
+
 
     private async Task OnInputHandler_UI_Async( string text ) {
         await Task.CompletedTask;
@@ -51,12 +63,20 @@ public partial class SimplePostEditor : ComponentBase {
     }
 
     private async Task Submit_UI_Async() {
-        SimplePostObject.Raw post = await this.SimplePostsData.Create_Async(
-            new ClientDataAccess_SimplePosts.IAPI.Create_Params { Body = this.PostText, TermIds = this.Tags.Select( t => t.Id ).ToArray() }
-        );
+        string text = this.PostText;
+        TermId[] termIds = this.Tags.Select( t => t.Id ).ToArray();
 
+        this.Reset();
         this.PostText = "";
+        this.TagsEditor.Reset();
         this.Tags.Clear();
+        
+        SimplePostObject.Raw post = await this.SimplePostsData.Create_Async(
+            new ClientDataAccess_SimplePosts.IAPI.Create_Params {
+                Body = text,
+                TermIds = termIds
+            }
+        );
 
         await this.OnSubmit_Async( post );
     }

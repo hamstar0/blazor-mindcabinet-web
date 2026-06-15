@@ -12,7 +12,7 @@ using MindCabinet.Utility.Attributes;
 using Microsoft.AspNetCore.SignalR;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_PostsContext.IAPI.BaseRoute )]
@@ -88,6 +88,7 @@ public class PostsContextController(
         );
     }
 
+    [HttpPost(nameof(UpdateForCurrentUser_Async))]
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
                 PostsContextObject.Prototype parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
@@ -99,10 +100,12 @@ public class PostsContextController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.PostsContextsDataSrc.Update_Async(
+        ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return ret = await this.PostsContextsDataSrc.Update_Async(
             dbCon: dbCon,
             postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters
         );
+
+        return ret;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
@@ -7,6 +6,7 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
 using MindCabinet.Shared.Utility;
 using System.Data;
+using System.Text;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -70,21 +70,31 @@ public partial class ServerDataAccess_UserTermFavorites(
         if( favTermIds.Any(id => id == 0) ) {
             throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
         }
+        if( favTermIds.Length == 0 ) {
+            return;
+        }
 
-        var dataTable = new DataTable();
-        dataTable.Columns.Add(TableColumn_SimpleUserId, typeof(long));
-        dataTable.Columns.Add(TableColumn_FavTermId, typeof(long));
-        dataTable.Columns.Add(TableColumn_Favor, typeof(int));
+        var sqlBuilder = new StringBuilder(
+            @$"INSERT INTO {TableName}
+                ({TableColumn_SimpleUserId}, {TableColumn_FavTermId}, {TableColumn_Favor})
+            VALUES "
+        );
+        var sqlParams = new DynamicParameters();
 
         for( int i=0; i<favTermIds.Length; i++ ) {
-            dataTable.Rows.Add( (long)simpleUserId, (long)favTermIds[i], 0 );
+            if( i > 0 ) {
+                sqlBuilder.Append( ", " );
+            }
+
+            string simpleUserParamName = $"@SimpleUserId{i}";
+            string favTermParamName = $"@FavTermId{i}";
+            sqlBuilder.Append( $"({simpleUserParamName}, {favTermParamName}, 0)" );
+
+            sqlParams.Add( simpleUserParamName, (long)simpleUserId );
+            sqlParams.Add( favTermParamName, (long)favTermIds[i] );
         }
 
-        using( SqlBulkCopy bulkCopy = new SqlBulkCopy((SqlConnection)dbCon) ) {
-            bulkCopy.DestinationTableName = TableName; 
-
-            await bulkCopy.WriteToServerAsync( dataTable );
-        }
+        await dbCon.ExecuteAsync( sqlBuilder.ToString(), sqlParams );
 
         //
 

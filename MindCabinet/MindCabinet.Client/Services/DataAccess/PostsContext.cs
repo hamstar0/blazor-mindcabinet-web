@@ -100,15 +100,15 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        Cache_ById.Remove( parameters.Id.Value );
-
-        //
-
         var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Prototype, IAPI.CreateOrUpdate_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateForCurrentUser_Async)}",
             parameters: parameters
         );
+
+        //
+
+        Cache_ById.Remove( parameters.Id.Value );
 
         return ret;
     }

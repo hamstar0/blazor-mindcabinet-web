@@ -22,6 +22,6 @@ public partial class ClientDataAccess_UserTermsHistory : IClientDataAccess {
             public TermId TermId { get; set; }
         }
 
-        public Task AddHistTermsForCurrentUser_Async( AddHistTermsForCurrentUser_Params parameters );
+        public Task<object> AddHistTermsForCurrentUser_Async( AddHistTermsForCurrentUser_Params parameters );
     }
 }

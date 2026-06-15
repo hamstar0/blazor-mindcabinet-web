@@ -10,7 +10,7 @@ using MindCabinet.Utility.Attributes;
 using System.Data;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
@@ -84,7 +84,7 @@ public class SimplePostController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        SimplePostId simplePostId = await this.SimplePostsDataSrc.Create_Async(
+        return await this.SimplePostsDataSrc.Create_Async(
             dbCon: dbCon,
             serverData: this.ServerDataSrc,
             userData: this.UserAppDataSrc,
@@ -95,15 +95,6 @@ public class SimplePostController(
             parameters: parameters,
             addCurrentUserTag: true,
             skipHistory: false
-        );
-        return SimplePostObject.CreateRaw(
-            id: simplePostId,
-            //SimpleUserId = this.SessionData.UserOfSession.Id,
-            created: DateTime.UtcNow,
-            modified: DateTime.UtcNow,
-            simpleUserId: this.SessionManager.UserOfSession.Id,
-            body: parameters.Body,
-            tagsTermIdSet: parameters.TermIds.ToArray()
         );
     }
 }

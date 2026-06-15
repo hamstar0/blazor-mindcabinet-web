@@ -81,7 +81,8 @@ public partial class ServerDataAccess_SimplePostTags(
 
         foreach( TermId termId in termIds ) {
             await dbCon.ExecuteAsync(
-                $@"INSERT INTO {TableName} ({TableColumn_SimplePostId}, {TableColumn_TermId}) 
+                $@"INSERT INTO {TableName}
+                    ({TableColumn_SimplePostId}, {TableColumn_TermId}) 
                     VALUES (@SimplePostId, @TermId)",
                 new {
                     SimplePostId = (long)id,

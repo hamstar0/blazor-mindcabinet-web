@@ -49,6 +49,14 @@ public partial class TermSetEditor : ComponentBase {
         }
     }
 
+
+    public void Reset() {
+        this._Terms = new List<TermObject>( this.InitialTerms );
+
+        this.StateHasChanged();
+    }
+
+
     public async Task<bool> AddTerm_Async( TermObject term ) {
         if( this.Terms.Any(t => t.Equals(term)) ) {
             return false;

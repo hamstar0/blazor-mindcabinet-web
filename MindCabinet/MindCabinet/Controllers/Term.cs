@@ -10,7 +10,7 @@ using MindCabinet.Utility.Attributes;
 using System.Data;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_Terms.IAPI.BaseRoute )]

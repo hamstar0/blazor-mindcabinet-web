@@ -14,7 +14,8 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MindCabinet.Hubs;
+
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_UserTermFavorites.IAPI.BaseRoute )]
@@ -58,7 +59,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
 
     [HttpPost(nameof(AddTermsForCurrentUser_Async))]
-    public async Task AddTermsForCurrentUser_Async(
+    public async Task<object> AddTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -67,11 +68,13 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.FavoriteTermsDataSrc.AddFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters.TermIds );
+
+        return new object();
     }
 
 
     [HttpPost(nameof(RemoveTermsForCurrentUser_Async))]
-    public async Task RemoveTermsForCurrentUser_Async(
+    public async Task<object> RemoveTermsForCurrentUser_Async(
                 ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -80,5 +83,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         await this.FavoriteTermsDataSrc.RemoveFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+
+        return new object();
     }
 }

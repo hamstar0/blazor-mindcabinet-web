@@ -93,7 +93,6 @@ public partial class LocalClientSessionManager(
                 ClientDataAccess_ClientSessionBundle sessionBundleDataSrc,
                 bool triggerEvents ) {
         LocalClientSessionManager.DataBundle? userAndAppData = await sessionBundleDataSrc.GetCurrent_Async( termsDataSrc );
-Console.WriteLine( "ClientSessionData.LoadData_Async: "+JsonSerializer.Serialize( userAndAppData ) );
 
         //
 

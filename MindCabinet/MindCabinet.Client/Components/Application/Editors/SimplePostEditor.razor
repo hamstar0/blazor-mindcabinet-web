@@ -19,6 +19,7 @@
 			 @* @oninput=@(async args => this.PostText = args.Value?.ToString() ?? "")></textarea> *@
 	<br/>
 	<TermSetEditor
+			@ref=@this.TagsEditor
 			Label="Enter tags (at least 1 required)"
 			OnTermsChange_Async=@this.OnTagsChangeHandler_UI_Async />
 	<button

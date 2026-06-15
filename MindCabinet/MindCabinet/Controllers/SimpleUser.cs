@@ -13,7 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_SimpleUsers.IAPI.BaseRoute )]
@@ -109,7 +109,7 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
         //         session: this.ServerSessionData
         //     );
         // }
-        this.Logger.LogInformation( $"User already exists? {result.AlreadyExists}" );
+        // this.Logger.LogInformation( $"User already exists? {result.AlreadyExists}" );
 
         return new ClientDataAccess_SimpleUsers.IAPI.Create_Return {
             User = result.User is not null

@@ -15,21 +15,21 @@ using System.Text;
 using System.Text.Json;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 // [HubRoute( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
 // [Route("[controller]")]
 [ApiController]
 [Route( ClientDataAccess_ClientSessionBundle.IAPI.BaseRoute )]
-public class SessionController(
-                ILogger<SessionController> logger,
+public class SessionBundleController(
+                ILogger<UserSessionController> logger,
                 IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_SimpleUserSessions sessionsDataSrc,
                 ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_ClientSessionBundle.IAPI {
-    private readonly ILogger<SessionController> Logger = logger;
+    private readonly ILogger<UserSessionController> Logger = logger;
 
     private readonly IServiceProvider ServiceProvider = serviceProvider;
 
@@ -67,23 +67,5 @@ public class SessionController(
 //this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsContext) );
 
         return ret;
-    }
-
-
-    [HttpPost(nameof(Logout_Async))]
-    public async Task<string> Logout_Async() {
-        if( !this.SessionManager.IsLoaded ) {
-            await ClientSessionManager.LoadForHubRequest_Async( this.ServiceProvider );
-        }
-
-        if( !this.SessionManager.IsLoaded ) {
-            throw new NullReferenceException( "Session not loaded." );
-        }
-
-        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
-
-        await this.SessionManager.LogoutSessionAndItsUser_Async( dbCon, this.SessionsDataSrc );
-
-        return "Logout successful.";
     }
 }

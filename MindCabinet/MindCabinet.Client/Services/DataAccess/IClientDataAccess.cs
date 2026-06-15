@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Services.DataAccess;
 
 
 public partial interface IClientDataAccess {    //: IAsyncDisposable {
-    public static async Task<TOutput> CallAPI_Async<TInput, TOutput>(
+    public static async Task<TOutput> CallAPI_Async<TInput, TOutput>(     // do not use `string` for `parameters`
                 HttpClient http,
                 string route,
                 TInput parameters ) {
@@ -35,7 +35,7 @@ public partial interface IClientDataAccess {    //: IAsyncDisposable {
         return await CallAPI_Async<object, TOutput>( http, route, new object() );
     }
 
-    public static async Task CallAPI_Async<TInput>(
+    public static async Task CallAPI_Async<TInput>(     // do not use `string` for `parameters`
                 HttpClient http,
                 string route,
                 TInput parameters ) {
@@ -43,7 +43,7 @@ public partial interface IClientDataAccess {    //: IAsyncDisposable {
     }
 
 
-    public static async Task<TOutput> CallAPIManual_Async<TInput, TOutput>(
+    public static async Task<TOutput> CallAPIManual_Async<TInput, TOutput>(     // do not use `string` for `parameters`
                 HttpClient http,
                 string route,
                 TInput parameters ) {

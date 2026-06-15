@@ -12,7 +12,7 @@ using MindCabinet.Utility.Attributes;
 using System.Data;
 
 
-namespace MindCabinet.Hubs.Composite;
+namespace MindCabinet.Controllers.Composite;
 
 
 // [HubRoute( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]

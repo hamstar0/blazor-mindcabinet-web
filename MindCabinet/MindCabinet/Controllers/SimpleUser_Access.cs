@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace MindCabinet.Hubs;
+namespace MindCabinet.Controllers;
 
 
 public partial class SimpleUserController : ControllerBase, ClientDataAccess_SimpleUsers.IAPI {

@@ -56,6 +56,7 @@ public class SetupController : ControllerBase {
         this.UserAppDataDataSrc = userAppDataDataSrc;
         this.ServerDataSrc = serverDataSrc;
     }
+    
 
     [HttpGet("Install")]
     public async Task<string> Install_Async() {
