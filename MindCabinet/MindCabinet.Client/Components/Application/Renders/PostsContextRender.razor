@@ -1,15 +1,20 @@
 ﻿@using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term;
+@using MindCabinet.Client.Components.Standard;
 
 
 
 <div component-name="PostsContextRender"
-        class="basic tooltip-container @(this.AddedClasses ?? "")"
-        @onclick=@this.OnClick_UI_Async>
-    @this.Context.Name
-    @if( !string.IsNullOrEmpty(this.Context.Description) ) {
-        <div class="tooltip-box">@this.Context.Description</div>
-    }
+            class="basic @(this.AddedClasses ?? "")"
+            @onclick=@this.OnClick_UI_Async>
+    <Tooltip Enabled=@(() => !string.IsNullOrEmpty(this.Context.Description))>
+        <Anchor>
+            @this.Context.Name
+        </Anchor>
+        <TooltipContent>
+            @this.Context.Description
+        </TooltipContent>
+    </Tooltip>
     @this.ChildContent
 </div>
 

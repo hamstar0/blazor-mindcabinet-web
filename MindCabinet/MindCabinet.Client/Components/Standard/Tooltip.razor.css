@@ -1,0 +1,17 @@
+.tooltip-content {
+    position: fixed; /* Fixed handles viewport scrolling better than absolute */
+    z-index: 9999;   /* Keep it above all other UI elements */
+    pointer-events: none; /* Prevents the tooltip from blocking mouse events */
+    
+    /* Presentation styling */
+    background-color: #333333;
+    color: #ffffff;
+
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+
+    white-space: nowrap;
+    /* transition: opacity 0.15s ease-in-out; */
+}

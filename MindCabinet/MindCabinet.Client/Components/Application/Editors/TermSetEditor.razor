@@ -13,6 +13,9 @@
     @if( this.Label is not null ) {
         <span>@this.Label</span>
     }
+    <TermEditor AddedClasses="ib"
+                OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+                OnTermConfirm_Async=@this.AddTerm_UI_Async />
     @foreach( TermObject termOfSet in this.Terms ) {
         <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses)
                     Term=@termOfSet
@@ -21,9 +24,6 @@
             <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
         </TermRender>
     }
-    <TermEditor AddedClasses="ib"
-                OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
-                OnTermConfirm_Async=@this.AddTerm_UI_Async />
 </div>
 
 

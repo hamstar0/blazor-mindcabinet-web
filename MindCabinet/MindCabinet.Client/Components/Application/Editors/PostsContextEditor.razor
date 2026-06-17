@@ -11,10 +11,10 @@
 
 
 <div component-name="PostsContextEditor" class=@this.AddedClasses>
-	<div class="tooltip-container">
-		<h4>Context name:</h4>
-		<div class="tooltip-box">AKA an arbitrary circumstance or phenomenon to be described</div>
-	</div>
+	<Tooltip>
+		<Anchor><h4>Context name:</h4></Anchor>
+		<TooltipContent>AKA an arbitrary circumstance or phenomenon to be described</TooltipContent>
+	</Tooltip>
 	<input type="text"
 			placeholder="Enter context name"
 			@bind:event="oninput"

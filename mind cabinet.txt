@@ -36,14 +36,23 @@ v0.7
 -	Set modal dialogs to have default input focused onto when open
 -	Keep post create component fixed to the bottom
 -	Where are favorite tags visible?
+-	Revise tooltip popups
+	-	Build lightweight custom JS tooltip popup
 v0.6
+-	@Test favorites, recent tags, context sidebar, etc.
 -	Show tag contexts in tag lists
 -	Clear create post fields upon submit (in particular tags entry and list)
 -	Clear tags input for post create after tag submit
 -	Fix context inputs (again)
--	@Test favorites, recent tags, context sidebar, etc.
+	-	Prevent removing context's user tag
+	-	Context tag list
+		-	Reposition tag's checkbox and removal icon on same line (overlaps text)
+		-	Show context with tag
 
 
+		-	Set priority slider+input to be same line
+	-	Set context tag input above tag list
+-	Upgraded to component-based tooltips
 -	Revert back to REST API (sigh)
 -	@Ensure singleton services are thread safe
 -	Finish caching for non-id data (mapped to id data)
