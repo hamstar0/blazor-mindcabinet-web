@@ -1,10 +1,11 @@
-@if( this.IsVisible ) {
-    <div class="tooltip-content" style="top: @(this.Y)px; left: @(this.X)px;">
-    @* <div class="tooltip-content" style="transform: translate3d(@(this.Y)px; @(this.X)px, 0);"> *@
-        @this.TooltipContent
-    </div>
-}
-<div @onmouseover=@this.ShowTooltip
+<div @ref=@this.TooltipElement
+        class="tooltip-content"
+        style="@this.VisibilityStyle top: @(this.Y)px; left: @(this.X)px;">
+    @this.TooltipContent
+</div>
+@* <div class="tooltip-content" style="transform: translate3d(@(this.Y)px; @(this.X)px, 0);"> *@
+
+<div @onmouseover=@this.ShowTooltip_Async
             @onmouseout=@this.HideTooltip
             style="display: inline-block;">
     @this.Anchor
@@ -13,35 +14,5 @@
 
 
 @code {
-    [Parameter]
-    public RenderFragment Anchor { get; set; } = null!;
-    
-    [Parameter]
-    public RenderFragment TooltipContent { get; set; } = null!;
-
-    [Parameter]
-    public Func<bool>? Enabled { get; set; }
-    
-
-    private bool IsVisible { get; set; }
-
-    private double X { get; set; }
-
-    private double Y { get; set; }
-
-
-
-    private void ShowTooltip( MouseEventArgs e ) {
-        // Calculate dynamic coordinates relative to the mouse or offset
-        this.X = e.ClientX + 12; 
-        this.Y = e.ClientY + 12;
-        if( this.Enabled?.Invoke() ?? true ) {
-            this.IsVisible = true;
-        }
-    }
-
-    private void HideTooltip() {
-        this.IsVisible = false;
-    }
+    private string VisibilityStyle => this.IsVisible ? "" : "display: none;";
 }
-
