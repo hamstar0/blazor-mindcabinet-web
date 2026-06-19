@@ -26,15 +26,20 @@
 			InitialTerms=@( this.EditContext_Entries
 				.Select( e => e.Term )
 				.ToList() )
+			VerboseTermDisplay=@true
 			AllowFavoritingTerms=@false
 			OnTermsChange_Async=@this.OnTagsChanged_UI_Async>
 		<PerTermAffix Context="termOfSet">
 			<SliderNumberInput
 					InitialValue=@(this.GetTagPriorityValue(termOfSet) ?? 0)
 					OnValueChanged_Async=@( async (val) => await this.OnPriorityChange_UI_Async(termOfSet, val) ) />
-			<input type="checkbox"
-					checked=@this.GetFirstMatchingTagEntry(termOfSet.Id).IsRequired
-					@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(termOfSet, (bool)e.Value!) ) />
+			<div style="float: right;">
+				<label for="isreq_@(termOfSet.ToId(verbose: true))">Is required</label>
+				<input type="checkbox"
+						name="isreq_@(termOfSet.ToId(verbose: true))"
+						checked=@this.GetFirstMatchingTagEntry(termOfSet.Id).IsRequired
+						@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(termOfSet, (bool)e.Value!) ) />
+			</div>
 		</PerTermAffix>
 	</TermSetEditor>
 	<div>

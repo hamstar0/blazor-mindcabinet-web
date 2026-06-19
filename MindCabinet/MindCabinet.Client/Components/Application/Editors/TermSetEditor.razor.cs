@@ -15,6 +15,7 @@ public partial class TermSetEditor : ComponentBase {
     private List<TermObject> _Terms = new List<TermObject>();
     public IReadOnlyList<TermObject> Terms => this._Terms.AsReadOnly();
 
+
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
@@ -26,6 +27,9 @@ public partial class TermSetEditor : ComponentBase {
 
     [Parameter]
     public bool AllowFavoritingTerms { get; set; } = true;
+
+    [Parameter]
+    public bool VerboseTermDisplay { get; set; } = false;
 
 
     public delegate Task OnTermsChange_Func(

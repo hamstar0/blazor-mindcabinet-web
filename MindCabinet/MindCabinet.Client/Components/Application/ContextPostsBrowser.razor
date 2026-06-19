@@ -16,12 +16,12 @@
         <div>
             <span>Sort by date: </span>
             @{
-                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_asc"
+                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_asc_@(this.Id)"
                         @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(true) ) />
-                    <label for="sort_by_create_date_asc">Ascending</label>
-                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_desc" checked
+                    <label for="sort_by_create_date_asc_@(this.Id)">Ascending</label>
+                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_desc_@(this.Id)" checked
                         @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(false) ) />
-                    <label for="sort_by_create_date_desc">Descending</label>
+                    <label for="sort_by_create_date_desc_@(this.Id)">Descending</label>
             }
         </div>
         <div style="margin-left: auto; margin-right: 0;">

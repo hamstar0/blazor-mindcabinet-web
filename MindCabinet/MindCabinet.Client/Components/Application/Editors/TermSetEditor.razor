@@ -19,6 +19,7 @@
     @foreach( TermObject termOfSet in this.Terms ) {
         <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses)
                     Term=@termOfSet
+                    VerboseTermDisplay=@this.VerboseTermDisplay
                     HasFavoriteButton=@this.AllowFavoritingTerms>
             @this.PerTermAffix?.Invoke( termOfSet )
             <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>

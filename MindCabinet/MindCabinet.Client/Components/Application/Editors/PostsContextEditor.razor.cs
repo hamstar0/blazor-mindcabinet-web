@@ -60,7 +60,6 @@ public partial class PostsContextEditor : ComponentBase {
 		base.OnInitialized();
         
         this.DefaultContext = this.InitialContext;
-        
         this.ResetEditContextToDefault();
 	}
 

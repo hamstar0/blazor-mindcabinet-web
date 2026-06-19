@@ -112,6 +112,14 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     }
 
 
+    public string ToId( bool verbose ) {
+        if( verbose ) {
+            return this.Term.StripWhitespace().StripNonAscii()+"_"+this.Id;
+        } else {
+            return this.Id.ToString();
+        }
+    }
+
     public override string ToString() {
 		return this.Context is not null
             ? $"{this.Term} ({this.Context.Term})"

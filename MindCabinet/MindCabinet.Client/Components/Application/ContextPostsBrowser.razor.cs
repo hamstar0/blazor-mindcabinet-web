@@ -8,6 +8,8 @@ using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.PostsContext;
+using System.ComponentModel;
+
 
 namespace MindCabinet.Client.Components.Application;
 
@@ -29,6 +31,9 @@ public partial class ContextPostsBrowser : ComponentBase {
     public ClientDataAccess_Terms TermsData { get; set; } = null!;
 
 
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = null!;
+    
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 

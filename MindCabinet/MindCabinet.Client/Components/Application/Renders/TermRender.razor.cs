@@ -26,6 +26,9 @@ public partial class TermRender : ComponentBase {
 
 
     [Parameter]
+    public bool VerboseTermDisplay { get; set; } = false;
+
+    [Parameter]
     public bool HasFavoriteButton { get; set; } = false;
 
     [Parameter]

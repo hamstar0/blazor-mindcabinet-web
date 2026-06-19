@@ -7,14 +7,23 @@
 <div component-name="TermRender"
         class="basic tooltip-container @(this.AddedClasses ?? "")"
         @onclick=@this.OnClick_UI_Async>
-    <Tooltip Enabled=@(() => this.Term?.Context is not null)>
-        <Anchor>
+    @if( this.VerboseTermDisplay ) {
+        <span>
             @(this.Term?.Term ?? "?")
-        </Anchor>
-        <TooltipContent>
-            @(this.Term?.Context?.Term ?? "-")
-        </TooltipContent>
-    </Tooltip>
+            @if( this.Term?.Context is not null ) {
+                @(" ("+this.Term?.Context?.Term+")")
+            }
+        </span>
+    } else {
+        <Tooltip Enabled=@(() => this.Term?.Context is not null)>
+            <Anchor>
+                @(this.Term?.Term ?? "?")
+            </Anchor>
+            <TooltipContent>
+                @(this.Term?.Context?.Term ?? "-")
+            </TooltipContent>
+        </Tooltip>
+    }
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {
         <button class=@(async () => await this.CurrentTermIsFavorite_Async() ? "lit" : "unlit")
