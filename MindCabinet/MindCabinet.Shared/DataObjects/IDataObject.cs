@@ -12,6 +12,6 @@ public interface IRawDataObject {
 }
 
 
-public interface IHasId<TId> where TId : System.Enum {
-    public TId Id { get; }
-}
+// public interface IHasId<TId> where TId : System.Enum {
+//     public TId Id { get; }
+// }

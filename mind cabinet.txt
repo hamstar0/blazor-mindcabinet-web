@@ -43,17 +43,15 @@ v0.6
 -	Show tag contexts in tag lists
 -	Clear create post fields upon submit (in particular tags entry and list)
 -	Clear tags input for post create after tag submit
--	Fix context inputs (again again)
-	-	Context tag list
 -	PostsContextOwners
 	-	Remove user tags from PostContextObject tags
 	-	Populate current user's PostsContextObject list from participating PostsContextOwners
 	-	Ensure valid current session's PostsContextObject picking server-side
 	-	On PostsContextObject creation, declare PostsContextOwners instance as well
 	-	Remove user tags from post creations
+
+
 	-	Create PostsContextOwners table
-
-
 -	@B&D better way to handle PostsContext owners
 	-	Add 'IsLocked' flag in PostsContextTermEntry
 	-	Add user id field in PostsContextTermEntry

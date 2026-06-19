@@ -236,6 +236,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 bool detectCollision,
@@ -316,14 +317,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 userName: parameters.Name
             );
 
-            PostsContextObject.Prototype userDefaultPostsContextProto = await this.CreateDefaultUserPostsContext(
-                dbCon,
-                postsContextDataSrc,
-                postsContextTermEntryDataSrc,
-                parameters,
-                userTerm.Id
+            (userDefaultPostsContext, PostsContextOwnersObject.Raw _) = await this.CreateDefaultUserPostsContext_Async(
+                dbCon: dbCon,
+                postsContextDataSrc: postsContextDataSrc,
+                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                postsContextOwnersDataSrc: postsContextOwnersDataSrc,
+                parameters: parameters,
+                ownerUserId: (SimpleUserId)newUserId
             );
-            userDefaultPostsContext = userDefaultPostsContextProto.ToRaw( true );
             
             await userAppDataSrc.Create_Async(
                 dbCon: dbCon,
@@ -383,22 +384,24 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
     
-    internal async Task<PostsContextObject.Prototype> CreateDefaultUserPostsContext(
+    internal async Task<(PostsContextObject.Raw raw, PostsContextOwnersObject.Raw owners)> CreateDefaultUserPostsContext_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
-                TermId userAsTermId ) {
+                // TermId userAsTermId,
+                SimpleUserId ownerUserId ) {
         PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
             Name = $"{parameters.Name}'s posts",
             Description = "All posts by the given user.",
-            Entries = new [] {
-                new PostsContextTermEntryObject.Prototype {
-                    TermId = userAsTermId,
-                    Priority = 1,
-                    IsRequired = true
-                }
-            }
+            Entries = [
+                // new PostsContextTermEntryObject.Prototype {
+                //     TermId = userAsTermId,
+                //     Priority = 1,
+                //     IsRequired = true
+                // }
+            ]
         };
         PostsContextId defaultCtxId = (await postsContextDataSrc.Create_Async(
             dbCon: dbCon,
@@ -416,7 +419,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         // );
         // PostsContextObject ctx = await ServerDataAccess_PostsContexts
         //     .ToDataObject_Async( dbCon, termsData, rawCtx );
-        
-        return proto;
+
+        PostsContextOwnersObject.Raw? owners = await postsContextOwnersDataSrc.Create_Async(
+            dbCon: dbCon,
+            postsContextId: proto.Id.Value,
+            userId: ownerUserId,
+            isOwner: true
+        );
+
+        return ( proto.ToRaw(true), owners );
     }
 }
