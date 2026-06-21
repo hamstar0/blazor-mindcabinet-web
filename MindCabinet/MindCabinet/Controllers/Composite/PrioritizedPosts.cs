@@ -8,6 +8,7 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Data.DataAccess.Composite;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Utility.Attributes;
 using System.Data;
 
@@ -72,12 +73,8 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
             return [];
         }
 
-        if( !parameters.AdditionalTagIds.Any(id => id == this.SessionManager.UserAppDataOfSession.UserDefaultTerm.Id) ) {
-            parameters.AdditionalTagIds = parameters.AdditionalTagIds
-                .Append( this.SessionManager.UserAppDataOfSession.UserDefaultTerm.Id )
-                .ToArray();
-        }
-        
+        // SimpleUserId currUserId = this.SessionManager.UserAppDataOfSession.SimpleUserId;
+        // PostsContextOwnersObject.Raw postsCtxsOfOwner = ;
         
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 

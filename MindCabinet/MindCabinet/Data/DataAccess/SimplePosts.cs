@@ -215,7 +215,6 @@ public partial class ServerDataAccess_SimplePosts(
                 ServerDataAccess_UserTermsHistory termHistoryData,
                 SimpleUserId simpleUserId,
                 ClientDataAccess_SimplePosts.IAPI.Create_Params parameters,
-                bool addCurrentUserTag,
                 bool skipHistory ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
@@ -241,17 +240,6 @@ public partial class ServerDataAccess_SimplePosts(
                 Body = new DbString { Value = parameters.Body, IsAnsi = true }
             }
         );
-
-        if( addCurrentUserTag ) {
-            UserAppDataObject.Raw? userAppData = await userData.GetById_Async( dbCon, simpleUserId );
-            if( userAppData is null ) {
-                throw new Exception( "User application data not found for user ID: " + simpleUserId );
-            }
-
-            parameters.TermIds = parameters.TermIds
-                .Prepend( userAppData.UserDefaultTermId )
-                .ToArray();
-        }
         
         await termSetsData.CreateForSimplePost_Async(
             dbCon: dbCon,

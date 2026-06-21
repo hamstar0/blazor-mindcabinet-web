@@ -48,9 +48,9 @@ v0.6
 	-	Populate current user's PostsContextObject list from participating PostsContextOwners
 	-	Ensure valid current session's PostsContextObject picking server-side
 	-	On PostsContextObject creation, declare PostsContextOwners instance as well
+
+
 	-	Remove user tags from post creations
-
-
 	-	Create PostsContextOwners table
 -	@B&D better way to handle PostsContext owners
 	-	Add 'IsLocked' flag in PostsContextTermEntry

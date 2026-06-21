@@ -159,7 +159,9 @@ public partial class ServerDataAccess_PostsContexts(
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Create_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                PostsContextObject.Prototype parameters ) {
+                ServerDataAccess_PostsContextOwners ownersDataSrc,
+                PostsContextObject.Prototype parameters,
+                SimpleUserId[] owners ) {
         if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "PostsContext Name is not valid." );
         }
@@ -167,7 +169,7 @@ public partial class ServerDataAccess_PostsContexts(
             throw new ArgumentException( "PostsContext Entries are not valid." );
         }
 
-        long postsContextId = await dbCon.ExecuteScalarAsync<long>(
+        long postsContextIdL = await dbCon.ExecuteScalarAsync<long>(
             $@"INSERT INTO {TableName} ({TableColumn_Name}, {TableColumn_Description})
                 VALUES (@Name, @Description);
             SELECT LAST_INSERT_ID();",
@@ -176,6 +178,7 @@ public partial class ServerDataAccess_PostsContexts(
                 Description = parameters.Description,
             }
         );
+        PostsContextId postsContextId = (PostsContextId)postsContextIdL;
 
         PostsContextTermEntryObject.Raw[] entries = parameters.Entries
             .Select( e => e.ToRaw(false, true) )
@@ -184,17 +187,21 @@ public partial class ServerDataAccess_PostsContexts(
         foreach( PostsContextTermEntryObject.Raw entry in entries ) {
             await postsContextTermEntryDataSrc.Create_Async(
                 dbCon: dbCon,
-                postsContextId: (PostsContextId)postsContextId,
+                postsContextId: postsContextId,
                 parameter: entry
             );
         }
 
         //
 
+        await ownersDataSrc.Create_Async( dbCon, postsContextId, owners );
+
+        //
+
         ServerDataAccess_PostsContexts.Cache_ById.Set(
-            key: (PostsContextId)postsContextId,
+            key: postsContextId,
             value: PostsContextObject.CreateRaw(
-                id: (PostsContextId)postsContextId,
+                id: postsContextId,
                 name: parameters.Name!,
                 description: parameters.Description,
                 entries: entries
@@ -204,7 +211,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return { Id = (PostsContextId)postsContextId };
+        return new ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return { Id = postsContextId };
     }
 
 

@@ -7,13 +7,11 @@ namespace MindCabinet.Shared.DataObjects.PostsContext;
 
 public partial class PostsContextOwnersObject : IDataObject {
     public static Raw CreateRaw(
-            PostsContextObject postsContext,
-            SimpleUserObject user,
-            bool isOwner ) {
+            PostsContextId postsContextId,
+            SimpleUserId simpleUserId ) {
         return new Raw {
-            PostsContextId = postsContext.Id,
-            UserId = user.Id,
-            IsOwner = isOwner
+            PostsContextId = postsContextId,
+            SimpleUserId = simpleUserId
         };
     }
 
@@ -22,8 +20,6 @@ public partial class PostsContextOwnersObject : IDataObject {
     public class Raw {
         public PostsContextId PostsContextId { get; set; }
 
-        public SimpleUserId UserId { get; set; }
-
-        public bool IsOwner { get; set; }
+        public SimpleUserId SimpleUserId { get; set; }
     }
 }

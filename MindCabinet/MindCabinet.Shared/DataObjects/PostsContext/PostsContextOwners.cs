@@ -8,24 +8,20 @@ namespace MindCabinet.Shared.DataObjects.PostsContext;
 public partial class PostsContextOwnersObject : IDataObject {
     public PostsContextObject PostsContext { get; }
 
-    public SimpleUserObject User { get; }
-
-    public bool IsOwner { get; }
+    public SimpleUserObject[] Owners { get; }
 
 
 
     public PostsContextOwnersObject(
             PostsContextObject postsContext,
-            SimpleUserObject user,
-            bool isOwner ) {
+            SimpleUserObject[] owners ) {
         this.PostsContext = postsContext;
-        this.User = user;
-        this.IsOwner = isOwner;
+        this.Owners = owners;
     }
 
 
     public override string ToString() {
-		return $"Context \"{this.PostsContext.Name}\" has user {this.User.Name}"
-            +(this.IsOwner ? " (owner)" : "");
+		return $"Context \"{this.PostsContext.Name}\" has users "
+            +$"{string.Join(", ", this.Owners.Select(u => u.Name))}";
     }
 }
