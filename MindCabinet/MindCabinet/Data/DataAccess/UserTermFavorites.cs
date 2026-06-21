@@ -15,7 +15,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_UserTermFavorites(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermFavoriteObject.Raw>> Cache_BySimpleUserId = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermFavoriteObject.Raw>> Cache_BySimpleUserId = new( refreshExpiryOnGet: true );
 
 
 

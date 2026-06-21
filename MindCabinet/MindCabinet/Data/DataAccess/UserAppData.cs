@@ -13,11 +13,14 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_UserAppData(
+                ILogger<ServerDataAccess_UserAppData> logger,
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimpleUserId, UserAppDataObject.Raw?> Cache_BySimpleUserId = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, UserAppDataObject.Raw?> Cache_BySimpleUserId = new( refreshExpiryOnGet: true );
 
 
+
+    private readonly ILogger<ServerDataAccess_UserAppData> Logger = logger;
 
     private readonly StaticServerSettings ServerSettings = serverSettings;
 
@@ -107,9 +110,10 @@ public partial class ServerDataAccess_UserAppData(
 
     public async Task Update_Async(
                 IDbConnection dbCon,
+                ServerDataAccess_PostsContextOwners ownersDataSrc,
                 SimpleUserId simpleUserId,
                 PostsContextId postsContextId,
-                TermId userDefaultTermId ) {
+                TermId userDefaultTermId ) {    //todo
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -118,6 +122,18 @@ public partial class ServerDataAccess_UserAppData(
         }
         if( userDefaultTermId == 0 ) {
             throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
+
+        //
+
+        PostsContextOwnersObject.Raw[] owners = await ownersDataSrc.GetByPostsContextId_Async(
+            dbCon,
+            postsContextId
+        );
+
+        if( !owners.Any(o => o.SimpleUserId == simpleUserId) ) {
+            this.Logger.LogWarning( "Probably want to monitor this clown!" );
+            return;
         }
 
         try {

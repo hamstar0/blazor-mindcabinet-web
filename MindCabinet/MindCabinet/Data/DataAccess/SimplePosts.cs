@@ -17,7 +17,7 @@ public partial class ServerDataAccess_SimplePosts(
                 ILogger<ServerDataAccess_SimplePosts> logger,
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw?> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimplePostId, SimplePostObject.Raw?> Cache_ById = new( refreshExpiryOnGet: true );
 
 
 

@@ -7,13 +7,13 @@ namespace MindCabinet.Shared.Utility;
 
 
 
-public class SimpleCache<TKey, TValue>( bool refreshOnGet ) 
+public class SimpleCache<TKey, TValue>( bool refreshExpiryOnGet ) 
                 where TKey : notnull {
     private readonly ConcurrentDictionary<TKey, (TValue value, TimeSpan expires)> _Cache = new();
 
     private readonly ConcurrentDictionary<TKey, DateTime> _LastUpdated = new();
 
-    private bool RefreshOnGet = refreshOnGet;
+    private bool RefreshOnGet = refreshExpiryOnGet;
 
 
 

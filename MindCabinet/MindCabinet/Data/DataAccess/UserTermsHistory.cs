@@ -16,7 +16,7 @@ public partial class ServerDataAccess_UserTermsHistory(
     public const int HistoryMaxEntries = 100;
 
 
-    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermHistoryObject.Raw>> Cache_BySimpleUserId = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermHistoryObject.Raw>> Cache_BySimpleUserId = new( refreshExpiryOnGet: true );
 
 
 

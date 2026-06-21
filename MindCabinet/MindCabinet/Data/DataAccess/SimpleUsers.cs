@@ -18,8 +18,8 @@ namespace MindCabinet.Data.DataAccess;
 
 
 public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
-    private static readonly SimpleCache<SimpleUserId, SimpleUserObject.Raw?> Cache_ById = new( refreshOnGet: true );
-    private static readonly SimpleCache<string, SimpleUserId?> Cache_ByName = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, SimpleUserObject.Raw?> Cache_ById = new( refreshExpiryOnGet: true );
+    private static readonly SimpleCache<string, SimpleUserId?> Cache_ByName = new( refreshExpiryOnGet: true );
 
 
     public static byte[] GeneratePasswordSalt() {
@@ -317,7 +317,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 userName: parameters.Name
             );
 
-            (userDefaultPostsContext, PostsContextOwnersObject.Raw _) = await this.CreateDefaultUserPostsContext_Async(
+            userDefaultPostsContext = await this.CreateDefaultUserPostsContext_Async(
                 dbCon: dbCon,
                 postsContextDataSrc: postsContextDataSrc,
                 postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
@@ -384,7 +384,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
     
-    internal async Task<(PostsContextObject.Raw raw, PostsContextOwnersObject.Raw owners)> CreateDefaultUserPostsContext_Async(
+    internal async Task<PostsContextObject.Raw> CreateDefaultUserPostsContext_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
@@ -406,7 +406,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         PostsContextId defaultCtxId = (await postsContextDataSrc.Create_Async(
             dbCon: dbCon,
             postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-            parameters: proto
+            postsContextOwnersDataSrc: postsContextOwnersDataSrc,
+            parameters: proto,
+            owners: [ ownerUserId ]
         )).Id;
 
         proto.Id = defaultCtxId;
@@ -420,13 +422,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         // PostsContextObject ctx = await ServerDataAccess_PostsContexts
         //     .ToDataObject_Async( dbCon, termsData, rawCtx );
 
-        PostsContextOwnersObject.Raw? owners = await postsContextOwnersDataSrc.Create_Async(
-            dbCon: dbCon,
-            postsContextId: proto.Id.Value,
-            userId: ownerUserId,
-            isOwner: true
-        );
-
-        return ( proto.ToRaw(true), owners );
+        return proto.ToRaw(true);
     }
 }

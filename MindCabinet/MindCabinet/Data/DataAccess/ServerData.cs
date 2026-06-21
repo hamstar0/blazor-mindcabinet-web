@@ -17,7 +17,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_ServerData(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<long, ServerDataObject.Raw> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<long, ServerDataObject.Raw> Cache_ById = new( refreshExpiryOnGet: true );
 
 
 

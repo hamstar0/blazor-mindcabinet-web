@@ -13,7 +13,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimplePostTags(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimplePostId, IEnumerable<TermObject.Raw>> Cache_BySimplePostId = new( refreshOnGet: true );
+    private static readonly SimpleCache<SimplePostId, IEnumerable<TermObject.Raw>> Cache_BySimplePostId = new( refreshExpiryOnGet: true );
 
 
 

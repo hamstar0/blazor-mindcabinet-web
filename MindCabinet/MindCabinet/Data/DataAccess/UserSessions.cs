@@ -12,7 +12,7 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_SimpleUserSessions(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<string, UserSessionObject.Raw?> Cache_BySessionId = new( refreshOnGet: true );
+    private static readonly SimpleCache<string, UserSessionObject.Raw?> Cache_BySessionId = new( refreshExpiryOnGet: true );
 
 
 

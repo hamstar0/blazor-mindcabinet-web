@@ -25,6 +25,7 @@ public class PostsContextController(
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
 				ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_PostsContext.IAPI {
     private readonly ILogger<PostsContextController> Logger = logger;
@@ -36,6 +37,8 @@ public class PostsContextController(
     private readonly ServerDataAccess_PostsContexts PostsContextsDataSrc = postsContextsDataSrc;
 
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+
+    private readonly ServerDataAccess_PostsContextOwners PostsContextOwnersDataSrc = postsContextOwnersDataSrc;
 
     private readonly ClientSessionManager SessionManager = sessMngr;
 
@@ -82,9 +85,11 @@ public class PostsContextController(
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.PostsContextsDataSrc.Create_Async(
-            dbCon,
-            this.PostsContextTermEntryDataSrc,
-            parameters
+            dbCon: dbCon,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            postsContextOwnersDataSrc: this.PostsContextOwnersDataSrc,
+            parameters: parameters,
+            owners: [ this.SessionManager.UserOfSession.Id ]
         );
     }
 

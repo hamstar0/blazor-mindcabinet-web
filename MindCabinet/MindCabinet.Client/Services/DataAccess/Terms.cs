@@ -12,7 +12,7 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 public partial class ClientDataAccess_Terms : IClientDataAccess {
-    private static readonly SimpleCache<TermId, TermObject.Raw?> Cache_ById = new( refreshOnGet: true );
+    private static readonly SimpleCache<TermId, TermObject.Raw?> Cache_ById = new( refreshExpiryOnGet: true );
 
 
     
