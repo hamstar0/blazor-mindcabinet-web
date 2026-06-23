@@ -229,9 +229,9 @@ public partial class ServerDataAccess_SimplePosts(
 
         long newPostId = await dbCon.ExecuteScalarAsync<long>(   //ExecuteAsync + ExecuteScalarAsync?
             $@"INSERT INTO {TableName}
-                    ({TableColumn_Created}, {TableColumn_Modified}, {TableColumn_SimpleUserId}, {TableColumn_Body}) 
+                    ({TableColumn_Created}, {TableColumn_Modified}, {TableColumn_Author}, {TableColumn_Body}) 
                 VALUES
-                    (@{TableColumn_Created}, @{TableColumn_Modified}, @{TableColumn_SimpleUserId}, @{TableColumn_Body});
+                    (@{TableColumn_Created}, @{TableColumn_Modified}, @{TableColumn_Author}, @{TableColumn_Body});
             SELECT LAST_INSERT_ID();",
             new {
                 Created = now,
@@ -254,7 +254,7 @@ public partial class ServerDataAccess_SimplePosts(
             id: (SimplePostId)newPostId,
             created: now,
             modified: now,
-            simpleUserId: simpleUserId,
+            author: simpleUserId,
             body: parameters.Body,
             tagsTermIdSet: parameters.TermIds
         );

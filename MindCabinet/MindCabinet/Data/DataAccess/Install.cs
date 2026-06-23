@@ -20,7 +20,6 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_UserTermsHistory historyTermsData,
                 ServerDataAccess_PostsContexts postsContextData,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ServerDataAccess_UserAppData userAppData,
                 ServerDataAccess_ServerData serverData ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
@@ -78,11 +77,6 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
 
-        success = await postsContextOwnersDataSrc.Install_Async( dbCon );
-        if( !success ) {
-            return false;
-        }
-
         success = await postsContextTermEntryData.Install_Async( dbCon );
         if( !success ) {
             return false;
@@ -105,7 +99,6 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             termsData,
             postsContextData,
             postsContextTermEntryData,
-            postsContextOwnersDataSrc,
             serverData,
             userAppData
         );

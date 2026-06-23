@@ -52,7 +52,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc ) {
         SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
@@ -60,7 +59,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             termsDataSrc: termsDataSrc,
             postsContextDataSrc: postsContextDataSrc,
             postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-            postsContextOwnersDataSrc: postsContextOwnersDataSrc,
             serverDataSrc: serverDataSrc,
             userAppDataSrc: userAppDataSrc,
             parameters: new ClientDataAccess_SimpleUsers.IAPI.Create_Params {

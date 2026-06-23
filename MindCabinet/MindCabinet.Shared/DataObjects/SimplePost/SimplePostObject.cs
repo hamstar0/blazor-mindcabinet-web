@@ -20,7 +20,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 
 	public DateTime Modified { get; }
 
-	public SimpleUserId SimpleUserId { get; }
+	public SimpleUserId Author { get; }
 
     public string Body { get; }
 
@@ -32,7 +32,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
 				SimplePostId id,
 				DateTime created,
 				DateTime modified,
-				SimpleUserId simpleUserId,
+				SimpleUserId author,
 				string body,
 				SortedSet<TermObject> tags ) {
 		if( id == 0 ) {
@@ -42,7 +42,7 @@ public partial class SimplePostObject : IEquatable<SimplePostObject>, IDataObjec
         this.Id = id;
         this.Created = created;
         this.Modified = modified;
-        this.SimpleUserId = simpleUserId;
+        this.Author = author;
         this.Body = body;
 		this.Tags = tags;
 	}

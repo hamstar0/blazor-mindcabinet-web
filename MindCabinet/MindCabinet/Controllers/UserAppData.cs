@@ -22,8 +22,6 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
 
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly ServerDataAccess_PostsContextOwners PostsContextOwnersDataSrc;
-
     private readonly ServerDataAccess_UserAppData UserAppDataSrc;
 
     private readonly ClientSessionManager SessionManager;
@@ -33,12 +31,10 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
     public UserAppDataController(
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientSessionManager serverSessionManager ) {
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
-        this.PostsContextOwnersDataSrc = postsContextOwnersDataSrc;
         this.UserAppDataSrc = userAppDataSrc;
         this.SessionManager = serverSessionManager;
     }
@@ -80,7 +76,6 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
 
         await this.UserAppDataSrc.Update_Async(
             dbCon: dbCon,
-            ownersDataSrc: this.PostsContextOwnersDataSrc,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             postsContextId: parameters.CurrentPostsContextId ?? 0,
             userDefaultTermId: parameters.UserDefaultTermId ?? 0

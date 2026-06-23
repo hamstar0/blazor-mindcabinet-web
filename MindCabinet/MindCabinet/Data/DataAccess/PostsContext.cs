@@ -77,6 +77,7 @@ public partial class ServerDataAccess_PostsContexts(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
                 ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params parameters,
+                SimpleUserId? owner,
                 bool alsoGetEntries ) {
         if( parameters.Ids.Any(id => id == 0) ) {
             throw new ArgumentException( "Some PostsContextIds are not valid (must be non-zero)." );
@@ -95,15 +96,16 @@ public partial class ServerDataAccess_PostsContexts(
         );
         var sqlParams1 = new Dictionary<string, object>();
 
+        if( owner is not null ) {
+            sqlBuilder.AddWhereClause( $"MyContext.{TableColumn_Owner} = @Owner" );
+            sqlParams1.Add( "@Owner", (long)owner.Value );
+        }
+
         if( parameters.Ids.Length >= 2 ) {
-            sqlBuilder.AddWhereClause(
-                $"MyContext.{TableColumn_Id} IN @Ids"
-            );
+            sqlBuilder.AddWhereClause( $"MyContext.{TableColumn_Id} IN @Ids" );
             sqlParams1.Add( "@Ids", parameters.Ids );
         } else if( parameters.Ids.Length == 1 ) {
-            sqlBuilder.AddWhereClause(
-                $"MyContext.{TableColumn_Id} = @Id"
-            );
+            sqlBuilder.AddWhereClause( $"MyContext.{TableColumn_Id} = @Id" );
             sqlParams1.Add( "@Id", parameters.Ids[0] );
         }
 
@@ -159,9 +161,8 @@ public partial class ServerDataAccess_PostsContexts(
     public async Task<ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return> Create_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 PostsContextObject.Prototype parameters,
-                SimpleUserId[] owners ) {
+                SimpleUserId owner ) {
         if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "PostsContext Name is not valid." );
         }
@@ -170,15 +171,18 @@ public partial class ServerDataAccess_PostsContexts(
         }
 
         long postsContextIdL = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} ({TableColumn_Name}, {TableColumn_Description})
-                VALUES (@Name, @Description);
+            $@"INSERT INTO {TableName} ({TableColumn_Name}, {TableColumn_Description}, {TableColumn_Owner})
+                VALUES (@Name, @Description, @Owner);
             SELECT LAST_INSERT_ID();",
             new {
                 Name = parameters.Name,
                 Description = parameters.Description,
+                Owner = owner
             }
         );
         PostsContextId postsContextId = (PostsContextId)postsContextIdL;
+
+        //
 
         PostsContextTermEntryObject.Raw[] entries = parameters.Entries
             .Select( e => e.ToRaw(false, true) )
@@ -194,16 +198,13 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        await postsContextOwnersDataSrc.Create_Async( dbCon, postsContextId, owners );
-
-        //
-
         ServerDataAccess_PostsContexts.Cache_ById.Set(
             key: postsContextId,
             value: PostsContextObject.CreateRaw(
                 id: postsContextId,
                 name: parameters.Name!,
                 description: parameters.Description,
+                owner: owner,
                 entries: entries
             ),
             expiry: this.ServerSettings.CacheExpirationDuration
@@ -223,6 +224,9 @@ public partial class ServerDataAccess_PostsContexts(
             throw new ArgumentException( "PostsContextObject.Prototype Id is not valid." );
         }
         if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
+            throw new ArgumentException( "PostsContextObject.Prototype Name is not valid." );
+        }
+        if( !PostsContextObject.ValidateOwner(parameters.Owner ?? 0) ) {
             throw new ArgumentException( "PostsContextObject.Prototype Name is not valid." );
         }
 
@@ -262,6 +266,7 @@ public partial class ServerDataAccess_PostsContexts(
                 id: parameters.Id.Value,
                 name: parameters.Name!,
                 description: parameters.Description,
+                owner: parameters.Owner!.Value,
                 entries: entries
             ),
             expiry: this.ServerSettings.CacheExpirationDuration

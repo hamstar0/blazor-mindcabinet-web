@@ -21,6 +21,8 @@ public partial class PostsContextObject {
         public string? Name { get; set; }
         
         public string? Description { get; set; }
+        
+        public SimpleUserId? Owner { get; set; }
 
         public PostsContextTermEntryObject.Prototype[] Entries { get; set; } = [];
 
@@ -31,6 +33,9 @@ public partial class PostsContextObject {
                 return false;
             }
             if( !PostsContextObject.ValidateName(this.Name ?? "") ) {
+                return false;
+            }
+            if( this.Owner is null || this.Owner == 0 ) {
                 return false;
             }
             if( PostsContextObject.Prototype.ValidateEntries(this.Entries, !includingId) == false ) {
@@ -55,6 +60,7 @@ public partial class PostsContextObject {
                 id: this.Id ?? throw new InvalidOperationException("Cannot create raw entry from prototype with null Id."),
                 name: this.Name ?? "",
                 description: this.Description,
+                owner: this.Owner!.Value,
                 entries: this.Entries.Select( e => e.ToRaw(false, true) ).ToArray()
             );
         }
@@ -66,6 +72,7 @@ public partial class PostsContextObject {
             Id = this.Id,
             Name = this.Name,
             Description = this.Description,
+            Owner = this.Owner,
             Entries = this.Entries
                 .Select( e => e.ToPrototype(this.Id) )
                 .ToArray()

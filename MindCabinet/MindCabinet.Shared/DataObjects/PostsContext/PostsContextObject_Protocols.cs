@@ -9,11 +9,13 @@ public partial class PostsContextObject {
             PostsContextId id,
             string name,
             string? description,
+            SimpleUserId owner,
             PostsContextTermEntryObject.Raw[] entries ) {
         return new Raw {
             Id = id,
             Name = name,
             Description = description,
+            Owner = owner,
             Entries = entries
         };
     }
@@ -25,6 +27,8 @@ public partial class PostsContextObject {
 
         public string? Description { get; set; }
 
+        public SimpleUserId Owner { get; set; }
+
         public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
@@ -34,6 +38,9 @@ public partial class PostsContextObject {
                 return false;
             }
             if( !PostsContextObject.ValidateName(this.Name) ) {
+                return false;
+            }
+            if( this.Owner == 0 ) {
                 return false;
             }
             if( this.Entries.Any(e => !e.IsValid(ignoreId)) ) {
@@ -51,6 +58,7 @@ public partial class PostsContextObject {
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
+                owner: this.Owner,
                 entries: entries
             );
         }
@@ -60,6 +68,7 @@ public partial class PostsContextObject {
                 Id = this.Id,
                 Name = this.Name,
                 Description = this.Description,
+                Owner = this.Owner,
                 Entries = this.Entries
                     .Select( e => e.ToPrototype() )
                     .ToArray()
@@ -84,6 +93,7 @@ public partial class PostsContextObject {
             id: this.Id,
             name: this.Name ?? "",
             description: this.Description,
+            owner: this.Owner,
             entries: this.Entries.Select( e => e.ToRaw(this.Id) ).ToArray()
         );
     }

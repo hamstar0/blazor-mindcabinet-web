@@ -10,14 +10,14 @@ public partial class SimplePostObject {
             SimplePostId id,
             DateTime created,
             DateTime modified,
-            SimpleUserId simpleUserId,
+            SimpleUserId author,
             string body,
             TermId[] tagsTermIdSet ) {
         return new Raw {
             Id = id,
             Created = created,
             Modified = modified,
-            SimpleUserId = simpleUserId,
+            Author = author,
             Body = body,
             TagsTermIdSet = tagsTermIdSet
         };
@@ -30,7 +30,7 @@ public partial class SimplePostObject {
 
         public DateTime Modified { get; set; }
 
-        public SimpleUserId SimpleUserId { get; set; }
+        public SimpleUserId Author { get; set; }
 
         public string Body { get; set; } = "";
 
@@ -44,7 +44,7 @@ public partial class SimplePostObject {
                 id: this.Id,
                 created: this.Created,
                 modified: this.Modified,
-                simpleUserId: this.SimpleUserId,
+                author: this.Author,
                 body: this.Body,
                 tags: new SortedSet<TermObject>( await termsFactory(this.TagsTermIdSet) )
             );

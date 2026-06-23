@@ -236,7 +236,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 bool detectCollision,
@@ -321,7 +320,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 dbCon: dbCon,
                 postsContextDataSrc: postsContextDataSrc,
                 postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-                postsContextOwnersDataSrc: postsContextOwnersDataSrc,
                 parameters: parameters,
                 ownerUserId: (SimpleUserId)newUserId
             );
@@ -388,7 +386,6 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 // TermId userAsTermId,
                 SimpleUserId ownerUserId ) {
@@ -406,9 +403,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         PostsContextId defaultCtxId = (await postsContextDataSrc.Create_Async(
             dbCon: dbCon,
             postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-            postsContextOwnersDataSrc: postsContextOwnersDataSrc,
             parameters: proto,
-            owners: [ ownerUserId ]
+            owner: ownerUserId
         )).Id;
 
         proto.Id = defaultCtxId;

@@ -19,10 +19,13 @@ public partial class PostsContextEditor : ComponentBase {
     //private ClientDbAccess DbAccess { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_Terms TermsData { get; set; } = null!;
+    private LocalClientSessionManager SessionManager { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_PostsContext PostsContextsData { get; set; } = null!;
+    private ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
+
+    [Inject]
+    private ClientDataAccess_PostsContext PostsContextsDataSrc { get; set; } = null!;
 
 
     [Parameter]
@@ -122,6 +125,7 @@ public partial class PostsContextEditor : ComponentBase {
             id: this.EditContext_Id,
             name: this.EditContext_Name ?? "",
             description: this.EditContext_Description,
+            owner: this.DefaultContext.Owner,
             entries: this.EditContext_Entries.ToArray(),
             ignoreId: true
         );
@@ -159,19 +163,20 @@ public partial class PostsContextEditor : ComponentBase {
             id: this.EditContext_Id ?? 0,
             name: this.EditContext_Name ?? "",
             description: this.EditContext_Description,
+            owner: this.SessionManager.UserId ?? throw new Exception("No user available."),
             entries: this.EditContext_Entries
                 .Select( e => e.ToRaw(this.EditContext_Id ?? 0) )
                 .ToArray()
         );
         
         if( !isUpdate ) {
-            raw.Id = (await this.PostsContextsData.CreateForCurrentUser_Async( raw )).Id;
+            raw.Id = (await this.PostsContextsDataSrc.CreateForCurrentUser_Async( raw )).Id;
         } else {
-            await this.PostsContextsData.UpdateForCurrentUser_Async( raw.ToPrototype() );
+            await this.PostsContextsDataSrc.UpdateForCurrentUser_Async( raw.ToPrototype() );
         }
 
         this.DefaultContext = await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(
-            termsDataSrc: this.TermsData,
+            termsDataSrc: this.TermsDataSrc,
             ctxRaw: raw
         );
 

@@ -21,6 +21,8 @@ namespace MindCabinet.Controllers.Composite;
 [ApiController]
 [Route( ClientDataAccess_PrioritizedPosts.IAPI.BaseRoute )]
 public class PrioritizedPostsController : ControllerBase, ClientDataAccess_PrioritizedPosts.IAPI {
+    private readonly ILogger<PrioritizedPostsController> Logger;
+
     private readonly DbAccess DbAccess;
 
     private readonly IServiceProvider ServiceProvider;
@@ -42,6 +44,7 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
 
 
     public PrioritizedPostsController(
+                ILogger<PrioritizedPostsController> logger,
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
                 ServerDataAccess_PrioritizedPosts prioritizedPostsDataSrc,
@@ -52,6 +55,7 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
                 ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
                 ClientSessionManager sessionManager ) {
         //this.HttpContext
+        this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
         this.PrioritizedPostsDataSrc = prioritizedPostsDataSrc;
@@ -74,15 +78,29 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
         }
 
         // SimpleUserId currUserId = this.SessionManager.UserAppDataOfSession.SimpleUserId;
-        // PostsContextOwnersObject.Raw postsCtxsOfOwner = ;
         
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+        
+        PostsContextObject.Raw? raw = await this.PostsContextDataSrc.GetById_Async(
+            dbCon: dbCon,
+            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            postsContextId: parameters.PostsContextId,
+            alsoGetEntries: true
+        );
+        if( raw is null ) {
+            this.Logger.LogWarning( "Missing PostsContextObject raw?" );
+            return [];
+        }
+
+        if( raw.Owner != this.SessionManager.UserOfSession?.Id ) {
+            this.Logger.LogWarning( "watch this leet haxor boi!" );
+            return [];
+        }
 
         return await this.PrioritizedPostsDataSrc.GetByCriteria_Async(
             dbCon: dbCon,
             postTagsDataSrc: this.PostTagsDataSrc,
-            postsContextDataSrc: this.PostsContextDataSrc,
-            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            postsContext: raw,
             parameters: parameters
         );
     }

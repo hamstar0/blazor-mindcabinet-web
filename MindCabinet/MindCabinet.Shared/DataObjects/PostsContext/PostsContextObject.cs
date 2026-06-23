@@ -14,6 +14,8 @@ public partial class PostsContextObject : IDataObject { //IHasId<PostsContextId>
     public string Name { get; }
     
     public string? Description { get; }
+    
+    public SimpleUserId Owner { get; }
 
     public PostsContextTermEntryObject[] Entries { get; }
 
@@ -23,14 +25,19 @@ public partial class PostsContextObject : IDataObject { //IHasId<PostsContextId>
             PostsContextId id,
             string name,
             string? description,
+            SimpleUserId owner,
             PostsContextTermEntryObject[] entries ) {
         if( id == 0 ) {
             throw new ArgumentException( $"Id cannot be 0 in {nameof(PostsContextObject)}." );
+        }
+        if( owner == 0 ) {
+            throw new ArgumentException( $"owner cannot be 0 in {nameof(PostsContextObject)}." );
         }
 
         this.Id = id;
         this.Name = name;
         this.Description = description;
+        this.Owner = owner;
         this.Entries = entries;
     }
 

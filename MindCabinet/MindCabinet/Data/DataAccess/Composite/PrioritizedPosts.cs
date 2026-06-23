@@ -22,25 +22,14 @@ public partial class ServerDataAccess_PrioritizedPosts(
     public async Task<SimplePostObject.Raw[]> GetByCriteria_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_SimplePostTags postTagsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                PostsContextObject.Raw postsContext,
                 ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params parameters ) {
         if( parameters.PostsPerPage == 0 ) {
             return [];
         }
 
-        PostsContextObject.Raw? usrCtx = await postsContextDataSrc.GetById_Async(
-            dbCon: dbCon,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-            postsContextId: parameters.PostsContextId,
-            alsoGetEntries: true
-        );
-        if( usrCtx is null ) {
-            return [];
-        }
-
         (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql(
-            postsContext: usrCtx,
+            postsContext: postsContext,
             bodyPattern: parameters.BodyPattern,
             sortAscendingByDate: parameters.SortAscendingByDate,
             postsPerPage: parameters.PostsPerPage,

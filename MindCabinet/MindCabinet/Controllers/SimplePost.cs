@@ -93,7 +93,6 @@ public class SimplePostController(
             termHistoryData: this.UserTermsHistoryDataSrc,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             parameters: parameters,
-            addCurrentUserTag: true,
             skipHistory: false
         );
     }

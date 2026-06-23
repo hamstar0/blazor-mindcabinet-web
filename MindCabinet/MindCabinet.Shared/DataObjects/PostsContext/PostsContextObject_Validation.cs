@@ -16,11 +16,14 @@ public partial class PostsContextObject {
 
 
 
-    public static bool Validate( PostsContextId id, string name, PostsContextTermEntryObject[] entries ) {
+    public static bool Validate( PostsContextId id, string name, SimpleUserId owner, PostsContextTermEntryObject[] entries ) {
         if( !PostsContextObject.ValidateId(id) ) {
             return false;
         }
         if( !PostsContextObject.ValidateName(name) ) {
+            return false;
+        }
+        if( !PostsContextObject.ValidateOwner(owner) ) {
             return false;
         }
         if( !PostsContextObject.ValidateEntries(entries) ) {
@@ -30,7 +33,7 @@ public partial class PostsContextObject {
     }
 
     public static bool ValidateId( PostsContextId id ) {
-        return id != default;
+        return id != 0;
     }
 
     public static bool ValidateName( string name ) {
@@ -60,6 +63,10 @@ public partial class PostsContextObject {
         return true;
     }
 
+    public static bool ValidateOwner( SimpleUserId id ) {
+        return id != 0;
+    }
+
     public static bool ValidateEntries( IEnumerable<PostsContextTermEntryObject> entries ) {
         return entries.Count() > 0
             && entries.All( e => e.IsValid() );
@@ -72,16 +79,18 @@ public partial class PostsContextObject {
         IdMismatch = 1,
         NameMismatch = 2,
         DescriptionMismatch = 3,
-        EntriesCountMismatch = 4,
-        EntriesMismatchId = 5,
-        EntriesMismatchPriority = 6,
-        EntriesMismatchIsRequired = 7
+        OwnerMismatch = 4,
+        EntriesCountMismatch = 5,
+        EntriesMismatchId = 6,
+        EntriesMismatchPriority = 7,
+        EntriesMismatchIsRequired = 8
     }
 
     public MatchResult Matches(
                 PostsContextId? id,
                 string name,
                 string? description,
+                SimpleUserId owner,
                 PostsContextTermEntryObject[] entries,
                 bool ignoreId = false ) {
         if( !ignoreId && id is not null && id != this.Id ) {
@@ -92,6 +101,9 @@ public partial class PostsContextObject {
         }
         if( description != this.Description ) {
             return MatchResult.DescriptionMismatch;
+        }
+        if( owner != this.Owner ) {
+            return MatchResult.OwnerMismatch;
         }
         if( entries.Length != this.Entries.Length ) {
             return MatchResult.EntriesCountMismatch;
@@ -120,12 +132,13 @@ public partial class PostsContextObject {
             id: ignoreId ? null : other.Id,
             name: other.Name,
             description: other.Description,
+            owner: other.Owner,
             entries: other.Entries
         );
     }
 
 
     public bool IsValid() {
-        return PostsContextObject.Validate( this.Id, this.Name, this.Entries );
+        return PostsContextObject.Validate( this.Id, this.Name, this.Owner, this.Entries );
     }
 }

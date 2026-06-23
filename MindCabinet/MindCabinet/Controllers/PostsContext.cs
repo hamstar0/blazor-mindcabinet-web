@@ -25,7 +25,6 @@ public class PostsContextController(
                 DbAccess dbAccess,
                 ServerDataAccess_PostsContexts postsContextsDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
-                ServerDataAccess_PostsContextOwners postsContextOwnersDataSrc,
 				ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_PostsContext.IAPI {
     private readonly ILogger<PostsContextController> Logger = logger;
@@ -37,8 +36,6 @@ public class PostsContextController(
     private readonly ServerDataAccess_PostsContexts PostsContextsDataSrc = postsContextsDataSrc;
 
     private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
-
-    private readonly ServerDataAccess_PostsContextOwners PostsContextOwnersDataSrc = postsContextOwnersDataSrc;
 
     private readonly ClientSessionManager SessionManager = sessMngr;
 
@@ -53,18 +50,11 @@ public class PostsContextController(
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        TermId currUserTermId = this.SessionManager.UserAppDataOfSession?.UserDefaultTerm.Id ?? 0;
-
-        if( !parameters.TagTermIds.Any(tid => tid == currUserTermId) ) {
-            parameters.TagTermIds = parameters.TagTermIds
-                .Append( currUserTermId )
-                .ToArray();
-        }
-
         IEnumerable<PostsContextObject.Raw> contexts = await this.PostsContextsDataSrc.GetByCriteria_Async(
             dbCon: dbCon,
             postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
             parameters: parameters,
+            owner: this.SessionManager.UserOfSession.Id,
             alsoGetEntries: true
         );
 
@@ -87,9 +77,8 @@ public class PostsContextController(
         return await this.PostsContextsDataSrc.Create_Async(
             dbCon: dbCon,
             postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
-            postsContextOwnersDataSrc: this.PostsContextOwnersDataSrc,
             parameters: parameters,
-            owners: [ this.SessionManager.UserOfSession.Id ]
+            owner: this.SessionManager.UserOfSession.Id
         );
     }
 
@@ -104,6 +93,8 @@ public class PostsContextController(
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        parameters.Owner = this.SessionManager.UserOfSession.Id;
 
         ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return ret = await this.PostsContextsDataSrc.Update_Async(
             dbCon: dbCon,

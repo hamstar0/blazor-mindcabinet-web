@@ -110,7 +110,6 @@ public partial class ServerDataAccess_UserAppData(
 
     public async Task Update_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContextOwners ownersDataSrc,
                 SimpleUserId simpleUserId,
                 PostsContextId postsContextId,
                 TermId userDefaultTermId ) {    //todo
@@ -125,16 +124,6 @@ public partial class ServerDataAccess_UserAppData(
         }
 
         //
-
-        PostsContextOwnersObject.Raw[] owners = await ownersDataSrc.GetByPostsContextId_Async(
-            dbCon,
-            postsContextId
-        );
-
-        if( !owners.Any(o => o.SimpleUserId == simpleUserId) ) {
-            this.Logger.LogWarning( "Probably want to monitor this clown!" );
-            return;
-        }
 
         try {
             await dbCon.ExecuteAsync(
