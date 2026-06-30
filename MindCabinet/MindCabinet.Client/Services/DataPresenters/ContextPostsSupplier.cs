@@ -53,10 +53,11 @@ public partial class ContextPostsSupplier(
             )
         );
 
-        var postPriorities = postsRaw.Select( post => new KeyValuePair<SimplePostId, double?>(
-            key: post.Id,
-            value: this.GetPriority(postsContext, post)
-        ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
+        Dictionary<SimplePostId, double?> postPriorities = postsRaw
+            .Select( post => new KeyValuePair<SimplePostId, double?>(
+                key: post.Id,
+                value: this.GetPriority(postsContext, post)
+            ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
 
         if( postPriorities.ContainsValue(null) ) {
             this.Logger.LogWarning(
@@ -110,8 +111,9 @@ public partial class ContextPostsSupplier(
             }
         }
 
-        return matchedCount > 0
-            ? totalPriority
-            : null;
+        return totalPriority;
+        // return matchedCount > 0
+        //     ? totalPriority
+        //     : null;
     }
 }

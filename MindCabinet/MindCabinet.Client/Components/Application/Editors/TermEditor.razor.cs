@@ -24,6 +24,9 @@ public partial class TermEditor : ComponentBase {
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
+    [Parameter]
+    public bool VerboseTermDisplay { get; set; } = false;
+
 
     private bool IsSeachFocused = false;
 

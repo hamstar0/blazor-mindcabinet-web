@@ -18,6 +18,10 @@ public partial class MultiTermRender : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
+    [Parameter]
+    public bool VerboseTermDisplay { get; set; } = false;
+
+
     [Parameter, EditorRequired]
 	public IEnumerable<TermObject> Terms { get; set; } = null!;
 

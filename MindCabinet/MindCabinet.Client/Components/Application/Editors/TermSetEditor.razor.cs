@@ -23,13 +23,13 @@ public partial class TermSetEditor : ComponentBase {
     public string? AddedPerItemClasses { get; set; } = null;
 
     [Parameter]
+    public bool VerboseTermDisplay { get; set; } = false;
+
+    [Parameter]
     public string? Label { get; set; } = null;
 
     [Parameter]
     public bool AllowFavoritingTerms { get; set; } = true;
-
-    [Parameter]
-    public bool VerboseTermDisplay { get; set; } = false;
 
 
     public delegate Task OnTermsChange_Func(
@@ -55,7 +55,7 @@ public partial class TermSetEditor : ComponentBase {
 
 
     public void Reset() {
-        this._Terms = new List<TermObject>( this.InitialTerms );
+        this._Terms = this.InitialTerms.ToList();
 
         this.StateHasChanged();
     }

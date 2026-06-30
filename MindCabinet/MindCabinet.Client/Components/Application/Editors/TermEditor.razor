@@ -27,6 +27,7 @@
 @* @("terms: "+string.Join(", ", this.SearchOptions.Select(t=>t.Term))) *@
                 <MultiTermRender
                         Terms=@this.SearchOptions
+                        VerboseTermDisplay=@this.VerboseTermDisplay
                         OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
        </div>
@@ -39,7 +40,9 @@
             ModalId=@this.TermContextInput_ModalDialogId
             Title="Specify Context">
         <BodyContent>
-            <TermSearch OnTermSelect_Async=@this.OnModalDialogTermContextSelect_UI_Async />
+            <TermSearch
+                    VerboseTermDisplay=@this.VerboseTermDisplay
+                    OnTermSelect_Async=@this.OnModalDialogTermContextSelect_UI_Async />
         </BodyContent>
     </Modal>
 </RenderPortal>

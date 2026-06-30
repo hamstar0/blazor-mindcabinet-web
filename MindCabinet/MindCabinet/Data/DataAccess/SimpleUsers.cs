@@ -392,6 +392,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
             Name = $"{parameters.Name}'s posts",
             Description = "All posts by the given user.",
+            Owner = ownerUserId,
             Entries = [
                 // new PostsContextTermEntryObject.Prototype {
                 //     TermId = userAsTermId,
@@ -408,7 +409,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         )).Id;
 
         proto.Id = defaultCtxId;
-        proto.Entries[0].PostsContextId = defaultCtxId;
+        //proto.Entries[0].PostsContextId = defaultCtxId;
+
         // PostsContextObject.Raw rawCtx = PostsContextObject.CreateRaw(
         //     id: defaultCtxId,
         //     name: proto.Name,

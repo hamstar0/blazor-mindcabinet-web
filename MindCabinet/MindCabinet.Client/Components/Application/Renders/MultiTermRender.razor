@@ -9,6 +9,7 @@
     @foreach( TermObject term in this.Terms ) {
         <TermRender AddedClasses="ib"
                 Term=@term
+                VerboseTermDisplay=@this.VerboseTermDisplay
                 OnClick_Async=@(async e => await this.OnClickEach_UI_Async(term, e)) />
     }
 </div>

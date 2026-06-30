@@ -67,9 +67,6 @@ public partial class SimplePostEditor : ComponentBase {
         TermId[] termIds = this.Tags.Select( t => t.Id ).ToArray();
 
         this.Reset();
-        this.PostText = "";
-        this.TagsEditor.Reset();
-        this.Tags.Clear();
         
         SimplePostObject.Raw post = await this.SimplePostsData.Create_Async(
             new ClientDataAccess_SimplePosts.IAPI.Create_Params {

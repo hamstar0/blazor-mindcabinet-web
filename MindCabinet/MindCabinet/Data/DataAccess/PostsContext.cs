@@ -167,7 +167,13 @@ public partial class ServerDataAccess_PostsContexts(
             throw new ArgumentException( "PostsContext Name is not valid." );
         }
         if( !PostsContextObject.Prototype.ValidateEntries(parameters.Entries, true) ) {
-            throw new ArgumentException( "PostsContext Entries are not valid." );
+            throw new ArgumentException(
+                "PostsContext Entries are not valid: "
+                + string.Join(", ", parameters.Entries
+                    .Where( e => !e.IsValid(true) )
+                    .Select( e => "term:"+e.TermId )
+                )
+            );
         }
 
         long postsContextIdL = await dbCon.ExecuteScalarAsync<long>(

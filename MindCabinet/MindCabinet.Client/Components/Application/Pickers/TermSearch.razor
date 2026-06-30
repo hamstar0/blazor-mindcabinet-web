@@ -24,6 +24,7 @@
                 <MultiTermRender
                         @ref=this.SearchResultsElement
                         Terms=@this.SearchOptions
+                        VerboseTermDisplay=@this.VerboseTermDisplay
                         OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
        </div>
@@ -33,6 +34,7 @@
             <label>Favorite Terms:</label>
             <MultiTermRender
                     Terms=@this.FavoriteTerms_Cache.Select( e => e.FavTerm )
+                    VerboseTermDisplay=@this.VerboseTermDisplay
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }
@@ -41,6 +43,7 @@
             <label>Recent Terms:</label>
             <MultiTermRender
                     Terms=@this.RecentTerms_Cache.Select( e => e.Term )
+                    VerboseTermDisplay=@this.VerboseTermDisplay
                     OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
         </div>
     }

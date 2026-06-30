@@ -39,11 +39,13 @@ v0.7
 -	Implement tabs of posts views
 v0.6
 -	@Test features
+-	Detect changes to context name in context editor
+
+
+-	Debug failure to display list of posts
 -	Show tags' contexts in tag lists
 -	Clear create post fields upon submit (in particular tags entry and list)
 -	Clear tags input for post create after tag submit
-
-
 -	Validate ServerDataAccess_UserAppData.Update_Async term id
 -	Prevent API actions upon posts of other users
 -	Change PostsContextOwners into simply PostContext.Owner
