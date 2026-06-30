@@ -28,27 +28,25 @@ v0.8
 -	Add landing page when not logged in
 -	Add login success message alert popup
 -	Show user name next to Logout button
+-	Set modal dialogs to have default input focused onto when open
+-	Keep post create component fixed to the bottom
 v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
+-	Where are favorite tags visible?
 -	Implement posts per page adjuster
 -	Save tab state with user session data
 -	Implement tabs of posts views
--	Set modal dialogs to have default input focused onto when open
--	Keep post create component fixed to the bottom
--	Where are favorite tags visible?
--	Revise tooltip popups
-	-	Build lightweight custom JS tooltip popup
 v0.6
 -	@Test features
 -	Show tags' contexts in tag lists
 -	Clear create post fields upon submit (in particular tags entry and list)
 -	Clear tags input for post create after tag submit
+
+
 -	Validate ServerDataAccess_UserAppData.Update_Async term id
 -	Prevent API actions upon posts of other users
 -	Change PostsContextOwners into simply PostContext.Owner
-
-
 -	@B&D per-user posts
 	-	Per-posts permissions - Probably.
 	-	Per-tag permissions - No. Tags are universal.

@@ -5,6 +5,7 @@ using MindCabinet.DataObjects;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
+using MindCabinet.Utility;
 using System.Data;
 using System.Text.Json;
 
@@ -63,26 +64,34 @@ public partial class ServerDataAccess_SimplePosts(
 
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters,
+                SimpleUserId? author,
                 bool countOnly ) {
-        bool hasWhere = false;
-        string sql = $"SELECT {(countOnly ? "COUNT(*)" : "*")} FROM {TableName} AS MyPosts ";
         var sqlParams = new Dictionary<string, object>();
+        var sqlBuilder = new SimpleSqlSelectBuilder(
+            tableName: TableName,
+            columnNames: countOnly ? TableColumns.Keys : ["COUNT(*)"]
+        );
 
+        
+        if( author is not null ) {
+            sqlBuilder.AddWhereClause( $"MyPosts.{TableColumn_Author} = @Author" );
+
+            sqlParams["@Author"] = author;
+        }
+        
         if( !string.IsNullOrEmpty(parameters.BodyPattern) ) {
+            // sql += "WHERE MyPosts.{TableColumn_Body} LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
+            sqlBuilder.AddWhereClause( $"MyPosts.{TableColumn_Body} LIKE @Body ESCAPE '\\\\' " );
+
             string body = parameters.BodyPattern.Replace( "%", "\\%" );
             body = body.Replace( "_", "\\_" );
             //body = body.Replace( "[", "\\[" );
 
-            // sql += "WHERE MyPosts.{TableColumn_Body} LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            sql += "\nWHERE MyPosts.{TableColumn_Body} LIKE @Body ESCAPE '\\\\' ";
             sqlParams["@Body"] = new DbString { Value = $"%{body}%", IsAnsi = true };
-            hasWhere = true;
         }
 
         if( parameters.AllTagIds.Length > 0 ) {
-            sql += hasWhere ? "AND" : "WHERE";
-
-            sql += $@" (
+            sqlBuilder.AddWhereClause( $@" (
                 (
                     (SELECT (@Tags)) EXCEPT (
                         SELECT MyTerms.{ServerDataAccess_Terms.TableColumn_Id} FROM {ServerDataAccess_Terms.TableName} AS MyTerms
@@ -91,47 +100,33 @@ public partial class ServerDataAccess_SimplePosts(
                         WHERE MyPostTags.{ServerDataAccess_SimplePostTags.TableColumn_SimplePostId} = MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Id}
                     )
                 ) IS NULL
-            ) ";
-                        // SELECT MyTerms.Id FROM {ServerDataAccess_Terms.TableName} AS MyTerms
-                        // INNER JOIN {ServerDataAccess_SimplePostTags.TableName} AS MyTermSet ON (MyTermSet.TermId = MyTerms.Id)
-                        // WHERE MyTermSet.SetId = MyPosts.TermSetId
+            ) " );
 
             sqlParams["@Tags"] = parameters.AllTagIds;
-            //      ) ALL (";
-            //int i = 1;
-            //foreach( TermEntry tag in parameters.Tags ) {
-            //    if( i > 1 ) { sql += ", "; }
-            //    sql += "@Tag"+i;
-            //    sqlParams[ "Tag"+i ] = tag.Id!;
-            //    i++;
-            //}
-            //sql += ")";
-
-            hasWhere = true;
         }
-
+        
         if( !countOnly ) {
-            sql += $"\n ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")} ";
+            sqlBuilder.OrderByClause = $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")} ";
         }
 
         if( parameters.PostsPerPage > 0 ) {
+            sqlBuilder.LimitClause = $" LIMIT @Offset, @Quantity";
             // FETCH NEXT @Quantity ROWS ONLY;";
             // LIMIT @Offset ROWS OFFSET @Quantity ROWS ONLY;";
-            sql += $"\n LIMIT @Offset, @Quantity";
             sqlParams["@Offset"] = parameters.PageNumber * parameters.PostsPerPage;
             sqlParams["@Quantity"] = parameters.PostsPerPage;
         }
 
-        sql += ";";
-        return (sql, sqlParams);
+        return (sqlBuilder.Build(), sqlParams);
     }
 
 
     public async Task<IEnumerable<SimplePostObject.Raw>> GetByCriteria_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags termSetsData,
-                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags termSetsDataSrc,
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters,
+                SimpleUserId? author ) {
         if( parameters.AllTagIds.Any(id => id == 0) ) {
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
@@ -140,7 +135,11 @@ public partial class ServerDataAccess_SimplePosts(
             return Enumerable.Empty<SimplePostObject.Raw>();
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, false );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql(
+            parameters: parameters,
+            author: author,
+            countOnly: false
+        );
 
 // this.Logger.LogInformation( "Executing SQL: {Sql} with params {Params}", sql, sqlParams );
         IEnumerable<SimplePostObject.Raw> postsRaw = await dbCon.QueryAsync<SimplePostObject.Raw>(
@@ -178,7 +177,8 @@ public partial class ServerDataAccess_SimplePosts(
 
     public async Task<int> GetCountByCriteria_Async(
                 IDbConnection dbCon,
-                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+                ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters,
+                SimpleUserId? author ) {
         if( parameters.AllTagIds.Any(id => id == 0) ) {
             throw new ArgumentException( "Some TermIds are not valid (must be non-zero)." );
         }
@@ -187,7 +187,7 @@ public partial class ServerDataAccess_SimplePosts(
             return 0;
         }
 
-        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, true );
+        (string sql, IDictionary<string, object> sqlParams) = this.GetByCriteriaSql( parameters, author, true );
 
         return await dbCon.QuerySingleAsync<int>( sql, new DynamicParameters(sqlParams) );
 
@@ -213,10 +213,10 @@ public partial class ServerDataAccess_SimplePosts(
                 ServerDataAccess_Terms termsData,
                 ServerDataAccess_SimplePostTags termSetsData,
                 ServerDataAccess_UserTermsHistory termHistoryData,
-                SimpleUserId simpleUserId,
+                SimpleUserId author,
                 ClientDataAccess_SimplePosts.IAPI.Create_Params parameters,
                 bool skipHistory ) {
-        if( simpleUserId == 0 ) {
+        if( author == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
         if( parameters.TermIds.Any(id => id == 0) ) {
@@ -236,7 +236,7 @@ public partial class ServerDataAccess_SimplePosts(
             new {
                 Created = now,
                 Modified = now,
-                SimpleUserId = (long)simpleUserId,
+                SimpleUserId = (long)author,
                 Body = new DbString { Value = parameters.Body, IsAnsi = true }
             }
         );
@@ -254,7 +254,7 @@ public partial class ServerDataAccess_SimplePosts(
             id: (SimplePostId)newPostId,
             created: now,
             modified: now,
-            author: simpleUserId,
+            author: author,
             body: parameters.Body,
             tagsTermIdSet: parameters.TermIds
         );
@@ -275,7 +275,7 @@ public partial class ServerDataAccess_SimplePosts(
             foreach( TermId termId in termIds ) {
                 await termHistoryData.AddTerm_Async(
                     dbCon,
-                    simpleUserId,
+                    author,
                     new ClientDataAccess_UserTermsHistory.IAPI.AddHistTermsForCurrentUser_Params {
                         TermId = termId
                     }

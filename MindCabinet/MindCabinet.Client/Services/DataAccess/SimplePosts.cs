@@ -24,7 +24,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     public async Task<IAPI.GetByCriteria_Return> GetByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
         var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.GetByCriteria_Return>(
             http: this.Http,
-            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetByCriteria_Async)}",
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetByCriteriaForCurrentUser_Async)}",
             parameters: parameters
         );
 
@@ -35,7 +35,7 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
     public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
         int ret = await IClientDataAccess.CallAPIManual_Async<IAPI.GetByCriteria_Params, int>(  // needed?
             http: this.Http,
-            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetCountByCriteria_Async)}",
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetCountByCriteriaForCurrentUser_Async)}",
             parameters: parameters
         );
         

@@ -16,14 +16,14 @@ public partial class UserAppDataObject {
 
 
         
-        public bool IsValidAsObject( bool ignoreUserId ) {
-            if( !ignoreUserId && this.SimpleUserId is null || this.SimpleUserId == 0 ) {
+        public bool IsValidAsObject( bool ignoreUserId, bool ignoreUserTerm ) {
+            if( !ignoreUserId && (this.SimpleUserId is null || this.SimpleUserId == 0) ) {
                 return false;
             }
             if( this.CurrentPostsContextId is null || this.CurrentPostsContextId == 0 ) {
                 return false;
             }
-            if( this.UserDefaultTermId is null || this.UserDefaultTermId == 0 ) {
+            if( !ignoreUserTerm && (this.UserDefaultTermId is null || this.UserDefaultTermId == 0) ) {
                 return false;
             }
             return true;

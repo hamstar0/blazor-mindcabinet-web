@@ -18,6 +18,8 @@ namespace MindCabinet.Controllers;
 [ApiController]
 [Route( ClientDataAccess_UserAppData.IAPI.BaseRoute )]
 public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppData.IAPI {
+    private readonly ILogger<UserAppDataController> Logger;
+
     private readonly DbAccess DbAccess;
 
     private readonly IServiceProvider ServiceProvider;
@@ -29,10 +31,12 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
 
 
     public UserAppDataController(
+                ILogger<UserAppDataController> logger,
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientSessionManager serverSessionManager ) {
+        this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
         this.UserAppDataSrc = userAppDataSrc;
@@ -68,8 +72,12 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No current user available." );
         }
-        if( !parameters.IsValidAsObject(true) ) {
+        if( !parameters.IsValidAsObject(true, true) ) {
             throw new InvalidOperationException( "Invalid parameters." );
+        }
+        if( parameters.SimpleUserId is not null || parameters.UserDefaultTermId is not null ) {
+            this.Logger.LogWarning( "leet haxor boi here" );
+            return new {};
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );

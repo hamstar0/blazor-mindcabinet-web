@@ -19,7 +19,6 @@ namespace MindCabinet.Controllers;
 [Route( ClientDataAccess_SimplePosts.IAPI.BaseRoute )]
 public class SimplePostController(
                 ILogger<SimplePostController> logger,
-                IServiceProvider serviceProvider,
                 DbAccess dbAccess,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
@@ -30,8 +29,6 @@ public class SimplePostController(
                 ClientSessionManager sessMngr
             ) : ControllerBase, ClientDataAccess_SimplePosts.IAPI {
     private readonly ILogger<SimplePostController> Logger = logger;
-
-    private readonly IServiceProvider ServiceProvider = serviceProvider;
 
     private readonly DbAccess DbAccess = dbAccess;
 
@@ -51,27 +48,40 @@ public class SimplePostController(
 
 
 
-    [HttpPost(nameof(GetByCriteria_Async))]
-    public async Task<ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return> GetByCriteria_Async(
+    [HttpPost(nameof(GetByCriteriaForCurrentUser_Async))]
+    public async Task<ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return> GetByCriteriaForCurrentUser_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new NullReferenceException( "Session not loaded." );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         IEnumerable<SimplePostObject.Raw> posts = await this.SimplePostsDataSrc.GetByCriteria_Async(
-            dbCon,
-            this.TermsDataSrc,
-            this.SimplePostTagsDataSrc,
-            parameters
+            dbCon: dbCon,
+            termsDataSrc: this.TermsDataSrc,
+            termSetsDataSrc: this.SimplePostTagsDataSrc,
+            parameters: parameters,
+            author: this.SessionManager.UserOfSession.Id
         );
         return new ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Return { Posts = posts };
     }
 
 
-    [HttpPost(nameof(GetCountByCriteria_Async))]
-    public async Task<int> GetCountByCriteria_Async(
+    [HttpPost(nameof(GetCountByCriteriaForCurrentUser_Async))]
+    public async Task<int> GetCountByCriteriaForCurrentUser_Async(
                 ClientDataAccess_SimplePosts.IAPI.GetByCriteria_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new NullReferenceException( "Session not loaded." );
+        }
+
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.SimplePostsDataSrc.GetCountByCriteria_Async( dbCon, parameters );
+        return await this.SimplePostsDataSrc.GetCountByCriteria_Async(
+            dbCon: dbCon,
+            parameters: parameters,
+            author: this.SessionManager.UserOfSession.Id
+        );
     }
 
 
@@ -91,7 +101,7 @@ public class SimplePostController(
             termsData: this.TermsDataSrc,
             termSetsData: this.SimplePostTagsDataSrc,
             termHistoryData: this.UserTermsHistoryDataSrc,
-            simpleUserId: this.SessionManager.UserOfSession.Id,
+            author: this.SessionManager.UserOfSession.Id,
             parameters: parameters,
             skipHistory: false
         );

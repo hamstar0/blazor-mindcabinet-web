@@ -38,10 +38,10 @@ public partial class ClientDataAccess_SimplePosts : IClientDataAccess {
             public IEnumerable<SimplePostObject.Raw> Posts { get; set; } = [];
         }
 
-        public Task<GetByCriteria_Return> GetByCriteria_Async( GetByCriteria_Params parameters );
+        public Task<GetByCriteria_Return> GetByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
         
         
-        public Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters );
+        public Task<int> GetCountByCriteriaForCurrentUser_Async( GetByCriteria_Params parameters );
 
 
 

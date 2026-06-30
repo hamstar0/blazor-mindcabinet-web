@@ -85,7 +85,8 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
             return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "User already in session" };
         }
         if( parameters.IsValidated ) {
-            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "Not permitted." };   // maybe watch this guy from now on
+            this.Logger.LogWarning( "leet haxor boi detected." );   // !
+            return new ClientDataAccess_SimpleUsers.IAPI.Create_Return { User = null, Status = "Not permitted." };
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
