@@ -13,12 +13,12 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 
 
-public partial class ContextPostsSupplier(
-            ILogger<ContextPostsSupplier> logger,
-            LocalClientSessionManager mySessionMngr,
-            ClientDataAccess_PrioritizedPosts postsDataSrc
-        ) : IClientDataProcessors {
-    private ILogger<ContextPostsSupplier> Logger = logger;
+public partial class PostsSupplier(
+                ILogger<PostsSupplier> logger,
+                LocalClientSessionManager mySessionMngr,
+                ClientDataAccess_PrioritizedPosts postsDataSrc
+            ) : IClientDataProcessors {
+    private ILogger<PostsSupplier> Logger = logger;
 
     private LocalClientSessionManager MySessionMngr = mySessionMngr;
     

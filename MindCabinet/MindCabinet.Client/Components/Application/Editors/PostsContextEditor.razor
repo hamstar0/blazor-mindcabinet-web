@@ -12,14 +12,16 @@
 
 <div component-name="PostsContextEditor" class=@this.AddedClasses>
 	<Tooltip>
-		<Anchor><h4>Context name:</h4></Anchor>
+		<Anchor>
+			<h4>Context name:</h4>
+			<input type="text"
+					placeholder="Enter context name"
+					@bind:event="oninput"
+					@bind:get=@this.EditContext_Name
+					@bind:set=@this.OnInputName_UI_Async />
+		</Anchor>
 		<TooltipContent>AKA an arbitrary circumstance or phenomenon to be described</TooltipContent>
 	</Tooltip>
-	<input type="text"
-			placeholder="Enter context name"
-			@bind:event="oninput"
-            @bind:get=@this.EditContext_Name
-            @bind:set=@this.OnInputName_UI_Async />
 	<h4>Enter tags to describe your current "context":</h4>
 	<TermSetEditor Label="Enter tags (at least 1 required)"
 			AddedPerItemClasses="d-block"
@@ -47,7 +49,7 @@
 		<button @onclick=@(() => this.ClearEditContext_UI(false))>
 			Create New
 		</button>
-		<button disabled=@( !this.CanSaveEdits(this.DefaultContext is null) )
+		<button disabled=@( !this.CanSaveEdits(this.TemplateContext is null) )
 				@onclick=@this.SaveContext_UI_Async>
 			Save Changes
 		</button>
@@ -65,7 +67,7 @@
 				<button @onclick=@(this.ConfirmResetPrompt_DialogComponent.Close)>
 					Cancel
 				</button>
-				<button @onclick=@( () => this.ClearEditContext_UI(true))>
+				<button @onclick=@( () => this.ClearEditContext_UI(true) )>
 					Confirm
 				</button>
 			</div>
@@ -112,6 +114,8 @@
         }
 
 		this.EditContext_Name = nameText;
+        
+        this.StateHasChanged();
     }
 
 	private async Task OnTagsChanged_UI_Async(

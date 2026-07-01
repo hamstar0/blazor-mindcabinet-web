@@ -11,22 +11,22 @@ namespace MindCabinet.Client.Components.Application.Pickers;
 
 
 
-public partial class PostsContextPicker : ComponentBase {
+public partial class CurrentPostsContextPicker : ComponentBase {
     private string Value = "";
 
 
     [Inject]
-    public ClientDataAccess_Terms TermsData { get; set; } = null!;
+    public ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess_PostsContext PostsContextData { get; set; } = null!;
+    public ClientDataAccess_PostsContext PostsContextDataSrc { get; set; } = null!;
 
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 
 
-    private bool IsSeachFocused = false;
+    private bool IsSearchFocused = false;
 
     private IEnumerable<PostsContextObject> SearchOptions = new List<PostsContextObject>();
 
@@ -41,11 +41,11 @@ public partial class PostsContextPicker : ComponentBase {
 
 
     [Parameter, EditorRequired]
-    public PostsContextObject[] InitialContexts { get; set; } = [];
+    public PostsContextObject[] InitialSearchOptionsCache { get; set; } = [];       // hackish
 
 
     [Parameter, EditorRequired]
-    public PostsContextObject InitialCurrentContext { get; set; } = null!;
+    public PostsContextObject InitialSelectedSearchOption { get; set; } = null!;    // hackish
 
 
     public delegate Task OnContextPickedFunc_Async( PostsContextObject context );
@@ -58,10 +58,10 @@ public partial class PostsContextPicker : ComponentBase {
     protected async override Task OnInitializedAsync() {
         await base.OnInitializedAsync();
 
-        this.Value = this.InitialCurrentContext?.Name ?? "";   // sorta blindly trusting this!
+        this.Value = this.InitialSelectedSearchOption?.Name ?? "";   // sorta blindly trusting this!
 
         // await this.TrySearchContext_Async( this.Value );
-        this.SearchOptions = this.InitialContexts.ToList();
+        this.SearchOptions = this.InitialSearchOptionsCache.ToList();
     }
 
 
@@ -73,19 +73,19 @@ public partial class PostsContextPicker : ComponentBase {
             return;
         }
 
-        IEnumerable<PostsContextObject.Raw> ctxsRaw = (await this.PostsContextData.GetForCurrentUserByCriteria_Async(
+        IEnumerable<PostsContextObject.Raw> ctxsRaw = (await this.PostsContextDataSrc.GetForCurrentUserByCriteria_Async(
             new ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params { NameContains = searchText }
         )).Contexts;
 
         this.SearchOptions = await ClientDataAccess_PostsContext
-            .ConvertRawsToDataObjects_Async( this.TermsData, ctxsRaw.ToArray() );
+            .ConvertRawsToDataObjects_Async( this.TermsDataSrc, ctxsRaw.ToArray() );
     }
 
     private async Task SelectSearchResults_UI_Async( PostsContextObject context ) {
         if( this.Disabled ) {
             return;
         }
-        //if( !this.IsSeachFocused ) {
+        //if( !this.IsSearchFocused ) {
         //    return;
         //}
 

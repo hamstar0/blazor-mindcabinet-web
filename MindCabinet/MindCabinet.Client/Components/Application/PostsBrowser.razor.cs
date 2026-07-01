@@ -14,21 +14,18 @@ using System.ComponentModel;
 namespace MindCabinet.Client.Components.Application;
 
 
-public partial class ContextPostsBrowser : ComponentBase {
+public partial class PostsBrowser : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ContextPostsSupplier PostsData { get; set; } = null!;
-
-    //[Inject]
-    //public LocalData LocalData { get; set; } = null!;
+    public PostsSupplier PostsData { get; set; } = null!;
 
     [Inject]
     public LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess_Terms TermsData { get; set; } = null!;
+    public ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
 
     [Parameter, EditorRequired]
@@ -78,7 +75,7 @@ public partial class ContextPostsBrowser : ComponentBase {
         }
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetCurrentContextPosts_Async(
-            termsDataSrc: this.TermsData,
+            termsDataSrc: this.TermsDataSrc,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );

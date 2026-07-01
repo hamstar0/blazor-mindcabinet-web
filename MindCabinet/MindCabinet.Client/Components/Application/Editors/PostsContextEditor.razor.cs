@@ -31,7 +31,7 @@ public partial class PostsContextEditor : ComponentBase {
     [Parameter]
     public PostsContextObject? InitialContext { get; set; } = null;
 
-    private PostsContextObject? DefaultContext = null;
+    private PostsContextObject? TemplateContext = null;
 	
     
     private PostsContextId? EditContext_Id;
@@ -62,13 +62,13 @@ public partial class PostsContextEditor : ComponentBase {
 	protected override void OnInitialized() {
 		base.OnInitialized();
         
-        this.DefaultContext = this.InitialContext;
+        this.TemplateContext = this.InitialContext;
         this.ResetEditContextToDefault();
 	}
 
 
     public void SetDefaultContext( PostsContextObject? context ) {
-        this.DefaultContext = context;
+        this.TemplateContext = context;
         this.ResetEditContextToDefault();
         
         this.StateHasChanged();
@@ -110,22 +110,22 @@ public partial class PostsContextEditor : ComponentBase {
 	}
 
 	private bool HasUnsavedChanges() {
-        if( this.DefaultContext is null ) {
+        if( this.TemplateContext is null ) {
             return this.EditContext_Id is not null
                     || this.EditContext_Name is not null
                     || this.EditContext_Description is not null
                     || this.EditContext_Entries.Any();
         }
         
-        if( this.EditContext_Id != this.DefaultContext.Id ) {
-            throw new InvalidOperationException( $"Context ID mismatch: {this.EditContext_Id} != {this.DefaultContext.Id}" );
+        if( this.EditContext_Id != this.TemplateContext.Id ) {
+            throw new InvalidOperationException( $"Context ID mismatch: {this.EditContext_Id} != {this.TemplateContext.Id}" );
         }
 
-		PostsContextObject.MatchResult matchResult = this.DefaultContext.Matches(
+		PostsContextObject.MatchResult matchResult = this.TemplateContext.Matches(
             id: this.EditContext_Id,
             name: this.EditContext_Name ?? "",
             description: this.EditContext_Description,
-            owner: this.DefaultContext.Owner,
+            owner: this.TemplateContext.Owner,
             entries: this.EditContext_Entries.ToArray(),
             ignoreId: true
         );
@@ -135,21 +135,21 @@ public partial class PostsContextEditor : ComponentBase {
 
 
     private void ClearEditContext() {
-        this.DefaultContext = null;
+        this.TemplateContext = null;
         this.ResetEditContextToDefault();
     }
 
 	private void ResetEditContextToDefault() {
-        if( this.DefaultContext is null ) {
+        if( this.TemplateContext is null ) {
             this.EditContext_Id = null;
             this.EditContext_Name = null;
             this.EditContext_Description = null;
             this.EditContext_Entries = [];
         } else {
-            this.EditContext_Id = this.DefaultContext.Id;
-            this.EditContext_Name = this.DefaultContext.Name;
-            this.EditContext_Description = this.DefaultContext.Description;
-            this.EditContext_Entries = this.DefaultContext.Entries
+            this.EditContext_Id = this.TemplateContext.Id;
+            this.EditContext_Name = this.TemplateContext.Name;
+            this.EditContext_Description = this.TemplateContext.Description;
+            this.EditContext_Entries = this.TemplateContext.Entries
                 .Select( e => e.Clone() )
                 .ToList();
         }
@@ -175,7 +175,7 @@ public partial class PostsContextEditor : ComponentBase {
             await this.PostsContextsDataSrc.UpdateForCurrentUser_Async( raw.ToPrototype() );
         }
 
-        this.DefaultContext = await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(
+        this.TemplateContext = await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(
             termsDataSrc: this.TermsDataSrc,
             ctxRaw: raw
         );

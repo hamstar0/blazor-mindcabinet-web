@@ -8,20 +8,20 @@
 
 
 
-<div component-name="PostsContextPicker"
+<div component-name="CurrentPostsContextPicker"
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
             title=@this.Description
-            @onfocusin=@(e => this.IsSeachFocused = true)
-            @onfocusout=@(e => this.IsSeachFocused = false)
+            @onfocusin=@(e => this.IsSearchFocused = true)
+            @onfocusout=@(e => this.IsSearchFocused = false)
             @onkeydown=@this.OnInputKey_UI_Async
             @bind:event="oninput"
             @bind:get=@this.Value
             @bind:set=@this.OnInputSearch_UI_Async />
     <div>
         <div style="position: absolute; display: inline-block;">
-            @* @if( (this.IsSeachFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@
+            @* @if( (this.IsSearchFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@
             @if( this.SearchOptions.Count() > 0 ) {
                 <MultiPostsContextRender
                         Contexts=@this.SearchOptions
@@ -45,7 +45,7 @@ await Task.CompletedTask;
         if( this.Disabled ) {
             return;
         }
-        if( !this.IsSeachFocused ) {
+        if( !this.IsSearchFocused ) {
             return;
         }
 

@@ -14,7 +14,7 @@ public partial class PostsContextRender : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_PostsContext UserPostsContextsData { get; set; } = null!;
+    private ClientDataAccess_PostsContext UserPostsContextsDataSrc { get; set; } = null!;
 
 
     [Parameter]

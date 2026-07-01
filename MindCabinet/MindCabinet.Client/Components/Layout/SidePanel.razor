@@ -6,10 +6,10 @@
 
 
 @if( this.MySessionMngr.UserId is not null ) {
-    <PostsContextPicker
+    <CurrentPostsContextPicker
         Description="Select the current 'context'"
-        InitialContexts=@this.Contexts_Cache
-        InitialCurrentContext=@this.MySessionMngr.GetCurrentContext()
+        InitialSearchOptionsCache=@this.Contexts_Cache
+        InitialSelectedSearchOption=@this.MySessionMngr.GetCurrentContext()
         OnContextPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />
     <PostsContextEditor

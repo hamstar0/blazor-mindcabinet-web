@@ -37,11 +37,13 @@ v0.7
 -	Implement posts per page adjuster
 -	Save tab state with user session data
 -	Implement tabs of posts views
+	-	Define tabs data structure
+	-	Define tabs encapsulation component
+
+
 v0.6
 -	@Test features
 -	Detect changes to context name in context editor
-
-
 -	Debug failure to display list of posts
 -	Show tags' contexts in tag lists
 -	Clear create post fields upon submit (in particular tags entry and list)

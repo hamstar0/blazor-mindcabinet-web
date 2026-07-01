@@ -9,9 +9,9 @@ using MindCabinet.Shared.DataObjects.Term;
 namespace MindCabinet.Client.Components.Application.Editors;
 
 
-public partial class SimplePostEditor : ComponentBase {
+public partial class SimplePostCreationEditor : ComponentBase {
     [Inject]
-    private ClientDataAccess_SimplePosts SimplePostsData { get; set; } = null!;
+    private ClientDataAccess_SimplePosts SimplePostsDataSrc { get; set; } = null!;
 
     //[Inject]
     //private LocalData LocalData { get; set; } = null!;
@@ -68,7 +68,7 @@ public partial class SimplePostEditor : ComponentBase {
 
         this.Reset();
         
-        SimplePostObject.Raw post = await this.SimplePostsData.Create_Async(
+        SimplePostObject.Raw post = await this.SimplePostsDataSrc.Create_Async(
             new ClientDataAccess_SimplePosts.IAPI.Create_Params {
                 Body = text,
                 TermIds = termIds
