@@ -18,7 +18,7 @@ public partial class UserRegistrationForm : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_SimpleUsers SimpleUsersData {get; set; } = null!;
+    private ClientDataAccess_SimpleUsers SimpleUsersDataSrc {get; set; } = null!;
 
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
@@ -74,7 +74,7 @@ public partial class UserRegistrationForm : ComponentBase {
             return (false, "Invalid input");
         }
 
-        ClientDataAccess_SimpleUsers.IAPI.Create_Return ret = await this.SimpleUsersData.Create_Async(
+        ClientDataAccess_SimpleUsers.IAPI.Create_Return ret = await this.SimpleUsersDataSrc.Create_Async(
             new ClientDataAccess_SimpleUsers.IAPI.Create_Params { 
                 Name = userName,
                 Email = email,

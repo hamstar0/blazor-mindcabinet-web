@@ -1,0 +1,24 @@
+﻿@using MindCabinet.Shared.Utility;
+
+
+<div class="tab-header-container">
+    @for( int idx=0; idx<this.TabEntries.Count; idx++ ) {
+        int i = idx;
+        <div class="tab-header" @onclick=@(() => this.ChangeTab_UI(i))>
+            @this.TabEntries[i].Header
+        </div>
+    }
+</div>
+<div class="tab-body-container">
+    @this.TabEntries[ this.CurrentTabIndex ].Content
+</div>
+
+
+
+@code {
+    public void ChangeTab_UI( int index ) {
+        this.CurrentTabIndex = index;
+
+        this.StateHasChanged();
+    }
+}

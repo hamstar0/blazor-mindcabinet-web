@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Components.Application.Editors;
 public partial class TermSetEditor : ComponentBase {
     [Parameter]
     public List<TermObject> InitialTerms { get; set; } = new List<TermObject>();
-    private List<TermObject> CurrentInitialTerms = new List<TermObject>();
+    private List<TermObject> InitialTermsSnapshot = new List<TermObject>();
 
     private List<TermObject> _Terms = new List<TermObject>();
     public IReadOnlyList<TermObject> Terms => this._Terms.AsReadOnly();
@@ -46,8 +46,8 @@ public partial class TermSetEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
 
-        if( this.CurrentInitialTerms != this.InitialTerms ) {
-            this.CurrentInitialTerms = this.InitialTerms;
+        if( this.InitialTermsSnapshot != this.InitialTerms ) {
+            this.InitialTermsSnapshot = this.InitialTerms;
 
             this._Terms = new List<TermObject>( this.InitialTerms );
         }

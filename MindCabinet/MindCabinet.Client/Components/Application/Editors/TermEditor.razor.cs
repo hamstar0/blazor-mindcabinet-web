@@ -18,7 +18,7 @@ public partial class TermEditor : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    public ClientDataAccess_Terms TermsData { get; set; } = null!;
+    public ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
 
     [Parameter]
@@ -77,11 +77,11 @@ public partial class TermEditor : ComponentBase {
     }
 
     private async Task<bool> SubmitNewTerm_Async( string termText, TermObject? contextTerm ) {
-        ClientDataAccess_Terms.IAPI.Create_Return newTermRet = await this.TermsData.Create_Async(
+        ClientDataAccess_Terms.IAPI.Create_Return newTermRet = await this.TermsDataSrc.Create_Async(
             new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
-        TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsData, newTermRet.TermRaw );
+        TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsDataSrc, newTermRet.TermRaw );
 
         await this.OnTermConfirm_Async( newTerm, newTermRet.IsAdded );
 
@@ -97,13 +97,13 @@ public partial class TermEditor : ComponentBase {
             return;
         }
 
-        IEnumerable<TermObject.Raw> termsRaw = (await this.TermsData.GetByCriteria_Async(
+        IEnumerable<TermObject.Raw> termsRaw = (await this.TermsDataSrc.GetByCriteria_Async(
             new ClientDataAccess_Terms.IAPI.GetByCriteria_Params { TermPattern = termText!, ContextTermId = null, ContextTermPattern = null }
         )).Terms;
 
         IEnumerable<Task<TermObject>> termTasks = termsRaw.Select(
             t => t.ToDataObject_Async(
-                async t => (await this.TermsData.GetByIds_Async( new TermId[] { t } ))
+                async t => (await this.TermsDataSrc.GetByIds_Async( new TermId[] { t } ))
                     .Terms
                     .First()
             )

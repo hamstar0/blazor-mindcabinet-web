@@ -13,9 +13,6 @@ public partial class MainPanel : ComponentBase {
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
-    //[Inject]
-    //public LocalData LocalData { get; set; } = null!;
-
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -25,7 +22,7 @@ public partial class MainPanel : ComponentBase {
     public string? Source { get; set; } = null;
 
 
-    private ContextPostsBrowser? BrowserComponent = null!;
+    private PostsBrowser? BrowserComponent = null!;
 
 
 

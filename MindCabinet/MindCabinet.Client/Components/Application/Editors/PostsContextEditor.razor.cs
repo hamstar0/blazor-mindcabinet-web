@@ -15,9 +15,6 @@ public partial class PostsContextEditor : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 
-    //[Inject]
-    //private ClientDbAccess DbAccess { get; set; } = null!;
-
     [Inject]
     private LocalClientSessionManager SessionManager { get; set; } = null!;
 

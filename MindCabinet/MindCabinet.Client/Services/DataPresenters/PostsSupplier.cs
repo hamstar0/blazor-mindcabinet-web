@@ -33,14 +33,12 @@ public partial class PostsSupplier(
 
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetCurrentContextPosts_Async(
+    public async Task<IEnumerable<SimplePostObject>> GetContextPosts_Async(
                 ClientDataAccess_Terms termsDataSrc,
+                PostsContextObject postsContext,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
-        PostsContextObject? postsContext = this.MySessionMngr.GetCurrentContext();
-        if( postsContext is null ) {
-            return [];
-        }
+        // PostsContextObject? postsContext = this.MySessionMngr.GetCurrentContext();
 
         IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsDataSrc.GetByCriteriaForCurrentUser_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
@@ -75,17 +73,15 @@ public partial class PostsSupplier(
             .OrderBy( post => postPriorities[post.Id] );
     }
 
-    public async Task<int> GetCurrentContextPostCount_Async(
+    public async Task<int> GetContextPostCount_Async(
+                PostsContextObject postsContext,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
-        PostsContextObject? currCtx = this.MySessionMngr.GetCurrentContext();
-        if( currCtx is null ) {
-            return 0;
-        }
+        // PostsContextObject? currCtx = this.MySessionMngr.GetCurrentContext();
 
         int totalPosts = await this.PrioritizedPostsDataSrc.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
-                postsContextId: currCtx.Id,
+                postsContextId: postsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: this.SortAscendingByDate,

@@ -16,7 +16,7 @@ public partial class UserLoginForm : ComponentBase {
 
 
     [Inject]
-    private ClientDataAccess_SimpleUsers UsersData { get; set; } = null!;
+    private ClientDataAccess_SimpleUsers UsersDataSrc { get; set; } = null!;
 
 
     private string MyModalId => "UserLoginForm_"+this.Id;    //Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -53,7 +53,7 @@ public partial class UserLoginForm : ComponentBase {
 
 
     private async Task<(bool success, string status)> Submit_Async( string userName, string password ) {
-        ClientDataAccess_SimpleUsers.IAPI.Login_Return reply = await this.UsersData.Login_Async(
+        ClientDataAccess_SimpleUsers.IAPI.Login_Return reply = await this.UsersDataSrc.Login_Async(
             new ClientDataAccess_SimpleUsers.IAPI.Login_Params { 
                 Name = userName,
                 Password = password

@@ -1,0 +1,29 @@
+﻿@using System.Text.Json;
+@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
+
+
+
+<div component-name="@nameof(CurrentPostsBrowserTabs)" class=@this.AddedClasses>
+    <Tabs @ref=@this.Tabs>
+        @{
+            this.Tabs.TabEntries = new List<(RenderFragment Header, RenderFragment Content)> {
+                (
+                    Header: @<div>Posts</div>,
+                    Content: @<PostsBrowser />
+                )
+            };
+        }
+    </Tabs>
+</div>
+
+
+
+@code {
+    private Tabs Tabs = null!;
+}

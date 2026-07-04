@@ -74,8 +74,9 @@ public partial class PostsBrowser : ComponentBase {
             return [];
         }
 
-        IEnumerable<SimplePostObject> posts = await this.PostsData.GetCurrentContextPosts_Async(
+        IEnumerable<SimplePostObject> posts = await this.PostsData.GetContextPosts_Async(
             termsDataSrc: this.TermsDataSrc,
+            postsContext: context,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
@@ -85,7 +86,13 @@ public partial class PostsBrowser : ComponentBase {
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        int totalPosts = await this.PostsData.GetCurrentContextPostCount_Async(
+        PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
+        if( context is null ) {
+            return (0, 0);
+        }
+
+        int totalPosts = await this.PostsData.GetContextPostCount_Async(
+            postsContext: context,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );

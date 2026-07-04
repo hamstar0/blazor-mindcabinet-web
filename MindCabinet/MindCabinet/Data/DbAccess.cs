@@ -2,7 +2,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Dapper;
-using static MindCabinet.Program;
 using MindCabinet.Data.DataAccess;
 
 

@@ -16,13 +16,13 @@ public partial class TermSearch : ComponentBase {
     //private IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_Terms TermsData { get; set; } = null!;
+    private ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
+    private ClientDataAccess_UserTermFavorites UserTermFavoritesDataSrc { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserTermsHistory UserTermsHistoryData { get; set; } = null!;
+    private ClientDataAccess_UserTermsHistory UserTermsHistoryDataSrc { get; set; } = null!;
 
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
@@ -71,23 +71,23 @@ public partial class TermSearch : ComponentBase {
 
     private async Task InitializeTermOptions_Async() {
         IEnumerable<UserTermFavoriteObject.Raw> favTerms
-            = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
+            = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
         IEnumerable<UserTermHistoryObject.Raw> histTerms
-            = await this.UserTermsHistoryData.GetHistTermsForCurrentUser_Async();
+            = await this.UserTermsHistoryDataSrc.GetHistTermsForCurrentUser_Async();
 
         this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ConvertRawsToClientObjects_Async(
-            this.TermsData,
+            this.TermsDataSrc,
             favTerms.ToArray()
         );
         this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ConvertRawsToClientObjects_Async(
-            this.TermsData,
+            this.TermsDataSrc,
             histTerms.ToArray()
         );
     }
 
 
     private async Task SearchTerms_Async( string termText ) {
-        IEnumerable<TermObject.Raw> rawTerms = (await this.TermsData.GetByCriteria_Async(
+        IEnumerable<TermObject.Raw> rawTerms = (await this.TermsDataSrc.GetByCriteria_Async(
             new ClientDataAccess_Terms.IAPI.GetByCriteria_Params {
                 TermPattern = termText,
                 ContextTermId = null,
@@ -96,7 +96,7 @@ public partial class TermSearch : ComponentBase {
         )).Terms;
 
         this.SearchOptions = (await ClientDataAccess_Terms.ConvertRawsToDataObjects_Async(
-            this.TermsData,
+            this.TermsDataSrc,
             rawTerms.ToArray()
         )).ToList();
     }

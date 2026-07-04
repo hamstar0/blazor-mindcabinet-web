@@ -15,7 +15,7 @@ public partial class TermRender : ComponentBase {
     //public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserTermFavorites UserTermFavoritesData { get; set; } = null!;
+    private ClientDataAccess_UserTermFavorites UserTermFavoritesDataSrc { get; set; } = null!;
 
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
@@ -49,7 +49,7 @@ public partial class TermRender : ComponentBase {
         }
 
         // TODO: Add caching
-        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
         return termRaws.Any( t => t.FavTermId == this.Term.Id );
     }
 
@@ -59,14 +59,14 @@ public partial class TermRender : ComponentBase {
             return;
         }
 
-        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesData.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
 
         if( termRaws.Any(t => t.FavTermId == this.Term.Id) ) {
-            await this.UserTermFavoritesData.RemoveTermsForCurrentUser_Async(
+            await this.UserTermFavoritesDataSrc.RemoveTermsForCurrentUser_Async(
                 new ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
             );
         } else {
-            await this.UserTermFavoritesData.AddTermsForCurrentUser_Async(
+            await this.UserTermFavoritesDataSrc.AddTermsForCurrentUser_Async(
                 new ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
             );
         }

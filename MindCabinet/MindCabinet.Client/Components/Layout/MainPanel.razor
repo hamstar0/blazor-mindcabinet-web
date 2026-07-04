@@ -10,8 +10,9 @@
 
 <div component-name="Main" class=@this.AddedClasses>
     @if( this.MySessionMngr.UserName is not null ) {
-	    <ContextPostsBrowser @ref=this.BrowserComponent Id="MainPostsBrowser" />
-	    <SimplePostEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
+        <h3>Browse Posts</h3>
+	    <PostsBrowser @ref=this.BrowserComponent Id="MainPostsBrowser" />
+	    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
     } else {
         <span>...</span>
     }

@@ -13,9 +13,6 @@ public partial class SimplePostCreationEditor : ComponentBase {
     [Inject]
     private ClientDataAccess_SimplePosts SimplePostsDataSrc { get; set; } = null!;
 
-    //[Inject]
-    //private LocalData LocalData { get; set; } = null!;
-
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;

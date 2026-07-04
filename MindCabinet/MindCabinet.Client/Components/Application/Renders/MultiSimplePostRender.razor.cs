@@ -10,9 +10,6 @@ public partial class MultiSimplePostRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
-    //[Inject]
-    //public ClientDataAccess Data { get; set; } = null!;
-
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
