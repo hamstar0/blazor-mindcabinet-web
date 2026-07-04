@@ -8,10 +8,10 @@
 @using MindCabinet.Shared.DataObjects;
 
 
-<div component-name="Main" class=@this.AddedClasses>
+<div component-name="@nameof(MainPanel)" class=@this.AddedClasses>
     @if( this.MySessionMngr.UserName is not null ) {
         <h3>Browse Posts</h3>
-	    <PostsBrowser @ref=this.BrowserComponent Id="MainPostsBrowser" />
+	    <CurrentPostsBrowserTabs @ref=this.TabbedPostsBrowserComponent Id="MainPostsBrowser" />
 	    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
     } else {
         <span>...</span>
@@ -32,8 +32,8 @@
 //int posts = await this.Data.GetPostCountByCriteria_Async( search );
 //Console.WriteLine( "OnPostSubmit_UI_Async "+posts+", "+search.ToString() );
 
-        if( this.BrowserComponent is not null ) {
-            await this.BrowserComponent.RefreshPosts_Async();
+        if( this.TabbedPostsBrowserComponent is not null ) {
+            await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
         }
     }
 }

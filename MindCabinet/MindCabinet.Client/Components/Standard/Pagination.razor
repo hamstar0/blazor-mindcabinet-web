@@ -1,7 +1,7 @@
 ﻿@using MindCabinet.Client.Components.Application.Renders;
 
 
-<div component-name="Pagination" class=@this.AddedClasses>
+<div component-name="@nameof(Pagination)" class=@this.AddedClasses>
     @* Info: c @this.CurrentPage, t @this.TotalPages, m @this.MaxPagesToDisplay :  *@
     @{
         int totalPagesToDisplay = this.TotalPages > 0 ? this.TotalPages : 1;

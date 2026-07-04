@@ -35,12 +35,13 @@ v0.7
 -	Implement tag removals for posts
 -	Where are favorite tags visible?
 -	Implement posts per page adjuster
--	Save tab state with user session data
 -	Implement tabs of posts views
+	-	Implement tab closing
+	-	Set context picker to deploy new tab
+
+
 	-	Define posts browser tabs component
 	-	Implement multiplexed posts data sources
-
-
 	-	Define tabs component
 v0.6
 -	@Test features

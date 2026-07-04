@@ -3,7 +3,7 @@
 
 
 
-<div component-name="MultiTermRender" class="basic @(this.AddedClasses ?? "")"
+<div component-name="@nameof(MultiTermRender)" class="basic @(this.AddedClasses ?? "")"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
     @foreach( TermObject term in this.Terms ) {

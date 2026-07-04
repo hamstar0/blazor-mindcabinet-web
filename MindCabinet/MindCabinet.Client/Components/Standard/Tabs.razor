@@ -1,10 +1,10 @@
 ﻿@using MindCabinet.Shared.Utility;
 
 
-<div class="tab-header-container">
-    @for( int idx=0; idx<this.TabEntries.Count; idx++ ) {
-        int i = idx;
-        <div class="tab-header" @onclick=@(() => this.ChangeTab_UI(i))>
+<div component-name="@nameof(Tabs)" class="tab-header-container">
+    @for( int i=0; i<this.TabEntries.Count; i++ ) {
+        int idx = i;
+        <div class="tab-header" @onclick=@(() => this.ChangeTab_UI(idx))>
             @this.TabEntries[i].Header
         </div>
     }

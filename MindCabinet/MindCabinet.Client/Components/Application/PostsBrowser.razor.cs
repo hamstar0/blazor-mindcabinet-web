@@ -35,6 +35,9 @@ public partial class PostsBrowser : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
+    [Parameter, EditorRequired]
+    public PostsContextObject PostsContext { get; set; }
+
     [Parameter]
     public int MaxPagesToDisplay { get; set; } = 10;
 
@@ -69,14 +72,14 @@ public partial class PostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() {
-        PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
-        if( context is null ) {
-            return [];
-        }
+        // PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
+        // if( context is null ) {
+        //     return [];
+        // }
 
         IEnumerable<SimplePostObject> posts = await this.PostsData.GetContextPosts_Async(
             termsDataSrc: this.TermsDataSrc,
-            postsContext: context,
+            postsContext: this.PostsContext,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
@@ -86,13 +89,13 @@ public partial class PostsBrowser : ComponentBase {
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
-        if( context is null ) {
-            return (0, 0);
-        }
+        // PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
+        // if( context is null ) {
+        //     return (0, 0);
+        // }
 
         int totalPosts = await this.PostsData.GetContextPostCount_Async(
-            postsContext: context,
+            postsContext: this.PostsContext,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );

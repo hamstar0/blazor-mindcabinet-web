@@ -1,5 +1,5 @@
-﻿<div component-name="ToggleSwitch" class=@this.AddedClasses>
-    <label component-name="ToggleSwitch" class=@(this.Disabled ? "disabled" : null)>
+﻿<div component-name="@nameof(ToggleSwitch)" class=@this.AddedClasses>
+    <label class=@(this.Disabled ? "disabled" : null)>
         @if( this.Label is not null ) {
             <div style="display: inline-block;">@this.Label</div>
         }

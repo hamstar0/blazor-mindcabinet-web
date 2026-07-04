@@ -4,7 +4,7 @@
 
 
 
-<div component-name="PostsContextRender"
+<div component-name="@nameof(PostsContextRender)"
             class="basic @(this.AddedClasses ?? "")"
             @onclick=@this.OnClick_UI_Async>
     <Tooltip Enabled=@(() => !string.IsNullOrEmpty(this.Context.Description))>
