@@ -38,7 +38,10 @@ public partial class SidePanel {
 	protected override async Task OnInitializedAsync() {
 		await base.OnInitializedAsync();
 
-        await this.MySessionMngr.RegisterPostsContextEvent_Async( "Sidebar", async ctxMaybe => this.StateHasChanged() );
+        await this.MySessionMngr.RegisterPostsContextEvent_Async(
+            name: "Sidebar",
+            callback: async ctxMaybe => this.StateHasChanged()
+        );
 	}
 
 	protected override async Task OnParametersSetAsync() {

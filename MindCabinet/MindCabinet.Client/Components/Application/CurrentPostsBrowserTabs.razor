@@ -11,39 +11,36 @@
 
 
 <div component-name="@nameof(CurrentPostsBrowserTabs)" class=@this.AddedClasses>
-    <Tabs @ref=@this.Tabs>
-        @{
-            for( int i=0; i<this.Contexts.Length; i++ ) {
-                PostsContextObject context = this.Contexts[i];
-
-                this.Tabs.TabEntries.Add( (
-                    Header: @<div>'@(context.Name)' posts</div>,
-                    Content: @<PostsBrowser
-                            @ref=@this._PostsBrowsersByTabIndex[i]
-                            Id=@($"{this.Id}_{context.Id}")
-                            PostsContext=context />
-                ) );
-            }
-        }
-    </Tabs>
+    <Tabs @ref=@this.Tabs InitialTabEntries=@this.GenerateTabsAndStoreBrowsersFromDataSuppliers() />
 </div>
 
 
 
 @code {
-    private Tabs Tabs = null!;
+    private IEnumerable<(RenderFragment Header, RenderFragment Content)> GenerateTabsAndStoreBrowsersFromDataSuppliers() {
+        this._PostsBrowsersByTabIndex.Clear();
 
+        foreach( PostsContextObject ctx in this.TabsDataSuppliers ) {
+            yield return this.GenerateTab_Blazor( ctx, out PostsBrowser browser );
 
-    private Dictionary<int, PostsBrowser> _PostsBrowsersByTabIndex = new();
-
-
-
-    public async Task RefreshBrowsers_Async() {
-        for( int i=0; i<this.Contexts.Length; i++ ) {
-            PostsBrowser tabContent = this._PostsBrowsersByTabIndex[i];
-            await tabContent.RefreshPosts_Async();
+            this._PostsBrowsersByTabIndex.Add( browser );
         }
+    }
 
-        this.StateHasChanged();
+
+     private PostsBrowser? _TempPostsBrowserRef;    // yuck!
+    private (RenderFragment Header, RenderFragment Content) GenerateTab_Blazor(
+                PostsContextObject ctx,
+                out PostsBrowser postsBrowser ) {
+        (RenderFragment Header, RenderFragment Content) ret = (
+            Header: @<div>'@(ctx.Name)' posts</div>,
+            Content: @<PostsBrowser
+                    @ref=this._TempPostsBrowserRef
+                    Id=@($"{this.Id}_{ctx.Id}")
+                    PostsContext=ctx />
+        );
+
+        postsBrowser = this._TempPostsBrowserRef!;
+        return ret;
     }
 }

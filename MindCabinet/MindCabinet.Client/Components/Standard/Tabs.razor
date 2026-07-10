@@ -10,13 +10,24 @@
     }
 </div>
 <div class="tab-body-container">
-    @this.TabEntries[ this.CurrentTabIndex ].Content
+    @this.ChildContent
+    @if( this.TabEntries.Count > this.CurrentTabIndex ) {
+        @this.TabEntries[ this.CurrentTabIndex ].Content
+    }
 </div>
 
 
 
 @code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }   // obligatory?
+
+
+
     public void ChangeTab_UI( int index ) {
+        if( index < 0 || index >= this.TabEntries.Count ) {
+            throw new ArgumentOutOfRangeException( nameof(index), $"Index {index} is out of range for TabEntries (count: {this.TabEntries.Count})" );
+        }
         this.CurrentTabIndex = index;
 
         this.StateHasChanged();

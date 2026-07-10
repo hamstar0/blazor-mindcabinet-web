@@ -16,6 +16,7 @@ v1
 -	Implement email validation on registration
 -	Add manual-unlocked hard limit to API upload content per user (1 MB?)
 -	Ensure (again) user is validated before using write or sensitive read API calls (including user API itself)
+-	Implement posts per page adjuster
 v0.9
 -	Apply mobile device layout accommodations
 -	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
@@ -34,12 +35,12 @@ v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
 -	Where are favorite tags visible?
--	Implement posts per page adjuster
 -	Implement tabs of posts views
 	-	Implement tab closing
+
+
+	-	@Test
 	-	Set context picker to deploy new tab
-
-
 	-	Define posts browser tabs component
 	-	Implement multiplexed posts data sources
 	-	Define tabs component

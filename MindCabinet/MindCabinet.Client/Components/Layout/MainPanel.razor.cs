@@ -36,9 +36,10 @@ public partial class MainPanel : ComponentBase {
 
         await this.MySessionMngr.RegisterPostsContextEvent_Async(
             name: "MainPanel",
-            callback: async (_) => {
-                if( this.TabbedPostsBrowserComponent is not null ) {
-                    await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
+            callback: async ( ctx ) => {
+                if( this.TabbedPostsBrowserComponent is not null && ctx is not null ) {
+                    //await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
+                    this.TabbedPostsBrowserComponent.NewTabAtCurrentIndex( ctx );
                 }
             }
         );

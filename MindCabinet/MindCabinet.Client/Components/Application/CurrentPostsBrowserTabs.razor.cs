@@ -22,6 +22,12 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
     public LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
 
+    private Tabs Tabs = null!;
+
+    private List<PostsBrowser> _PostsBrowsersByTabIndex = new();
+
+
+
     [Parameter, EditorRequired]
     public string Id { get; set; } = null!;
     
@@ -29,17 +35,43 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
 
-    private PostsContextObject[] Contexts = [];
+    private List<PostsContextObject> TabsDataSuppliers = new();
 
 
 
-    protected override async Task OnInitializedAsync() {
-        PostsContextObject? ctx = this.MySessionMngr.GetCurrentContext();
 
-        if( ctx is not null ) {
-            this.Contexts = [ ctx ];
-
-            this.StateHasChanged();
+    public async Task RefreshBrowsers_Async() {
+        foreach( PostsBrowser browser in this._PostsBrowsersByTabIndex ) {
+            await browser.RefreshPosts_Async();
         }
+
+        this.StateHasChanged();
+    }
+
+
+    public void NewTabAtCurrentIndex( PostsContextObject ctx ) {
+        if( this.Tabs is null ) {
+            this.TabsDataSuppliers.Insert( 0, ctx );
+
+            return;
+        }
+        
+        this.TabsDataSuppliers.Insert( this.Tabs.CurrentTabIndex, ctx );
+
+        //
+
+        PostsBrowser browser;
+        (RenderFragment header, RenderFragment content) = this.GenerateTab_Blazor(
+            ctx: ctx,
+            postsBrowser: out browser
+        );
+
+        this.Tabs.InsertTab( header, content, this.Tabs.CurrentTabIndex );
+
+        //
+
+        this._PostsBrowsersByTabIndex.Insert( this.Tabs.CurrentTabIndex, browser );
+
+        this.StateHasChanged();
     }
 }

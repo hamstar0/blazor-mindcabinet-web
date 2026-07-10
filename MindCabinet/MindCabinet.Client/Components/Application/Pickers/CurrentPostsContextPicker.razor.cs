@@ -93,6 +93,8 @@ public partial class CurrentPostsContextPicker : ComponentBase {
         // this.SearchPosition = 0;
         this.Value = context.Name;
 
+        //await this.MySessionMngr.SetCurrentContext_Await( this.UserAppDataSrc, context );     Pick from current only
+        
         await this.OnContextPicked_Async( context );
 
         this.StateHasChanged();
