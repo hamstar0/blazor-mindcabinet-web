@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
-@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Components.Standard.Tabs2;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.PostsContext;
@@ -11,36 +11,31 @@
 
 
 <div component-name="@nameof(CurrentPostsBrowserTabs)" class=@this.AddedClasses>
-    <Tabs @ref=@this.Tabs InitialTabEntries=@this.GenerateTabsAndStoreBrowsersFromDataSuppliers() />
+    <Tabs @ref=@this.Tabs>
+        @{ this._PostsBrowsersByTabIndex.Clear(); }
+
+        @for( int i=0; i<this.TabsDataSuppliers.Count; i++ ) {
+            PostsContextObject ctx = this.TabsDataSuppliers[i];
+
+            <TabEntry>
+                <Header>
+                    <div>'@(ctx.Name)' posts</div>
+                </Header>
+                <Content>
+                    <PostsBrowser
+                        @ref=@this._TempPostsBrowserRef
+                        Id=@($"{this.Id}_{ctx.Id}")
+                        PostsContext=ctx />
+                </Content>
+            </TabEntry>
+
+            this._PostsBrowsersByTabIndex.Add( this._TempPostsBrowserRef! );
+        }
+    </Tabs>
 </div>
 
 
 
 @code {
-    private IEnumerable<(RenderFragment Header, RenderFragment Content)> GenerateTabsAndStoreBrowsersFromDataSuppliers() {
-        this._PostsBrowsersByTabIndex.Clear();
-
-        foreach( PostsContextObject ctx in this.TabsDataSuppliers ) {
-            yield return this.GenerateTab_Blazor( ctx, out PostsBrowser browser );
-
-            this._PostsBrowsersByTabIndex.Add( browser );
-        }
-    }
-
-
-     private PostsBrowser? _TempPostsBrowserRef;    // yuck!
-    private (RenderFragment Header, RenderFragment Content) GenerateTab_Blazor(
-                PostsContextObject ctx,
-                out PostsBrowser postsBrowser ) {
-        (RenderFragment Header, RenderFragment Content) ret = (
-            Header: @<div>'@(ctx.Name)' posts</div>,
-            Content: @<PostsBrowser
-                    @ref=this._TempPostsBrowserRef
-                    Id=@($"{this.Id}_{ctx.Id}")
-                    PostsContext=ctx />
-        );
-
-        postsBrowser = this._TempPostsBrowserRef!;
-        return ret;
-    }
+    private PostsBrowser? _TempPostsBrowserRef;    // yuck!
 }

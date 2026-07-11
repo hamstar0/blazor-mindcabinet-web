@@ -1,0 +1,31 @@
+﻿@using MindCabinet.Shared.Utility;
+
+
+
+@code {
+    [CascadingParameter(Name = "TabsContainer")]
+    protected Tabs TabsContainer { get; set; } = null!;
+
+    [CascadingParameter]
+    protected List<TabEntry> TabsRegistry { get; set; } = null!;
+
+    [CascadingParameter]
+    protected TabEntry? CurrentTab { get; set; } = null!;
+
+    
+    [Parameter, EditorRequired]
+    public RenderFragment? Header { get; set; }
+
+    [Parameter, EditorRequired]
+    public RenderFragment? Content { get; set; }
+
+
+
+    protected override void OnInitialized() {
+        base.OnInitialized();
+
+        this.TabsRegistry.Add( this );
+
+        this.TabsContainer.Refresh_UI();
+    }
+}

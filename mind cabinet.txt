@@ -31,14 +31,22 @@ v0.8
 -	Show user name next to Logout button
 -	Set modal dialogs to have default input focused onto when open
 -	Keep post create component fixed to the bottom
+-	Implement tabs of posts views
+	-	Moving (drag and drop)
+	-	Tab closing (button + middle click)
 v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
--	Where are favorite tags visible?
--	Implement tabs of posts views
-	-	Implement tab closing
+-	Implement terms editor (included favorites editor, history view)
+-	Add main view editor tabs
+	-	Tabs
+		-	Terms editor
+		-	Posts views
+	-	Implement tabs functionality
 
 
+-	Replace tabs with new tabs concept from scratch
+-	Implement tabs of posts views (basic)
 	-	@Test
 	-	Set context picker to deploy new tab
 	-	Define posts browser tabs component
