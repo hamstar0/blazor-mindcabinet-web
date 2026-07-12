@@ -154,6 +154,10 @@ public partial class PostsContextEditor : ComponentBase {
     
 
     private async Task UpdateOrCreate_Async() {
+        if( this.SessionManager.UserId is null || this.SessionManager.UserId == 0 ) {
+            throw new Exception( "No user available. "+this.SessionManager.UserId );
+        }
+
         bool isUpdate = this.EditContext_Id is not null;
 
         PostsContextObject.Raw raw = PostsContextObject.CreateRaw(

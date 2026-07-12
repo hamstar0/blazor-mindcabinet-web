@@ -48,6 +48,9 @@ public partial class PostsContextObject {
             if( !this.IsValid(validateId) ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
+            if( this.Owner is null || this.Owner == 0 ) {
+                throw new Exception( "Invalid Owner "+this.Owner );
+            }
 
             foreach( PostsContextTermEntryObject.Prototype entry in this.Entries ) {
                 if( entry.PostsContextId != this.Id ) {

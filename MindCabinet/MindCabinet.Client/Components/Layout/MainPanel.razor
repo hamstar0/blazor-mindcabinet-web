@@ -1,21 +1,42 @@
 ﻿@using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application;
 @using MindCabinet.Client.Components.Application.Editors;
-@using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Components.Standard.Tabs;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
 
 
 <div component-name="@nameof(MainPanel)" class=@this.AddedClasses>
-    @if( this.MySessionMngr.UserName is not null ) {
-        <h3>Browse Posts</h3>
-	    <CurrentPostsBrowserTabs @ref=this.TabbedPostsBrowserComponent Id="MainPostsBrowser" />
-	    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
-    } else {
-        <span>...</span>
-    }
+    <Tabs>
+        <TabEntry>
+            <Header>
+                Posts
+            </Header>
+            <Content>
+                @if( this.MySessionMngr.UserName is not null ) {
+                    <h3>Browse Posts</h3>
+                    <CurrentPostsBrowserTabs
+                            @ref=this.TabbedPostsBrowserComponent
+                            Id="MainPostsBrowser"
+                            TabsData=@this.TabsData />
+                    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
+                } else {
+                    <span>...</span>
+                }
+            </Content>
+        </TabEntry>
+        <TabEntry>
+            <Header>
+                Tags Editor
+            </Header>
+            <Content>
+                ...
+            </Content>
+        </TabEntry>
+    </Tabs>
 </div>
 
 

@@ -40,7 +40,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        if( ServerDataAccess_PostsContexts.Cache_ById.TryGet(postsContextId, out var cached) ) {
+        if( Cache_ById.TryGet(postsContextId, out var cached) ) {
             return cached;
         }
 
@@ -63,7 +63,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        ServerDataAccess_PostsContexts.Cache_ById.Set(
+        Cache_ById.Set(
             key: raw.Id,
             value: raw,
             expiry: this.ServerSettings.CacheExpirationDuration
@@ -88,11 +88,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         var sqlBuilder = new SimpleSqlSelectBuilder(
             tableName: $"{TableName} AS MyContext",
-            columnNames: new[] {
-                $"MyContext.{TableColumn_Id}",
-                $"MyContext.{TableColumn_Name}",
-                $"MyContext.{TableColumn_Description}"
-            }
+            columnNames: TableColumns.Select( col => $"MyContext.{col}" )
         );
         var sqlParams1 = new Dictionary<string, object>();
 
@@ -146,7 +142,7 @@ public partial class ServerDataAccess_PostsContexts(
 
                 //
 
-                ServerDataAccess_PostsContexts.Cache_ById.Set(
+                Cache_ById.Set(
                     key: rawCtx.Id,
                     value: rawCtx,
                     expiry: this.ServerSettings.CacheExpirationDuration
@@ -175,9 +171,13 @@ public partial class ServerDataAccess_PostsContexts(
                 )
             );
         }
+        if( !PostsContextObject.ValidateOwner(owner) ) {
+            throw new ArgumentException( "PostsContextObject.Prototype owner is not valid." );
+        }
 
         long postsContextIdL = await dbCon.ExecuteScalarAsync<long>(
-            $@"INSERT INTO {TableName} ({TableColumn_Name}, {TableColumn_Description}, {TableColumn_Owner})
+            $@"INSERT INTO {TableName}
+                ({TableColumn_Name}, {TableColumn_Description}, {TableColumn_Owner})
                 VALUES (@Name, @Description, @Owner);
             SELECT LAST_INSERT_ID();",
             new {
@@ -204,7 +204,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        ServerDataAccess_PostsContexts.Cache_ById.Set(
+        Cache_ById.Set(
             key: postsContextId,
             value: PostsContextObject.CreateRaw(
                 id: postsContextId,
@@ -233,7 +233,7 @@ public partial class ServerDataAccess_PostsContexts(
             throw new ArgumentException( "PostsContextObject.Prototype Name is not valid." );
         }
         if( !PostsContextObject.ValidateOwner(parameters.Owner ?? 0) ) {
-            throw new ArgumentException( "PostsContextObject.Prototype Name is not valid." );
+            throw new ArgumentException( "PostsContextObject.Prototype Owner is not valid." );
         }
 
         await dbCon.ExecuteAsync(
@@ -266,7 +266,7 @@ public partial class ServerDataAccess_PostsContexts(
 
         //
 
-        ServerDataAccess_PostsContexts.Cache_ById.Set(
+        Cache_ById.Set(
             key: parameters.Id.Value,
             value: PostsContextObject.CreateRaw(
                 id: parameters.Id.Value,

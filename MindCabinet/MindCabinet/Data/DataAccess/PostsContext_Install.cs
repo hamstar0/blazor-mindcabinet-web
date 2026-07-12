@@ -19,6 +19,12 @@ public partial class ServerDataAccess_PostsContexts {
     public const string TableColumn_Owner = "Owner";
     public const string TableColumn_Name = "Name";
     public const string TableColumn_Description = "Description";
+    public readonly string[] TableColumns = new string[] {
+        TableColumn_Id,
+        TableColumn_Owner,
+        TableColumn_Name,
+        TableColumn_Description
+    };
 
 
 

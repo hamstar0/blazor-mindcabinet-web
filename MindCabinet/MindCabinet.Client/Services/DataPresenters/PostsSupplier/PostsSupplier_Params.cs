@@ -14,6 +14,8 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 
 public partial class PostsSupplier {
+    public PostsContextObject GetPostsContext() => this.PostsContext;
+
     public int GetCurrentPage() => this.CurrentPage;
     public void SetCurrentPage( int page ) => this.CurrentPage = page;
 

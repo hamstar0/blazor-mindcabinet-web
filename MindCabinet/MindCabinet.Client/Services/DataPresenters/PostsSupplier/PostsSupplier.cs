@@ -14,15 +14,18 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 
 public partial class PostsSupplier(
-                ILogger<PostsSupplier> logger,
+                ILogger logger,
                 LocalClientSessionManager mySessionMngr,
-                ClientDataAccess_PrioritizedPosts postsDataSrc
-            ) : IClientDataProcessors {
-    private ILogger<PostsSupplier> Logger = logger;
+                ClientDataAccess_PrioritizedPosts postsDataSrc,
+                PostsContextObject postsContext
+            ) {
+    private ILogger Logger = logger;
 
     private LocalClientSessionManager MySessionMngr = mySessionMngr;
     
     private ClientDataAccess_PrioritizedPosts PrioritizedPostsDataSrc = postsDataSrc;
+    
+    private PostsContextObject PostsContext = postsContext;
 
 
     private int CurrentPage = 0;
@@ -33,16 +36,15 @@ public partial class PostsSupplier(
 
 
 
-    public async Task<IEnumerable<SimplePostObject>> GetContextPosts_Async(
+    public async Task<IEnumerable<SimplePostObject>> GetPosts_Async(
                 ClientDataAccess_Terms termsDataSrc,
-                PostsContextObject postsContext,
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
         // PostsContextObject? postsContext = this.MySessionMngr.GetCurrentContext();
 
         IEnumerable<SimplePostObject.Raw> postsRaw = await this.PrioritizedPostsDataSrc.GetByCriteriaForCurrentUser_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
-                postsContextId: postsContext.Id,
+                postsContextId: this.PostsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: this.SortAscendingByDate,
@@ -54,12 +56,12 @@ public partial class PostsSupplier(
         Dictionary<SimplePostId, double?> postPriorities = postsRaw
             .Select( post => new KeyValuePair<SimplePostId, double?>(
                 key: post.Id,
-                value: this.GetPriority(postsContext, post)
+                value: this.GetPriority(this.PostsContext, post)
             ) ).ToDictionary( kvp => kvp.Key, kvp => kvp.Value );
 
         if( postPriorities.ContainsValue(null) ) {
             this.Logger.LogWarning(
-                $"Some posts returned for context {postsContext.ToString()} have null priority."
+                $"Some posts returned for context {this.PostsContext.ToString()} have null priority."
             );
         }
 
@@ -73,15 +75,14 @@ public partial class PostsSupplier(
             .OrderBy( post => postPriorities[post.Id] );
     }
 
-    public async Task<int> GetContextPostCount_Async(
-                PostsContextObject postsContext,
+    public async Task<int> GetPostCount_Async(
                 string? searchTerm,
                 TermId[] addedFilterTagIds ) {
         // PostsContextObject? currCtx = this.MySessionMngr.GetCurrentContext();
 
         int totalPosts = await this.PrioritizedPostsDataSrc.GetCountByCriteria_Async(
             new ClientDataAccess_PrioritizedPosts.IAPI.GetByCriteria_Params(
-                postsContextId: postsContext.Id,
+                postsContextId: this.PostsContext.Id,
                 bodyPattern: searchTerm,
                 additionalTagIds: addedFilterTagIds,
                 sortAscendingByDate: this.SortAscendingByDate,

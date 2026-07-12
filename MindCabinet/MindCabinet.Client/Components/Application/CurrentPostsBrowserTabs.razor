@@ -2,8 +2,9 @@
 @using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
-@using MindCabinet.Client.Components.Standard.Tabs2;
+@using MindCabinet.Client.Components.Standard.Tabs;
 @using MindCabinet.Client.Services;
+@using MindCabinet.Client.Services.DataPresenters
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.PostsContext;
 @using MindCabinet.Shared.DataObjects.Term;
@@ -12,24 +13,26 @@
 
 <div component-name="@nameof(CurrentPostsBrowserTabs)" class=@this.AddedClasses>
     <Tabs @ref=@this.Tabs>
-        @{ this._PostsBrowsersByTabIndex.Clear(); }
+        @{
+            this._PostsBrowsersByTabIndex.Clear();
 
-        @for( int i=0; i<this.TabsDataSuppliers.Count; i++ ) {
-            PostsContextObject ctx = this.TabsDataSuppliers[i];
+            for( int i=0; i<(this.Suppliers_Cache?.Count() ?? 0); i++ ) {
+                PostsSupplier supply = this.Suppliers_Cache![i];
 
-            <TabEntry>
-                <Header>
-                    <div>'@(ctx.Name)' posts</div>
-                </Header>
-                <Content>
-                    <PostsBrowser
-                        @ref=@this._TempPostsBrowserRef
-                        Id=@($"{this.Id}_{ctx.Id}")
-                        PostsContext=ctx />
-                </Content>
-            </TabEntry>
+                <TabEntry>
+                    <Header>
+                        <div>'@(supply.GetPostsContext().Name)' posts</div>
+                    </Header>
+                    <Content>
+                        <PostsBrowser
+                            @ref=@this._TempPostsBrowserRef
+                            Id=@($"{this.Id}_{supply.GetPostsContext().Id}")
+                            PostsSupply=supply />
+                    </Content>
+                </TabEntry>
 
-            this._PostsBrowsersByTabIndex.Add( this._TempPostsBrowserRef! );
+                this._PostsBrowsersByTabIndex.Add( this._TempPostsBrowserRef! );
+            }
         }
     </Tabs>
 </div>

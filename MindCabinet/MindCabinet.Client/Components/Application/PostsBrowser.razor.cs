@@ -15,12 +15,6 @@ namespace MindCabinet.Client.Components.Application;
 
 
 public partial class PostsBrowser : ComponentBase {
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
-
-    [Inject]
-    public PostsSupplier PostsData { get; set; } = null!;
-
     [Inject]
     public LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
@@ -36,7 +30,7 @@ public partial class PostsBrowser : ComponentBase {
 
 
     [Parameter, EditorRequired]
-    public PostsContextObject PostsContext { get; set; }
+    public PostsSupplier PostsSupply { get; set; } = null!;
 
     [Parameter]
     public int MaxPagesToDisplay { get; set; } = 10;
@@ -53,8 +47,10 @@ public partial class PostsBrowser : ComponentBase {
 
 
 
-    protected override async Task OnInitializedAsync() {
+    protected override async Task OnParametersSetAsync() {
         await this.RefreshPosts_Async();
+
+        await base.OnParametersSetAsync();
     }
 
     public async Task RefreshPosts_Async() {
@@ -62,9 +58,9 @@ public partial class PostsBrowser : ComponentBase {
 
         (this.TotalPosts_Cache, this.TotalPages_Cache) = await this.GetTotalPostPagesCount_Async();
 
-        int currPage = this.PostsData.GetCurrentPage();
+        int currPage = this.PostsSupply.GetCurrentPage();
         if( currPage >= this.TotalPages_Cache ) {
-            this.PostsData.SetCurrentPage( Math.Max(0, this.TotalPages_Cache - 1) );
+            this.PostsSupply.SetCurrentPage( Math.Max(0, this.TotalPages_Cache - 1) );
         }
 
         this.StateHasChanged();
@@ -77,14 +73,13 @@ public partial class PostsBrowser : ComponentBase {
         //     return [];
         // }
 
-        IEnumerable<SimplePostObject> posts = await this.PostsData.GetContextPosts_Async(
+        IEnumerable<SimplePostObject> posts = await this.PostsSupply.GetPosts_Async(
             termsDataSrc: this.TermsDataSrc,
-            postsContext: this.PostsContext,
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
 
-//Console.WriteLine( "GetPostsOfCurrentPage_Async " + posts.Count() + ", " + search.ToString() );
+//Console.WriteLine( $"GetPostsOfCurrentPage_Async ({this.PostsSupply.GetPostsContext().Name}): {posts.Count()}, {this.SearchTerm.ToString()}" );
         return posts;
     }
 
@@ -94,13 +89,12 @@ public partial class PostsBrowser : ComponentBase {
         //     return (0, 0);
         // }
 
-        int totalPosts = await this.PostsData.GetContextPostCount_Async(
-            postsContext: this.PostsContext,
+        int totalPosts = await this.PostsSupply.GetPostCount_Async(
             searchTerm: this.SearchTerm,
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
 
-        return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.PostsData.GetMaxPostsPerPage() ) );
+        return (totalPosts, (int)Math.Ceiling( (float)totalPosts / (float)this.PostsSupply.GetMaxPostsPerPage() ) );
     }
 
 
@@ -110,22 +104,22 @@ public partial class PostsBrowser : ComponentBase {
             : 0;
         page = Math.Clamp( page, 0, maxPages );
 
-        if( page == this.PostsData.GetCurrentPage() ) {
+        if( page == this.PostsSupply.GetCurrentPage() ) {
             return;
         }
 
-        this.PostsData.SetCurrentPage( page );
+        this.PostsSupply.SetCurrentPage( page );
 
         await this.RefreshPosts_Async();
     }
 
     public async Task SetCreateDateSort_Async( bool isAscending ) {
-        if( isAscending == this.PostsData.GetSortOrder() ) {
+        if( isAscending == this.PostsSupply.GetSortOrder() ) {
             return;
         }
 
-        this.PostsData.SetCurrentPage( 0 );
-        this.PostsData.SetSortOrder( isAscending );
+        this.PostsSupply.SetCurrentPage( 0 );
+        this.PostsSupply.SetSortOrder( isAscending );
 
         await this.RefreshPosts_Async();
     }
@@ -135,7 +129,7 @@ public partial class PostsBrowser : ComponentBase {
             return;
         }
 
-        this.PostsData.SetCurrentPage( 0 );
+        this.PostsSupply.SetCurrentPage( 0 );
         this.SearchTerm = term;
 
         await this.RefreshPosts_Async();
@@ -156,7 +150,7 @@ public partial class PostsBrowser : ComponentBase {
             return;
         }
 
-        this.PostsData.SetCurrentPage( 0 );
+        this.PostsSupply.SetCurrentPage( 0 );
         this.AddedFilterTags = changedTags.ToList();
 
         await this.RefreshPosts_Async();

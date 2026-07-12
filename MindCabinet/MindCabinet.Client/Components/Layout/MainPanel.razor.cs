@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application;
 using MindCabinet.Client.Services;
+using MindCabinet.Client.Services.DataPresenters;
 using System.Text;
 
 namespace MindCabinet.Client.Components.Layout;
@@ -12,6 +13,9 @@ public partial class MainPanel : ComponentBase {
 
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
+
+    [Inject]
+    private EachCurrentPostsSupplierSupplier TabsData { get; set; } = null!;
 
 
     [Parameter]
@@ -32,16 +36,6 @@ public partial class MainPanel : ComponentBase {
         await this.MySessionMngr.RegisterUserAndAppDataEvent_Async(
             name: "MainPanel",
             callback: async (_) => this.StateHasChanged()
-        );
-
-        await this.MySessionMngr.RegisterPostsContextEvent_Async(
-            name: "MainPanel",
-            callback: async ( ctx ) => {
-                if( this.TabbedPostsBrowserComponent is not null && ctx is not null ) {
-                    //await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
-                    this.TabbedPostsBrowserComponent.NewTabAtCurrentIndex( ctx );
-                }
-            }
         );
 	}
 }

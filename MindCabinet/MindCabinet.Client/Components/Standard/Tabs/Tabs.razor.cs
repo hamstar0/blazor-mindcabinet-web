@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Collections;
 
-namespace MindCabinet.Client.Components.Standard.Tabs2;
+namespace MindCabinet.Client.Components.Standard.Tabs;
 
 
 public partial class Tabs : ComponentBase {

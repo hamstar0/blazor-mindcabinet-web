@@ -37,16 +37,19 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        IEnumerable<PostsContextObject.Raw?> contexts = Cache_ById.GetMany( parameters.Ids );
-        if( contexts.Count() == parameters.Ids.Length ) {
-            return new IAPI.Get_Return {
-                Contexts = contexts.Select( c => c! )
+        IAPI.Get_Return ret;
+
+        IEnumerable<PostsContextObject.Raw?> cachedContexts = Cache_ById.GetMany( parameters.Ids );
+        if( parameters.Ids.Length > 0 && cachedContexts.Count() == parameters.Ids.Length ) {
+            ret = new IAPI.Get_Return {
+                Contexts = cachedContexts.Select( c => c! )
             };
+            return ret;
         }
 
         //
 
-        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.Get_Return>(
+        ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, IAPI.Get_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetForCurrentUserByCriteria_Async)}",
             parameters: parameters

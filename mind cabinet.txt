@@ -41,10 +41,11 @@ v0.7
 -	Add main view editor tabs
 	-	Tabs
 		-	Terms editor
+
+		
 		-	Posts views
 	-	Implement tabs functionality
-
-
+-	Fix data sources for each browser
 -	Replace tabs with new tabs concept from scratch
 -	Implement tabs of posts views (basic)
 	-	@Test
