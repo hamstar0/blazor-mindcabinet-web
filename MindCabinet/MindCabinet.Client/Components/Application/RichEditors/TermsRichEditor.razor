@@ -1,0 +1,11 @@
+@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+
+
+<div component-name="@nameof(TermsRichEditor)" class=@this.AddedClasses>
+    <h3>Edit Tags</h3>
+    <CurrentTermSetEditor />
+    <TermSetInputEditor
+            InitialTerms=sfasd      <- Change this to TermSupply
+            OnTermsChange_Async=null />
+</div>

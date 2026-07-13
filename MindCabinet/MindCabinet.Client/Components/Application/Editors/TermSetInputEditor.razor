@@ -8,12 +8,12 @@
 
 
 
-<div component-name="@nameof(TermSetEditor)" class=@this.AddedClasses>
+<div component-name="@nameof(TermSetInputEditor)" class=@this.AddedClasses>
     @* class="tooltip-container" class="tooltip-box" *@
     @if( this.Label is not null ) {
         <span>@this.Label</span>
     }
-    <TermEditor AddedClasses="ib"
+    <TermInputEditor AddedClasses="ib"
                 OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
                 OnTermConfirm_Async=@this.AddTerm_UI_Async />
     @foreach( TermObject termOfSet in this.Terms ) {

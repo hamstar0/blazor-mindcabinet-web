@@ -7,7 +7,7 @@ using System.Text;
 namespace MindCabinet.Client.Components.Application.RichEditors;
 
 
-public partial class PostsRichEditor : ComponentBase {
+public partial class CurrentPostsRichEditor : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 

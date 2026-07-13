@@ -7,7 +7,7 @@ using System.Text;
 namespace MindCabinet.Client.Components.Application.RichEditors;
 
 
-public partial class TagsRichEditor : ComponentBase {
+public partial class TermsRichEditor : ComponentBase {
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 }

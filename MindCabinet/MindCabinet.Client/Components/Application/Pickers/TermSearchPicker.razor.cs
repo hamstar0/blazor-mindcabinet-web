@@ -11,7 +11,7 @@ using MindCabinet.Shared.DataObjects.UserTermHistory;
 namespace MindCabinet.Client.Components.Application.Pickers;
 
 
-public partial class TermSearch : ComponentBase {
+public partial class TermSearchPicker : ComponentBase {
     //[Inject]
     //private IJSRuntime Js { get; set; } = null!;
 

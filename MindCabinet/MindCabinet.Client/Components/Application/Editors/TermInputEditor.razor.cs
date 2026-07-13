@@ -10,7 +10,7 @@ namespace MindCabinet.Client.Components.Application.Editors;
 
 
 
-public partial class TermEditor : ComponentBase {
+public partial class TermInputEditor : ComponentBase {
     private string Value = "";
 
 
