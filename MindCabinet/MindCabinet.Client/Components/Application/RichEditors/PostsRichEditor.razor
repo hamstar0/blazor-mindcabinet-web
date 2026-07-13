@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Components.Application.Renders;
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Components.Standard.Tabs;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+
+
+<div component-name="@nameof(PostsRichEditor)" class=@this.AddedClasses>
+    <h3>Browse Posts</h3>
+    <CurrentPostsBrowserTabs
+            @ref=this.TabbedPostsBrowserComponent
+            Id="MainPostsBrowser"
+            TabsData=@this.TabsData />
+    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
+</div>
+
+
+
+@code {
+    private async Task OnPostSubmit_UI_Async( SimplePostObject.Raw post ) {
+//var search = new ClientDataAccess.GetPostsByCriteriaParams(
+//    bodyPattern: "",
+//    tags: new HashSet<TermEntry>(),
+//    sortAscendingByDate: true,
+//    pageNumber: 0,
+//    postsPerPage: 10
+//);
+//int posts = await this.Data.GetPostCountByCriteria_Async( search );
+//Console.WriteLine( "OnPostSubmit_UI_Async "+posts+", "+search.ToString() );
+
+        if( this.TabbedPostsBrowserComponent is not null ) {
+            await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
+        }
+    }
+}
+

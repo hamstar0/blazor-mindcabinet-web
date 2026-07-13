@@ -4,17 +4,10 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DataPresenters;
 using System.Text;
 
-namespace MindCabinet.Client.Components.Layout;
+namespace MindCabinet.Client.Components.Application.RichEditors;
 
 
-public partial class MainPanel : ComponentBase {
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
-
-    [Inject]
-    private LocalClientSessionManager MySessionMngr { get; set; } = null!;
-
-
+public partial class TagsRichEditor : ComponentBase {
     [Parameter]
     public string? AddedClasses { get; set; } = null;
 }

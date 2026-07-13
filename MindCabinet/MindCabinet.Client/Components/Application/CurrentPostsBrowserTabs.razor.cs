@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using MindCabinet.Client.Components.Application.Renders;
+using MindCabinet.Client.Components.Application.Browsers;
 using MindCabinet.Client.Components.Standard.Tabs;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DataPresenters;
@@ -40,7 +40,6 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
 
 
 
-
 	protected override async Task OnParametersSetAsync() {
         this.Suppliers_Cache = (await this.TabsData.GetPostsSuppliers_Async())
             .ToArray();
@@ -49,9 +48,9 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
 	}
 
     public async Task RefreshBrowsers_Async() {
-        foreach( PostsBrowser browser in this._PostsBrowsersByTabIndex ) {
-            await browser.RefreshPosts_Async();
-        } verify
+        // foreach( PostsBrowser browser in this._PostsBrowsersByTabIndex ) {
+        //     await browser.RefreshPosts_Async();
+        // } verify
 
         this.StateHasChanged();
     }

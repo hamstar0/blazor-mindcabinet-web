@@ -11,7 +11,7 @@ using MindCabinet.Shared.DataObjects.PostsContext;
 using System.ComponentModel;
 
 
-namespace MindCabinet.Client.Components.Application;
+namespace MindCabinet.Client.Components.Application.Browsers;
 
 
 public partial class PostsBrowser : ComponentBase {

@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.RichEditors;
 @using MindCabinet.Client.Components.Application;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Pickers;
@@ -13,16 +14,11 @@
     <Tabs>
         <TabEntry>
             <Header>
-                Posts
+                <h4>Posts</h4>
             </Header>
             <Content>
                 @if( this.MySessionMngr.UserName is not null ) {
-                    <h3>Browse Posts</h3>
-                    <CurrentPostsBrowserTabs
-                            @ref=this.TabbedPostsBrowserComponent
-                            Id="MainPostsBrowser"
-                            TabsData=@this.TabsData />
-                    <SimplePostCreationEditor OnSubmit_Async=@this.OnPostSubmit_UI_Async />
+                    <PostsRichEditor />
                 } else {
                     <span>...</span>
                 }
@@ -30,32 +26,18 @@
         </TabEntry>
         <TabEntry>
             <Header>
-                Tags Editor
+                <h4>Tags</h4>
             </Header>
             <Content>
-                ...
+                @if( this.MySessionMngr.UserName is not null ) {
+                    <TagsRichEditor />
+                } else {
+                    <span>...</span>
+                }
             </Content>
         </TabEntry>
     </Tabs>
 </div>
 
 
-
-@code {
-    private async Task OnPostSubmit_UI_Async( SimplePostObject.Raw post ) {
-//var search = new ClientDataAccess.GetPostsByCriteriaParams(
-//    bodyPattern: "",
-//    tags: new HashSet<TermEntry>(),
-//    sortAscendingByDate: true,
-//    pageNumber: 0,
-//    postsPerPage: 10
-//);
-//int posts = await this.Data.GetPostCountByCriteria_Async( search );
-//Console.WriteLine( "OnPostSubmit_UI_Async "+posts+", "+search.ToString() );
-
-        if( this.TabbedPostsBrowserComponent is not null ) {
-            await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
-        }
-    }
-}
 

@@ -8,6 +8,7 @@
 
 v2
 -	Posts "permissions" (AKA user groups)
+-	Tag icons
 -	@Brainstorm value data for posts (contextualized by tags)
 v1
 -	Deploy
@@ -38,11 +39,18 @@ v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
 -	Implement terms editor (included favorites editor, history view)
+	-	...
+	-	Implement abbreviation field for terms
+	-	Define elements
+		-	Terms main list selection
+		-	Terms search bar
+		-	Terms favorites list
+		-	Term editor ((re)name, abbreviation, alias, context, description?, delete)
+
+
 -	Add main view editor tabs
 	-	Tabs
 		-	Terms editor
-
-		
 		-	Posts views
 	-	Implement tabs functionality
 -	Fix data sources for each browser
