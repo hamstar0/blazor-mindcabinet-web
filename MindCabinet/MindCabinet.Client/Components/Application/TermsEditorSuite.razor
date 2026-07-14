@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.RichEditors;
+@using MindCabinet.Shared.DataObjects.Term
+
+
+<div component-name="@nameof(TermsEditorSuite)" class=@this.AddedClasses>
+    <h3>Edit Tags</h3>
+    <TermSetInputEditor
+            Label="Favorites"
+            InitialTerms=@this.FavTerms_Cache.Select( f => f.FavTerm ).ToList()
+            AdjustableOrderAndVerticalOrder=@true
+            VerboseTermDisplay=@true
+            OnTermsChange_Async=@this.OnTermsChange />
+    <TermsRichEditor />
+</div>
+
+
+
+@code {
+    private async Task OnTermsChange(
+            IEnumerable<TermObject> currentTerms,
+            TermObject changedTerm,
+            bool isAdded ) {
+    }
+}

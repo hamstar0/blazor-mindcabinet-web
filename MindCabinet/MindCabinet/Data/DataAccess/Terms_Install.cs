@@ -28,7 +28,8 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
                  CONSTRAINT FK_{TableName}_{TableColumn_ContextId} FOREIGN KEY ({TableColumn_ContextId})
                     REFERENCES {TableName}({TableColumn_Id}),
                  CONSTRAINT FK_{TableName}_{TableColumn_AliasId} FOREIGN KEY ({TableColumn_AliasId})
-                    REFERENCES {TableName}({TableColumn_Id})
+                    REFERENCES {TableName}({TableColumn_Id}),
+                 INDEX IDX_{TableColumn_Term} ({TableColumn_Term})
             );"
         );
 

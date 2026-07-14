@@ -14,9 +14,6 @@ public partial class TermInputEditor : ComponentBase {
     private string Value = "";
 
 
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
-
     [Inject]
     public ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
@@ -46,11 +43,10 @@ public partial class TermInputEditor : ComponentBase {
 
 
     public delegate Task<(string termText, bool isSubmit)> OnTermInputFunc_Async( string termText );
+    public delegate Task OnTermConfirmFunc_Async( TermObject term, bool isAdded );
 
     [Parameter]
     public OnTermInputFunc_Async? OnAttemptingTermInput_Async { get; set; } = null;
-
-    public delegate Task OnTermConfirmFunc_Async( TermObject term, bool isAdded );
 
     [Parameter, EditorRequired]
     public OnTermConfirmFunc_Async OnTermConfirm_Async { get; set; } = null!;

@@ -78,6 +78,8 @@ public partial class LocalClientSessionManager {
 
         if( this.OnUserAndAppDataLoaded_PromisedData is not null ) {
             await callback.Invoke( this.OnUserAndAppDataLoaded_PromisedData );
+
+            this.OnUserAndAppDataLoaded_PromisedData = null;    // why werent these added before?
         }
     }
 
@@ -86,6 +88,8 @@ public partial class LocalClientSessionManager {
 
         if( this.OnPostsContextChanged_PromisedData is not null ) {
             await callback.Invoke( this.OnPostsContextChanged_PromisedData );
+
+            this.OnPostsContextChanged_PromisedData = null;    // why werent these added before?
         }
     }
 
@@ -94,6 +98,8 @@ public partial class LocalClientSessionManager {
 
         if( this.OnUserLogin_PromisedData is not null ) {
             await callback.Invoke( this.OnUserLogin_PromisedData );
+
+            this.OnUserLogin_PromisedData = null;    // why werent these added before?
         }
     }
 
@@ -102,6 +108,8 @@ public partial class LocalClientSessionManager {
 
         if( this.OnUserLogout_PromisedData is not null ) {
             await callback.Invoke( this.OnUserLogout_PromisedData );
+
+            this.OnUserLogout_PromisedData = null;    // why werent these added before?
         }
     }
 }

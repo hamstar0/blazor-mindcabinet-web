@@ -23,7 +23,7 @@
 		<TooltipContent>AKA an arbitrary circumstance or phenomenon to be described</TooltipContent>
 	</Tooltip>
 	<h4>Enter tags to describe your current "context":</h4>
-	<TermSetEditor Label="Enter tags (at least 1 required)"
+	<TermSetInputEditor Label="Enter tags (at least 1 required)"
 			AddedPerItemClasses="d-block"
 			InitialTerms=@( this.EditContext_Entries
 				.Select( e => e.Term )
@@ -43,7 +43,7 @@
 						@onchange=@( async (e) => await this.OnIsRequiredChange_UI_Async(termOfSet, (bool)e.Value!) ) />
 			</div>
 		</PerTermAffix>
-	</TermSetEditor>
+	</TermSetInputEditor>
 	<div>
 		<div>Context options:</div>
 		<button @onclick=@(() => this.ClearEditContext_UI(false))>

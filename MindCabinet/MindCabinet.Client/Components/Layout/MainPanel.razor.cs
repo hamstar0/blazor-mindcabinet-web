@@ -17,4 +17,10 @@ public partial class MainPanel : ComponentBase {
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+
+
+    protected async override Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+    }
 }

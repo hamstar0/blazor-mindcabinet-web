@@ -16,15 +16,22 @@
     <TermInputEditor AddedClasses="ib"
                 OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
                 OnTermConfirm_Async=@this.AddTerm_UI_Async />
-    @foreach( TermObject termOfSet in this.Terms ) {
-        <TermRender AddedClasses=@("ib "+this.AddedPerItemClasses)
-                    Term=@termOfSet
-                    VerboseTermDisplay=@this.VerboseTermDisplay
-                    HasFavoriteButton=@this.AllowFavoritingTerms>
-            @this.PerTermAffix?.Invoke( termOfSet )
-            <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
-        </TermRender>
-    }
+    <div>
+        @{
+            string addedClass = this.AdjustableOrderAndVerticalOrder
+                ? " block"
+                : "";
+        }
+        @foreach( TermObject termOfSet in this.Terms ) {
+            <TermRender AddedClasses=@($"ib {this.AddedPerItemClasses}{addedClass}")
+                        Term=@termOfSet
+                        VerboseTermDisplay=@this.VerboseTermDisplay
+                        HasFavoriteButton=@this.AllowFavoritingTerms>
+                @this.PerTermAffix?.Invoke( termOfSet )
+                <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
+            </TermRender>
+        }
+    </div>
 </div>
 
 

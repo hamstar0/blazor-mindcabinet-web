@@ -27,7 +27,6 @@ window.GetTooltipPosition = ( tooltipElem, clientX, clientY ) => {
         return { x: clientX + 12, y: clientY + 12 };
     }
 
-console.log( "que?", tooltipElem );
     const rect = tooltipElem.getBoundingClientRect();
     const padding = 10; // Minimum distance from screen edges
 

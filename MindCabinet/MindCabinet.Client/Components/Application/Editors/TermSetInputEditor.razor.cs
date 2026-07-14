@@ -17,6 +17,10 @@ public partial class TermSetInputEditor : ComponentBase {
 
 
     [Parameter]
+    public bool AdjustableOrderAndVerticalOrder { get; set; } = false;
+
+
+    [Parameter]
     public string? AddedClasses { get; set; } = null;
 
     [Parameter]

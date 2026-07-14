@@ -27,10 +27,10 @@ public partial class CurrentPostsRichEditor : ComponentBase {
 
 
 	protected override async Task OnInitializedAsync() {
-		await base.OnInitializedAsync();
+        await base.OnInitializedAsync();
 
         await this.MySessionMngr.RegisterUserAndAppDataEvent_Async(
-            name: "MainPanel",
+            name: nameof(CurrentPostsRichEditor),
             callback: async (_) => this.StateHasChanged()
         );
 	}

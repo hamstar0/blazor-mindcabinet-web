@@ -26,7 +26,7 @@ public partial class SimplePostCreationEditor : ComponentBase {
     public Func<SimplePostObject.Raw, Task> OnSubmit_Async { get; set; } = null!;
 
 
-	private TermSetEditor TagsEditor = null!;
+	private TermSetInputEditor TagsEditor = null!;
 
 
 

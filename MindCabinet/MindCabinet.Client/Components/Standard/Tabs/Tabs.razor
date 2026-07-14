@@ -1,9 +1,9 @@
 ﻿@using MindCabinet.Shared.Utility;
 
 
-<CascadingValue Value="@this" Name="TabsContainer">
-    <CascadingValue Value="@this.TabsRegistry">
-        <CascadingValue Value="@this.CurrentTab">
+<CascadingValue Value=@this Name="TabsContainer">
+    <CascadingValue Value=@this.TabsRegistry>
+        <CascadingValue Value=@this.CurrentTab>
             @this.ChildContent
         </CascadingValue>
     </CascadingValue>
@@ -18,7 +18,15 @@
     }
 </div>
 <div class="tab-body-container">
-    @this.CurrentTab?.Content
+    @for( int i=0; i<this.TabsRegistry.Count; i++ ) {
+        string display = i == this.CurrentTabIndex
+            ? ""
+            : "display: none;";
+        <div style="@display">
+            @this.TabsRegistry[i].Content
+        </div>
+    }
+    @* @this.CurrentTab?.Content *@
 </div>
 
 

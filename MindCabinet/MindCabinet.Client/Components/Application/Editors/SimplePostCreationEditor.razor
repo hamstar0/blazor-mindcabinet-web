@@ -18,7 +18,7 @@
 			@bind:set=@this.OnInputHandler_UI_Async></textarea>
 			 @* @oninput=@(async args => this.PostText = args.Value?.ToString() ?? "")></textarea> *@
 	<br/>
-	<TermSetEditor
+	<TermSetInputEditor
 			@ref=@this.TagsEditor
 			VerboseTermDisplay=@false
 			Label="Enter tags (at least 1 required)"
