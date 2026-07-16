@@ -1,6 +1,8 @@
+using System.Drawing;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects.Term;
@@ -11,8 +13,8 @@ namespace MindCabinet.Client.Components.Application.Renders;
 
 
 public partial class TermRender : ComponentBase {
-    //[Inject]
-    //public IJSRuntime Js { get; set; } = null!;
+    [Inject]
+    public IJSRuntime Js { get; set; } = null!;
 
     [Inject]
     private ClientDataAccess_UserTermFavorites UserTermFavoritesDataSrc { get; set; } = null!;
@@ -23,6 +25,9 @@ public partial class TermRender : ComponentBase {
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+    [Parameter]
+    public string? AddedStyles { get; set; } = null;
 
 
     [Parameter]
@@ -41,7 +46,29 @@ public partial class TermRender : ComponentBase {
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
 
+    public delegate Task<bool> OnDragFunc_Async( double x, double y, Rectangle rect );
+
+	[Parameter]
+	public OnDragFunc_Async? OnDrag_Async { get; set; } = null;
+
+
+    private ElementReference ComponentElement;
+
     
+
+    private async Task<bool> HandleDrag_Async( MouseEventArgs e ) {
+        if( e.ClientX == this.DragStartX && e.ClientY == this.DragStartY ) {
+            return false;
+        }
+
+        Rectangle rect = await this.Js.InvokeAsync<Rectangle>(
+            identifier: "getBoundingClientRect",
+            this.ComponentElement
+        );
+
+        return await this.OnDrag_Async!( e.ClientX, e.ClientY, rect );
+    }
+
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
         if( this.MySessionMngr.UserId is null ) {

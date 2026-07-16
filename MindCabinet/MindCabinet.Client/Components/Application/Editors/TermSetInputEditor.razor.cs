@@ -17,11 +17,14 @@ public partial class TermSetInputEditor : ComponentBase {
 
 
     [Parameter]
-    public bool AdjustableOrderAndVerticalOrder { get; set; } = false;
+    public bool AdjustableOrderAndVerticalStackMode { get; set; } = false;
 
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
+
+    [Parameter]
+    public string? AddedStyle { get; set; } = null;
 
     [Parameter]
     public string? AddedPerItemClasses { get; set; } = null;
@@ -92,4 +95,24 @@ public partial class TermSetInputEditor : ComponentBase {
 
 		return true;
 	}
+
+
+    public bool ShiftTermOrder( TermObject term, int offset ) {
+        int idx = this._Terms.IndexOf( term );
+        if( idx == -1 ) {
+            throw new ArgumentException( "Invalid Term "+term.ToString() );
+        }
+
+        if( idx + offset < 0 ) {
+            return false;
+        } else if( idx + offset >= this._Terms.Count ) {
+            return false;
+        }
+
+        TermObject tmp = this._Terms[ idx + offset ];
+        this._Terms[ idx + offset ] = term;
+        this._Terms[ idx ] = tmp;
+
+        return true;
+    }
 }

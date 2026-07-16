@@ -39,13 +39,14 @@ v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
 -	@Validate favorites submit to not allow invalid user id
--	Implement terms editor (included favorites editor, history view)
-	-	Implement terms favorites editor
+-	Implement terms editor suite (included favorites editor, existing terms editor)
+	-	Implement TermsRichEditor (lists terms with sort and paginate, edits terms, creates/removes terms)
 	-	@Implement abbreviation field for terms
 	-	@Implement description field for terms
-	-	Implement re-sortable (drag and drop) terms in TermSetInputEditor
 
 
+	-	Implement terms favorites editor
+		-	Implement re-sortable (drag and drop) terms in TermSetInputEditor
 	-	Separate TermsRichEditor from TermsEditorSuite
 	-	Define elements
 		-	Terms main list selection

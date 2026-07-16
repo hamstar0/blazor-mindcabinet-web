@@ -57,3 +57,14 @@ window.GetTooltipPosition = ( tooltipElem, clientX, clientY ) => {
     return { x: x, y: y };
 };
 
+/**
+ * @param {Element} element 
+ * @returns {DOMRect}
+ */
+window.GetElementRect = ( element ) => {
+    return element.getBoundingClientRect();
+    // return {
+    //     width: rect.width,
+    //     height: rect.height
+    // };
+};

@@ -1,12 +1,23 @@
-﻿@using MindCabinet.Client.Components.Standard
+﻿@using System.Threading.Tasks;
+@using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Shared.DataObjects;
 @using MindCabinet.Shared.DataObjects.Term;
 
 
 
-<div component-name="@nameof(TermRender)"
+@* position:relative; left:@(this.Left)px; top:@(this.Top)px; user-select:none; *@
+<div @ref=@this.ComponentElement
+        component-name="@nameof(TermRender)"
         class="basic tooltip-container @(this.AddedClasses ?? "")"
+        style="@this.AddedStyles"
+        @onpointerdown=@this.DragStart_UI
+        @onpointermove=@this.Drag_UI_Async
+        @onpointerup=@this.DragEnd_UI
+        @onpointercancel=@this.DragEnd_UI
         @onclick=@this.OnClick_UI_Async>
+    @* @onmousedown=@this.DragStart_UI
+            @onmousemove=@this.Drag_UI
+            @onmouseup=@this.DragEnd_UI *@
     @if( this.VerboseTermDisplay ) {
         <span>
             @(this.Term?.Term ?? "?")
@@ -27,7 +38,7 @@
     @this.ChildContent
     @if( this.HasFavoriteButton && this.Term is not null ) {
         <button class=@(async () => await this.CurrentTermIsFavorite_Async() ? "lit" : "unlit")
-                @onclick=this.OnFavoriteButtonClick_UI_Async>
+        @onclick=this.OnFavoriteButtonClick_UI_Async>
             ★
         </button>
     }
@@ -39,6 +50,36 @@
         if( this.OnClick_Async is not null ) {
             await this.OnClick_Async( args );
         }
+    }
+
+
+    private bool IsDragging;
+    private double DragStartX, DragStartY;
+    // private double Left;
+    // private double Top;
+
+
+    private void DragStart_UI( MouseEventArgs e ) {
+        this.IsDragging = true;
+        this.DragStartX = e.ClientX;
+        this.DragStartY = e.ClientY;
+    }
+
+    private async Task Drag_UI_Async( MouseEventArgs e ) {
+        if( this.OnDrag_Async is null || !this.IsDragging ) {
+            return;
+        }
+
+        if( await this.HandleDrag_Async(e) ) {
+            //this.Left += e.ClientX - this.DragStartX;
+            //this.Top += e.ClientY - this.DragStartY;
+            this.DragStartX = e.ClientX;
+            this.DragStartY = e.ClientY;
+        }
+    }
+
+    private void DragEnd_UI( MouseEventArgs e ) {
+        this.IsDragging = false;
     }
 
 

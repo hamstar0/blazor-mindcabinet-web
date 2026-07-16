@@ -76,12 +76,12 @@ public partial class TermSearchPicker : ComponentBase {
             = await this.UserTermsHistoryDataSrc.GetHistTermsForCurrentUser_Async();
 
         this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ConvertRawsToClientObjects_Async(
-            this.TermsDataSrc,
-            favTerms.ToArray()
+            termsDataSrc: this.TermsDataSrc,
+            entriesRaw: favTerms.ToArray()
         );
         this.RecentTerms_Cache = await ClientDataAccess_UserTermsHistory.ConvertRawsToClientObjects_Async(
-            this.TermsDataSrc,
-            histTerms.ToArray()
+            termsDataSrc: this.TermsDataSrc,
+            entriesRaw: histTerms.ToArray()
         );
     }
 
