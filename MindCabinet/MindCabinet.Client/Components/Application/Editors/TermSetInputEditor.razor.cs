@@ -63,7 +63,7 @@ public partial class TermSetInputEditor : ComponentBase {
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
 
-        if( this.InitialTermsSnapshot != this.InitialTerms ) {
+        if( this.InitialTermsSnapshot != this.InitialTerms ) { 
             this.InitialTermsSnapshot = this.InitialTerms;
 
             this._Terms = new List<TermObject>( this.InitialTerms );
