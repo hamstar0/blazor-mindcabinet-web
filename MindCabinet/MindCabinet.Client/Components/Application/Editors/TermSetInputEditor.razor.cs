@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Shared.DataObjects.Term;
 
@@ -47,6 +48,15 @@ public partial class TermSetInputEditor : ComponentBase {
 
     [Parameter, EditorRequired]
     public OnTermsChange_Func OnTermsChange_Async { get; set; } = null!;
+
+
+    public delegate Task OnTermReordered_Func(
+        TermObject terms,
+        int offset
+    );
+
+    [Parameter]
+    public OnTermReordered_Func? OnTermReordered_Async { get; set; } = null!;
 
 
 
@@ -97,7 +107,7 @@ public partial class TermSetInputEditor : ComponentBase {
 	}
 
 
-    public bool ShiftTermOrder( TermObject term, int offset ) {
+    public async Task<bool> ShiftTermOrder_Async( TermObject term, int offset ) {
         int idx = this._Terms.IndexOf( term );
         if( idx == -1 ) {
             throw new ArgumentException( "Invalid Term "+term.ToString() );
@@ -112,6 +122,10 @@ public partial class TermSetInputEditor : ComponentBase {
         TermObject tmp = this._Terms[ idx + offset ];
         this._Terms[ idx + offset ] = term;
         this._Terms[ idx ] = tmp;
+
+        if( this.OnTermReordered_Async is not null ) {
+            await this.OnTermReordered_Async( term, offset );
+        }
 
         return true;
     }

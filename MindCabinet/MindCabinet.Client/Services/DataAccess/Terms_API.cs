@@ -27,13 +27,13 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
         public class GetByCriteria_Params {
-            public string TermPattern { get; set; } = "";
+            public string? TermPattern { get; set; } = "";
+
+            public string? AbbrevPattern { get; set; } = "";
 
             public TermId? ContextTermId { get; set; }
 
             public string? ContextTermPattern { get; set; }
-
-            // public PrimitiveOptional<long>? ContextContextTermId { get; } = contextContextTermId;
         }
         
         public Task<GetByX_Return> GetByCriteria_Async( GetByCriteria_Params parameters );
@@ -41,7 +41,9 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
         public class Create_Params {
-            public string TermPattern { get; set; } = "";
+            public string TermBody { get; set; } = "";
+            public string? Abbreviation { get; set; } = "";
+            public string? Description { get; set; } = "";
             public TermId? ContextId { get; set; }
             public TermId? AliasId { get; set; }
         }

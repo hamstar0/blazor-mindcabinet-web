@@ -32,19 +32,21 @@ v0.8
 -	Show user name next to Logout button
 -	Set modal dialogs to have default input focused onto when open
 -	Keep post create component fixed to the bottom
--	Implement tabs of posts views
+-	Implement tabs behaviors
 	-	Moving (drag and drop)
 	-	Tab closing (button + middle click)
 v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
 -	Implement tag removals for posts
 -	@Validate favorites submit to not allow invalid user id
+-	Trim whitespace from text inputs
 -	Implement terms editor suite (included favorites editor, existing terms editor)
 	-	Implement TermsRichEditor (lists terms with sort and paginate, edits terms, creates/removes terms)
+
+
+	-	Implement favorites metric for term favorites (via sort order)
 	-	@Implement abbreviation field for terms
 	-	@Implement description field for terms
-
-
 	-	Implement terms favorites editor
 		-	Implement re-sortable (drag and drop) terms in TermSetInputEditor
 	-	Separate TermsRichEditor from TermsEditorSuite

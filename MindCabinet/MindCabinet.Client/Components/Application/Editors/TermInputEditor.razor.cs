@@ -22,6 +22,9 @@ public partial class TermInputEditor : ComponentBase {
     public string? AddedClasses { get; set; } = null;
 
     [Parameter]
+    public string? AddedStyle { get; set; } = null;
+
+    [Parameter]
     public bool VerboseTermDisplay { get; set; } = false;
 
 
@@ -74,7 +77,7 @@ public partial class TermInputEditor : ComponentBase {
 
     private async Task<bool> SubmitNewTerm_Async( string termText, TermObject? contextTerm ) {
         ClientDataAccess_Terms.IAPI.Create_Return newTermRet = await this.TermsDataSrc.Create_Async(
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = termText, ContextId = contextTerm?.Id, AliasId = null }
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
         TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsDataSrc, newTermRet.TermRaw );

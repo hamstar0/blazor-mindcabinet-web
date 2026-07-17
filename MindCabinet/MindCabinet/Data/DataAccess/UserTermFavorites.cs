@@ -15,7 +15,8 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_UserTermFavorites(
                 StaticServerSettings serverSettings
             ) : IServerDataAccess {
-    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermFavoriteObject.Raw>> Cache_BySimpleUserId = new( refreshExpiryOnGet: true );
+    private static readonly SimpleCache<SimpleUserId, IEnumerable<UserTermFavoriteObject.Raw>> Cache_BySimpleUserId
+        = new( refreshExpiryOnGet: true );
 
 
 
@@ -63,14 +64,14 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task AddFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                TermId[] favTermIds ) {
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
-        if( favTermIds.Any(id => id == 0) ) {
+        if( parameters.TermIds.Any(id => id == 0) ) {
             throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
         }
-        if( favTermIds.Length == 0 ) {
+        if( parameters.TermIds.Length == 0 ) {
             return;
         }
 
@@ -81,17 +82,20 @@ public partial class ServerDataAccess_UserTermFavorites(
         );
         var sqlParams = new DynamicParameters();
 
-        for( int i=0; i<favTermIds.Length; i++ ) {
+        for( int i=0; i<parameters.TermIds.Length; i++ ) {
             if( i > 0 ) {
                 sqlBuilder.Append( ", " );
             }
 
             string simpleUserParamName = $"@SimpleUserId{i}";
             string favTermParamName = $"@FavTermId{i}";
-            sqlBuilder.Append( $"({simpleUserParamName}, {favTermParamName}, 0)" );
+            string favorParamName = $"@Favor{i}";
+
+            sqlBuilder.Append( $"({simpleUserParamName}, {favTermParamName}, {favorParamName})" );
 
             sqlParams.Add( simpleUserParamName, (long)simpleUserId );
-            sqlParams.Add( favTermParamName, (long)favTermIds[i] );
+            sqlParams.Add( favTermParamName, (long)parameters.TermIds[i] );
+            sqlParams.Add( favorParamName, parameters.TermFavors[i] );
         }
 
         await dbCon.ExecuteAsync( sqlBuilder.ToString(), sqlParams );
@@ -105,7 +109,7 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -122,6 +126,36 @@ public partial class ServerDataAccess_UserTermFavorites(
                 TermIds = parameters.TermIds
             }
         );
+
+        //
+
+        ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Remove( simpleUserId );
+    }
+
+
+    public async Task UpdateFavTermEntries_Async(
+                IDbConnection dbCon,
+                SimpleUserId simpleUserId,
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( parameters.TermIds.Any(id => id == 0) ) {
+            throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
+        }
+
+        for( int i=0; i<parameters.TermIds.Length; i++ ) {
+            await dbCon.ExecuteAsync(
+                $@"UPDATE {TableName}
+                    SET {TableColumn_SimpleUserId} = @SimpleUserId, {TableColumn_FavTermId} = @FavTermId
+                    WHERE {TableColumn_Favor} = @Favor;",
+                new {
+                    SimpleUserId = (long)simpleUserId,
+                    TermId = parameters.TermIds[i],
+                    Favor = parameters.TermFavors[i]
+                }
+            );
+        }
 
         //
 

@@ -1,5 +1,5 @@
 @using Microsoft.AspNetCore.Components;
-@using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.RichEditors;
 @using MindCabinet.Shared.DataObjects.Term
@@ -7,21 +7,22 @@
 
 <div component-name="@nameof(TermsEditorSuite)"
             class=@this.AddedClasses>
-    <div style="display: flex; flex-direction: column; min-height: 100dvh;">
+    <div style="display: flex; flex-direction: column; min-height: calc(100dvh - 192px);">
         <h3 style="flex-shrink: 0;">Edit Tags</h3>
         <div style="flex-grow: 1; display: flex; min-height: 0;">
             <div style="flex: 40%; min-height: 0;">
                 <TermSetInputEditor
-                        AdjustableOrderAndVerticalStackMode=@true
-                        Label="Favorite Tags"
-                        AddedClasses="block"
-                        InitialTerms=@this.FavTerms_Cache.Select( f => f.FavTerm ).ToList()
-                        AllowFavoritingTerms=@false
-                        VerboseTermDisplay=@true
-                        OnTermsChange_Async=@this.SelectFavTerm_UI_Async />
+                            AdjustableOrderAndVerticalStackMode=@true
+                            Label="Favorite Tags"
+                            AddedClasses="block"
+                            InitialTerms=@this.FavTerms_Cache.Select( f => f.FavTerm ).ToList()
+                            AllowFavoritingTerms=@false
+                            VerboseTermDisplay=@true
+                            OnTermsChange_Async=@this.SelectFavTerm_UI_Async
+                            OnTermReordered_Async=@this.OnFavTermReordered_UI_Async />
             </div>
             <div style="flex: 60%; min-height: 0;">
-                test
+                <TermsRichEditor />
             </div>
         </div>
     </div>
@@ -31,8 +32,13 @@
 
 @code {
     private async Task SelectFavTerm_UI_Async(
-            IEnumerable<TermObject> currentTerms,
-            TermObject changedTerm,
-            bool isAdded ) {
+                IEnumerable<TermObject> currentTerms,
+                TermObject changedTerm,
+                bool isAdded ) {
+        await this.UpdateFavTerms_Async();
+    }
+
+    private async Task OnFavTermReordered_UI_Async( TermObject term, int offset ) {
+        await this.UpdateFavTerms_Async();
     }
 }

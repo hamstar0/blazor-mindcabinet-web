@@ -34,4 +34,25 @@ public partial class TermsEditorSuite : ComponentBase {
         this.FavTerms_Cache = (await ClientDataAccess_UserTermFavorites.ConvertRawsToClientObjects_Async( this.TermsDataSrc, favRaws ))
             .ToList();
 	}
+
+
+    private async Task UpdateFavTerms_Async() {
+        int favAmt = this.FavTerms_Cache.Count;
+
+        foreach( UserTermFavoriteObject.ClientObject fav in this.FavTerms_Cache ) {
+            fav.SetFavor( favAmt );
+            favAmt--;
+        }
+
+        await this.FavDataSrc.UpdateTermsForCurrentUser_Async( 
+            new ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params {
+                TermIds = this.FavTerms_Cache
+                    .Select( f => f.FavTerm.Id )
+                    .ToArray(),
+                TermFavors = this.FavTerms_Cache
+                    .Select( f => f.Favor )
+                    .ToArray()
+            }
+        );
+    }
 }

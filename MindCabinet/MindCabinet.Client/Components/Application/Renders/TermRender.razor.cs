@@ -94,7 +94,7 @@ public partial class TermRender : ComponentBase {
             );
         } else {
             await this.UserTermFavoritesDataSrc.AddTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
+                new ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params { TermIds = [this.Term.Id] }
             );
         }
     }

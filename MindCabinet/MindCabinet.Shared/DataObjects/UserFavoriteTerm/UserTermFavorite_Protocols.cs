@@ -50,10 +50,15 @@ public partial class UserTermFavoriteObject {
 
     
     public class ClientObject( SimpleUserId simpleUserId, int favor, TermObject favTerm ) {
-        public SimpleUserId SimpleUserId { get; } = simpleUserId;
+        public SimpleUserId SimpleUserId { get; private set; } = simpleUserId;
 
-        public int Favor { get; } = favor;
+        public int Favor { get; private set; } = favor;
 
-        public TermObject FavTerm { get; } = favTerm;
+        public TermObject FavTerm { get; private set; } = favTerm;
+
+
+        public void SetFavor( int favor ) {
+            this.Favor = favor;
+        }
     }
 }

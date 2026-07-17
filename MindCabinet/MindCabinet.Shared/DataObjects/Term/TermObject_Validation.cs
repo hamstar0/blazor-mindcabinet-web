@@ -39,4 +39,22 @@ public partial class TermObject {
 
         return keyboardOnly;
     }
+
+    public static bool ValidateAbbreviation( string abbrev ) {
+        if( string.IsNullOrWhiteSpace(abbrev) ) {
+            return false;
+        }
+        if( abbrev.Length < 2 ) {
+            return false;
+        }
+        if( abbrev.Length > MaxTermLength ) {
+            return false;
+        }
+        
+        return abbrev.All( c => {
+            return char.IsLetterOrDigit(c) 
+                || TermObject.AllowedSpecialCharacters.Contains(c) 
+                || !char.IsWhiteSpace(c);
+        } );
+    }
 }

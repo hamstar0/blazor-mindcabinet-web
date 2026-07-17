@@ -14,23 +14,37 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public const string TableName = "Terms";
     public const string TableColumn_Id = "Id";
     public const string TableColumn_Term = "Term";
+    public const string TableColumn_Abbreviation = "Abbreviation";
+    public const string TableColumn_Description = "Description";
     public const string TableColumn_ContextId = "ContextId";
     public const string TableColumn_AliasId = "AliasId";
+
+    public readonly (string column, string def)[] TableColumns = [
+        ( TableColumn_Id, "BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY" ),
+        ( TableColumn_Term, "VARCHAR(64) NOT NULL" ),
+        ( TableColumn_Abbreviation, "VARCHAR(64)" ),
+        ( TableColumn_Description, "MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci" ),
+        ( TableColumn_ContextId, "BIGINT" ),
+        ( TableColumn_AliasId, "BIGINT" )
+    ];
 
 	public async Task<(bool success, TermId userConceptTermId)> Install_Async( IDbConnection dbCon ) {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                {TableColumn_Id} BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                {TableColumn_Term} VARCHAR(64) NOT NULL,
-                {TableColumn_ContextId} BIGINT,
-                {TableColumn_AliasId} BIGINT,
+                {string.Join(",\n                ", TableColumns.Select(kv => kv.column+" "+kv.def))}
                  CONSTRAINT FK_{TableName}_{TableColumn_ContextId} FOREIGN KEY ({TableColumn_ContextId})
                     REFERENCES {TableName}({TableColumn_Id}),
                  CONSTRAINT FK_{TableName}_{TableColumn_AliasId} FOREIGN KEY ({TableColumn_AliasId})
                     REFERENCES {TableName}({TableColumn_Id}),
                  INDEX IDX_{TableColumn_Term} ({TableColumn_Term})
             );"
+                // {TableColumn_Id} BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                // {TableColumn_Term} VARCHAR(64) NOT NULL,
+                // {TableColumn_Abbreviation} VARCHAR(64),
+                // {TableColumn_Description} MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+                // {TableColumn_ContextId} BIGINT,
+                // {TableColumn_AliasId} BIGINT,
         );
 
         TermId userConceptTermId = await this.InstallSamples_Async( dbCon );
@@ -44,7 +58,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         TermId userConceptTermId = (await this.Create_Async(
             dbCon: dbConnection,
             parameters: new ClientDataAccess_Terms.IAPI.Create_Params {
-                TermPattern = "Simple User",
+                TermBody = "Simple User",
                 //Description = "A term that represents an instance of a 'SimpleUser'.",
                 ContextId = null
             }

@@ -8,7 +8,8 @@
 
 
 <div component-name="@nameof(TermInputEditor)"
-        class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
+            class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")"
+            style=@this.AddedStyle>
     @*<component-label>@this.Label</component-label>*@
     <input type="text"
             disabled=@this.Disabled

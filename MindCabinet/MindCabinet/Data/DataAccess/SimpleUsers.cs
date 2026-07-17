@@ -375,7 +375,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         return (
             await termsDataSrc.Create_Async( dbCon, new ClientDataAccess_Terms.IAPI.Create_Params {
-                TermPattern = userName,
+                TermBody = userName,
                 ContextId = serverDataObj?.UsersConceptTermId
             } )
         ).TermRaw;

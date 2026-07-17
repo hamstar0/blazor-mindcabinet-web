@@ -27,7 +27,7 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {   //( Get_Params parameters ) {
+    public async Task<IEnumerable<UserTermFavoriteObject.Raw>> GetFavTermsForCurrentUser_Async() {
         if( Cache_ForCurrentUser is not null ) {
             return Cache_ForCurrentUser;
         }
@@ -47,8 +47,8 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task AddTermsForCurrentUser_Async( IAPI.AddTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.AddTermsForCurrentUser_Params>(
+    public async Task AddTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.AddTermsForCurrentUser_Async)}",
             parameters: parameters
@@ -60,10 +60,23 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task RemoveTermsForCurrentUser_Async( IAPI.RemoveTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.RemoveTermsForCurrentUser_Params>(
+    public async Task RemoveTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveTermsForCurrentUser_Async)}",
+            parameters: parameters
+        );
+
+        //
+
+        Cache_ForCurrentUser = null;
+    }
+
+
+    public async Task UpdateTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateTermsForCurrentUser_Async)}",
             parameters: parameters
         );
 

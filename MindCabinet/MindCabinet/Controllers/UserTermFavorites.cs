@@ -60,14 +60,18 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(AddTermsForCurrentUser_Async))]
     public async Task<object> AddTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.AddTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsDataSrc.AddFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters.TermIds );
+        await this.FavoriteTermsDataSrc.AddFavTermEntries_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters
+        );
 
         return new object();
     }
@@ -75,14 +79,37 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(RemoveTermsForCurrentUser_Async))]
     public async Task<object> RemoveTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.RemoveTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        await this.FavoriteTermsDataSrc.RemoveFavTermEntries_Async( dbCon, this.SessionManager.UserOfSession.Id, parameters );
+        await this.FavoriteTermsDataSrc.RemoveFavTermEntries_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters
+        );
+
+        return new object();
+    }
+
+
+    [HttpPost(nameof(UpdateTermsForCurrentUser_Async))]
+    public async Task<object> UpdateTermsForCurrentUser_Async(
+                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        await this.FavoriteTermsDataSrc.UpdateFavTermEntries_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters
+        );
 
         return new object();
     }

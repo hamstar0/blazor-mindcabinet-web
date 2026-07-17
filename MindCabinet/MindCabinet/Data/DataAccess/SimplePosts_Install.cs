@@ -50,19 +50,19 @@ public partial class ServerDataAccess_SimplePosts : IServerDataAccess {
                 TermId defaultUserAsTermId ) {
         ClientDataAccess_Terms.IAPI.Create_Return sampleTerm = await termsDataSrc.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Sample", ContextId = null, AliasId = null }
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = "Sample", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.IAPI.Create_Return term1 = await termsDataSrc.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term1", ContextId = null, AliasId = null }
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = "Term1", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.IAPI.Create_Return term2 = await termsDataSrc.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term2", ContextId = null, AliasId = null }
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = "Term2", ContextId = null, AliasId = null }
         );
         ClientDataAccess_Terms.IAPI.Create_Return term3 = await termsDataSrc.Create_Async(
             dbConnection,
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermPattern = "Term3", ContextId = null, AliasId = null }
+            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = "Term3", ContextId = null, AliasId = null }
         );
         
 // termSetsData.CreateForSimplePost_Async

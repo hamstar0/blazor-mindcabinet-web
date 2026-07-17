@@ -14,23 +14,37 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public string Term { get; }
 
+    public string? Abbreviation { get; }
+
+    public string? Description { get; }
+
     public TermObject.Raw? Context { get; }
 
     public TermObject.Raw? Alias { get; }
 
 
 
-	public TermObject( TermId id, string term, TermObject? context, TermObject? alias ) {
+	public TermObject(
+                TermId id,
+                string term,
+                string? abbreviation,
+                string? description,
+                TermObject? context,
+                TermObject? alias ) {
 		if( id == 0 ) {
 			throw new ArgumentException( "Id cannot be 0 in TermObject." );
 		}
 
 		this.Id = id;
 		this.Term = term;
+		this.Abbreviation = abbreviation;
+		this.Description = description;
 		this.Context = context is not null
             ? TermObject.CreateRaw(
                 id: context.Id,
                 term: context.Term,
+                abbreviation: this.Abbreviation,
+                description: this.Description,
                 contextId: context.Context?.Id,
                 aliasId: context.Alias?.Id
             )
@@ -39,15 +53,25 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
             ? TermObject.CreateRaw(
                 id: alias.Id,
                 term: alias.Term,
+                abbreviation: this.Abbreviation,
+                description: this.Description,
                 contextId: alias.Context?.Id,
                 aliasId: alias.Alias?.Id
             )
             : null;
     }
 
-	public TermObject( TermId id, string term, TermObject.Raw? context, TermObject.Raw? alias ) {
+	public TermObject(
+                TermId id,
+                string term, 
+                string? abbreviation,
+                string? description,
+                TermObject.Raw? context,
+                TermObject.Raw? alias ) {
 		this.Id = id;
 		this.Term = term;
+		this.Abbreviation = abbreviation;
+		this.Description = description;
 		this.Context = context;
 		this.Alias = alias;
     }
@@ -57,6 +81,8 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
         return HashCode.Combine(
 			this.Id,
 			this.Term,
+            this.Abbreviation,
+            this.Description,
             this.Context is null
 				? 0 : HashCode.Combine( this.Context.Id, this.Context?.Term ),
             this.Alias is null
@@ -114,16 +140,20 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public string ToId( bool verbose ) {
         if( verbose ) {
-            return this.Term.StripWhitespace().StripNonAscii()+"_"+this.Id;
+            return (this.Abbreviation is not null ? this.Abbreviation : this.Term)
+                .StripWhitespace()
+                .StripNonAscii()+"_"+this.Id;
         } else {
             return this.Id.ToString();
         }
     }
 
     public override string ToString() {
+        string term = this.Abbreviation is not null ? this.Abbreviation : this.Term;
+        
 		return this.Context is not null
-            ? $"{this.Term} ({this.Context.Term})"
-			: this.Term;
+            ? $"{term} ({this.Context.Term})"
+			: term;
     }
 
     // public Prototype ToPrototype() {

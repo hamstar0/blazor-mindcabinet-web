@@ -7,11 +7,15 @@ public partial class TermObject {
     public static Raw CreateRaw(
             TermId id,
             string term,
+            string? abbreviation,
+            string? description,
             TermId? contextId = null,
             TermId? aliasId = null ) {
         return new Raw {
             Id = id,
             Term = term,
+            Abbreviation = abbreviation,
+            Description = description,
             ContextId = contextId,
             AliasId = aliasId
         };
@@ -20,6 +24,8 @@ public partial class TermObject {
     public class Raw : IRawDataObject { //IHasId<TermId>
         public TermId Id { get; set; } = default;
         public string Term { get; set; } = "";
+        public string? Abbreviation { get; set; } = "";
+        public string? Description { get; set; } = "";
         public TermId? ContextId { get; set; } = null;
         public TermId? AliasId { get; set; } = null;
 
@@ -28,6 +34,8 @@ public partial class TermObject {
             return new TermObject(
                 id: this.Id,
                 term: this.Term,
+                abbreviation: this.Abbreviation,
+                description: this.Description,
                 context: this.ContextId is not null
                     ? await termRawFactory( this.ContextId.Value )
                     : null,
@@ -43,6 +51,8 @@ public partial class TermObject {
         return TermObject.CreateRaw(
             id: this.Id,
             term: this.Term,
+            abbreviation: this.Abbreviation,
+            description: this.Description,
             contextId: this.Context?.Id,
             aliasId: this.Alias?.Id
         );
