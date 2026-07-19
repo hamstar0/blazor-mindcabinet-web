@@ -12,6 +12,8 @@ public enum TermId : long { }
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject {   //IHasId<TermId>
     public TermId Id { get; }
 
+    public SimpleUserId Creator { get; set; } = default;
+
     public string Term { get; private set; }
 
     public string? Abbreviation { get; private set; }
@@ -26,6 +28,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
 	public TermObject( TermObject copy ) : this(
         id: copy.Id,
+        creator: copy.Creator,
         term: copy.Term,
         abbreviation: copy.Abbreviation,
         description: copy.Description,
@@ -35,6 +38,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
 	public TermObject(
                 TermId id,
+                SimpleUserId creator,
                 string term,
                 string? abbreviation,
                 string? description,
@@ -45,12 +49,14 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 		}
 
 		this.Id = id;
+        this.Creator = creator;
 		this.Term = term;
 		this.Abbreviation = abbreviation;
 		this.Description = description;
 		this.Context = context is not null
             ? TermObject.CreateRaw(
                 id: context.Id,
+                creator: context.Creator,
                 term: context.Term,
                 abbreviation: this.Abbreviation,
                 description: this.Description,
@@ -61,6 +67,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 		this.Alias = alias is not null
             ? TermObject.CreateRaw(
                 id: alias.Id,
+                creator: alias.Creator,
                 term: alias.Term,
                 abbreviation: this.Abbreviation,
                 description: this.Description,
@@ -72,12 +79,14 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
 	public TermObject(
                 TermId id,
+                SimpleUserId creator,
                 string term, 
                 string? abbreviation,
                 string? description,
                 TermObject.Raw? context,
                 TermObject.Raw? alias ) {
 		this.Id = id;
+		this.Creator = creator;
 		this.Term = term;
 		this.Abbreviation = abbreviation;
 		this.Description = description;
@@ -89,6 +98,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     public override int GetHashCode() {
         return HashCode.Combine(
 			this.Id,
+            this.Creator,
 			this.Term,
             this.Abbreviation,
             this.Description,
@@ -114,6 +124,10 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 		if( Object.ReferenceEquals(this, other) ) { return true; }
 
         if( this.Id != other.Id ) {
+            return false;
+        }
+
+        if( this.Creator != other.Creator ) {
             return false;
         }
 

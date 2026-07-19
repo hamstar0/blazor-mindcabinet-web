@@ -232,14 +232,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 bool detectCollision,
-                bool createPostsContext ) {
+                bool createUserData ) {
         SimpleUserObject.StatusCode code;
         code = SimpleUserObject.GetUserNameStatus(parameters.Name);
         if( code != SimpleUserObject.StatusCode.OK ) {
@@ -305,37 +305,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
-        TermObject.Raw? userTerm = null;
-        PostsContextObject.Raw? userDefaultPostsContext = null;
-
-        if( createPostsContext ) {
-            userTerm = await this.CreateUserTerm_Async(
-                dbCon: dbCon,
-                serverDataSrc: serverDataSrc,
-                termsDataSrc: termsDataSrc,
-                userName: parameters.Name
-            );
-
-            userDefaultPostsContext = await this.CreateDefaultUserPostsContext_Async(
-                dbCon: dbCon,
-                postsContextDataSrc: postsContextDataSrc,
-                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-                parameters: parameters,
-                ownerUserId: (SimpleUserId)newUserId
-            );
-            
-            await userAppDataSrc.Create_Async(
-                dbCon: dbCon,
-                simpleUserId: (SimpleUserId)newUserId,
-                userDefaultPostsContextId: userDefaultPostsContext.Id,
-                userDefaultTermId: userTerm.Id
-            );
-        }
-
-        //
-
         var userRaw = SimpleUserObject.CreateRaw(
-            id: (SimpleUserId)newUserId,
+            id: newUser.Id,
             created: now,
             name: parameters.Name,
             email: parameters.Email,
@@ -357,14 +328,33 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
+        TermObject.Raw? userTerm = null;
+        PostsContextObject.Raw? userDefaultPostsContext = null;
+
+        if( createUserData ) {
+            (userTerm, userDefaultPostsContext) = await this.CreateUserData_Async(
+                dbCon: dbCon,
+                serverDataSrc: serverDataSrc,
+                userAppDataSrc: userAppDataSrc,
+                termsDataSrc: termsDataSrc,
+                postsContextDataSrc: postsContextDataSrc,
+                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                parameters: parameters,
+                newUserId: newUser.Id
+            );
+        }
+
+        //
+
         return new SimpleUserQueryResult( newUser, userDefaultPostsContext, userTerm, false );
     }
 
-    internal async Task<TermObject.Raw> CreateUserTerm_Async(
+    private async Task<TermObject.Raw> CreateUserTerm_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_Terms termsDataSrc,
-                string userName ) {
+                string userName,
+                SimpleUserId creator ) {
         ServerDataObject.Raw? serverDataObj = await serverDataSrc.Get_Async( dbCon );
         if( serverDataObj is null ) {
             throw new Exception( "Server application data not found." );
@@ -373,16 +363,18 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             throw new Exception( "User Concept term not found." );
         }
 
-        return (
-            await termsDataSrc.Create_Async( dbCon, new ClientDataAccess_Terms.IAPI.Create_Params {
+        return ( await termsDataSrc.Create_Async(
+            dbCon,
+            creator,
+            new ClientDataAccess_Terms.IAPI.Create_Params {
                 TermBody = userName,
                 ContextId = serverDataObj?.UsersConceptTermId
-            } )
-        ).TermRaw;
+            }
+        ) ).TermRaw;
     }
 
     
-    internal async Task<PostsContextObject.Raw> CreateDefaultUserPostsContext_Async(
+    private async Task<PostsContextObject.Raw> CreateDefaultUserPostsContext_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
                 ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
@@ -421,5 +413,40 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //     .ToDataObject_Async( dbCon, termsData, rawCtx );
 
         return proto.ToRaw(true);
+    }
+    
+    internal async Task<(TermObject.Raw, PostsContextObject.Raw)> CreateUserData_Async(
+                IDbConnection dbCon,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
+                SimpleUserId newUserId ) {
+        TermObject.Raw userTerm = await this.CreateUserTerm_Async(
+            dbCon: dbCon,
+            serverDataSrc: serverDataSrc,
+            termsDataSrc: termsDataSrc,
+            userName: parameters.Name,
+            creator: newUserId
+        );
+
+        PostsContextObject.Raw userDefaultPostsContext = await this.CreateDefaultUserPostsContext_Async(
+            dbCon: dbCon,
+            postsContextDataSrc: postsContextDataSrc,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            parameters: parameters,
+            ownerUserId: newUserId
+        );
+        
+        await userAppDataSrc.Create_Async(
+            dbCon: dbCon,
+            simpleUserId: newUserId,
+            userDefaultPostsContextId: userDefaultPostsContext.Id,
+            userDefaultTermId: userTerm.Id
+        );
+
+        return (userTerm, userDefaultPostsContext);
     }
 }

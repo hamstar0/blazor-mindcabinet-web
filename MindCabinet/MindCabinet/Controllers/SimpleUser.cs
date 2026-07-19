@@ -100,7 +100,7 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
             userAppDataSrc: this.UserAppDataSrc,
             parameters: parameters,
             detectCollision: true,
-            createPostsContext: true
+            createUserData: true
         );
 
         // if( result.User is not null ) {      <- Do not log in automatically!

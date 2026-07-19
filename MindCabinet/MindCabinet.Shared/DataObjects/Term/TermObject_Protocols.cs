@@ -6,6 +6,7 @@ namespace MindCabinet.Shared.DataObjects.Term;
 public partial class TermObject {
     public static Raw CreateRaw(
             TermId id,
+            SimpleUserId creator,
             string term,
             string? abbreviation,
             string? description,
@@ -13,6 +14,7 @@ public partial class TermObject {
             TermId? aliasId = null ) {
         var raw = new Raw {
             Id = id,
+            Creator = creator,
             Term = term,
             Abbreviation = abbreviation,
             Description = description,
@@ -27,6 +29,7 @@ public partial class TermObject {
 
     public class Raw : IRawDataObject { //IHasId<TermId>
         public TermId Id { get; set; } = default;
+        public SimpleUserId Creator { get; set; } = default;
         public string Term { get; set; } = "";
         public string? Abbreviation { get; set; } = "";
         public string? Description { get; set; } = "";
@@ -37,6 +40,7 @@ public partial class TermObject {
         public async Task<TermObject> ToDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {
             return new TermObject(
                 id: this.Id,
+                creator: this.Creator,
                 term: this.Term,
                 abbreviation: this.Abbreviation,
                 description: this.Description,
@@ -60,6 +64,7 @@ public partial class TermObject {
     public TermObject.Raw ToRaw() {
         return TermObject.CreateRaw(
             id: this.Id,
+            creator: this.Creator,
             term: this.Term,
             abbreviation: this.Abbreviation,
             description: this.Description,

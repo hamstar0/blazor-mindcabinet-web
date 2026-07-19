@@ -47,6 +47,7 @@ v0.7
 			-	Implement functionality
 
 
+			-	@Implement Owner field for terms
 			-	Implement css grid to make uniform layout
 			-	Define
 		-	Implement terms list element (always vertical)

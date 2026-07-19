@@ -164,6 +164,7 @@ public partial class ServerDataAccess_Terms(
 
     public async Task<ClientDataAccess_Terms.IAPI.Create_Return> Create_Async(
                 IDbConnection dbCon,
+                SimpleUserId creator,
                 ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
         if( !TermObject.ValidateTerm(parameters.TermBody) ) {
             throw new ArgumentException( "Term is not valid." );
@@ -187,15 +188,17 @@ public partial class ServerDataAccess_Terms(
             $@"INSERT INTO {TableName}
                 (
                     {TableColumn_Term},
+                    {TableColumn_Creator},
                     {TableColumn_Abbreviation},
                     {TableColumn_Description},
                     {TableColumn_ContextId},
                     {TableColumn_AliasId}
                 ) 
-                VALUES (@Term, @Abbreviation, @Description, @ContextId, @AliasId);
+                VALUES (@Term, @Creator, @Abbreviation, @Description, @ContextId, @AliasId);
             SELECT LAST_INSERT_ID();",
             new {
                 Term = parameters.TermBody,
+                Creator = creator,
                 Abbreviation = parameters.Abbreviation,
                 Description = parameters.Description,
                 ContextId = parameters.ContextId,
@@ -208,6 +211,7 @@ public partial class ServerDataAccess_Terms(
 
         var newTermRaw = TermObject.CreateRaw(
 			id: (TermId)newId,
+            creator: creator,
 			term: parameters.TermBody,
             abbreviation: parameters.Abbreviation,
             description: parameters.Description,

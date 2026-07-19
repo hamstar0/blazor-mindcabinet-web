@@ -47,7 +47,14 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
     
-    public async Task<(bool success, SimpleUserId defaultUserId, TermId defaultUserAsTermId)> Install_After_Async(
+    private ClientDataAccess_SimpleUsers.IAPI.Create_Params DefaultUserParams = new ClientDataAccess_SimpleUsers.IAPI.Create_Params {
+        Name = "hamstar",   // temporary!!!!!
+        Email = "hamstarhelper@gmail.com",
+        Password = "12345A",
+        IsValidated = true
+    };
+
+    public async Task<(bool success, SimpleUserId defaultUserId)> Install_After_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_PostsContexts postsContextDataSrc,
@@ -61,14 +68,9 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
             serverDataSrc: serverDataSrc,
             userAppDataSrc: userAppDataSrc,
-            parameters: new ClientDataAccess_SimpleUsers.IAPI.Create_Params {
-                Name = "hamstar",   // temporary!!!!!
-                Email = "hamstarhelper@gmail.com",
-                Password = "12345A",
-                IsValidated = true
-            },
+            parameters: this.DefaultUserParams,
             detectCollision: false,
-            createPostsContext: true
+            createUserData: false
         );
         //throw new Exception( JsonSerializer.Serialize(obj) );
 
@@ -76,6 +78,29 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             throw new Exception( "Failed to create default user: "+(result.AlreadyExists ? "already exists" : "unknown error") );
         }
 
-        return (true, result.User.Id, result.UserAsTermId!.Id);
+        return (true, result.User.Id);
+    }
+    
+
+    public async Task<(bool success, TermId defaultUserAsTermId)> Install_AfterDefaultUserAndServerData_Async(
+                IDbConnection dbConnection,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_ServerData serverDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                SimpleUserId defaultUserId ) {
+        (TermObject.Raw defaultUserAsTerm, _) = await this.CreateUserData_Async(
+            dbCon: dbConnection,
+            termsDataSrc: termsDataSrc,
+            postsContextDataSrc: postsContextDataSrc,
+            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            serverDataSrc: serverDataSrc,
+            userAppDataSrc: userAppDataSrc,
+            parameters: this.DefaultUserParams,
+            newUserId: defaultUserId
+        );
+
+        return (true, defaultUserAsTerm.Id);
     }
 }

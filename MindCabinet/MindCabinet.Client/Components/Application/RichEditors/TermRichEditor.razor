@@ -35,7 +35,8 @@
                     <input type="text"
                             @bind:event="oninput"
                             @bind:get=@this.AbbreviationValue
-                            @bind:set=@this.OnInputAbbreviationValue_UI_Async />
+                            @bind:set=@this.OnEditAbbreviationValue_UI_Async
+                            @onkeydown=@this.OnEnterAbbreviationValue_UI_Async />
                 </div>
             }
         </div>
@@ -44,7 +45,7 @@
                 @* @this.Term?.Context?.Term *@
                 <TermSearchPicker 
                         InitialValue=@this.ContextTermValue
-                        OnTermSelect_Async=@this.OnInputContextTermValue_UI_Async/>
+                        OnTermSelect_Async=@this.OnEnterContextTermValue_UI_Async />
             }
         </div>
         <div style="overflow-x: scroll;">
@@ -101,20 +102,35 @@
         }
         
         if( this.TermValueIsValid ) {
-            bool isValid = this.InitialTerm.SetTerm( this.TermValue );
+            this.InitialTerm.SetTerm( this.TermValue );
 
-            await this.TermDataSrc.Update_Async( new ClientDataAccess_Terms.IAPI.Update_Params {
+            await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
                 Id = this.InitialTerm.Id,
                 Term = this.TermValue
             } );
         }
     }
 
-    private async Task OnInputAbbreviationValue_UI_Async( string value ) {
+    private async Task OnEditAbbreviationValue_UI_Async( string value ) {
         f
     }
 
-    private async Task OnInputContextTermValue_UI_Async( TermObject value ) {
+    private async Task OnEnterAbbreviationValue_UI_Async( KeyboardEventArgs arg ) {
+        if( arg.Code != "Enter" && arg.Code != "NumpadEnter" ) {
+            return;
+        }
+        
+        if( this.AbbreviationValueIsValid ) {
+            this.InitialTerm.SetAbbreviation( this.AbbreviationValue );
+
+            await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
+                Id = this.InitialTerm.Id,
+                Abbreviation = this.AbbreviationValue
+            } );
+        }
+    }
+
+    private async Task OnEnterContextTermValue_UI_Async( TermObject value ) {
         f
     }
 

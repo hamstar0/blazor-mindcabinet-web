@@ -36,15 +36,6 @@ public partial class AllTermsRichEditor : ComponentBase {
     public OnTermsChange_Func OnTermsChange_Async { get; set; } = null!;
 
 
-    public delegate Task OnTermReordered_Func(
-        TermObject terms,
-        int offset
-    );
-
-    [Parameter]
-    public OnTermReordered_Func? OnTermReordered_Async { get; set; } = null!;
-
-
 
 	protected async override Task OnInitializedAsync() {
 		await base.OnInitializedAsync();

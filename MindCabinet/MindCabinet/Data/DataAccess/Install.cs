@@ -11,17 +11,17 @@ namespace MindCabinet.Data.DataAccess;
 public partial class ServerDataAccess_Install : IServerDataAccess {
     public async Task<bool> Install_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_SimpleUsers simpleUsersData,
-                ServerDataAccess_SimpleUserSessions sessionsData,
-                ServerDataAccess_Terms termsData,
-                ServerDataAccess_SimplePostTags simplePostTagsData,
-                ServerDataAccess_SimplePosts simplePostsData,
-                ServerDataAccess_UserTermFavorites favoriteTermsData,
-                ServerDataAccess_UserTermsHistory historyTermsData,
-                ServerDataAccess_PostsContexts postsContextData,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryData,
-                ServerDataAccess_UserAppData userAppData,
-                ServerDataAccess_ServerData serverData ) {
+                ServerDataAccess_SimpleUsers simpleUsersDataSrc,
+                ServerDataAccess_SimpleUserSessions sessionsDataSrc,
+                ServerDataAccess_Terms termsDataSrc,
+                ServerDataAccess_SimplePostTags simplePostTagsDataSrc,
+                ServerDataAccess_SimplePosts simplePostsDataSrc,
+                ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
+                ServerDataAccess_UserTermsHistory historyTermsDataSrc,
+                ServerDataAccess_PostsContexts postsContextDataSrc,
+                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_UserAppData userAppDataSrc,
+                ServerDataAccess_ServerData serverDataSrc ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
             return true;
         }
@@ -32,84 +32,96 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         TermId defaultUserAsTermId;
         TermObject.Raw sampleTerm;
 
-        success = await simpleUsersData.Install_Async( dbCon );
+        success = await simpleUsersDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await sessionsData.Install_Async( dbCon );
+        success = await sessionsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        (success, usersConceptTermId) = await termsData.Install_Async( dbCon );
+        success = await termsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await serverData.Install_Async( dbCon );
+        success = await serverDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await simplePostsData.Install_Async( dbCon );
+        success = await simplePostsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await simplePostTagsData.Install_Async( dbCon );
+        success = await simplePostTagsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await favoriteTermsData.Install_Async( dbCon );
+        success = await favoriteTermsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await historyTermsData.Install_Async( dbCon );
+        success = await historyTermsDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await postsContextData.Install_Async( dbCon );
+        success = await postsContextDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await postsContextTermEntryData.Install_Async( dbCon );
+        success = await postsContextTermEntryDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await userAppData.Install_Async( dbCon );
+        success = await userAppDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
         //
 
-        success = await serverData.Install_After_Async( dbCon, usersConceptTermId );
+        (success, defaultUserId) = await simpleUsersDataSrc.Install_After_Async(
+            dbCon,
+            termsDataSrc,
+            postsContextDataSrc,
+            postsContextTermEntryDataSrc,
+            serverDataSrc,
+            userAppDataSrc
+        );
+
+        (success, usersConceptTermId) = await termsDataSrc.Install_After_Async( dbCon, defaultUserId );
+
+        success = await serverDataSrc.Install_After_Async( dbCon, usersConceptTermId );
         if( !success ) {
             return false;
         }
 
-        (success, defaultUserId, defaultUserAsTermId) = await simpleUsersData.Install_After_Async(
+        (success, defaultUserAsTermId) = await simpleUsersDataSrc.Install_AfterDefaultUserAndServerData_Async(
             dbCon,
-            termsData,
-            postsContextData,
-            postsContextTermEntryData,
-            serverData,
-            userAppData
+            termsDataSrc,
+            postsContextDataSrc,
+            postsContextTermEntryDataSrc,
+            serverDataSrc,
+            userAppDataSrc,
+            defaultUserId
         );
         if( !success ) {
             return false;
         }
 
-        (success, sampleTerm) = await simplePostsData.Install_AfterUser_Async(
+        (success, sampleTerm) = await simplePostsDataSrc.Install_AfterUser_Async(
             dbCon,
-            termsData,
-            simplePostTagsData,
+            termsDataSrc,
+            simplePostTagsDataSrc,
             defaultUserId,
             defaultUserAsTermId
         );

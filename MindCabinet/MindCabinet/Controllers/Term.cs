@@ -62,8 +62,8 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
     }
 
 
-    [HttpPost(nameof(Create_Async))]
-    public async Task<ClientDataAccess_Terms.IAPI.Create_Return> Create_Async(
+    [HttpPost(nameof(CreateForCurrentUser_Async))]
+    public async Task<ClientDataAccess_Terms.IAPI.Create_Return> CreateForCurrentUser_Async(
                 ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
@@ -71,6 +71,10 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
 
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        return await this.TermsDataSrc.Create_Async( dbCon, parameters );
+        return await this.TermsDataSrc.Create_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters
+        );
     }
 }

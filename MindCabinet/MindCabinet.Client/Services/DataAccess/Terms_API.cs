@@ -53,6 +53,6 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
             public TermObject.Raw TermRaw { get; set; } = null!;
         }
 
-        public Task<Create_Return> Create_Async( Create_Params parameters );
+        public Task<Create_Return> CreateForCurrentUser_Async( Create_Params parameters );
     }
 }
