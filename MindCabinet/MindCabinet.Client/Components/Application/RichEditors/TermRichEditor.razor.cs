@@ -9,12 +9,12 @@ using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.DataObjects.UserTermFavorite;
 
 
-namespace MindCabinet.Client.Components.Application.Renders;
+namespace MindCabinet.Client.Components.Application.RichEditors;
 
 
-public partial class TermRender : ComponentBase {
+public partial class TermRichEditor : ComponentBase {
     [Inject]
-    public IJSRuntime Js { get; set; } = null!;
+    private ClientDataAccess_Terms TermDataSrc { get; set; } = null!;
 
     [Inject]
     private ClientDataAccess_UserTermFavorites UserTermFavoritesDataSrc { get; set; } = null!;
@@ -24,24 +24,18 @@ public partial class TermRender : ComponentBase {
 
 
     [Parameter]
+    public RenderFragment? PostFix { get; set; } = null;
+
+
+    [Parameter]
     public string? AddedClasses { get; set; } = null;
 
     [Parameter]
     public string? AddedStyles { get; set; } = null;
 
 
-    [Parameter]
-    public bool VerboseTermDisplay { get; set; } = false;
-
-    [Parameter]
-    public bool HasFavoriteButton { get; set; } = false;
-
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; } = null;
-
-
     [Parameter, EditorRequired]
-	public TermObject Term { get; set; } = null!;
+	public TermObject InitialTerm { get; set; } = null!;
 
 	[Parameter]
 	public Func<MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
@@ -52,23 +46,16 @@ public partial class TermRender : ComponentBase {
 	public OnDragFunc_Async? OnDrag_Async { get; set; } = null;
 
 
-    private ElementReference ComponentElement;
 
-    
+	protected override void OnParametersSet() {
+		base.OnParametersSet();
 
-    private async Task<bool> HandleDrag_Async( MouseEventArgs e ) {
-        if( e.ClientX == this.DragStartX && e.ClientY == this.DragStartY ) {
-            return false;
-        }
-
-        Rectangle rect = await this.Js.InvokeAsync<Rectangle>(
-            identifier: "getBoundingClientRect",
-            this.ComponentElement
-        );
-
-        return await this.OnDrag_Async!( e.ClientX, e.ClientY, rect );
-    }
-
+        this.TermValue = this.InitialTerm.Term;
+        this.AbbreviationValue = this.InitialTerm.Abbreviation ?? "";
+        this.DescriptionValue = this.InitialTerm.Description ?? "";
+        this.ContextTermValue = this.InitialTerm.Context?.Term ?? "";
+        // this.AliasTermValue = this._Term.Alias?.Term;
+	}
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
         if( this.MySessionMngr.UserId is null ) {
@@ -77,7 +64,7 @@ public partial class TermRender : ComponentBase {
 
         // TODO: Add caching
         IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
-        return termRaws.Any( t => t.FavTermId == this.Term.Id );
+        return termRaws.Any( t => t.FavTermId == this.InitialTerm.Id );
     }
 
 
@@ -88,13 +75,13 @@ public partial class TermRender : ComponentBase {
 
         IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
 
-        if( termRaws.Any(t => t.FavTermId == this.Term.Id) ) {
+        if( termRaws.Any(t => t.FavTermId == this.InitialTerm.Id) ) {
             await this.UserTermFavoritesDataSrc.RemoveTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.Term.Id] }
+                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.InitialTerm.Id] }
             );
         } else {
             await this.UserTermFavoritesDataSrc.AddTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.Term.Id] }
+                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.InitialTerm.Id] }
             );
         }
     }

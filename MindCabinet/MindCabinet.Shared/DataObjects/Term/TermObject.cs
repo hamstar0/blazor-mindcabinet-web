@@ -12,17 +12,26 @@ public enum TermId : long { }
 public partial class TermObject : IEquatable<TermObject>, IComparable, IComparable<TermObject>, IDataObject {   //IHasId<TermId>
     public TermId Id { get; }
 
-    public string Term { get; }
+    public string Term { get; private set; }
 
-    public string? Abbreviation { get; }
+    public string? Abbreviation { get; private set; }
 
-    public string? Description { get; }
+    public string? Description { get; private set; }
 
-    public TermObject.Raw? Context { get; }
+    public TermObject.Raw? Context { get; private set; }
 
-    public TermObject.Raw? Alias { get; }
+    public TermObject.Raw? Alias { get; private set; }
 
 
+
+	public TermObject( TermObject copy ) : this(
+        id: copy.Id,
+        term: copy.Term,
+        abbreviation: copy.Abbreviation,
+        description: copy.Description,
+        context: copy.Context,
+        alias: copy.Alias
+    ) { }
 
 	public TermObject(
                 TermId id,

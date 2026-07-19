@@ -47,8 +47,8 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task AddTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
+    public async Task AddTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.AddTermsForCurrentUser_Async)}",
             parameters: parameters
@@ -60,8 +60,8 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task RemoveTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
+    public async Task RemoveTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveTermsForCurrentUser_Async)}",
             parameters: parameters
@@ -73,8 +73,8 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task UpdateTermsForCurrentUser_Async( IAPI.UpdateTermsForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.UpdateTermsForCurrentUser_Params>(
+    public async Task UpdateTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateTermsForCurrentUser_Async)}",
             parameters: parameters

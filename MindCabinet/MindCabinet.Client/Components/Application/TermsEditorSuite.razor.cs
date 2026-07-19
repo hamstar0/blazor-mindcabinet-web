@@ -45,7 +45,7 @@ public partial class TermsEditorSuite : ComponentBase {
         }
 
         await this.FavDataSrc.UpdateTermsForCurrentUser_Async( 
-            new ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params {
+            new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params {
                 TermIds = this.FavTerms_Cache
                     .Select( f => f.FavTerm.Id )
                     .ToArray(),

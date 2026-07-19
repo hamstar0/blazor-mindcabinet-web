@@ -40,6 +40,11 @@ public partial class TermSearchPicker : ComponentBase {
 
     //private bool IsSeachFocused = false;
 
+
+    [Parameter]
+    public string? InitialValue { get; set; } = null;
+
+
     private string Value = "";
 
     //private bool IsCurrentInputSuppressed = false;
@@ -63,6 +68,12 @@ public partial class TermSearchPicker : ComponentBase {
 
 	protected async override Task OnParametersSetAsync() {
         await base.OnParametersSetAsync();
+
+        if( this.InitialValue is not null ) {
+            this.Value = this.InitialValue;
+
+            await this.SearchTerms_Async( this.Value );
+        }
 
         if( this.MySessionMngr.UserId is not null ) {
             await this.InitializeTermOptions_Async();

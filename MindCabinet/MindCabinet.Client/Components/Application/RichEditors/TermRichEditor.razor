@@ -1,0 +1,140 @@
+﻿@using System.Threading.Tasks;
+@using MindCabinet.Client.Components.Application.Pickers
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Services.DbAccess
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
+
+
+
+<div component-name="@nameof(TermRichEditor)"
+            class="basic block @(this.AddedClasses ?? "")"
+            style=@this.AddedStyles
+            @onclick=@this.OnClick_UI_Async>
+    <div style="display: grid; grid-template-columns: 48px 30% 30% 30% minmax(48px, auto);">
+        <div>
+            @if( this.InitialTerm is not null ) {
+                <button class=@(async () => await this.CurrentTermIsFavorite_Async() ? "lit" : "unlit")
+                        @onclick=this.OnFavoriteButtonClick_UI_Async>
+                    ★
+                </button>
+            }
+        </div>
+        <div style="overflow-x: scroll;">
+            <div style=@(this.TermValueIsValid ? "" : "border-color: red;")>
+                @* @(this.Term?.Term ?? "?") *@
+                <input type="text"
+                        @bind:event="oninput"
+                        @bind:get=@this.TermValue
+                        @bind:set=@this.OnEditTermValue_UI_Async
+                        @onkeydown=@this.OnEnterTermValue_UI_Async />
+            </div>
+            @if( this.InitialTerm?.Abbreviation is not null ) {
+                <div style="font: italics; @(this.AbbreviationValueIsValid ? "" : "border-color: red;")">
+                    @* @this.Term.Abbreviation *@
+                    <input type="text"
+                            @bind:event="oninput"
+                            @bind:get=@this.AbbreviationValue
+                            @bind:set=@this.OnInputAbbreviationValue_UI_Async />
+                </div>
+            }
+        </div>
+        <div style="overflow-x: scroll;">
+            @if( this.InitialTerm?.Context is not null ) {
+                @* @this.Term?.Context?.Term *@
+                <TermSearchPicker 
+                        InitialValue=@this.ContextTermValue
+                        OnTermSelect_Async=@this.OnInputContextTermValue_UI_Async/>
+            }
+        </div>
+        <div style="overflow-x: scroll;">
+            @if( this.InitialTerm?.Alias is not null ) {
+                <s>@this.InitialTerm.Alias.Term</s>
+            }
+        </div>
+        <div>
+            @this.PostFix
+        </div>
+    </div>
+    @if( this.InitialTerm?.Description is not null ) {
+        <div style="font: italics;">
+            @* @this.Term?.Description *@
+            <textarea name="post_editor"
+                    style="width: 100%;"
+                    @bind:event="oninput"
+                    @bind:get=@this.DescriptionValue
+                    @bind:set=@this.OnInputDescriptionValue_UI_Async />
+        </div>
+    }
+</div>
+
+
+
+@code {
+    private string TermValue = null!;
+    private bool TermValueIsValid = false;
+
+    private string AbbreviationValue = null!;
+    private bool AbbreviationValueIsValid = false;
+
+    private string ContextTermValue = null!;
+
+    private string DescriptionValue = null!;
+
+
+
+    private async Task OnEditTermValue_UI_Async( string value ) {
+        this.TermValue = value;
+
+        bool isValid = TermObject.ValidateTerm( value );
+        bool isChanged = this.TermValueIsValid != isValid;
+        
+        if( isChanged ) {
+            this.TermValueIsValid = isValid;
+            this.StateHasChanged();
+        }
+    }
+
+    private async Task OnEnterTermValue_UI_Async( KeyboardEventArgs arg ) {
+        if( arg.Code != "Enter" && arg.Code != "NumpadEnter" ) {
+            return;
+        }
+        
+        if( this.TermValueIsValid ) {
+            bool isValid = this.InitialTerm.SetTerm( this.TermValue );
+
+            await this.TermDataSrc.Update_Async( new ClientDataAccess_Terms.IAPI.Update_Params {
+                Id = this.InitialTerm.Id,
+                Term = this.TermValue
+            } );
+        }
+    }
+
+    private async Task OnInputAbbreviationValue_UI_Async( string value ) {
+        f
+    }
+
+    private async Task OnInputContextTermValue_UI_Async( TermObject value ) {
+        f
+    }
+
+    private async Task OnInputDescriptionValue_UI_Async( string value ) {
+        f
+    }
+
+
+
+
+    private async Task OnClick_UI_Async( MouseEventArgs args ) {
+        if( this.OnClick_Async is not null ) {
+            await this.OnClick_Async( args );
+        }
+    }
+
+    private async Task OnFavoriteButtonClick_UI_Async( MouseEventArgs args ) {
+        /*⭐*/
+        await this.ToggleFavoriteTerm_Async();
+
+        this.StateHasChanged();
+    }
+}

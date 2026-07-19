@@ -31,14 +31,16 @@
                 AddedStyle=@( this.AdjustableOrderAndVerticalStackMode ? "flex-shrink: 0;" : null )
                 OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
                 OnTermConfirm_Async=@this.AddTerm_UI_Async />
-    <div class=@(this.Terms.Count > 0 ? "card" : "")
-                style=@(this.AdjustableOrderAndVerticalStackMode ? "flex-grow: 1; min-height: 0;" : "")>
+    @{
+        string listStyles = this.AdjustableOrderAndVerticalStackMode ? "flex-grow: 1; min-height: 0;" : "";
+    }
+    <div class=@(this.Terms.Count > 0 ? "card" : "") style=@listStyles>
         @{
             string addedClass = this.AdjustableOrderAndVerticalStackMode
                 ? " block"
-                : "";
+                : " ib";
             foreach( TermObject termOfSet in this.Terms ) {
-                <TermRender AddedClasses=@($"ib {this.AddedPerItemClasses}{addedClass}")
+                <TermRender AddedClasses=@($"{this.AddedPerItemClasses}{addedClass}")
                             Term=@termOfSet
                             VerboseTermDisplay=@this.VerboseTermDisplay
                             HasFavoriteButton=@this.AllowFavoritingTerms

@@ -64,7 +64,7 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task AddFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -109,7 +109,7 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -136,7 +136,7 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task UpdateFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }

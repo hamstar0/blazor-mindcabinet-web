@@ -4,7 +4,7 @@ namespace MindCabinet.Shared.DataObjects.Term;
 
 
 public partial class TermObject {
-    public const int MinTermLength = 3;
+    public const int MinTermLength = 2;
     public const int MaxTermLength = 64;
 
     public static ISet<char> AllowedSpecialCharacters = new HashSet<char>(
@@ -38,23 +38,5 @@ public partial class TermObject {
         } );
 
         return keyboardOnly;
-    }
-
-    public static bool ValidateAbbreviation( string abbrev ) {
-        if( string.IsNullOrWhiteSpace(abbrev) ) {
-            return false;
-        }
-        if( abbrev.Length < 2 ) {
-            return false;
-        }
-        if( abbrev.Length > MaxTermLength ) {
-            return false;
-        }
-        
-        return abbrev.All( c => {
-            return char.IsLetterOrDigit(c) 
-                || TermObject.AllowedSpecialCharacters.Contains(c) 
-                || !char.IsWhiteSpace(c);
-        } );
     }
 }

@@ -1,0 +1,73 @@
+@using System.Drawing;
+@using Microsoft.AspNetCore.Components;
+@using MindCabinet.Client.Components.Application.Editors;
+@using MindCabinet.Client.Components.Application.Pickers
+@using MindCabinet.Client.Components.Standard;
+@using MindCabinet.Client.Services;
+@using MindCabinet.Shared.DataObjects;
+@using MindCabinet.Shared.DataObjects.Term;
+
+
+
+<div component-name="@nameof(AllTermsRichEditor)"
+            class=@this.AddedClasses
+            style="display: flex; flex-direction: column; min-height: 100%;">
+    @if( this.Label is not null ) {
+        <div style="flex-shrink: 0;">@this.Label</div>
+    }
+    <TermInputEditor AddedClasses="ib"
+                AddedStyle="flex-shrink: 0;"
+                OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+                OnTermConfirm_Async=@this.AddTerm_UI_Async />
+    <div class="card" style="flex-grow: 1; min-height: 0;">
+        @{
+            foreach( TermObject termOfSet in this.Terms ) {
+                <TermRichEditor InitialTerm=@termOfSet>
+                    <PostFix>
+                        <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
+                    </PostFix>
+                </TermRichEditor>
+            }
+        }
+    </div>
+</div>
+
+
+
+@code {
+    private async Task AddTerm_UI_Async( TermObject term, bool _ ) {
+        if( this.Terms.Any(t => t.Equals(term)) ) {
+            return;
+        }
+
+        if( await this.AddTerm_Async(term) ) {
+            this.StateHasChanged();
+        }
+
+        return;
+    }
+
+
+    public async Task<(string termText, bool isSubmit)> OnTermEditConfirmSubmit_UI_Async( string term ) {
+        await Task.CompletedTask;
+
+        return term.Contains(",")
+            ? (term.Split(",")[0], true)
+            : (term, false);
+    }
+
+
+    private async Task<bool> RemoveTerm_UI_Async( TermObject term ) {
+        if( !this.Terms.Any(t => t.Equals(term)) ) {
+            return false;
+        }
+
+        bool isRemoved = await this.RemoveTerm_Async( term );
+
+        if( isRemoved ) {
+            this.StateHasChanged();
+        }
+
+        return isRemoved;
+    }
+}

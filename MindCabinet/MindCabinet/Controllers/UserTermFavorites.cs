@@ -60,7 +60,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(AddTermsForCurrentUser_Async))]
     public async Task<object> AddTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -79,7 +79,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(RemoveTermsForCurrentUser_Async))]
     public async Task<object> RemoveTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -98,7 +98,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(UpdateTermsForCurrentUser_Async))]
     public async Task<object> UpdateTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.UpdateTermsForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

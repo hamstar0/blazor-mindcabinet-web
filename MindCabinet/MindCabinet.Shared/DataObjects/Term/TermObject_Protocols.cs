@@ -11,7 +11,7 @@ public partial class TermObject {
             string? description,
             TermId? contextId = null,
             TermId? aliasId = null ) {
-        return new Raw {
+        var raw = new Raw {
             Id = id,
             Term = term,
             Abbreviation = abbreviation,
@@ -19,6 +19,10 @@ public partial class TermObject {
             ContextId = contextId,
             AliasId = aliasId
         };
+        if( !raw.Validate() ) {
+            throw new ArgumentException("Invalid term params");
+        }
+        return raw;
     }
 
     public class Raw : IRawDataObject { //IHasId<TermId>
@@ -43,6 +47,12 @@ public partial class TermObject {
                     ? await termRawFactory( this.AliasId.Value )
                     : null
             );
+        }
+
+        public bool Validate() {
+            return this.Id != 0
+                && TermObject.ValidateTerm(this.Term)
+                && (this.Abbreviation is null || TermObject.ValidateTerm(this.Abbreviation));
         }
     }
 
