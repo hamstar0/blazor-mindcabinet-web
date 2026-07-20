@@ -44,7 +44,7 @@
             @if( this.InitialTerm?.Context is not null ) {
                 @* @this.Term?.Context?.Term *@
                 <TermSearchPicker 
-                        InitialValue=@this.ContextTermValue
+                        InitialValue=@(this.InitialTerm?.Context.Term ?? "")
                         OnTermSelect_Async=@this.OnEnterContextTermValue_UI_Async />
             }
         </div>
@@ -61,10 +61,12 @@
         <div style="font: italics;">
             @* @this.Term?.Description *@
             <textarea name="post_editor"
-                    style="width: 100%;"
+                    rows="2"
+                    style="white-space: pre-wrap; overflow-wrap: break-word; width: 100%;"
                     @bind:event="oninput"
                     @bind:get=@this.DescriptionValue
-                    @bind:set=@this.OnInputDescriptionValue_UI_Async />
+                    @bind:set=@this.OnInputDescriptionValue_UI_Async
+                    @onkeydown=@this.OnEnterDescriptionValue_UI_Async />
         </div>
     }
 </div>
@@ -77,8 +79,6 @@
 
     private string AbbreviationValue = null!;
     private bool AbbreviationValueIsValid = false;
-
-    private string ContextTermValue = null!;
 
     private string DescriptionValue = null!;
 
@@ -100,45 +100,77 @@
         if( arg.Code != "Enter" && arg.Code != "NumpadEnter" ) {
             return;
         }
-        
-        if( this.TermValueIsValid ) {
-            this.InitialTerm.SetTerm( this.TermValue );
+        if( this.InitialTerm.Term == this.TermValue ) {
+            return;
+        }
 
-            await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
-                Id = this.InitialTerm.Id,
-                Term = this.TermValue
-            } );
+        if( !TermObject.ValidateTerm(this.TermValue) ) {
+            this.TermValueIsValid = false;
+
+            this.StateHasChanged();
+        }
+
+        if( this.TermValueIsValid ) {
+            await this.UpdateTermValue_Async( this.TermValue );
         }
     }
 
     private async Task OnEditAbbreviationValue_UI_Async( string value ) {
-        f
+        this.AbbreviationValue = value;
+
+        bool isValid = TermObject.ValidateTerm( value );
+        bool isChanged = this.AbbreviationValueIsValid != isValid;
+        
+        if( isChanged ) {
+            this.AbbreviationValueIsValid = isValid;
+            this.StateHasChanged();
+        }
     }
 
     private async Task OnEnterAbbreviationValue_UI_Async( KeyboardEventArgs arg ) {
         if( arg.Code != "Enter" && arg.Code != "NumpadEnter" ) {
             return;
         }
+        if( this.InitialTerm.Abbreviation == this.AbbreviationValue ) {
+            return;
+        }
+
+        if( !TermObject.ValidateTerm(this.AbbreviationValue) ) {
+            this.AbbreviationValueIsValid = false;
+
+            this.StateHasChanged();
+        }
         
         if( this.AbbreviationValueIsValid ) {
-            this.InitialTerm.SetAbbreviation( this.AbbreviationValue );
-
-            await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
-                Id = this.InitialTerm.Id,
-                Abbreviation = this.AbbreviationValue
-            } );
+            await this.UpdateAbbreviationValue_Async( this.AbbreviationValue );
         }
     }
 
     private async Task OnEnterContextTermValue_UI_Async( TermObject value ) {
-        f
+        if( this.InitialTerm.Context?.Id == value.Id ) {
+            return;
+        }
+        
+        await this.UpdateContextValue_Async( value );
     }
 
     private async Task OnInputDescriptionValue_UI_Async( string value ) {
-        f
+        this.DescriptionValue = value?
+            .Replace( oldValue: "\r", newValue: "" )
+            .Replace( oldValue: "\n", newValue: "" ) ?? "";
     }
 
+    private async Task OnEnterDescriptionValue_UI_Async( KeyboardEventArgs arg ) {
+        if( arg.Code != "Enter" && arg.Code != "NumpadEnter" ) {
+            return;
+        }
 
+        if( this.InitialTerm.Description == this.DescriptionValue ) {
+            return;
+        }
+
+        await this.UpdateDescriptionValue_Async( this.DescriptionValue );
+    }
 
 
     private async Task OnClick_UI_Async( MouseEventArgs args ) {

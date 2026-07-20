@@ -9,6 +9,8 @@
 v2
 -	Posts "permissions" (AKA user groups)
 -	Tag icons
+-	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
+-	@Brainstorm content templates for posts (also via tags)
 -	@Brainstorm value data for posts (contextualized by tags)
 v1
 -	Deploy
@@ -19,13 +21,13 @@ v1
 -	Ensure (again) user is validated before using write or sensitive read API calls (including user API itself)
 -	Implement posts per page adjuster
 v0.9
+-	Implement posts grid view toggle
 -	Apply mobile device layout accommodations
--	Have any posts tagged "Push Notify" create random notifications (frequency based on priority)
 -	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
 -	(Decide) Add a button to shuffle main view of posts
--	Add bulk tag editor for posts in view
+-	Implement tabs behaviors
+	-	Moving (drag and drop)
 v0.8
--	Implement post grid view
 -	Styling!
 -	Add landing page when not logged in
 -	Add login success message alert popup
@@ -33,16 +35,17 @@ v0.8
 -	Set modal dialogs to have default input focused onto when open
 -	Keep post create component fixed to the bottom
 -	Implement tabs behaviors
-	-	Moving (drag and drop)
 	-	Tab closing (button + middle click)
 v0.7
 -	Add tag picker (favorites, recents) for posts in post view (attached popup on post focus)
--	Implement tag removals for posts
--	@Validate favorites submit to not allow invalid user id
+-	Implement tag removals for (own) posts
+-	Validate favorites submit to not allow invalid user id
 -	Trim whitespace from text inputs
 -	Implement terms editor suite (included favorites editor, existing terms editor)
 	-	@Test
-	-	Implement TermsRichEditor (lists terms with sort and paginate, edits terms, creates/removes terms)
+	-	Finish implementing AllTermsRichEditor (lists terms with sort and paginate, edits terms, creates/removes terms)
+		-	Implement sort and paginate
+		-	Render list of all terms via TermRichEditor instances
 		-	Implement TermRichEditor component (shows each field in table-like form)
 			-	Implement functionality
 

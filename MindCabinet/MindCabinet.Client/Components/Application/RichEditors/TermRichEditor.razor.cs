@@ -53,8 +53,6 @@ public partial class TermRichEditor : ComponentBase {
         this.TermValue = this.InitialTerm.Term;
         this.AbbreviationValue = this.InitialTerm.Abbreviation ?? "";
         this.DescriptionValue = this.InitialTerm.Description ?? "";
-        this.ContextTermValue = this.InitialTerm.Context?.Term ?? "";
-        // this.AliasTermValue = this._Term.Alias?.Term;
 	}
 
     public async Task<bool> CurrentTermIsFavorite_Async() {
@@ -84,5 +82,50 @@ public partial class TermRichEditor : ComponentBase {
                 new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.InitialTerm.Id] }
             );
         }
+    }
+
+    
+    private async Task UpdateTermValue_Async( string value ) {
+        if( !TermObject.ValidateTerm(value) ) {
+            throw new Exception();
+        }
+
+        this.InitialTerm.SetTerm( value );
+
+        await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
+            Id = this.InitialTerm.Id,
+            Term = value
+        } );
+    }
+
+    private async Task UpdateAbbreviationValue_Async( string value ) {
+        if( !TermObject.ValidateTerm(value) ) {
+            throw new Exception();
+        }
+
+        this.InitialTerm.SetAbbreviation( value );
+
+        await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
+            Id = this.InitialTerm.Id,
+            Abbreviation = value
+        } );
+    }
+
+    private async Task UpdateContextValue_Async( TermObject value ) {
+        this.InitialTerm.SetContext( value.ToRaw() );
+
+        await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
+            Id = this.InitialTerm.Id,
+            Context = value
+        } );
+    }
+
+    private async Task UpdateDescriptionValue_Async( string value ) {
+        this.InitialTerm.SetDescription( value );
+
+        await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
+            Id = this.InitialTerm.Id,
+            Description = value
+        } );
     }
 }
