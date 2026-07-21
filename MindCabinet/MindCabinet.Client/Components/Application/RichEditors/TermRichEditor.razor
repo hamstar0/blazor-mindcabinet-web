@@ -21,7 +21,14 @@
             }
         </div>
         <div style="overflow-x: scroll;">
-            <div style=@(this.TermValueIsValid ? "" : "border-color: red;")>
+            @{
+                string termInputHighlight = !this.TermValueIsValid
+                    ? "border-color: red;"
+                    : this.TermValue != this.InitialTerm?.Term
+                        ? "border-color: yellow;"
+                        : "";
+            }
+            <div style=@termInputHighlight>
                 @* @(this.Term?.Term ?? "?") *@
                 <input type="text"
                         @bind:event="oninput"
@@ -30,7 +37,12 @@
                         @onkeydown=@this.OnEnterTermValue_UI_Async />
             </div>
             @if( this.InitialTerm?.Abbreviation is not null ) {
-                <div style="font: italics; @(this.AbbreviationValueIsValid ? "" : "border-color: red;")">
+                string abbrevInputHighlight = !this.AbbreviationValueIsValid
+                    ? "border-color: red;"
+                    : this.AbbreviationValue != this.InitialTerm.Abbreviation
+                        ? "border-color: yellow;"
+                        : "";
+                <div style=$"font: italics; {color}">
                     @* @this.Term.Abbreviation *@
                     <input type="text"
                             @bind:event="oninput"
@@ -42,8 +54,7 @@
         </div>
         <div style="overflow-x: scroll;">
             @if( this.InitialTerm?.Context is not null ) {
-                @* @this.Term?.Context?.Term *@
-                <TermSearchPicker 
+                <TermSearchPicker
                         InitialValue=@(this.InitialTerm?.Context.Term ?? "")
                         OnTermSelect_Async=@this.OnEnterContextTermValue_UI_Async />
             }

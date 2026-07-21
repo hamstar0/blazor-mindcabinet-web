@@ -94,7 +94,7 @@ public partial class TermRichEditor : ComponentBase {
 
         await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
             Id = this.InitialTerm.Id,
-            Term = value
+            TermBody = value
         } );
     }
 
@@ -116,7 +116,7 @@ public partial class TermRichEditor : ComponentBase {
 
         await this.TermDataSrc.UpdateForCurrentUser_Async( new ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params {
             Id = this.InitialTerm.Id,
-            Context = value
+            ContextId = value.Id
         } );
     }
 

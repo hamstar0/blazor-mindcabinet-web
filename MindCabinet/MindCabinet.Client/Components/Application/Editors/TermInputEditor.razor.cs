@@ -76,8 +76,8 @@ public partial class TermInputEditor : ComponentBase {
     }
 
     private async Task<bool> SubmitNewTerm_Async( string termText, TermObject? contextTerm ) {
-        ClientDataAccess_Terms.IAPI.Create_Return newTermRet = await this.TermsDataSrc.Create_Async(
-            new ClientDataAccess_Terms.IAPI.Create_Params { TermBody = termText, ContextId = contextTerm?.Id, AliasId = null }
+        ClientDataAccess_Terms.IAPI.CreateForCurrentUser_Return newTermRet = await this.TermsDataSrc.CreateForCurrentUser_Async(
+            new ClientDataAccess_Terms.IAPI.CreateForCurrentUser_Params { TermBody = termText, ContextId = contextTerm?.Id, AliasId = null }
         );
 
         TermObject newTerm = await ClientDataAccess_Terms.ConvertRawToDataObject_Async( this.TermsDataSrc, newTermRet.TermRaw );

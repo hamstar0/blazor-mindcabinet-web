@@ -62,8 +62,8 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
     }
 
 
-    public async Task<IAPI.Create_Return> Create_Async( IAPI.Create_Params parameters ) {
-        var ret = await IClientDataAccess.CallAPI_Async<IAPI.Create_Params, IAPI.Create_Return>(
+    public async Task<IAPI.CreateForCurrentUser_Return> CreateForCurrentUser_Async( IAPI.CreateForCurrentUser_Params parameters ) {
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.CreateForCurrentUser_Params, IAPI.CreateForCurrentUser_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.CreateForCurrentUser_Async)}",
             parameters: parameters
@@ -76,5 +76,14 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
         //
 
         return ret;
+    }
+
+
+    public async Task<bool> UpdateForCurrentUser_Async( IAPI.UpdateForCurrentUser_Params parameters ) {
+        return await IClientDataAccess.CallAPI_Async<IAPI.UpdateForCurrentUser_Params, bool>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateForCurrentUser_Async)}",
+            parameters: parameters
+        );
     }
 }

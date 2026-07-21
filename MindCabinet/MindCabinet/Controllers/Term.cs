@@ -63,8 +63,8 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
 
 
     [HttpPost(nameof(CreateForCurrentUser_Async))]
-    public async Task<ClientDataAccess_Terms.IAPI.Create_Return> CreateForCurrentUser_Async(
-                ClientDataAccess_Terms.IAPI.Create_Params parameters ) {
+    public async Task<ClientDataAccess_Terms.IAPI.CreateForCurrentUser_Return> CreateForCurrentUser_Async(
+                ClientDataAccess_Terms.IAPI.CreateForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -72,6 +72,32 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
         return await this.TermsDataSrc.Create_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters
+        );
+    }
+
+
+    [HttpPost(nameof(UpdateForCurrentUser_Async))]
+    public async Task<bool> UpdateForCurrentUser_Async(
+                ClientDataAccess_Terms.IAPI.UpdateForCurrentUser_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        var term = await this.TermsDataSrc.GetById_Async( dbCon, parameters.Id );
+
+        if( term is null ) {
+            return false;   // leet haxor again
+        }
+        if( term.Creator != this.SessionManager.UserOfSession.Id ) {
+            return false;   // leet haxor again
+        }
+
+        return await this.TermsDataSrc.Update_Async(
             dbCon,
             this.SessionManager.UserOfSession.Id,
             parameters

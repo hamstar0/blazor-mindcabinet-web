@@ -40,7 +40,7 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
 
-        public class Create_Params {
+        public class CreateForCurrentUser_Params {
             public string TermBody { get; set; } = "";
             public string? Abbreviation { get; set; } = "";
             public string? Description { get; set; } = "";
@@ -48,11 +48,23 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
             public TermId? AliasId { get; set; }
         }
 
-        public class Create_Return {
+        public class CreateForCurrentUser_Return {
             public bool IsAdded { get; set; }
             public TermObject.Raw TermRaw { get; set; } = null!;
         }
 
-        public Task<Create_Return> CreateForCurrentUser_Async( Create_Params parameters );
+        public Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( CreateForCurrentUser_Params parameters );
+
+
+        public class UpdateForCurrentUser_Params {
+            public TermId Id { get; set; }
+            public string? TermBody { get; set; } = "";
+            public string? Abbreviation { get; set; } = "";
+            public string? Description { get; set; } = "";
+            public TermId? ContextId { get; set; }
+            public TermId? AliasId { get; set; }
+        }
+
+        public Task<bool> UpdateForCurrentUser_Async( UpdateForCurrentUser_Params parameters );
     }
 }
