@@ -34,9 +34,17 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
             public TermId? ContextTermId { get; set; }
 
             public string? ContextTermPattern { get; set; }
+
+            public int? Page { get; set; }
+
+            public int? PageSize { get; set; }
+
+            public bool SortAscendingByTerm { get; set; } = false;
         }
         
         public Task<GetByX_Return> GetByCriteria_Async( GetByCriteria_Params parameters );
+        
+        public Task<int> GetCountByCriteria_Async( GetByCriteria_Params parameters );
 
 
 

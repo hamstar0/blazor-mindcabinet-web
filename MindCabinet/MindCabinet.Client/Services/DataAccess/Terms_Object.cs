@@ -26,7 +26,7 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
     public static async Task<TermObject[]> ConvertRawsToDataObjects_Async(
                 ClientDataAccess_Terms termsDataSrc,
-                TermObject.Raw[] rawTerms ) {
+                IEnumerable<TermObject.Raw> rawTerms ) {
         Func<TermId, Task<TermObject.Raw>> termRawFactory = async (TermId termId) =>
             (await termsDataSrc.GetByIds_Async( new TermId[] { termId } ))
             .Terms

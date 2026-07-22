@@ -45,10 +45,17 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
                 ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters ) {
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
 
-        IEnumerable<TermObject.Raw> terms =  await this.TermsDataSrc.GetTermsByCriteria_Async( dbCon, parameters );
+        IEnumerable<TermObject.Raw> terms = await this.TermsDataSrc.GetTermsByCriteria_Async( dbCon, parameters );
 
         return new ClientDataAccess_Terms.IAPI.GetByX_Return( terms );
     }
+
+    [HttpPost(nameof(GetCountByCriteria_Async))]
+	public async Task<int> GetCountByCriteria_Async( ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters ) {
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        return await this.TermsDataSrc.GetTermsCountByCriteria_Async( dbCon, parameters );
+	}
 
 
     [HttpPost(nameof(GetByIds_Async))]

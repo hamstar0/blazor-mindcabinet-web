@@ -43,17 +43,21 @@ v0.7
 -	Trim whitespace from text inputs
 -	Implement terms editor suite (included favorites editor, existing terms editor)
 	-	@Test
-	-	Finish implementing AllTermsRichEditor (lists terms with sort and paginate, edits terms, creates/removes terms)
-		-	Implement sort, search, and pagination
-		-	Render list of all terms via TermRichEditor instances
+	-	Finish implementing AllTermsRichEditor (lists terms with sort and paginate, edits terms, creates terms)
+		-	Add New Term button
+		-	Implement tern search
+		-	Implement context search
+		-	Implement sort
 
 
+		-	Implement pagination
 		-	Implement TermRichEditor component (shows each field in table-like form)
 			-	Implement functionality
 			-	@Implement Owner field for terms
 			-	Implement css grid to make uniform layout
 			-	Define
-		-	Implement terms list element (always vertical)
+		-	Add remove buttons for each displayed term
+		-	Implement terms list (always vertical)
 	-	Implement favorites metric for term favorites (via sort order)
 	-	@Implement abbreviation field for terms
 	-	@Implement description field for terms

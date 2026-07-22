@@ -62,6 +62,17 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
     }
 
 
+    public async Task<int> GetCountByCriteria_Async( IAPI.GetByCriteria_Params parameters ) {
+        var ret = await IClientDataAccess.CallAPI_Async<IAPI.GetByCriteria_Params, int>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.GetCountByCriteria_Async)}",
+            parameters: parameters
+        );
+        
+        return ret;
+    }
+
+
     public async Task<IAPI.CreateForCurrentUser_Return> CreateForCurrentUser_Async( IAPI.CreateForCurrentUser_Params parameters ) {
         var ret = await IClientDataAccess.CallAPI_Async<IAPI.CreateForCurrentUser_Params, IAPI.CreateForCurrentUser_Return>(
             http: this.Http,

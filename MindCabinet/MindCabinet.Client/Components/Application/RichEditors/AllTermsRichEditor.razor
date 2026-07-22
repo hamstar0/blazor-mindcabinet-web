@@ -11,7 +11,7 @@
 
 <div component-name="@nameof(AllTermsRichEditor)"
             class=@this.AddedClasses
-            style="display: flex; flex-direction: column; min-height: 100%;">
+            style="min-height: 100%;">
     @if( this.Label is not null ) {
         <div style="flex-shrink: 0;">@this.Label</div>
     }
@@ -19,15 +19,46 @@
                 AddedStyle="flex-shrink: 0;"
                 OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
                 OnTermConfirm_Async=@this.AddTerm_UI_Async />
-    <div class="card" style="flex-grow: 1; min-height: 0;">
-        @{
-            foreach( TermObject termOfSet in this.Terms ) {
+
+    <div style="display: grid; grid-template-columns: auto auto;">
+        <div>
+            <span>Sort alphabetically: </span>
+            <input type="radio" name="sort_alphabetic" id="sort_alphabetic_asc_@(this.Id)"
+                        @onchange=@( _ => this.SetAlphabeticalSort_UI(true) ) />
+                <label for="sort_alphabetic_asc_@(this.Id)">Ascending</label>
+            <input type="radio" name="sort_alphabetic" id="sort_by_create_date_desc_@(this.Id)" checked
+                        @onchange=@( _ => this.SetAlphabeticalSort_UI(false) ) />
+                <label for="sort_alphabetic_desc_@(this.Id)">Descending</label>
+        </div>
+        <div>
+            <span>Search By Context</span>
+            <TermSearchPicker OnTermSelect_Async=@this.OnContextTermSearchChoice_Async />
+        </div>
+        <div style="margin-left: auto; margin-right: 0;">
+            <span>Search By Term</span>
+            <input type="text" @onchange=@this.SetTermSearch_UI_Async />
+        </div>
+    </div>
+
+    <div class="card" style="overflow-y: scroll;">
+        <Pagination
+                TotalPages=@this.TotalPages
+                CurrentPage=@this.CurrentPage
+                OnPageChange_Async=@this.OnChangePage_UI_Async />
+        <div style="min-height: 100%;">
+            @foreach( TermObject termOfSet in this.Terms ) {
                 <TermRichEditor InitialTerm=@termOfSet>
                     <PostFix>
-                        <a class="" @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
+                        <a @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
                     </PostFix>
                 </TermRichEditor>
             }
+        </div>
+        @if( this.Terms.Count > 3 ) {
+            <Pagination
+                    TotalPages=@this.TotalPages
+                    CurrentPage=@this.CurrentPage
+                    OnPageChange_Async=@this.OnChangePage_UI_Async />
         }
     </div>
 </div>
@@ -35,6 +66,13 @@
 
 
 @code {
+    private void SetAlphabeticalSort_UI( bool ascending ) {
+        this.SortAscending = ascending;
+        this.DisplayListNeedsRefresh = true;
+
+        this.StateHasChanged();
+    }
+
     private async Task AddTerm_UI_Async( TermObject term, bool _ ) {
         if( this.Terms.Any(t => t.Equals(term)) ) {
             return;
@@ -48,7 +86,7 @@
     }
 
 
-    public async Task<(string termText, bool isSubmit)> OnTermEditConfirmSubmit_UI_Async( string term ) {
+    private async Task<(string termText, bool isSubmit)> OnTermEditConfirmSubmit_UI_Async( string term ) {
         await Task.CompletedTask;
 
         return term.Contains(",")
@@ -65,9 +103,15 @@
         bool isRemoved = await this.RemoveTerm_Async( term );
 
         if( isRemoved ) {
+            this.DisplayListNeedsRefresh = true;
             this.StateHasChanged();
         }
 
         return isRemoved;
+    }
+
+
+    private async Task OnChangePage_UI_Async( int newPage ) {
+        this.CurrentPage = newPage;
     }
 }
