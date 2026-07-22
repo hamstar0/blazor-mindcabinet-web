@@ -52,6 +52,10 @@ public partial class AllTermsRichEditor : ComponentBase {
     [Parameter]
     public bool SortAscending { get; set; } = false;
 
+    private string TermFilterValue = "";
+
+    private TermId? ContextIdFilter = null;
+
 
 
 	protected async override Task OnParametersSetAsync() {
@@ -70,7 +74,9 @@ public partial class AllTermsRichEditor : ComponentBase {
         var criteria = new ClientDataAccess_Terms.IAPI.GetByCriteria_Params {
             Page = this.CurrentPage,
             PageSize = this.PageSize,
-            SortAscendingByTerm = this.SortAscending
+            SortAscendingByTerm = this.SortAscending,
+            ContextTermId = this.ContextIdFilter,
+            TermPattern = this.TermFilterValue != "" ? this.TermFilterValue : null
         };
         IEnumerable<TermObject.Raw> rawTerms = ( await this.TermsDataSrc
             .GetByCriteria_Async( criteria ) )

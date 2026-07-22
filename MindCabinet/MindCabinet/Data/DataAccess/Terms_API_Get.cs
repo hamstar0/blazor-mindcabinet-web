@@ -96,46 +96,34 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public (string sql, Dictionary<string, object> sqlParams) GetTermsByCriteriaSQL(
                 ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters,
                 string allColumns ) {
-        //TODO: SimpleSqlSelectBuilder
-        string sql = $"SELECT {allColumns} FROM {TableName} AS MyTerms";
+        var sqlBuilder = new SimpleSqlSelectBuilder( TableName, [allColumns] );
         var sqlParams = new Dictionary<string, object>();
 
-        bool hasWhere = false;
-
-        if( parameters.ContextTermId is not null || parameters.ContextTermPattern is not null ) {
-            hasWhere = true;
-
+        if( parameters.ContextTermId is not null || !string.IsNullOrEmpty(parameters.ContextTermPattern) ) {
             if( parameters.ContextTermId is not null ) {
-                sql += $@" WHERE MyTerms.ContextId = @ContextId";
+                sqlBuilder.AddWhereClause( $"WHERE MyTerms.ContextId = @ContextId" );
                 sqlParams["@ContextId"] = parameters.ContextTermId!;
             } else {
-                sql += $@" INNER JOIN {TableName} AS CtxTerms
+                sqlBuilder.JoinClause = $@" INNER JOIN {TableName} AS CtxTerms
                     ON (MyTerms.Context.Id = CtxTerms.Id)
                     WHERE CtxTerms.Term = @ContextTerm";
                 sqlParams["@ContextTerm"] = parameters.ContextTermPattern!;
             }
-
-            sql += $" AND MyTerms.{TableColumn_Term} LIKE @Term";
-        } else if( parameters.TermPattern is not null ) {
-            hasWhere = true;
-            
-            sql += $" WHERE MyTerms.{TableColumn_Term} LIKE @Term";
+        }
+        
+        if( !string.IsNullOrEmpty(parameters.TermPattern) ) {
+            sqlBuilder.AddWhereClause( $"WHERE MyTerms.{TableColumn_Term} LIKE @Term" );
             sqlParams["@Term"] = $"%{parameters.TermPattern}%";
         }
 
         if( parameters.AbbrevPattern is not null ) {
-            if( hasWhere ) {
-                sql += $"\n AND ";
-            } else {
-                sql += $"\n WHERE ";
-            }
-            sql += $"MyTerms.{TableColumn_Abbreviation} LIKE @Abbreviation";
+            sqlBuilder.AddWhereClause( $"MyTerms.{TableColumn_Abbreviation} LIKE @Abbreviation" );
             sqlParams["@Abbreviation"] = $"%{parameters.AbbrevPattern}%";
         }
 
-        sql += $" ORDER BY Term {(parameters.SortAscendingByTerm ? "ASC" : "DESC")} ";
+        sqlBuilder.OrderByClause = (parameters.SortAscendingByTerm ? "ASC" : "DESC");
 
-        return (sql, sqlParams);
+        return (sqlBuilder.Build(), sqlParams);
     }
 
     
