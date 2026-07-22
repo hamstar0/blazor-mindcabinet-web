@@ -27,9 +27,9 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
         public class GetByCriteria_Params {
-            public string? TermPattern { get; set; } = "";
+            public string? TermPattern { get; set; }
 
-            public string? AbbrevPattern { get; set; } = "";
+            public string? AbbrevPattern { get; set; }
 
             public TermId? ContextTermId { get; set; }
 
@@ -49,9 +49,9 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
 
         public class CreateForCurrentUser_Params {
-            public string TermBody { get; set; } = "";
-            public string? Abbreviation { get; set; } = "";
-            public string? Description { get; set; } = "";
+            public string TermBody { get; set; } = null!;
+            public string? Abbreviation { get; set; }
+            public string? Description { get; set; }
             public TermId? ContextId { get; set; }
             public TermId? AliasId { get; set; }
         }
@@ -66,9 +66,9 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
 
         public class UpdateForCurrentUser_Params {
             public TermId Id { get; set; }
-            public string? TermBody { get; set; } = "";
-            public string? Abbreviation { get; set; } = "";
-            public string? Description { get; set; } = "";
+            public string? TermBody { get; set; }
+            public string? Abbreviation { get; set; }
+            public string? Description { get; set; }
             public TermId? ContextId { get; set; }
             public TermId? AliasId { get; set; }
         }

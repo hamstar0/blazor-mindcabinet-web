@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace MindCabinet.Shared.DataObjects.Term;
@@ -22,7 +23,7 @@ public partial class TermObject {
             AliasId = aliasId
         };
         if( !raw.Validate() ) {
-            throw new ArgumentException("Invalid term params");
+            throw new ArgumentException( "Invalid term params: "+JsonSerializer.Serialize(raw) );
         }
         return raw;
     }
@@ -55,6 +56,7 @@ public partial class TermObject {
 
         public bool Validate() {
             return this.Id != 0
+                && this.Creator != 0
                 && TermObject.ValidateTerm(this.Term)
                 && (this.Abbreviation is null || TermObject.ValidateTerm(this.Abbreviation));
         }

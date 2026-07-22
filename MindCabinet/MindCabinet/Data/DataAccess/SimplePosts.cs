@@ -68,7 +68,7 @@ public partial class ServerDataAccess_SimplePosts(
                 bool countOnly ) {
         var sqlParams = new Dictionary<string, object>();
         var sqlBuilder = new SimpleSqlSelectBuilder(
-            tableName: TableName,
+            tableName: $"{TableName} AS MyPosts",
             columnNames: countOnly ? TableColumns.Keys : ["COUNT(*)"]
         );
 
@@ -106,7 +106,7 @@ public partial class ServerDataAccess_SimplePosts(
         }
         
         if( !countOnly ) {
-            sqlBuilder.OrderByClause = $" ORDER BY Created {(parameters.SortAscendingByDate ? "ASC" : "DESC")} ";
+            sqlBuilder.OrderByClause = $"MyPosts.{TableColumn_Created} {(parameters.SortAscendingByDate ? "ASC" : "DESC")}";
         }
 
         if( parameters.PostsPerPage > 0 ) {

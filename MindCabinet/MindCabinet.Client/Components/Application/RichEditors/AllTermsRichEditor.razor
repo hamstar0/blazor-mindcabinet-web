@@ -15,56 +15,64 @@
     @if( this.Label is not null ) {
         <div style="flex-shrink: 0;">@this.Label</div>
     }
-    <TermInputEditor AddedClasses="ib"
-                AddedStyle="flex-shrink: 0;"
-                OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
-                OnTermConfirm_Async=@this.AddTerm_UI_Async />
 
-    <div style="display: grid; grid-template-columns: auto auto;">
+    <div class="card">
         <div>
-            <span>Sort alphabetically: </span>
-            <input type="radio" name="sort_alphabetic" id="sort_alphabetic_asc_@(this.Id)"
-                        @onchange=@( _ => this.SetAlphabeticalSort_UI(true) ) />
-                <label for="sort_alphabetic_asc_@(this.Id)">Ascending</label>
-            <input type="radio" name="sort_alphabetic" id="sort_by_create_date_desc_@(this.Id)" checked
-                        @onchange=@( _ => this.SetAlphabeticalSort_UI(false) ) />
-                <label for="sort_alphabetic_desc_@(this.Id)">Descending</label>
+            <span>Create New: </span>
+            <TermInputEditor AddedClasses="ib"
+                        AddedStyle="display: inline-block"
+                        OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
+                        OnTermConfirm_Async=@this.AddTerm_UI_Async />
         </div>
-        <div>
-            <span>Search By Context</span>
-            <TermSearchPicker OnTermSelect_Async=@this.OnContextTermSearchChoice_UI_Async />
-            <input type="button" value="   " @onclick=@this.ClearContextSearch_UI />
-        </div>
-        <div style="margin-left: auto; margin-right: 0;">
-            <span>Search By Term</span>
-            <input type="text"
-                    @bind:event="oninput"
-                    @bind:get=@this.TermFilterValue
-                    @bind:set=@this.OnInputTermFilter_UI_Async
-                    @onkeydown=@this.OnEnterTermFilter_UI_Async />
-        </div>
-    </div>
 
-    <div class="card" style="overflow-y: scroll;">
-        <Pagination
-                TotalPages=@this.TotalPages
-                CurrentPage=@this.CurrentPage
-                OnPageChange_Async=@this.OnChangePage_UI_Async />
-        <div style="min-height: 100%;">
-            @foreach( TermObject termOfSet in this.Terms ) {
-                <TermRichEditor InitialTerm=@termOfSet>
-                    <PostFix>
-                        <a @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
-                    </PostFix>
-                </TermRichEditor>
+        <div style="display: grid; grid-template-columns: auto auto auto;">
+            <div>
+                <span>Sort alphabetically: </span>
+                <input type="radio" name="sort_alphabetic" id="sort_alphabetic_asc_@(this.Id)"
+                            @onchange=@( _ => this.SetAlphabeticalSort_UI(true) ) />
+                    <label for="sort_alphabetic_asc_@(this.Id)">Ascending</label>
+                <input type="radio" name="sort_alphabetic" id="sort_by_create_date_desc_@(this.Id)" checked
+                            @onchange=@( _ => this.SetAlphabeticalSort_UI(false) ) />
+                    <label for="sort_alphabetic_desc_@(this.Id)">Descending</label>
+            </div>
+            <div>
+                <span>Search By Context: </span>
+                <TermSearchPicker OnTermSelect_Async=@this.OnContextTermSearchChoice_UI_Async />
+                <input type="button" value="   " @onclick=@this.ClearContextSearch_UI />
+            </div>
+            <div style="margin-left: auto; margin-right: 0;">
+                <span>Search By Term: </span>
+                <input type="text"
+                        @bind:event="oninput"
+                        @bind:get=@this.TermFilterValue
+                        @bind:set=@this.OnInputTermFilter_UI_Async
+                        @onkeydown=@this.OnEnterTermFilter_UI_Async />
+            </div>
+        </div>
+
+        <div class="card" style="overflow-y: scroll;">
+            @if( this.Terms.Count > this.PageSize ) {
+                <Pagination
+                        TotalPages=@this.TotalPages
+                        CurrentPage=@this.CurrentPage
+                        OnPageChange_Async=@this.OnChangePage_UI_Async />
+            }
+            <div style="min-height: 100%;">
+                @foreach( TermObject termOfSet in this.Terms ) {
+                    <TermRichEditor InitialTerm=@termOfSet>
+                        <PostFix>
+                            <a @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
+                        </PostFix>
+                    </TermRichEditor>
+                }
+            </div>
+            @if( this.Terms.Count > this.PageSize ) {
+                <Pagination
+                        TotalPages=@this.TotalPages
+                        CurrentPage=@this.CurrentPage
+                        OnPageChange_Async=@this.OnChangePage_UI_Async />
             }
         </div>
-        @if( this.Terms.Count > 3 ) {
-            <Pagination
-                    TotalPages=@this.TotalPages
-                    CurrentPage=@this.CurrentPage
-                    OnPageChange_Async=@this.OnChangePage_UI_Async />
-        }
     </div>
 </div>
 

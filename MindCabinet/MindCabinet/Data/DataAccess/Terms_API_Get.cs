@@ -96,12 +96,17 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     public (string sql, Dictionary<string, object> sqlParams) GetTermsByCriteriaSQL(
                 ClientDataAccess_Terms.IAPI.GetByCriteria_Params parameters,
                 string allColumns ) {
-        var sqlBuilder = new SimpleSqlSelectBuilder( TableName, [allColumns] );
+        var sqlBuilder = new SimpleSqlSelectBuilder(
+            $"{TableName} AS MyTerms",
+            [allColumns]
+        );
         var sqlParams = new Dictionary<string, object>();
+
+        //
 
         if( parameters.ContextTermId is not null || !string.IsNullOrEmpty(parameters.ContextTermPattern) ) {
             if( parameters.ContextTermId is not null ) {
-                sqlBuilder.AddWhereClause( $"WHERE MyTerms.ContextId = @ContextId" );
+                sqlBuilder.AddWhereClause( $"MyTerms.ContextId = @ContextId" );
                 sqlParams["@ContextId"] = parameters.ContextTermId!;
             } else {
                 sqlBuilder.JoinClause = $@" INNER JOIN {TableName} AS CtxTerms
@@ -112,7 +117,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         }
         
         if( !string.IsNullOrEmpty(parameters.TermPattern) ) {
-            sqlBuilder.AddWhereClause( $"WHERE MyTerms.{TableColumn_Term} LIKE @Term" );
+            sqlBuilder.AddWhereClause( $"MyTerms.{TableColumn_Term} LIKE @Term" );
             sqlParams["@Term"] = $"%{parameters.TermPattern}%";
         }
 
@@ -121,7 +126,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
             sqlParams["@Abbreviation"] = $"%{parameters.AbbrevPattern}%";
         }
 
-        sqlBuilder.OrderByClause = (parameters.SortAscendingByTerm ? "ASC" : "DESC");
+        sqlBuilder.OrderByClause =  $"MyTerms.{TableColumn_Term} {(parameters.SortAscendingByTerm ? "ASC" : "DESC")}";
 
         return (sqlBuilder.Build(), sqlParams);
     }

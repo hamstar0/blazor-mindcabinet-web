@@ -34,7 +34,7 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         // todo: fulltext index on 'Term'
         await dbCon.ExecuteAsync( $@"
             CREATE TABLE {TableName} (
-                {string.Join(",\n                ", TableColumns.Select(kv => kv.column+" "+kv.def))}
+                {string.Join(",\n                ", TableColumns.Select(kv => kv.column+" "+kv.def))},
                  CONSTRAINT FK_{TableName}_{TableColumn_Creator} FOREIGN KEY ({TableColumn_Creator})
                     REFERENCES {ServerDataAccess_SimpleUsers.TableName}({ServerDataAccess_SimpleUsers.TableColumn_Id}),
                  CONSTRAINT FK_{TableName}_{TableColumn_ContextId} FOREIGN KEY ({TableColumn_ContextId})
