@@ -11,8 +11,8 @@ public partial class TermObject {
             string term,
             string? abbreviation,
             string? description,
-            TermId? contextId = null,
-            TermId? aliasId = null ) {
+            TermId? contextId,
+            TermId? aliasId ) {
         var raw = new Raw {
             Id = id,
             Creator = creator,
@@ -29,13 +29,13 @@ public partial class TermObject {
     }
 
     public class Raw : IRawDataObject { //IHasId<TermId>
-        public TermId Id { get; set; } = default;
-        public SimpleUserId Creator { get; set; } = default;
+        public TermId Id { get; set; }
+        public SimpleUserId Creator { get; set; }
         public string Term { get; set; } = "";
-        public string? Abbreviation { get; set; } = "";
-        public string? Description { get; set; } = "";
-        public TermId? ContextId { get; set; } = null;
-        public TermId? AliasId { get; set; } = null;
+        public string? Abbreviation { get; set; }
+        public string? Description { get; set; }
+        public TermId? ContextId { get; set; }
+        public TermId? AliasId { get; set; }
 
         
         public async Task<TermObject> ToDataObject_Async( Func<TermId, Task<Raw>> termRawFactory ) {

@@ -1,7 +1,7 @@
 @using System.Drawing;
 @using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application.Editors;
-@using MindCabinet.Client.Components.Application.Pickers
+@using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
@@ -25,28 +25,37 @@
                         OnTermConfirm_Async=@this.AddTerm_UI_Async />
         </div>
 
+        <hr />
+
         <div style="display: grid; grid-template-columns: auto auto auto;">
             <div>
-                <span>Sort alphabetically: </span>
-                <input type="radio" name="sort_alphabetic" id="sort_alphabetic_asc_@(this.Id)"
-                            @onchange=@( _ => this.SetAlphabeticalSort_UI(true) ) />
+                <div>Sort alphabetically:</div>
+                <div>
+                    <input type="radio" name="sort_alphabetic" id="sort_alphabetic_asc_@(this.Id)"
+                                @onchange=@( _ => this.SetAlphabeticalSort_UI_Async(true) ) />
                     <label for="sort_alphabetic_asc_@(this.Id)">Ascending</label>
-                <input type="radio" name="sort_alphabetic" id="sort_by_create_date_desc_@(this.Id)" checked
-                            @onchange=@( _ => this.SetAlphabeticalSort_UI(false) ) />
+                    <input type="radio" name="sort_alphabetic" id="sort_alphabetic_desc_@(this.Id)" checked
+                                @onchange=@( _ => this.SetAlphabeticalSort_UI_Async(false) ) />
                     <label for="sort_alphabetic_desc_@(this.Id)">Descending</label>
+                </div>
             </div>
             <div>
-                <span>Search By Context: </span>
-                <TermSearchPicker OnTermSelect_Async=@this.OnContextTermSearchChoice_UI_Async />
-                <input type="button" value="   " @onclick=@this.ClearContextSearch_UI />
+                <div>Filter By Context:</div>
+                <div>
+                    <TermSearchPicker AddedClasses="ib"
+                                OnTermSelect_Async=@this.OnContextTermSearchChoice_UI_Async />
+                    <input type="button" value="   " @onclick=@this.ClearContextSearch_UI />
+                </div>
             </div>
             <div style="margin-left: auto; margin-right: 0;">
-                <span>Search By Term: </span>
-                <input type="text"
-                        @bind:event="oninput"
-                        @bind:get=@this.TermFilterValue
-                        @bind:set=@this.OnInputTermFilter_UI_Async
-                        @onkeydown=@this.OnEnterTermFilter_UI_Async />
+                <div>Search:</div>
+                <div>
+                    <input type="text"
+                            @bind:event="oninput"
+                            @bind:get=@this.TermFilterValue
+                            @bind:set=@this.OnInputTermFilter_UI_Async
+                            @onkeydown=@this.OnEnterTermFilter_UI_Async />
+                </div>
             </div>
         </div>
 
@@ -79,10 +88,10 @@
 
 
 @code {
-    private void SetAlphabeticalSort_UI( bool ascending ) {
+    private async Task SetAlphabeticalSort_UI_Async( bool ascending ) {
         this.SortAscending = ascending;
 
-        this.DisplayListNeedsRefresh = true;
+        await this.RefreshList_Async();
         this.StateHasChanged();
     }
 
@@ -104,14 +113,14 @@
 
         this.ContextIdFilter = term.Id;
 
-        this.DisplayListNeedsRefresh = true;
+        await this.RefreshList_Async();
         this.StateHasChanged();
     }
 
     private async Task ClearContextSearch_UI() {
         this.ContextIdFilter = null;
         
-        this.DisplayListNeedsRefresh = true;
+        await this.RefreshList_Async();
         this.StateHasChanged();
     }
 
@@ -127,7 +136,7 @@
             return;
         }
         
-        this.DisplayListNeedsRefresh = true;
+        await this.RefreshList_Async();
         this.StateHasChanged();
     }
 
@@ -149,7 +158,7 @@
         bool isRemoved = await this.RemoveTerm_Async( term );
 
         if( isRemoved ) {
-            this.DisplayListNeedsRefresh = true;
+            await this.RefreshList_Async();
             this.StateHasChanged();
         }
 

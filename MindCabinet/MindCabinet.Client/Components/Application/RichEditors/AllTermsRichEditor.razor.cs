@@ -47,8 +47,6 @@ public partial class AllTermsRichEditor : ComponentBase {
     public int TotalPages;
 
 
-    private bool DisplayListNeedsRefresh = true;
-    
     [Parameter]
     public bool SortAscending { get; set; } = false;
 
@@ -57,17 +55,25 @@ public partial class AllTermsRichEditor : ComponentBase {
     private TermId? ContextIdFilter = null;
 
 
+    private bool IsListLoaded = false;
+
+
 
 	protected async override Task OnParametersSetAsync() {
 		await base.OnParametersSetAsync();
 
-        if( this.DisplayListNeedsRefresh ) {
-            this.DisplayListNeedsRefresh = false;
-
-            (this._Terms, int totalTerms) = await this.GetTerms_Async();
-            this.TotalPages = (int)Math.Ceiling( (double)(totalTerms / this.PageSize) );
+        if( !this.IsListLoaded ) {
+            this.IsListLoaded = true;
+            
+            await this.RefreshList_Async();
         }
 	}
+
+
+    private async Task RefreshList_Async() {
+        (this._Terms, int totalTerms) = await this.GetTerms_Async();
+        this.TotalPages = (int)Math.Ceiling( (double)(totalTerms / this.PageSize) );
+    }
 
 
 	private async Task<(List<TermObject> terms, int totalTerms)> GetTerms_Async() {
