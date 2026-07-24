@@ -64,6 +64,15 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
         public Task<CreateForCurrentUser_Return> CreateForCurrentUser_Async( CreateForCurrentUser_Params parameters );
 
 
+
+        // public class RemoveForCurrentUser_Params {
+        //     public TermId Id { get; set; }
+        // }
+
+        public Task<bool> RemoveForCurrentUser_Async( TermId parameters );
+
+
+
         public class UpdateForCurrentUser_Params {
             public TermId Id { get; set; }
             public string? TermBody { get; set; }

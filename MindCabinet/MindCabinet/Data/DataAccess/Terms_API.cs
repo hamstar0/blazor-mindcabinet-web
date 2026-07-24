@@ -84,6 +84,50 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
     }
 
 
+    public async Task<bool> Remove_Async( TermId id ) {
+        throw new NotImplementedException();
+
+        // -- Start transaction for safe removal
+        // START TRANSACTION;
+
+        // -- 1. Remove user term favorites
+        // DELETE FROM UserTermFavorites 
+        // WHERE FavTermId = @TermId;
+
+        // -- 2. Remove user terms history
+        // DELETE FROM UserTermsHistory 
+        // WHERE TermId = @TermId;
+
+        // -- 3. Remove simple post tags
+        // DELETE FROM SimplePostTags 
+        // WHERE TermId = @TermId;
+
+        // -- 4. Remove posts context term entries (todo: also delete PostsContextEntry with no terms)
+        // DELETE FROM PostsContextTermEntry 
+        // WHERE TermId = @TermId;
+
+        // -- 5. Handle UserAppData defaults - either update or delete
+        // -- Option A: Set to NULL or a fallback term
+        // UPDATE UserAppData 
+        // SET UserDefaultTermId = NULL 
+        // WHERE UserDefaultTermId = @TermId;
+
+        // -- 6. Handle terms that reference this term as Context
+        // DELETE FROM Terms 
+        // WHERE ContextId = @TermId;
+
+        // -- 7. Handle terms that reference this term as Alias
+        // DELETE FROM Terms 
+        // WHERE AliasId = @TermId;
+
+        // -- 8. Finally, delete the term itself
+        // DELETE FROM Terms 
+        // WHERE Id = @TermId;
+
+        // COMMIT;
+    }
+
+
     public async Task<bool> Update_Async(
                 IDbConnection dbCon,
                 SimpleUserId creator,

@@ -117,8 +117,12 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         }
         
         if( !string.IsNullOrEmpty(parameters.TermPattern) ) {
-            sqlBuilder.AddWhereClause( $"MyTerms.{TableColumn_Term} LIKE @Term" );
-            sqlParams["@Term"] = $"%{parameters.TermPattern}%";
+            string term = parameters.TermPattern.Replace( "%", "\\%" );
+            term = term.Replace( "_", "\\_" );
+            //body = body.Replace( "[", "\\[" );
+
+            sqlBuilder.AddWhereClause( $"MyTerms.{TableColumn_Term} LIKE @Term ESCAPE '\\\\'" );
+            sqlParams["@Term"] = new DbString { Value = $"%{term}%", IsAnsi = true };
         }
 
         if( parameters.AbbrevPattern is not null ) {

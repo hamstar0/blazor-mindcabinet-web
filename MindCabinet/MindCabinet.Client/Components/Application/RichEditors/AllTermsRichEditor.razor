@@ -22,7 +22,7 @@
             <TermInputEditor AddedClasses="ib"
                         AddedStyle="display: inline-block"
                         OnAttemptingTermInput_Async=@this.OnTermEditConfirmSubmit_UI_Async
-                        OnTermConfirm_Async=@this.AddTerm_UI_Async />
+                        OnTermConfirm_Async=@this.OnAddTerm_UI_Async />
         </div>
 
         <hr />
@@ -70,7 +70,8 @@
                 @foreach( TermObject termOfSet in this.Terms ) {
                     <TermRichEditor InitialTerm=@termOfSet>
                         <PostFix>
-                            <a @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a>
+                            @* <a @onclick=@( async () => await this.RemoveTerm_UI_Async(termOfSet) )>X</a> *@
+                            <a @onclick=@( async () => await this.ViewPostsOfTerm_UI_Async(termOfSet) )>X</a>
                         </PostFix>
                     </TermRichEditor>
                 }
@@ -95,16 +96,9 @@
         this.StateHasChanged();
     }
 
-    private async Task AddTerm_UI_Async( TermObject term, bool _ ) {
-        if( this.Terms.Any(t => t.Equals(term)) ) {
-            return;
-        }
 
-        if( await this.AddTerm_Async(term) ) {
-            this.StateHasChanged();
-        }
-
-        return;
+    private async Task OnChangePage_UI_Async( int newPage ) {
+        this.CurrentPage = newPage;
     }
 
 
@@ -150,7 +144,19 @@
     }
 
 
-    private async Task<bool> RemoveTerm_UI_Async( TermObject term ) {
+    private async Task OnAddTerm_UI_Async( TermObject term, bool _ ) {
+        if( this.Terms.Any(t => t.Equals(term)) ) {
+            return;
+        }
+
+        if( await this.OnAddTerm_Async(term) ) {
+            this.StateHasChanged();
+        }
+
+        return;
+    }
+
+    /* private async Task<bool> RemoveTerm_UI_Async( TermObject term ) {
         if( !this.Terms.Any(t => t.Equals(term)) ) {
             return false;
         }
@@ -163,10 +169,9 @@
         }
 
         return isRemoved;
-    }
+    } */
 
-
-    private async Task OnChangePage_UI_Async( int newPage ) {
-        this.CurrentPage = newPage;
+    private async Task ViewPostsOfTerm_UI_Async( TermObject term ) {
+        todo
     }
 }

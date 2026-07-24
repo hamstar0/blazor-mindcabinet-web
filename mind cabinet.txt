@@ -21,6 +21,9 @@ v1
 -	Ensure (again) user is validated before using write or sensitive read API calls (including user API itself)
 -	Implement posts per page adjuster
 v0.9
+-	Implement scheduled tasks
+	-	Implement term pruning task
+	-	Implement service
 -	Implement posts grid view toggle
 -	Apply mobile device layout accommodations
 -	Implement drag and drop to re-order context tags (implicitly adjusts their priority)
@@ -41,14 +44,22 @@ v0.7
 -	Implement tag removals for (own) posts
 -	Validate favorites submit to not allow invalid user id
 -	Trim whitespace from text inputs
--	Rename PostsContext to PostsView
+-	Rename PostsContext to View
 -	Implement terms editor suite (included favorites editor, existing terms editor)
 	-	Set favorites 'favor' to work by usage (uses increment favor)
-	-	Implement smart tag removing
-	-	F&T
-		-	Sanitize inputs for term searches
+	-	Change remove button to instead deploy a tab of all posts using that given tag
+		-	On button press, create and navigate to a new tab for temporary single-term PostsContext
+			-	Implement new PostsContext creation as pre-load Action on navigation (give unique name)
+			-	Implement navigation
+		-	Create Navigator service for client
+			-	Implement tab creation via pseudo-path with pre-load Action
+			-	Implement "navigation" through tabs via path specification
+			-	Implement pseudo-paths concept
+			-	Define service
 
 
+	-	(CANCELLED) Implement remove tag, smartly
+	-	Sanitize inputs for term searches
 	-	@Test
 	-	Finish implementing AllTermsRichEditor (lists terms with sort and paginate, edits terms, creates terms)
 		-	Implement term pattern search

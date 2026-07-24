@@ -97,7 +97,7 @@ public partial class AllTermsRichEditor : ComponentBase {
 	}
 
 
-    public async Task<bool> AddTerm_Async( TermObject term ) {
+    public async Task<bool> OnAddTerm_Async( TermObject term ) {
         if( this.Terms.Any(t => t.Equals(term)) ) {
             return false;
         }
@@ -112,11 +112,15 @@ public partial class AllTermsRichEditor : ComponentBase {
     }
     
 
-    public async Task<bool> RemoveTerm_Async( TermObject term ) {
+    /* public async Task<bool> RemoveTerm_Async( TermObject term ) {
         int idx = this._Terms.IndexOf( term );
 
         //if( !this.Terms.Any(t => t.Equals(term)) ) {
         if( idx == -1 ) {
+            return false;
+        }
+
+        if( !(await this.TermsDataSrc.RemoveForCurrentUser_Async(term.Id)) ) {
             return false;
         }
 
@@ -127,5 +131,5 @@ public partial class AllTermsRichEditor : ComponentBase {
         }
 
 		return true;
-	}
+	} */
 }

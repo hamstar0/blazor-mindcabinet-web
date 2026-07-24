@@ -35,7 +35,6 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
 
         if( !string.IsNullOrEmpty(bodyPattern) ) {
             // // sql += "WHERE MyPosts.Body LIKE REPLACE(REPLACE(REPLACE(@Body, '[', '[[]'), '_', '[_]'), '%', '[%]')";
-            // sql += "\nWHERE MyPosts.Body LIKE @Body ESCAPE '\\\\' ";
             sqlBuilder.AddWhereClause( $"MyPosts.{ServerDataAccess_SimplePosts.TableColumn_Body} LIKE @Body ESCAPE '\\\\'" );
 
             string body = bodyPattern.Replace( "%", "\\%" );

@@ -18,6 +18,8 @@ namespace MindCabinet.Controllers;
 [ApiController]
 [Route( ClientDataAccess_Terms.IAPI.BaseRoute )]
 public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
+    private readonly ILogger<TermController> Logger;
+
     private readonly DbAccess DbAccess;
     
     private readonly IServiceProvider ServiceProvider;
@@ -29,10 +31,12 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
 
 
     public TermController(
+                ILogger<TermController> logger,
                 DbAccess dbAccess,
                 IServiceProvider serviceProvider,
                 ServerDataAccess_Terms termsDataSrc,
                 ClientSessionManager sessionManager ) {
+        this.Logger = logger;
         this.DbAccess = dbAccess;
         this.ServiceProvider = serviceProvider;
         this.TermsDataSrc = termsDataSrc;
@@ -83,6 +87,31 @@ public class TermController : ControllerBase, ClientDataAccess_Terms.IAPI {
             this.SessionManager.UserOfSession.Id,
             parameters
         );
+    }
+
+
+    [HttpPost(nameof(RemoveForCurrentUser_Async))]
+    public async Task<bool> RemoveForCurrentUser_Async( TermId parameters ) {
+this.Logger.LogWarning( "knock knock" );
+return false;
+        // if( this.SessionManager.UserOfSession is null ) {
+        //     throw new InvalidOperationException( "No user in session" );
+        // }
+
+        // using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        // var term = await this.TermsDataSrc.GetById_Async( dbCon, parameters );
+
+        // if( term is null ) {
+        //     return false;   // leet haxor again
+        // }
+        // if( term.Creator != this.SessionManager.UserOfSession.Id ) {
+        //     return false;   // leet haxor again
+        // }
+
+        // return await this.TermsDataSrc.Remove_Async(
+        //     parameters
+        // );
     }
 
 

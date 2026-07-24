@@ -90,6 +90,15 @@ public partial class ClientDataAccess_Terms : IClientDataAccess {
     }
 
 
+    public async Task<bool> RemoveForCurrentUser_Async( TermId parameters ) {
+        return await IClientDataAccess.CallAPI_Async<TermId, bool>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveForCurrentUser_Async)}",
+            parameters: parameters
+        );
+    }
+
+
     public async Task<bool> UpdateForCurrentUser_Async( IAPI.UpdateForCurrentUser_Params parameters ) {
         return await IClientDataAccess.CallAPI_Async<IAPI.UpdateForCurrentUser_Params, bool>(
             http: this.Http,
