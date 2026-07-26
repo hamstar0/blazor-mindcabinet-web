@@ -3,9 +3,8 @@
 
 <CascadingValue Value=@this Name="TabsContainer">
     <CascadingValue Value=@this.TabsRegistry>
-        <CascadingValue Value=@this.CurrentTab>
-            @this.ChildContent
-        </CascadingValue>
+        @* <CascadingValue Value=@this.CurrentTab Name="ParentsCurrentTab"> *@
+        @this.ChildContent
     </CascadingValue>
 </CascadingValue>
 
@@ -13,17 +12,21 @@
     @for( int i=0; i<this.TabsRegistry.Count; i++ ) {
         int idx = i;
         <div class="tab-header" @onclick=@(() => this.ChangeTab(idx))>
-            @this.TabsRegistry[i].Header
+            <CascadingValue Value=@(this.TabsRegistry[i].Id) Name="TabId">
+                @this.TabsRegistry[i].Header
+            </CascadingValue>
         </div>
     }
 </div>
 <div class="tab-body-container">
     @for( int i=0; i<this.TabsRegistry.Count; i++ ) {
-        string display = i == this.CurrentTabIndex
-            ? ""
-            : "display: none;";
-        <div style="@display">
-            @this.TabsRegistry[i].Content
+        string? display = i == this.CurrentTabIndex
+            ? null
+            : "display: none;"; // <- ensures blazor render tree retains the element internally
+        <div style=@display>
+            <CascadingValue Value=@(this.TabsRegistry[i].Id) Name="TabId">
+                @this.TabsRegistry[i].Content
+            </CascadingValue>
         </div>
     }
     @* @this.CurrentTab?.Content *@
@@ -34,6 +37,7 @@
 @code {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
 
 
     public void Refresh_UI() {
