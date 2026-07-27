@@ -11,8 +11,8 @@
 
 
 <div component-name="@nameof(MainPanel)" class=@this.AddedClasses>
-    <Tabs>
-        <TabEntry>
+    <Tabs Id=@this.TabsId>
+        <TabEntry Id=@this.PostsTabId>
             <Header>
                 <h4>Posts</h4>
             </Header>
@@ -24,7 +24,7 @@
                 }
             </Content>
         </TabEntry>
-        <TabEntry>
+        <TabEntry Id=@this.TagsTabId>
             <Header>
                 <h4>Tags</h4>
             </Header>
@@ -41,3 +41,12 @@
 
 
 
+@code {
+    [Parameter, EditorRequired]
+    public string Id { get; set; } = null!;
+
+
+    public string TabsId => $"{this.Id}Tabs";
+    public string PostsTabId => $"{this.Id}PostsTab";
+    public string TagsTabId => $"{this.Id}TagsTab";
+}

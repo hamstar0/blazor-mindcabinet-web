@@ -68,7 +68,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
 
     public async Task<IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async(
-                PostsContextObject.Raw parameters ) {
+                PostsContextObject.Prototype parameters ) {
         if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
@@ -76,7 +76,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
             throw new ArgumentException( $"Invalid PostsContextObject.Raw parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
-        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Raw, IAPI.CreateOrUpdate_Return>(
+        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Prototype, IAPI.CreateOrUpdate_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.CreateForCurrentUser_Async)}",
             parameters: parameters
@@ -84,7 +84,9 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        Cache_ById.Set( parameters.Id, parameters, TimeSpan.FromDays(365) );
+        parameters.Id = ret.Id;
+
+        Cache_ById.Set( ret.Id, parameters.ToRaw(true), TimeSpan.FromDays(365) );
 
         //
 

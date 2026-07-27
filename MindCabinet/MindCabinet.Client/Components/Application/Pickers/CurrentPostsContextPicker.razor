@@ -86,4 +86,22 @@ await Task.CompletedTask;
 
         await this.TrySearchContext_Async( inputText );
     }
+
+
+    public async Task PickPostContext_Async( PostsContextId id ) {
+        PostsContextObject? context = this.SearchOptions
+            .FirstOrDefault( o => o.Id == id );
+        if( context is null ) {
+            throw new Exception( "No such option found." );
+        }
+
+        this.SearchOptions = new List<PostsContextObject>();
+        this.Value = context.Name;
+
+        //await this.MySessionMngr.SetCurrentContext_Await( this.UserAppDataSrc, context );     Pick from current only
+        
+        await this.OnContextPicked_Async( context );
+
+        this.StateHasChanged();
+    }
 }

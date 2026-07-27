@@ -15,6 +15,10 @@ namespace MindCabinet.Client.Components.Application;
 
 
 public partial class CurrentPostsBrowserTabs : ComponentBase {
+    public static CurrentPostsBrowserTabs Main { get; private set; } = null!;
+
+
+
     [Inject]
     public LocalClientSessionManager MySessionMngr { get; set; } = null!;
 
@@ -40,11 +44,17 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
 
 
 
+	protected override void OnInitialized() {
+		base.OnInitialized();
+
+        CurrentPostsBrowserTabs.Main = this;
+	}
+
 	protected override async Task OnParametersSetAsync() {
+		await base.OnParametersSetAsync();
+
         this.Suppliers_Cache = (await this.TabsData.GetPostsSuppliers_Async())
             .ToArray();
-
-		await base.OnParametersSetAsync();
 	}
 
     public async Task RefreshBrowsers_Async() {

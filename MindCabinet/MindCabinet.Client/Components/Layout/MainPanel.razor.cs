@@ -8,6 +8,10 @@ namespace MindCabinet.Client.Components.Layout;
 
 
 public partial class MainPanel : ComponentBase {
+    public static MainPanel Main { get; private set; } = null!;
+
+
+
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -22,5 +26,7 @@ public partial class MainPanel : ComponentBase {
 
     protected async override Task OnInitializedAsync() {
         await base.OnInitializedAsync();
+
+        MainPanel.Main = this;
     }
 }

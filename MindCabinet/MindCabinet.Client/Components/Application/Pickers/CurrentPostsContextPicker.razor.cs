@@ -12,6 +12,10 @@ namespace MindCabinet.Client.Components.Application.Pickers;
 
 
 public partial class CurrentPostsContextPicker : ComponentBase {
+    public static CurrentPostsContextPicker Main { get; private set; } = null!;
+
+
+
     private string Value = "";
 
 
@@ -62,6 +66,8 @@ public partial class CurrentPostsContextPicker : ComponentBase {
 
         // await this.TrySearchContext_Async( this.Value );
         this.SearchOptions = this.InitialSearchOptionsCache.ToList();
+
+        CurrentPostsContextPicker.Main = this;
     }
 
 

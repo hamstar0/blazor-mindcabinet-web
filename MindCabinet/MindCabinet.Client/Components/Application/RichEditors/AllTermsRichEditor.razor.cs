@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Components.Application;
+using MindCabinet.Client.Components.Application.Pickers;
+using MindCabinet.Client.Components.Layout;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DataPresenters;
 using MindCabinet.Client.Services.DbAccess;
+using MindCabinet.Shared.DataObjects.PostsContext;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Text;
 
@@ -11,7 +14,16 @@ namespace MindCabinet.Client.Components.Application.RichEditors;
 
 public partial class AllTermsRichEditor : ComponentBase {
     [Inject]
+    private LocalClientSessionManager MySessMngr { get; set; } = null!;
+
+    [Inject]
+    private TabNavigation Navigation { get; set; } = null!;
+
+    [Inject]
     private ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
+
+    [Inject]
+    private ClientDataAccess_PostsContext PostsContextDataSrc { get; set; } = null!;
 
 
     [Parameter, EditorRequired]
@@ -132,4 +144,23 @@ public partial class AllTermsRichEditor : ComponentBase {
 
 		return true;
 	} */
+
+
+    private async Task ViewPostsOfTerm_Async( TermObject term ) {
+        ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return ret = await this.PostsContextDataSrc.CreateForCurrentUser_Async(
+            new PostsContextObject.Prototype {
+                Name = $"'{term.ToFullString()}' posts",
+                Owner = this.MySessMngr.UserId,
+                Entries = [
+                    new PostsContextTermEntryObject.Prototype {
+                        TermId = term.Id
+                    }
+                ]
+            }
+        );
+
+        await CurrentPostsContextPicker.Main.PickPostContext_Async( ret.Id );
+
+        this.Navigation.Navigate( $"{MainPanel.Main.PostsTabId}.{CurrentPostsBrowserTabs.Main.Id}" );
+    }
 }

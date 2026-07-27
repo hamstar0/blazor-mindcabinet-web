@@ -40,7 +40,6 @@ public partial class Tabs : ComponentBase {
 	}
 
 
-
     public void ChangeTab( string tabId ) {
         int idx;
         for( idx=0; idx<this.TabsRegistry.Count; idx++ ) {

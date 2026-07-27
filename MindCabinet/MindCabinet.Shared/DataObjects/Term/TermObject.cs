@@ -164,8 +164,7 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
     public string ToId( bool verbose ) {
         if( verbose ) {
             return (this.Abbreviation is not null ? this.Abbreviation : this.Term)
-                .StripWhitespace()
-                .StripNonAscii()+"_"+this.Id;
+                .ToId()+"_"+this.Id;
         } else {
             return this.Id.ToString();
         }
@@ -173,10 +172,18 @@ public partial class TermObject : IEquatable<TermObject>, IComparable, IComparab
 
     public override string ToString() {
         string term = this.Abbreviation is not null ? this.Abbreviation : this.Term;
+        string ctx = this.Context?.Abbreviation is not null ? this.Context.Abbreviation : this.Context?.Term ?? string.Empty;
         
-		return this.Context is not null
-            ? $"{term} ({this.Context.Term})"
+		return ctx != string.Empty
+            ? $"{term} ({ctx})"
 			: term;
+    }
+
+    public string ToFullString() {
+        if( this.Context is null ) {
+            return this.Term;
+        }
+        return $"{this.Term} ({this.Context.Term})";
     }
 
     // public Prototype ToPrototype() {
