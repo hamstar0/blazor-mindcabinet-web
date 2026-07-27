@@ -162,11 +162,11 @@ public partial class ServerDataAccess_PostsContexts(
         if( !PostsContextObject.ValidateName(parameters.Name ?? "") ) {
             throw new ArgumentException( "PostsContext Name is not valid." );
         }
-        if( !PostsContextObject.Prototype.ValidateEntries(parameters.Entries, true) ) {
+        if( !PostsContextObject.Prototype.ValidateEntries(parameters.Entries, false) ) {
             throw new ArgumentException(
                 "PostsContext Entries are not valid: "
                 + string.Join(", ", parameters.Entries
-                    .Where( e => !e.IsValid(true) )
+                    .Where( e => !e.IsValid(false) )
                     .Select( e => "term:"+e.TermId )
                 )
             );

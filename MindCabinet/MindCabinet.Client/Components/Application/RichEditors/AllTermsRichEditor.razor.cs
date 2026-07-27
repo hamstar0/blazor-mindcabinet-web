@@ -153,11 +153,15 @@ public partial class AllTermsRichEditor : ComponentBase {
                 Owner = this.MySessMngr.UserId,
                 Entries = [
                     new PostsContextTermEntryObject.Prototype {
-                        TermId = term.Id
+                        TermId = term.Id,
+                        Priority = 0,
+                        IsRequired = true
                     }
                 ]
             }
         );
+
+        picker needs to update with latest posts context
 
         await CurrentPostsContextPicker.Main.PickPostContext_Async( ret.Id );
 

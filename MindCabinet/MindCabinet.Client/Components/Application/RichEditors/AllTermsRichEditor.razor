@@ -52,6 +52,7 @@
                 <div>Search:</div>
                 <div>
                     <input type="text"
+					        placeholder="Enter search"
                             @bind:event="oninput"
                             @bind:get=@this.TermFilterValue
                             @bind:set=@this.OnInputTermFilter_UI_Async
@@ -73,7 +74,7 @@
 
                     <TermRichEditor InitialTerm=@currTerm>
                         <PostFix>
-                            <a @onclick=@( async () => await this.ViewPostsOfTerm_Async(currTerm) )>X</a>
+                            <a @onclick=@( async () => await this.ViewPostsOfTerm_Async(currTerm) )>View Posts</a>
                         </PostFix>
                     </TermRichEditor>
                 }

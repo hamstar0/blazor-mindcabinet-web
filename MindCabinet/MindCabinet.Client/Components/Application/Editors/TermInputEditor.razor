@@ -14,6 +14,7 @@
     <input type="text"
             disabled=@this.Disabled
             title=@this.Description
+            placeholder="Enter term"
             @onfocusin=@(e => this.IsSeachFocused = true)
             @onfocusout=@(e => this.IsSeachFocused = false)
             @onkeydown=@this.OnInputKey_UI_Async

@@ -13,6 +13,7 @@
     <input type="text"
             disabled=@this.Disabled
             title=@this.Description
+            placeholder="Enter search"
             @onfocusin=@(e => this.IsSearchFocused = true)
             @onfocusout=@(e => this.IsSearchFocused = false)
             @onkeydown=@this.OnInputKey_UI_Async

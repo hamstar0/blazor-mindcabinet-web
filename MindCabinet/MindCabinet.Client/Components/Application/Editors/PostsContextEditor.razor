@@ -13,16 +13,16 @@
 <div component-name="@nameof(PostsContextEditor)" class=@this.AddedClasses>
 	<Tooltip>
 		<Anchor>
-			<h4>Context name:</h4>
+			<h4>Current posts query title:</h4>
 			<input type="text"
-					placeholder="Enter context name"
+					placeholder="Enter name"
 					@bind:event="oninput"
 					@bind:get=@this.EditContext_Name
 					@bind:set=@this.OnInputName_UI_Async />
 		</Anchor>
-		<TooltipContent>AKA an arbitrary circumstance or phenomenon to be described</TooltipContent>
+		<TooltipContent>A 'posts query' is a set of posts about a given circumstance or phenomena</TooltipContent>
 	</Tooltip>
-	<h4>Enter tags to describe your current "context":</h4>
+	<h4>Enter tags to define the current query:</h4>
 	<TermSetInputEditor Label="Enter tags (at least 1 required)"
 			AddedPerItemClasses="d-block"
 			InitialTerms=@( this.EditContext_Entries

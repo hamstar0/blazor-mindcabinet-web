@@ -74,19 +74,20 @@ public partial class TermRichEditor : ComponentBase {
         // TODO: Add caching
         IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc
             .GetFavTermsForCurrentUser_Async();
-            
+
         return termRaws.Any( t => t.FavTermId == this.InitialTerm.Id );
     }
 
 
-    private async Task ToggleFavoriteTerm_Async() {
+    private async Task<bool> ToggleFavoriteTerm_Async() {
         if( this.MySessionMngr.UserId is null ) {
-            return;
+            return false;
         }
 
         IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
+        bool isFav = termRaws.Any(t => t.FavTermId == this.InitialTerm.Id);
 
-        if( termRaws.Any(t => t.FavTermId == this.InitialTerm.Id) ) {
+        if( isFav ) {
             await this.UserTermFavoritesDataSrc.RemoveTermsForCurrentUser_Async(
                 new ClientDataAccess_UserTermFavorites.IAPI.RemoveForCurrentUser_Params {
                     TermIds = [this.InitialTerm.Id]
@@ -100,6 +101,8 @@ public partial class TermRichEditor : ComponentBase {
                 }
             );
         }
+
+        return !isFav;
     }
 
     

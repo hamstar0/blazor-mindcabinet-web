@@ -17,8 +17,8 @@ public partial class PostsContextTermEntryObject {
 
 
 
-        public bool IsValid( bool ignorePostsContextId ) {
-            if( !ignorePostsContextId && (this.PostsContextId == null || this.PostsContextId == default) ) {
+        public bool IsValid( bool includePostsContextId ) {
+            if( includePostsContextId && (this.PostsContextId == null || this.PostsContextId == default) ) {
                 return false;
             }
             if( this.TermId == null || this.TermId == default ) {

@@ -9,8 +9,8 @@ public partial class PostsContextObject {
     public class Prototype {
         public static bool ValidateEntries(
                     IEnumerable<PostsContextTermEntryObject.Prototype> entries,
-                    bool ignorePostsContextId ) {
-            return entries.All( e => e.IsValid(ignorePostsContextId) );     //entries.Count() > 0
+                    bool includeId ) {
+            return entries.All( e => e.IsValid(includeId) );     //entries.Count() > 0
         }
 
 
@@ -37,7 +37,7 @@ public partial class PostsContextObject {
             if( this.Owner is null || this.Owner == 0 ) {
                 return false;
             }
-            if( !PostsContextObject.Prototype.ValidateEntries(this.Entries, !includingId) ) {
+            if( !PostsContextObject.Prototype.ValidateEntries(this.Entries, includingId) ) {
                 return false;
             }
             

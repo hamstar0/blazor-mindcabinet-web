@@ -31,10 +31,11 @@
             <div style=@termInputHighlight>
                 @* @(this.Term?.Term ?? "?") *@
                 <input type="text"
-                        @bind:event="oninput"
-                        @bind:get=@this.TermValue
-                        @bind:set=@this.OnEditTermValue_UI_Async
-                        @onkeydown=@this.OnEnterTermValue_UI_Async />
+                            placeholder="Enter term"
+                            @bind:event="oninput"
+                            @bind:get=@this.TermValue
+                            @bind:set=@this.OnEditTermValue_UI_Async
+                            @onkeydown=@this.OnEnterTermValue_UI_Async />
             </div>
             @if( this.InitialTerm?.Abbreviation is not null ) {
                 string abbrevInputHighlight = !this.AbbreviationValueIsValid
@@ -45,10 +46,11 @@
                 <div style=$"font: italics; {color}">
                     @* @this.Term.Abbreviation *@
                     <input type="text"
-                            @bind:event="oninput"
-                            @bind:get=@this.AbbreviationValue
-                            @bind:set=@this.OnEditAbbreviationValue_UI_Async
-                            @onkeydown=@this.OnEnterAbbreviationValue_UI_Async />
+					            placeholder="Enter abbreviation"
+                                @bind:event="oninput"
+                                @bind:get=@this.AbbreviationValue
+                                @bind:set=@this.OnEditAbbreviationValue_UI_Async
+                                @onkeydown=@this.OnEnterAbbreviationValue_UI_Async />
                 </div>
             }
         </div>
@@ -198,7 +200,7 @@
 
     private async Task OnFavoriteButtonClick_UI_Async( MouseEventArgs args ) {
         /*⭐*/
-        await this.ToggleFavoriteTerm_Async();
+        this.IsFav_Cached = await this.ToggleFavoriteTerm_Async();
 
         this.StateHasChanged();
     }

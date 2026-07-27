@@ -10,6 +10,7 @@
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
+            placeholder="Enter search"
             @bind:event="oninput"
             @bind:get=@this.Value
             @bind:set=@this.OnInputSearch_UI_Async />
