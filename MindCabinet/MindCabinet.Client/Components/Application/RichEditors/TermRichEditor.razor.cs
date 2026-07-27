@@ -44,8 +44,19 @@ public partial class TermRichEditor : ComponentBase {
 
 	[Parameter]
 	public OnDragFunc_Async? OnDrag_Async { get; set; } = null;
+    
+    
+    private bool IsFav_Cached;
+    
+    
 
 
+
+	protected override async Task OnParametersSetAsync() {
+		await base.OnParametersSetAsync();
+
+        this.IsFav_Cached = await this.CurrentTermIsFavorite_Async();
+	}
 
 	protected override void OnParametersSet() {
 		base.OnParametersSet();
@@ -61,7 +72,9 @@ public partial class TermRichEditor : ComponentBase {
         }
 
         // TODO: Add caching
-        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
+        IEnumerable<UserTermFavoriteObject.Raw> termRaws = await this.UserTermFavoritesDataSrc
+            .GetFavTermsForCurrentUser_Async();
+            
         return termRaws.Any( t => t.FavTermId == this.InitialTerm.Id );
     }
 
@@ -75,11 +88,16 @@ public partial class TermRichEditor : ComponentBase {
 
         if( termRaws.Any(t => t.FavTermId == this.InitialTerm.Id) ) {
             await this.UserTermFavoritesDataSrc.RemoveTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.InitialTerm.Id] }
+                new ClientDataAccess_UserTermFavorites.IAPI.RemoveForCurrentUser_Params {
+                    TermIds = [this.InitialTerm.Id]
+                }
             );
         } else {
             await this.UserTermFavoritesDataSrc.AddTermsForCurrentUser_Async(
-                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params { TermIds = [this.InitialTerm.Id] }
+                new ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params {
+                    TermIds = [this.InitialTerm.Id],
+                    TermFavors = [1]
+                }
             );
         }
     }

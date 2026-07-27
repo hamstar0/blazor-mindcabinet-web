@@ -11,21 +11,23 @@
 <div component-name="@nameof(Tabs)" class="tab-header-container">
     @for( int i=0; i<this.TabsRegistry.Count; i++ ) {
         int idx = i;
+        TabEntry tab = this.TabsRegistry[i];
         <div class="tab-header" @onclick=@(() => this.ChangeTab(idx))>
-            <CascadingValue Value=@(this.TabsRegistry[i].Id) Name="TabId">
-                @this.TabsRegistry[i].Header
+            <CascadingValue Value=@(tab.Id) Name="TabId">
+                @tab.Header
             </CascadingValue>
         </div>
     }
 </div>
 <div class="tab-body-container">
     @for( int i=0; i<this.TabsRegistry.Count; i++ ) {
+        TabEntry tab = this.TabsRegistry[i];
         string? display = i == this.CurrentTabIndex
             ? null
             : "display: none;"; // <- ensures blazor render tree retains the element internally
         <div style=@display>
-            <CascadingValue Value=@(this.TabsRegistry[i].Id) Name="TabId">
-                @this.TabsRegistry[i].Content
+            <CascadingValue Value=@(tab.Id) Name="TabId">
+                @tab.Content
             </CascadingValue>
         </div>
     }

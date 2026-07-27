@@ -71,6 +71,10 @@ public partial class ServerDataAccess_UserTermFavorites(
         if( parameters.TermIds.Any(id => id == 0) ) {
             throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
         }
+        if( parameters.TermFavors.Length != parameters.TermIds.Length ) {
+            throw new ArgumentException( "Mismatched pairing of term favorites vs ids." );
+        }
+        
         if( parameters.TermIds.Length == 0 ) {
             return;
         }
@@ -109,7 +113,7 @@ public partial class ServerDataAccess_UserTermFavorites(
     public async Task RemoveFavTermEntries_Async(
                 IDbConnection dbCon,
                 SimpleUserId simpleUserId,
-                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.RemoveForCurrentUser_Params parameters ) {
         if( simpleUserId == 0 ) {
             throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
         }
@@ -142,6 +146,13 @@ public partial class ServerDataAccess_UserTermFavorites(
         }
         if( parameters.TermIds.Any(id => id == 0) ) {
             throw new ArgumentException( "FavTermIds contains invalid values (must be non-zero)." );
+        }
+        if( parameters.TermFavors.Length != parameters.TermIds.Length ) {
+            throw new ArgumentException( "Mismatched pairing of term favorites vs ids." );
+        }
+        
+        if( parameters.TermIds.Length == 0 ) {
+            return;
         }
 
         for( int i=0; i<parameters.TermIds.Length; i++ ) {

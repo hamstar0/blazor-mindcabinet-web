@@ -14,7 +14,7 @@
     <div style="display: grid; grid-template-columns: 48px 30% 30% 30% minmax(48px, auto);">
         <div>
             @if( this.InitialTerm is not null ) {
-                <button class=@(async () => await this.CurrentTermIsFavorite_Async() ? "lit" : "unlit")
+                <button class=@(this.IsFav_Cached ? "lit" : "unlit")
                         @onclick=this.OnFavoriteButtonClick_UI_Async>
                     ★
                 </button>
@@ -96,6 +96,8 @@
 
 
     private async Task OnEditTermValue_UI_Async( string value ) {
+        await Task.CompletedTask;
+
         this.TermValue = value;
 
         bool isValid = TermObject.ValidateTerm( value );
@@ -127,6 +129,8 @@
     }
 
     private async Task OnEditAbbreviationValue_UI_Async( string value ) {
+        await Task.CompletedTask;
+
         this.AbbreviationValue = value;
 
         bool isValid = TermObject.ValidateTerm( value );
@@ -166,6 +170,8 @@
     }
 
     private async Task OnInputDescriptionValue_UI_Async( string value ) {
+        await Task.CompletedTask;
+        
         this.DescriptionValue = value?
             .Replace( oldValue: "\r", newValue: "" )
             .Replace( oldValue: "\n", newValue: "" ) ?? "";

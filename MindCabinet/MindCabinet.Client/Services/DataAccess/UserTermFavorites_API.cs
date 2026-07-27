@@ -21,10 +21,13 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
             public TermId[] TermIds { get; set; } = [];
             public int[] TermFavors { get; set; } = [];
         }
+        public class RemoveForCurrentUser_Params {
+            public TermId[] TermIds { get; set; } = [];
+        }
 
         public Task<object> AddTermsForCurrentUser_Async( EditForCurrentUser_Params parameters );
 
-        public Task<object> RemoveTermsForCurrentUser_Async( EditForCurrentUser_Params parameters );
+        public Task<object> RemoveTermsForCurrentUser_Async( RemoveForCurrentUser_Params parameters );
         
         public Task<object> UpdateTermsForCurrentUser_Async( EditForCurrentUser_Params parameters );
     }

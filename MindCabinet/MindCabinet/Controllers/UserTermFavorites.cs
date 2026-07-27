@@ -79,7 +79,7 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
     [HttpPost(nameof(RemoveTermsForCurrentUser_Async))]
     public async Task<object> RemoveTermsForCurrentUser_Async(
-                ClientDataAccess_UserTermFavorites.IAPI.EditForCurrentUser_Params parameters ) {
+                ClientDataAccess_UserTermFavorites.IAPI.RemoveForCurrentUser_Params parameters ) {
         if( this.SessionManager.UserOfSession is null ) {
             throw new InvalidOperationException( "No user in session" );
         }

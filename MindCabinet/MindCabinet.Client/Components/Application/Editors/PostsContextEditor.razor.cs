@@ -171,7 +171,7 @@ public partial class PostsContextEditor : ComponentBase {
         );
         
         if( !isUpdate ) {
-            raw.Id = (await this.PostsContextsDataSrc.CreateForCurrentUser_Async( raw )).Id;
+            raw.Id = (await this.PostsContextsDataSrc.CreateForCurrentUser_Async( raw.ToPrototype() )).Id;
         } else {
             await this.PostsContextsDataSrc.UpdateForCurrentUser_Async( raw.ToPrototype() );
         }

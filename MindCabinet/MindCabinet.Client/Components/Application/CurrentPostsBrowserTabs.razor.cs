@@ -58,6 +58,8 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
 	}
 
     public async Task RefreshBrowsers_Async() {
+        await Task.CompletedTask;
+        
         // foreach( PostsBrowser browser in this._PostsBrowsersByTabIndex ) {
         //     await browser.RefreshPosts_Async();
         // } verify

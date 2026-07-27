@@ -100,13 +100,13 @@
 
 
     private async Task OnChangePage_UI_Async( int newPage ) {
+        await Task.CompletedTask;
+
         this.CurrentPage = newPage;
     }
 
 
     private async Task OnContextTermSearchChoice_UI_Async( TermObject term ) {
-        await Task.CompletedTask;
-
         this.ContextIdFilter = term.Id;
 
         await this.RefreshList_Async();

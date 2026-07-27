@@ -60,8 +60,8 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task RemoveTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
-        await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
+    public async Task RemoveTermsForCurrentUser_Async( IAPI.RemoveForCurrentUser_Params parameters ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.RemoveForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveTermsForCurrentUser_Async)}",
             parameters: parameters
