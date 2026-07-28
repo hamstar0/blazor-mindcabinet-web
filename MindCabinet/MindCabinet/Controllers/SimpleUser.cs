@@ -33,9 +33,9 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
 
     private readonly ServerDataAccess_SimpleUsers SimpleUsersDataSrc;
 
-    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
+    private readonly ServerDataAccess_PostsQuery PostsQueryDataSrc;
 
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
+    private readonly ServerDataAccess_PostsQueryTermEntry PostsQueryTermEntryDataSrc;
 
     private readonly ServerDataAccess_SimpleUserSessions UserSessionsDataSrc;
 
@@ -54,8 +54,8 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimpleUsers simpleUsersDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_SimpleUserSessions userSessionsDataSrc,
                 ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
@@ -66,8 +66,8 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
         this.ServerDataSrc = serverDataSrc;
         this.TermsDataSrc = termsDataSrc;
         this.SimpleUsersDataSrc = simpleUsersDataSrc;
-        this.PostsContextDataSrc = postsContextDataSrc;
-        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.PostsQueryDataSrc = postsQueryDataSrc;
+        this.PostsQueryTermEntryDataSrc = postsQueryTermEntryDataSrc;
         this.UserSessionsDataSrc = userSessionsDataSrc;
         this.FavoriteTermsDataSrc = favoriteTermsDataSrc;
         this.UserAppDataSrc = userAppDataSrc;
@@ -95,8 +95,8 @@ public partial class SimpleUserController : ControllerBase, ClientDataAccess_Sim
             dbCon: dbCon,
             serverDataSrc: this.ServerDataSrc,
             termsDataSrc: this.TermsDataSrc,
-            postsContextDataSrc: this.PostsContextDataSrc,
-            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            postsQueryDataSrc: this.PostsQueryDataSrc,
+            postsQueryTermEntryDataSrc: this.PostsQueryTermEntryDataSrc,
             userAppDataSrc: this.UserAppDataSrc,
             parameters: parameters,
             detectCollision: true,

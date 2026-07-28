@@ -1,23 +1,23 @@
-﻿@using Microsoft.AspNetCore.Components;
+﻿@using System.Text.Json
+@using Microsoft.AspNetCore.Components;
 @using MindCabinet.Client.Components.Application.Editors;
 @using MindCabinet.Client.Components.Application.Renders;
 @using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.PostsContext;
+@using MindCabinet.Shared.DataObjects.PostsQuery
 @using MindCabinet.Shared.DataObjects.Term;
-@using System.Text.Json
 
 
 
-<div component-name="@nameof(PostsContextEditor)" class=@this.AddedClasses>
+<div component-name="@nameof(PostsQueryEditor)" class=@this.AddedClasses>
 	<Tooltip>
 		<Anchor>
 			<h4>Current posts query title:</h4>
 			<input type="text"
 					placeholder="Enter name"
 					@bind:event="oninput"
-					@bind:get=@this.EditContext_Name
+					@bind:get=@this.EditQuery_Name
 					@bind:set=@this.OnInputName_UI_Async />
 		</Anchor>
 		<TooltipContent>A 'posts query' is a set of posts about a given circumstance or phenomena</TooltipContent>
@@ -25,7 +25,7 @@
 	<h4>Enter tags to define the current query:</h4>
 	<TermSetInputEditor Label="Enter tags (at least 1 required)"
 			AddedPerItemClasses="d-block"
-			InitialTerms=@( this.EditContext_Entries
+			InitialTerms=@( this.EditQuery_Entries
 				.Select( e => e.Term )
 				.ToList() )
 			VerboseTermDisplay=@true
@@ -46,11 +46,11 @@
 	</TermSetInputEditor>
 	<div>
 		<div>Context options:</div>
-		<button @onclick=@(() => this.ClearEditContext_UI(false))>
+		<button @onclick=@(() => this.ClearEditQuery_UI(false))>
 			Create New
 		</button>
-		<button disabled=@( !this.CanSaveEdits(this.TemplateContext is null) )
-				@onclick=@this.SaveContext_UI_Async>
+		<button disabled=@( !this.CanSaveEdits(this.TemplateQuery is null) )
+				@onclick=@this.SaveQuery_UI_Async>
 			Save Changes
 		</button>
 	</div>
@@ -67,7 +67,7 @@
 				<button @onclick=@(this.ConfirmResetPrompt_DialogComponent.Close)>
 					Cancel
 				</button>
-				<button @onclick=@( () => this.ClearEditContext_UI(true) )>
+				<button @onclick=@( () => this.ClearEditQuery_UI(true) )>
 					Confirm
 				</button>
 			</div>
@@ -78,7 +78,7 @@
 
 
 @code {
-    private string ConfirmResetPrompt_ModalDialogId => "PostsContextEditor_Reset_" + Guid.NewGuid()
+    private string ConfirmResetPrompt_ModalDialogId => "PostsQueryEditor_Reset_" + Guid.NewGuid()
         .ToString("N")
         .Substring(0, 8);
 
@@ -88,17 +88,17 @@
 
 
 	private double? GetTagPriorityValue( TermObject tag ) {
-		return this.EditContext_Entries
+		return this.EditQuery_Entries
 			.FirstOrDefault( t => t.Term.Id == tag.Id )?
 			.Priority;
 	}
 
-	private PostsContextTermEntryObject GetFirstMatchingTagEntry( TermId id ) {
+	private PostsQueryTermEntryObject GetFirstMatchingTagEntry( TermId id ) {
 		try {
-			return this.EditContext_Entries
+			return this.EditQuery_Entries
 				.First( t => t.Term.Id == id );
 		} catch( InvalidOperationException e ) {
-			IEnumerable<TermId> entryIds = this.EditContext_Entries
+			IEnumerable<TermId> entryIds = this.EditQuery_Entries
 				.Select( e => e.Term.Id );
 
 			throw new InvalidOperationException( $"Expecting: {id}, Found: {entryIds}", e );
@@ -113,7 +113,7 @@
             return;
         }
 
-		this.EditContext_Name = nameText;
+		this.EditQuery_Name = nameText;
         
         this.StateHasChanged();
     }
@@ -122,7 +122,7 @@
 				IEnumerable<TermObject> currentTags,
 				TermObject changedTag,
 				bool isAdded ) {
-		PostsContextTermEntryObject? changedTagEntry = null;
+		PostsQueryTermEntryObject? changedTagEntry = null;
 
 		if( isAdded ) {
 			changedTagEntry = this.AddNewTag( changedTag );
@@ -140,7 +140,7 @@
 	private async Task OnPriorityChange_UI_Async( TermObject tag, double newValue ) {
         await Task.CompletedTask;
 
-		PostsContextTermEntryObject? entry = this.EditContext_Entries
+		PostsQueryTermEntryObject? entry = this.EditQuery_Entries
 			.First( t => t.Term.Id == tag.Id );
 
 		entry.SetPriority( newValue );
@@ -151,7 +151,7 @@
 	private async Task OnIsRequiredChange_UI_Async( TermObject tag, bool newValue ) {
         await Task.CompletedTask;
 
-		PostsContextTermEntryObject? entry = this.EditContext_Entries
+		PostsQueryTermEntryObject? entry = this.EditQuery_Entries
 			.First( t => t.Term.Id == tag.Id );
 
 		entry.SetIsRequired( newValue );
@@ -159,7 +159,7 @@
 		this.StateHasChanged();
 	}
 
-	private void ClearEditContext_UI( bool forceReset ) {
+	private void ClearEditQuery_UI( bool forceReset ) {
 		if( this.HasUnsavedChanges() && !forceReset ) {
 			this.ConfirmResetPrompt_DialogComponent.Open();
 
@@ -169,13 +169,13 @@
 		// if( this.ResetPromptDialog.IsOpen ) {
 		this.ConfirmResetPrompt_DialogComponent.Close();
 
-		this.ClearEditContext();
+		this.ClearEditQuery();
 
 		this.StateHasChanged();
 	}
 
 
-	private async Task SaveContext_UI_Async() {
+	private async Task SaveQuery_UI_Async() {
 		await this.UpdateOrCreate_Async();
         
 		this.StateHasChanged();

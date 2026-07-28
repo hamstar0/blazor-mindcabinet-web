@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 
 
 namespace MindCabinet.Client.Components.Application.Renders;
 
 
-public partial class MultiPostsContextRender : ComponentBase {
+public partial class MultiPostsQueryRender : ComponentBase {
     //[Inject]
     //public IJSRuntime Js { get; set; } = null!;
 
@@ -17,10 +17,10 @@ public partial class MultiPostsContextRender : ComponentBase {
     
 
     [Parameter, EditorRequired]
-	public IEnumerable<PostsContextObject> Contexts { get; set; } = null!;
+	public IEnumerable<PostsQueryObject> Queries { get; set; } = null!;
 
 	[Parameter]
-	public Func<PostsContextObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
+	public Func<PostsQueryObject, MouseEventArgs, Task>? OnClick_Async { get; set; } = null;
     
     public bool HasFocus { get; private set; } = false;
 }

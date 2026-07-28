@@ -1,14 +1,14 @@
-﻿@using MindCabinet.Client.Components.Standard;
+﻿@using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Components.Application.Renders;
-@using MindCabinet.Client.Components.Application.Pickers;
+@using MindCabinet.Client.Components.Standard;
 @using MindCabinet.Client.Services;
 @using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.PostsContext;
+@using MindCabinet.Shared.DataObjects.PostsQuery
 @using MindCabinet.Shared.DataObjects.Term;
 
 
 
-<div component-name="@nameof(CurrentPostsContextPicker)"
+<div component-name="@nameof(CurrentPostsQueryPicker)"
         class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
             disabled=@this.Disabled
@@ -24,8 +24,8 @@
         <div style="position: absolute; display: inline-block;">
             @* @if( (this.IsSearchFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@
             @if( this.SearchOptions.Count() > 0 ) {
-                <MultiPostsContextRender
-                        Contexts=@this.SearchOptions
+                <MultiPostsQueryRender
+                        Queries=@this.SearchOptions
                         OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
        </div>
@@ -37,7 +37,7 @@
 @code {
     public void Reset_UI() {
         this.Value = "";
-        this.SearchOptions = new List<PostsContextObject>();
+        this.SearchOptions = new List<PostsQueryObject>();
     }
 
 
@@ -76,7 +76,7 @@ await Task.CompletedTask;
         }
         
         if( string.IsNullOrEmpty(inputText) ) {
-            this.SearchOptions = new List<PostsContextObject>();
+            this.SearchOptions = new List<PostsQueryObject>();
             // this.SearchPosition = 0;
             this.Value = "";
 
@@ -85,23 +85,23 @@ await Task.CompletedTask;
 
         this.Value = inputText;
 
-        await this.TrySearchContext_Async( inputText );
+        await this.TrySearchQuery_Async( inputText );
     }
 
 
-    public async Task PickPostContext_Async( PostsContextId id ) {
-        PostsContextObject? context = this.SearchOptions
+    public async Task PickPostsQuery_Async( PostsQueryId id ) {
+        PostsQueryObject? query = this.SearchOptions
             .FirstOrDefault( o => o.Id == id );
-        if( context is null ) {
+        if( query is null ) {
             throw new Exception( "No such option found." );
         }
 
-        this.SearchOptions = new List<PostsContextObject>();
-        this.Value = context.Name;
+        this.SearchOptions = new List<PostsQueryObject>();
+        this.Value = query.Name;
 
-        //await this.MySessionMngr.SetCurrentContext_Await( this.UserAppDataSrc, context );     Pick from current only
+        //await this.MySessionMngr.SetCurrentQuery_Await( this.UserAppDataSrc, query );     Pick from current only
         
-        await this.OnContextPicked_Async( context );
+        await this.OnQueryPicked_Async( query );
 
         this.StateHasChanged();
     }

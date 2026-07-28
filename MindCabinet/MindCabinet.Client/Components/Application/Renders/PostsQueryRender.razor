@@ -4,15 +4,15 @@
 
 
 
-<div component-name="@nameof(PostsContextRender)"
+<div component-name="@nameof(PostsQueryRender)"
             class="basic @(this.AddedClasses ?? "")"
             @onclick=@this.OnClick_UI_Async>
-    <Tooltip Enabled=@(() => !string.IsNullOrEmpty(this.Context.Description))>
+    <Tooltip Enabled=@(() => !string.IsNullOrEmpty(this.Query.Description))>
         <Anchor>
-            @this.Context.Name
+            @this.Query.Name
         </Anchor>
         <TooltipContent>
-            @this.Context.Description
+            @this.Query.Description
         </TooltipContent>
     </Tooltip>
     @this.ChildContent

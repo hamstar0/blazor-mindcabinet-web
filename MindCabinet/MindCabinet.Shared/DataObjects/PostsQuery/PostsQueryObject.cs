@@ -1,15 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public enum PostsContextId : long { }
+public enum PostsQueryId : long { }
 
 
 
-public partial class PostsContextObject : IDataObject { //IHasId<PostsContextId>
-    public PostsContextId Id { get; }
+public partial class PostsQueryObject : IDataObject { //IHasId<PostsQueryId>
+    public PostsQueryId Id { get; }
 
     public string Name { get; }
     
@@ -17,21 +17,21 @@ public partial class PostsContextObject : IDataObject { //IHasId<PostsContextId>
     
     public SimpleUserId Owner { get; }
 
-    public PostsContextTermEntryObject[] Entries { get; }
+    public PostsQueryTermEntryObject[] Entries { get; }
 
 
 
-    public PostsContextObject(
-            PostsContextId id,
+    public PostsQueryObject(
+            PostsQueryId id,
             string name,
             string? description,
             SimpleUserId owner,
-            PostsContextTermEntryObject[] entries ) {
+            PostsQueryTermEntryObject[] entries ) {
         if( id == 0 ) {
-            throw new ArgumentException( $"Id cannot be 0 in {nameof(PostsContextObject)}." );
+            throw new ArgumentException( $"Id cannot be 0 in {nameof(PostsQueryObject)}." );
         }
         if( owner == 0 ) {
-            throw new ArgumentException( $"owner cannot be 0 in {nameof(PostsContextObject)}." );
+            throw new ArgumentException( $"owner cannot be 0 in {nameof(PostsQueryObject)}." );
         }
 
         this.Id = id;
@@ -42,12 +42,12 @@ public partial class PostsContextObject : IDataObject { //IHasId<PostsContextId>
     }
 
 
-    public IEnumerable<PostsContextTermEntryObject> GetRequiredEntries() {
+    public IEnumerable<PostsQueryTermEntryObject> GetRequiredEntries() {
         return this.Entries
             .Where( e => e.IsRequired );
     }
 
-    public IEnumerable<PostsContextTermEntryObject> GetOptionalEntries() {
+    public IEnumerable<PostsQueryTermEntryObject> GetOptionalEntries() {
         return this.Entries
             .Where( e => !e.IsRequired );
     }

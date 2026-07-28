@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
@@ -28,12 +28,12 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
         );
 
         Task<UserAppDataObject>? userAppDataMaybeTask = null;
-        if( sessionData.UserAppData_PostsContext is not null && sessionData.UserAppData_UserDefaultTerm is not null ) {
+        if( sessionData.UserAppData_PostsQuery is not null && sessionData.UserAppData_UserDefaultTerm is not null ) {
             userAppDataMaybeTask = sessionData.UserAppData?.ToDataObject_Async(
                 termsFactory: async ( _ ) =>
                     await ClientDataAccess_Terms.ConvertRawToDataObject_Async( termsDataSrc, sessionData.UserAppData_UserDefaultTerm! ),
-                postsContextFactory: async ( _ ) =>
-                    await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async( termsDataSrc, sessionData.UserAppData_PostsContext! )
+                postsQueryFactory: async ( _ ) =>
+                    await ClientDataAccess_PostsQuery.ConvertRawToDataObject_Async( termsDataSrc, sessionData.UserAppData_PostsQuery! )
             );
         }
         

@@ -7,14 +7,14 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 
 namespace MindCabinet.Client.Services.DataPresenters;
 
 
 
 public partial class PostsSupplier {
-    public PostsContextObject GetPostsContext() => this.PostsContext;
+    public PostsQueryObject GetPostsQuery() => this.PostsQuery;
 
     public int GetCurrentPage() => this.CurrentPage;
     public void SetCurrentPage( int page ) => this.CurrentPage = page;

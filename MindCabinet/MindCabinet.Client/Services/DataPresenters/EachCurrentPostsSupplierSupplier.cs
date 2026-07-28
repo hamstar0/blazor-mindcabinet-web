@@ -7,7 +7,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 
 namespace MindCabinet.Client.Services.DataPresenters;
 
@@ -17,7 +17,7 @@ public partial class EachCurrentPostsSupplierSupplier(
                 ILogger<EachCurrentPostsSupplierSupplier> logger,
                 ClientDataAccess_Terms termsDataSrc,
                 LocalClientSessionManager mySessionMngr,
-                ClientDataAccess_PostsContext postsContextsDataSrc,
+                ClientDataAccess_PostsQuery postsQueryDataSrc,
                 ClientDataAccess_PrioritizedPosts prioritizedPostsDataSrc
             ) : IClientDataProcessors {
     private ILogger<EachCurrentPostsSupplierSupplier> Logger = logger;
@@ -26,7 +26,7 @@ public partial class EachCurrentPostsSupplierSupplier(
 
     private ClientDataAccess_Terms TermsDataSrc = termsDataSrc;
 
-    private ClientDataAccess_PostsContext PostsContextsDataSrc = postsContextsDataSrc;
+    private ClientDataAccess_PostsQuery PostsQueryDataSrc = postsQueryDataSrc;
 
     private ClientDataAccess_PrioritizedPosts PrioritizedPostsDataSrc = prioritizedPostsDataSrc;
 
@@ -36,20 +36,20 @@ public partial class EachCurrentPostsSupplierSupplier(
 
 
     public async Task<IEnumerable<PostsSupplier>> GetPostsSuppliers_Async() {
-        IEnumerable<PostsContextObject.Raw> currContextRaws = (await this.PostsContextsDataSrc.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsContext.IAPI.GetByCriteria_Params { }
-        )).Contexts;
+        IEnumerable<PostsQueryObject.Raw> currContextRaws = (await this.PostsQueryDataSrc.GetForCurrentUserByCriteria_Async(
+            new ClientDataAccess_PostsQuery.IAPI.GetByCriteria_Params { }
+        )).Queries;
 
-        List<PostsContextObject> currContexts = new List<PostsContextObject>( currContextRaws.Count() );
-        foreach( PostsContextObject.Raw raw in currContextRaws ) {
-            currContexts.Add( await ClientDataAccess_PostsContext.ConvertRawToDataObject_Async(this.TermsDataSrc, raw) );
+        List<PostsQueryObject> currContexts = new List<PostsQueryObject>( currContextRaws.Count() );
+        foreach( PostsQueryObject.Raw raw in currContextRaws ) {
+            currContexts.Add( await ClientDataAccess_PostsQuery.ConvertRawToDataObject_Async(this.TermsDataSrc, raw) );
         }
 
         return currContexts.Select( context => new PostsSupplier(
             logger: this.Logger,
             mySessionMngr: this.MySessionMngr,
             postsDataSrc: this.PrioritizedPostsDataSrc,
-            postsContext: context
+            postsQuery: context
         ) );
     }
 }

@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.Utility;
 using System.Data;
 using MindCabinet.Services;
@@ -13,8 +13,8 @@ using MindCabinet.Services;
 namespace MindCabinet.Data.DataAccess;
 
 
-public partial class ServerDataAccess_PostsContexts {
-    public const string TableName = "PostsContexts";
+public partial class ServerDataAccess_PostsQuery {
+    public const string TableName = "PostsQueries";
     public const string TableColumn_Id = "Id";
     public const string TableColumn_Owner = "Owner";
     public const string TableColumn_Name = "Name";

@@ -2,29 +2,29 @@
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.Net.Http.Json;
 
 namespace MindCabinet.Client.Services;
 
 
 public partial class LocalClientSessionManager {
-    public PostsContextObject? GetCurrentContext() {
-        return this.Data?.UserAppData?.CurrentPostsContext;
+    public PostsQueryObject? GetCurrentContext() {
+        return this.Data?.UserAppData?.CurrentPostsQuery;
     }
 
 
-    public async Task SetCurrentContext_Await( ClientDataAccess_UserAppData userAppDataSrc, PostsContextObject context ) {
+    public async Task SetCurrentContext_Await( ClientDataAccess_UserAppData userAppDataSrc, PostsQueryObject query ) {
         if( this.Data?.UserAppData is null ) {
             throw new InvalidOperationException( "UserAppData is null in SetCurrentContext." );
         }
 
         await userAppDataSrc.UpdateForCurrentUser_Async( new UserAppDataObject.Prototype {
             SimpleUserId = this.UserId,
-            CurrentPostsContextId = context.Id
+            CurrentPostsQueryId = query.Id
         } );
-        this.Data.UserAppData.SetCurrentPostsContext( context );
+        this.Data.UserAppData.SetCurrentPostsQuery( query );
         
-        await this.TriggerPostsContextChanged_Async( context );
+        await this.TriggerPostsQueryChanged_Async( query );
     }
 }

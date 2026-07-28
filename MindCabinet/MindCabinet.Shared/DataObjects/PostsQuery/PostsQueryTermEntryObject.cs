@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextTermEntryObject( TermObject term, double priority, bool isRequired ) {
-    //public PostsContextObject PostsContext { get; } = postsContext;
+public partial class PostsQueryTermEntryObject( TermObject term, double priority, bool isRequired ) {
+    //public PostsQueryObject PostsQuery { get; } = postsQuery;
     public TermObject Term { get; private set; } = term;
 
     public double Priority { get; private set; } = priority;
@@ -14,8 +14,8 @@ public partial class PostsContextTermEntryObject( TermObject term, double priori
 
     
 
-    public PostsContextTermEntryObject Clone() {
-        return new PostsContextTermEntryObject(
+    public PostsQueryTermEntryObject Clone() {
+        return new PostsQueryTermEntryObject(
             term: this.Term,
             priority: this.Priority,
             isRequired: this.IsRequired

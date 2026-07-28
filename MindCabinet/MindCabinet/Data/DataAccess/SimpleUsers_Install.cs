@@ -6,7 +6,7 @@ using MindCabinet.Client.Site.Pages;
 using MindCabinet.DataObjects;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Data;
 using System.Security.Cryptography;
@@ -57,15 +57,15 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     public async Task<(bool success, SimpleUserId defaultUserId)> Install_After_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc ) {
         SimpleUserQueryResult result = await this.CreateSimpleUser_Async(
             dbCon: dbConnection,
             termsDataSrc: termsDataSrc,
-            postsContextDataSrc: postsContextDataSrc,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            postsQueryDataSrc: postsQueryDataSrc,
+            postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
             serverDataSrc: serverDataSrc,
             userAppDataSrc: userAppDataSrc,
             parameters: this.DefaultUserParams,
@@ -85,16 +85,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     public async Task<(bool success, TermId defaultUserAsTermId)> Install_AfterDefaultUserAndServerData_Async(
                 IDbConnection dbConnection,
                 ServerDataAccess_Terms termsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 SimpleUserId defaultUserId ) {
         (TermObject.Raw defaultUserAsTerm, _) = await this.CreateUserData_Async(
             dbCon: dbConnection,
             termsDataSrc: termsDataSrc,
-            postsContextDataSrc: postsContextDataSrc,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            postsQueryDataSrc: postsQueryDataSrc,
+            postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
             serverDataSrc: serverDataSrc,
             userAppDataSrc: userAppDataSrc,
             parameters: this.DefaultUserParams,

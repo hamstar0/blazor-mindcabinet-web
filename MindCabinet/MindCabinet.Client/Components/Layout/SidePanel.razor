@@ -2,18 +2,18 @@
 @using MindCabinet.Client.Components.Application.Pickers;
 @using MindCabinet.Client.Components.SiteFunctions;
 @using MindCabinet.Client.Services.DbAccess
-@using MindCabinet.Shared.DataObjects.PostsContext
+@using MindCabinet.Shared.DataObjects.PostsQuery
 
 
 @if( this.MySessionMngr.UserId is not null ) {
-    <CurrentPostsContextPicker
+    <CurrentPostsQueryPicker
         Description="Select the current 'context'"
         InitialSearchOptionsCache=@this.Contexts_Cache
         InitialSelectedSearchOption=@this.MySessionMngr.GetCurrentContext()
-        OnContextPicked_Async=@this.OnContextSelect_UI_Async />
+        OnQueryPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />
-    <PostsContextEditor
-        @ref=@this.PostsContextEditorComponent
+    <PostsQueryEditor
+        @ref=@this.PostsQueryEditorComponent
         InitialContext=@this.MySessionMngr.GetCurrentContext()
         OnUpdate_Async=@this.OnContextCreateOrUpdate_UI_Async
         OnEntryEdit_Async=@this.OnContextEntryEdit_UI_Async />
@@ -23,14 +23,14 @@
 
 
 @code {
-    private async Task OnContextSelect_UI_Async( PostsContextObject context ) {
+    private async Task OnContextSelect_UI_Async( PostsQueryObject context ) {
         await this.SetContext_Async( context );
 
         this.StateHasChanged();
     }
 
 
-    private async Task OnContextCreateOrUpdate_UI_Async( PostsContextObject.Raw context ) {
+    private async Task OnContextCreateOrUpdate_UI_Async( PostsQueryObject.Raw context ) {
         this.StateHasChanged();
 
         if( this.OnStateChange_Async is not null ) {
@@ -38,7 +38,7 @@
         }
     }
 
-    private async Task OnContextEntryEdit_UI_Async( PostsContextTermEntryObject changedEntry, bool isAdded ) {
+    private async Task OnContextEntryEdit_UI_Async( PostsQueryTermEntryObject changedEntry, bool isAdded ) {
 await Task.CompletedTask;
         //this.StateHasChanged();
         //

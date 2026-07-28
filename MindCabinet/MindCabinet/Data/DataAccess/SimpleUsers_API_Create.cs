@@ -6,7 +6,7 @@ using MindCabinet.Client.Site.Pages;
 using MindCabinet.DataObjects;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Data;
@@ -21,8 +21,8 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     public async Task<SimpleUserQueryResult> CreateSimpleUser_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
@@ -117,16 +117,16 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         //
 
         TermObject.Raw? userTerm = null;
-        PostsContextObject.Raw? userDefaultPostsContext = null;
+        PostsQueryObject.Raw? userDefaultPostsQuery = null;
 
         if( createUserData ) {
-            (userTerm, userDefaultPostsContext) = await this.CreateUserData_Async(
+            (userTerm, userDefaultPostsQuery) = await this.CreateUserData_Async(
                 dbCon: dbCon,
                 serverDataSrc: serverDataSrc,
                 userAppDataSrc: userAppDataSrc,
                 termsDataSrc: termsDataSrc,
-                postsContextDataSrc: postsContextDataSrc,
-                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                postsQueryDataSrc: postsQueryDataSrc,
+                postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
                 parameters: parameters,
                 newUserId: newUser.Id
             );
@@ -134,7 +134,7 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
         //
 
-        return new SimpleUserQueryResult( newUser, userDefaultPostsContext, userTerm, false );
+        return new SimpleUserQueryResult( newUser, userDefaultPostsQuery, userTerm, false );
     }
 
     private async Task<TermObject.Raw> CreateUserTerm_Async(
@@ -162,52 +162,52 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
     }
 
     
-    private async Task<PostsContextObject.Raw> CreateDefaultUserPostsContext_Async(
+    private async Task<PostsQueryObject.Raw> CreateDefaultUserPostsQuery_Async(
                 IDbConnection dbCon,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
                 // TermId userAsTermId,
                 SimpleUserId ownerUserId ) {
-        PostsContextObject.Prototype proto = new PostsContextObject.Prototype {
+        PostsQueryObject.Prototype proto = new PostsQueryObject.Prototype {
             Name = $"{parameters.Name}'s posts",
             Description = "All posts by the given user.",
             Owner = ownerUserId,
             Entries = [
-                // new PostsContextTermEntryObject.Prototype {
+                // new PostsQueryTermEntryObject.Prototype {
                 //     TermId = userAsTermId,
                 //     Priority = 1,
                 //     IsRequired = true
                 // }
             ]
         };
-        PostsContextId defaultCtxId = (await postsContextDataSrc.Create_Async(
+        PostsQueryId defaultCtxId = (await postsQueryDataSrc.Create_Async(
             dbCon: dbCon,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
             parameters: proto,
             owner: ownerUserId
         )).Id;
 
         proto.Id = defaultCtxId;
-        //proto.Entries[0].PostsContextId = defaultCtxId;
+        //proto.Entries[0].PostsQueryId = defaultCtxId;
 
-        // PostsContextObject.Raw rawCtx = PostsContextObject.CreateRaw(
+        // PostsQueryObject.Raw rawCtx = PostsQueryObject.CreateRaw(
         //     id: defaultCtxId,
         //     name: proto.Name,
         //     description: proto.Description,
         //     entries: proto.Entries
         // );
-        // PostsContextObject ctx = await ServerDataAccess_PostsContexts
+        // PostsQueryObject query = await ServerDataAccess_PostsQuerys
         //     .ToDataObject_Async( dbCon, termsData, rawCtx );
 
         return proto.ToRaw(true);
     }
     
-    internal async Task<(TermObject.Raw, PostsContextObject.Raw)> CreateUserData_Async(
+    internal async Task<(TermObject.Raw, PostsQueryObject.Raw)> CreateUserData_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_ServerData serverDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ClientDataAccess_SimpleUsers.IAPI.Create_Params parameters,
@@ -220,10 +220,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
             creator: newUserId
         );
 
-        PostsContextObject.Raw userDefaultPostsContext = await this.CreateDefaultUserPostsContext_Async(
+        PostsQueryObject.Raw userDefaultPostsQuery = await this.CreateDefaultUserPostsQuery_Async(
             dbCon: dbCon,
-            postsContextDataSrc: postsContextDataSrc,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            postsQueryDataSrc: postsQueryDataSrc,
+            postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
             parameters: parameters,
             ownerUserId: newUserId
         );
@@ -231,10 +231,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
         await userAppDataSrc.Create_Async(
             dbCon: dbCon,
             simpleUserId: newUserId,
-            userDefaultPostsContextId: userDefaultPostsContext.Id,
+            userDefaultPostsQueryId: userDefaultPostsQuery.Id,
             userDefaultTermId: userTerm.Id
         );
 
-        return (userTerm, userDefaultPostsContext);
+        return (userTerm, userDefaultPostsQuery);
     }
 }

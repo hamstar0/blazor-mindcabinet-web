@@ -102,8 +102,8 @@ public partial class ServerDataAccess_Terms : IServerDataAccess {
         // DELETE FROM SimplePostTags 
         // WHERE TermId = @TermId;
 
-        // -- 4. Remove posts context term entries (todo: also delete PostsContextEntry with no terms)
-        // DELETE FROM PostsContextTermEntry 
+        // -- 4. Remove posts context term entries (todo: also delete PostsQueryEntry with no terms)
+        // DELETE FROM PostsQueryTermEntry 
         // WHERE TermId = @TermId;
 
         // -- 5. Handle UserAppData defaults - either update or delete

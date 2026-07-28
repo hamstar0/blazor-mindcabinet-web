@@ -2,20 +2,20 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextObject {
+public partial class PostsQueryObject {
     public class Prototype {
         public static bool ValidateEntries(
-                    IEnumerable<PostsContextTermEntryObject.Prototype> entries,
+                    IEnumerable<PostsQueryTermEntryObject.Prototype> entries,
                     bool includeId ) {
             return entries.All( e => e.IsValid(includeId) );     //entries.Count() > 0
         }
 
 
 
-        public PostsContextId? Id { get; set; }
+        public PostsQueryId? Id { get; set; }
 
         public string? Name { get; set; }
         
@@ -23,28 +23,28 @@ public partial class PostsContextObject {
         
         public SimpleUserId? Owner { get; set; }
 
-        public PostsContextTermEntryObject.Prototype[] Entries { get; set; } = [];
+        public PostsQueryTermEntryObject.Prototype[] Entries { get; set; } = [];
 
 
 
         public bool IsValid( bool includingId ) {
-            if( includingId && !PostsContextObject.ValidateId(this.Id ?? 0) ) {
+            if( includingId && !PostsQueryObject.ValidateId(this.Id ?? 0) ) {
                 return false;
             }
-            if( !PostsContextObject.ValidateName(this.Name ?? "") ) {
+            if( !PostsQueryObject.ValidateName(this.Name ?? "") ) {
                 return false;
             }
             if( this.Owner is null || this.Owner == 0 ) {
                 return false;
             }
-            if( !PostsContextObject.Prototype.ValidateEntries(this.Entries, includingId) ) {
+            if( !PostsQueryObject.Prototype.ValidateEntries(this.Entries, includingId) ) {
                 return false;
             }
             
             return true;
         }
 
-        public PostsContextObject.Raw ToRaw( bool validateId ) {
+        public PostsQueryObject.Raw ToRaw( bool validateId ) {
             if( !this.IsValid(validateId) ) {
                 throw new InvalidOperationException("Cannot create raw entry from invalid prototype.");
             }
@@ -52,13 +52,13 @@ public partial class PostsContextObject {
                 throw new Exception( "Invalid Owner "+this.Owner );
             }
 
-            foreach( PostsContextTermEntryObject.Prototype entry in this.Entries ) {
-                if( entry.PostsContextId != this.Id ) {
-                    throw new InvalidOperationException("All entries must have the same PostsContextId as the prototype.");
+            foreach( PostsQueryTermEntryObject.Prototype entry in this.Entries ) {
+                if( entry.PostsQueryId != this.Id ) {
+                    throw new InvalidOperationException("All entries must have the same PostsQueryId as the prototype.");
                 }
             }
             
-            return PostsContextObject.CreateRaw(
+            return PostsQueryObject.CreateRaw(
                 id: this.Id ?? throw new InvalidOperationException("Cannot create raw entry from prototype with null Id."),
                 name: this.Name ?? "",
                 description: this.Description,

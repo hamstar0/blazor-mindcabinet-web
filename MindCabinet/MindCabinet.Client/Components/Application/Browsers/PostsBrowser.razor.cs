@@ -7,7 +7,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.ComponentModel;
 
 
@@ -68,7 +68,7 @@ public partial class PostsBrowser : ComponentBase {
 
 
     public async Task<IEnumerable<SimplePostObject>> GetPostsOfCurrentPage_Async() {
-        // PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
+        // PostsQueryObject? context = this.MySessionMngr.GetCurrentContext();
         // if( context is null ) {
         //     return [];
         // }
@@ -79,12 +79,12 @@ public partial class PostsBrowser : ComponentBase {
             addedFilterTagIds: this.AddedFilterTags.Select( t => t.Id ).ToArray()
         );
 
-//Console.WriteLine( $"GetPostsOfCurrentPage_Async ({this.PostsSupply.GetPostsContext().Name}): {posts.Count()}, {this.SearchTerm.ToString()}" );
+//Console.WriteLine( $"GetPostsOfCurrentPage_Async ({this.PostsSupply.GetPostsQuery().Name}): {posts.Count()}, {this.SearchTerm.ToString()}" );
         return posts;
     }
 
     public async Task<(int totalPosts, int totalPages)> GetTotalPostPagesCount_Async() {
-        // PostsContextObject? context = this.MySessionMngr.GetCurrentContext();
+        // PostsQueryObject? context = this.MySessionMngr.GetCurrentContext();
         // if( context is null ) {
         //     return (0, 0);
         // }

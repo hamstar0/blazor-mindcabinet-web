@@ -5,7 +5,7 @@ using MindCabinet.Client.Components.Layout;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DataPresenters;
 using MindCabinet.Client.Services.DbAccess;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using System.Text;
 
@@ -23,7 +23,7 @@ public partial class AllTermsRichEditor : ComponentBase {
     private ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_PostsContext PostsContextDataSrc { get; set; } = null!;
+    private ClientDataAccess_PostsQuery PostsQueryDataSrc { get; set; } = null!;
 
 
     [Parameter, EditorRequired]
@@ -147,12 +147,12 @@ public partial class AllTermsRichEditor : ComponentBase {
 
 
     private async Task ViewPostsOfTerm_Async( TermObject term ) {
-        ClientDataAccess_PostsContext.IAPI.CreateOrUpdate_Return ret = await this.PostsContextDataSrc.CreateForCurrentUser_Async(
-            new PostsContextObject.Prototype {
+        ClientDataAccess_PostsQuery.IAPI.CreateOrUpdate_Return ret = await this.PostsQueryDataSrc.CreateForCurrentUser_Async(
+            new PostsQueryObject.Prototype {
                 Name = $"'{term.ToFullString()}' posts",
                 Owner = this.MySessMngr.UserId,
                 Entries = [
-                    new PostsContextTermEntryObject.Prototype {
+                    new PostsQueryTermEntryObject.Prototype {
                         TermId = term.Id,
                         Priority = 0,
                         IsRequired = true
@@ -163,7 +163,7 @@ public partial class AllTermsRichEditor : ComponentBase {
 
         picker needs to update with latest posts context
 
-        await CurrentPostsContextPicker.Main.PickPostContext_Async( ret.Id );
+        await CurrentPostsQueryPicker.Main.PickPostsQuery_Async( ret.Id );
 
         this.Navigation.Navigate( $"{MainPanel.Main.PostsTabId}.{CurrentPostsBrowserTabs.Main.Id}" );
     }

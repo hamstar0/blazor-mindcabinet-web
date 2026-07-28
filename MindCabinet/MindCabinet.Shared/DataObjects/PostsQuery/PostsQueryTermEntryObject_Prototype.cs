@@ -2,12 +2,12 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextTermEntryObject {
+public partial class PostsQueryTermEntryObject {
     public class Prototype {
-        public PostsContextId? PostsContextId { get; set; }
+        public PostsQueryId? PostsQueryId { get; set; }
 
         public TermId? TermId { get; set; }
 
@@ -17,8 +17,8 @@ public partial class PostsContextTermEntryObject {
 
 
 
-        public bool IsValid( bool includePostsContextId ) {
-            if( includePostsContextId && (this.PostsContextId == null || this.PostsContextId == default) ) {
+        public bool IsValid( bool includePostsQueryId ) {
+            if( includePostsQueryId && (this.PostsQueryId == null || this.PostsQueryId == default) ) {
                 return false;
             }
             if( this.TermId == null || this.TermId == default ) {
@@ -37,14 +37,14 @@ public partial class PostsContextTermEntryObject {
         public enum MatchResult {
             Unknown = -1,
             Match = 0,
-            PostsContextIdMismatch = 1,
+            PostsQueryIdMismatch = 1,
             TermMismatch = 2,
             PriorityMismatch = 3,
             IsRequiredMismatch = 4,
         }
-        public MatchResult Matches( PostsContextTermEntryObject other ) {
-            // if( this.PostsContextId != other.PostsContextId ) {
-            //     return MatchResult.PostsContextIdMismatch;
+        public MatchResult Matches( PostsQueryTermEntryObject other ) {
+            // if( this.PostsQueryId != other.PostsQueryId ) {
+            //     return MatchResult.PostsQueryIdMismatch;
             // }
             if( this.TermId != other.Term.Id ) {
                 return MatchResult.TermMismatch;
@@ -59,10 +59,10 @@ public partial class PostsContextTermEntryObject {
             return MatchResult.Match;
         }
 
-        public PostsContextTermEntryObject.Raw ToRaw( bool validatePostContextId, bool validate ) {
+        public PostsQueryTermEntryObject.Raw ToRaw( bool validatePostContextId, bool validate ) {
             if( validatePostContextId ) {
-                if( this.PostsContextId is null || this.PostsContextId == 0 ) {
-                    throw new InvalidOperationException("Cannot create raw entry from prototype with null or zero PostsContextId.");
+                if( this.PostsQueryId is null || this.PostsQueryId == 0 ) {
+                    throw new InvalidOperationException("Cannot create raw entry from prototype with null or zero PostsQueryId.");
                 }
             }
             if( validate ) {
@@ -77,8 +77,8 @@ public partial class PostsContextTermEntryObject {
                 }
             }
 
-            return PostsContextTermEntryObject.CreateRaw(
-                postsContextId: this.PostsContextId ?? default,
+            return PostsQueryTermEntryObject.CreateRaw(
+                postsQueryId: this.PostsQueryId ?? default,
                 termId: this.TermId ?? default,
                 priority: this.Priority ?? default,
                 isRequired: this.IsRequired ?? default
@@ -87,9 +87,9 @@ public partial class PostsContextTermEntryObject {
     }
     
 
-    public Prototype ToPrototype( PostsContextId? postContextId ) {
+    public Prototype ToPrototype( PostsQueryId? postContextId ) {
         return new Prototype {
-            PostsContextId = postContextId,
+            PostsQueryId = postContextId,
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

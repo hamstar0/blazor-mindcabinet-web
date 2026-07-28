@@ -85,7 +85,7 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
         await this.UserAppDataSrc.Update_Async(
             dbCon: dbCon,
             simpleUserId: this.SessionManager.UserOfSession.Id,
-            postsContextId: parameters.CurrentPostsContextId ?? 0,
+            postsQueryId: parameters.CurrentPostsQueryId ?? 0,
             userDefaultTermId: parameters.UserDefaultTermId ?? 0
         );
 

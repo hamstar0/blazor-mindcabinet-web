@@ -8,7 +8,7 @@ using MindCabinet.Data.DataAccess;
 using MindCabinet.Data.DataAccess.Composite;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Utility.Attributes;
 using System.Data;
 
@@ -35,9 +35,9 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
 
     private readonly ServerDataAccess_UserTermsHistory UserTermsHistoryDataSrc;
 
-    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
+    private readonly ServerDataAccess_PostsQuery PostsQueryDataSrc;
     
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
+    private readonly ServerDataAccess_PostsQueryTermEntry PostsQueryTermEntryDataSrc;
 
     private readonly ClientSessionManager SessionManager;
 
@@ -50,8 +50,8 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
                 ServerDataAccess_PrioritizedPosts prioritizedPostsDataSrc,
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimplePostTags postTagsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_UserTermsHistory userTermsHistoryDataSrc,
                 ClientSessionManager sessionManager ) {
         //this.HttpContext
@@ -61,8 +61,8 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
         this.PrioritizedPostsDataSrc = prioritizedPostsDataSrc;
         this.TermsDataSrc = termsDataSrc;
         this.PostTagsDataSrc = postTagsDataSrc;
-        this.PostsContextDataSrc = postsContextDataSrc;
-        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.PostsQueryDataSrc = postsQueryDataSrc;
+        this.PostsQueryTermEntryDataSrc = postsQueryTermEntryDataSrc;
         this.UserTermsHistoryDataSrc = userTermsHistoryDataSrc;
         this.SessionManager = sessionManager;
     }
@@ -81,14 +81,14 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
         
         using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
         
-        PostsContextObject.Raw? raw = await this.PostsContextDataSrc.GetById_Async(
+        PostsQueryObject.Raw? raw = await this.PostsQueryDataSrc.GetById_Async(
             dbCon: dbCon,
-            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
-            postsContextId: parameters.PostsContextId,
+            postsQueryTermEntryDataSrc: this.PostsQueryTermEntryDataSrc,
+            postsQueryId: parameters.PostsQueryId,
             alsoGetEntries: true
         );
         if( raw is null ) {
-            this.Logger.LogWarning( "Missing PostsContextObject raw?" );
+            this.Logger.LogWarning( "Missing PostsQueryObject raw?" );
             return [];
         }
 
@@ -100,7 +100,7 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
         return await this.PrioritizedPostsDataSrc.GetByCriteria_Async(
             dbCon: dbCon,
             postTagsDataSrc: this.PostTagsDataSrc,
-            postsContext: raw,
+            postsQuery: raw,
             parameters: parameters
         );
     }
@@ -117,8 +117,8 @@ public class PrioritizedPostsController : ControllerBase, ClientDataAccess_Prior
 
         return await this.PrioritizedPostsDataSrc.GetCountByCriteria_Async(
             dbCon: dbCon,
-            postsContextDataSrc: this.PostsContextDataSrc,
-            postsContextTermEntryDataSrc: this.PostsContextTermEntryDataSrc,
+            postsQueryDataSrc: this.PostsQueryDataSrc,
+            postsQueryTermEntryDataSrc: this.PostsQueryTermEntryDataSrc,
             parameters: parameters
         );
     }

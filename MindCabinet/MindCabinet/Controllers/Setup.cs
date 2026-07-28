@@ -22,8 +22,8 @@ public class SetupController : ControllerBase {
     private readonly ServerDataAccess_Terms TermsDataSrc;
     private readonly ServerDataAccess_SimplePostTags TermSetsDataSrc;
     private readonly ServerDataAccess_SimplePosts SimplePostsDataSrc;
-    private readonly ServerDataAccess_PostsContexts PostsContextDataSrc;
-    private readonly ServerDataAccess_PostsContextTermEntry PostsContextTermEntryDataSrc;
+    private readonly ServerDataAccess_PostsQuery PostsQueryDataSrc;
+    private readonly ServerDataAccess_PostsQueryTermEntry PostsQueryTermEntryDataSrc;
     private readonly ServerDataAccess_UserAppData UserAppDataDataSrc;
     private readonly ServerDataAccess_ServerData ServerDataSrc;
 
@@ -38,8 +38,8 @@ public class SetupController : ControllerBase {
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimplePostTags termSetsDataSrc,
                 ServerDataAccess_SimplePosts simplePostsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_UserAppData userAppDataDataSrc,
                 ServerDataAccess_ServerData serverDataSrc ) {
         this.DbAccess = dbAccess;
@@ -51,8 +51,8 @@ public class SetupController : ControllerBase {
         this.TermsDataSrc = termsDataSrc;
         this.TermSetsDataSrc = termSetsDataSrc;
         this.SimplePostsDataSrc = simplePostsDataSrc;
-        this.PostsContextDataSrc = postsContextDataSrc;
-        this.PostsContextTermEntryDataSrc = postsContextTermEntryDataSrc;
+        this.PostsQueryDataSrc = postsQueryDataSrc;
+        this.PostsQueryTermEntryDataSrc = postsQueryTermEntryDataSrc;
         this.UserAppDataDataSrc = userAppDataDataSrc;
         this.ServerDataSrc = serverDataSrc;
     }
@@ -75,8 +75,8 @@ public class SetupController : ControllerBase {
             this.SimplePostsDataSrc,
             this.FavoriteTermsDataSrc,
             this.HistoryTermsDataSrc,
-            this.PostsContextDataSrc,
-            this.PostsContextTermEntryDataSrc,
+            this.PostsQueryDataSrc,
+            this.PostsQueryTermEntryDataSrc,
             this.UserAppDataDataSrc,
             this.ServerDataSrc
         );

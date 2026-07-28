@@ -2,7 +2,7 @@
 using System.Text.Json;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using Microsoft.AspNetCore.Components;
 using MindCabinet.Shared.Utility;
@@ -12,8 +12,8 @@ namespace MindCabinet.Client.Services.DbAccess;
 
 
 
-public partial class ClientDataAccess_PostsContext : IClientDataAccess {
-    private static readonly SimpleCache<PostsContextId, PostsContextObject.Raw?> Cache_ById = new( refreshExpiryOnGet: true );
+public partial class ClientDataAccess_PostsQuery : IClientDataAccess {
+    private static readonly SimpleCache<PostsQueryId, PostsQueryObject.Raw?> Cache_ById = new( refreshExpiryOnGet: true );
 
 
     
@@ -23,7 +23,7 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
 
 
-    public ClientDataAccess_PostsContext( HttpClient http, LocalClientSessionManager mySessionMngr ) {
+    public ClientDataAccess_PostsQuery( HttpClient http, LocalClientSessionManager mySessionMngr ) {
         this.MySessionMngr = mySessionMngr;
         this.Http = http;
     }
@@ -39,10 +39,10 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         IAPI.Get_Return ret;
 
-        IEnumerable<PostsContextObject.Raw?> cachedContexts = Cache_ById.GetMany( parameters.Ids );
-        if( parameters.Ids.Length > 0 && cachedContexts.Count() == parameters.Ids.Length ) {
+        IEnumerable<PostsQueryObject.Raw?> cached = Cache_ById.GetMany( parameters.Ids );
+        if( parameters.Ids.Length > 0 && cached.Count() == parameters.Ids.Length ) {
             ret = new IAPI.Get_Return {
-                Contexts = cachedContexts.Select( c => c! )
+                Queries = cached.Select( c => c! )
             };
             return ret;
         }
@@ -57,8 +57,8 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
         //
 
-        foreach( PostsContextObject.Raw ctx in ret.Contexts ) {
-            Cache_ById.Set( ctx.Id, ctx, TimeSpan.FromDays(365) );
+        foreach( PostsQueryObject.Raw query in ret.Queries ) {
+            Cache_ById.Set( query.Id, query, TimeSpan.FromDays(365) );
         }
 
         //
@@ -68,26 +68,26 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
 
 
     public async Task<IAPI.CreateOrUpdate_Return> CreateForCurrentUser_Async(
-                PostsContextObject.Prototype parameters ) {
+                PostsQueryObject.Prototype parameters ) {
         if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( !parameters.IsValid(false) ) {
-            throw new ArgumentException( $"Invalid PostsContextObject.Prototype parameter: {JsonSerializer.Serialize(parameters)}" );
+            throw new ArgumentException( $"Invalid PostsQueryObject.Prototype parameter: {JsonSerializer.Serialize(parameters)}" );
         }
 
-        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Prototype, IAPI.CreateOrUpdate_Return>(
+        var ret = await IClientDataAccess.CallAPI_Async<PostsQueryObject.Prototype, IAPI.CreateOrUpdate_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.CreateForCurrentUser_Async)}",
             parameters: parameters
         );
-        PostsContextId id = ret.Id;
+        PostsQueryId id = ret.Id;
 
         //
 
         parameters.Id = id;
-        foreach( PostsContextTermEntryObject.Prototype entry in parameters.Entries ) {
-            entry.PostsContextId = id;
+        foreach( PostsQueryTermEntryObject.Prototype entry in parameters.Entries ) {
+            entry.PostsQueryId = id;
         }
 
         Cache_ById.Set( id, parameters.ToRaw(true), TimeSpan.FromDays(365) );
@@ -99,17 +99,17 @@ public partial class ClientDataAccess_PostsContext : IClientDataAccess {
     
 
     public async Task<IAPI.CreateOrUpdate_Return> UpdateForCurrentUser_Async(
-                PostsContextObject.Prototype parameters ) {
+                PostsQueryObject.Prototype parameters ) {
         if( this.MySessionMngr.UserId is null ) {
             throw new InvalidOperationException( "No user in session" );
         }
         if( parameters.Id is null || parameters.Id == 0 ) {
-            throw new ArgumentException( "PostsContextObject.Prototype Id is not valid (must be non-zero and non-null)." );
+            throw new ArgumentException( "PostsQueryObject.Prototype Id is not valid (must be non-zero and non-null)." );
         }
 
         //
 
-        var ret = await IClientDataAccess.CallAPI_Async<PostsContextObject.Prototype, IAPI.CreateOrUpdate_Return>(
+        var ret = await IClientDataAccess.CallAPI_Async<PostsQueryObject.Prototype, IAPI.CreateOrUpdate_Return>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateForCurrentUser_Async)}",
             parameters: parameters

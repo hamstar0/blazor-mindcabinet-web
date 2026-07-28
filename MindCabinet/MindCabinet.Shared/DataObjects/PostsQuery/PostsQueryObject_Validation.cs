@@ -2,10 +2,10 @@
 using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextObject {
+public partial class PostsQueryObject {
     public const int MinNameLength = 2;
     
     public const int MaxNameLength = 64;
@@ -16,23 +16,23 @@ public partial class PostsContextObject {
 
 
 
-    public static bool Validate( PostsContextId id, string name, SimpleUserId owner, PostsContextTermEntryObject[] entries ) {
-        if( !PostsContextObject.ValidateId(id) ) {
+    public static bool Validate( PostsQueryId id, string name, SimpleUserId owner, PostsQueryTermEntryObject[] entries ) {
+        if( !PostsQueryObject.ValidateId(id) ) {
             return false;
         }
-        if( !PostsContextObject.ValidateName(name) ) {
+        if( !PostsQueryObject.ValidateName(name) ) {
             return false;
         }
-        if( !PostsContextObject.ValidateOwner(owner) ) {
+        if( !PostsQueryObject.ValidateOwner(owner) ) {
             return false;
         }
-        if( !PostsContextObject.ValidateEntries(entries) ) {
+        if( !PostsQueryObject.ValidateEntries(entries) ) {
             return false;
         }
         return true;
     }
 
-    public static bool ValidateId( PostsContextId id ) {
+    public static bool ValidateId( PostsQueryId id ) {
         return id != 0;
     }
 
@@ -49,7 +49,7 @@ public partial class PostsContextObject {
         
         int consecWhites = 0;
         bool keyboardOnly = name.All( c => {
-            if( char.IsLetterOrDigit(c) || PostsContextObject.AllowedSpecialCharacters.Contains(c) ) {
+            if( char.IsLetterOrDigit(c) || PostsQueryObject.AllowedSpecialCharacters.Contains(c) ) {
                 consecWhites = 0;
                 return true;
             }
@@ -67,7 +67,7 @@ public partial class PostsContextObject {
         return id != 0;
     }
 
-    public static bool ValidateEntries( IEnumerable<PostsContextTermEntryObject> entries ) {
+    public static bool ValidateEntries( IEnumerable<PostsQueryTermEntryObject> entries ) {
         return entries.Count() > 0
             && entries.All( e => e.IsValid() );
     }
@@ -87,11 +87,11 @@ public partial class PostsContextObject {
     }
 
     public MatchResult Matches(
-                PostsContextId? id,
+                PostsQueryId? id,
                 string name,
                 string? description,
                 SimpleUserId owner,
-                PostsContextTermEntryObject[] entries,
+                PostsQueryTermEntryObject[] entries,
                 bool ignoreId = false ) {
         if( !ignoreId && id is not null && id != this.Id ) {
             return MatchResult.IdMismatch;
@@ -110,8 +110,8 @@ public partial class PostsContextObject {
         }
         
         for( int i = 0; i < entries.Length; i++ ) {
-            PostsContextTermEntryObject entryA = entries[i];
-            PostsContextTermEntryObject entryB = this.Entries[i];
+            PostsQueryTermEntryObject entryA = entries[i];
+            PostsQueryTermEntryObject entryB = this.Entries[i];
 
             if( entryA.Term.Id != entryB.Term.Id ) {
                 return MatchResult.EntriesMismatchId;
@@ -127,7 +127,7 @@ public partial class PostsContextObject {
         return MatchResult.Match;
     }
 
-    public MatchResult Matches( PostsContextObject other, bool ignoreId ) {
+    public MatchResult Matches( PostsQueryObject other, bool ignoreId ) {
         return this.Matches(
             id: ignoreId ? null : other.Id,
             name: other.Name,
@@ -139,6 +139,6 @@ public partial class PostsContextObject {
 
 
     public bool IsValid() {
-        return PostsContextObject.Validate( this.Id, this.Name, this.Owner, this.Entries );
+        return PostsQueryObject.Validate( this.Id, this.Name, this.Owner, this.Entries );
     }
 }

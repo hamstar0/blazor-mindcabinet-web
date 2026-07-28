@@ -4,7 +4,7 @@ using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.Utility;
 using System.Data;
 
@@ -16,8 +16,8 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
     public async static Task<UserAppDataObject> ToDataObject_Async(
                 IDbConnection dbCon,
                 ServerDataAccess_Terms termsDataSrc,
-                ServerDataAccess_PostsContexts postsContextsDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 UserAppDataObject.Raw dbEntry ) {
         Func<TermId, Task<TermObject.Raw>> termsRawFactory = async id => {
             TermObject.Raw? termRaw = await termsDataSrc.GetById_Async( dbCon, id );
@@ -34,28 +34,28 @@ public partial class ServerDataAccess_UserAppData : IServerDataAccess {
             return await termRaw.ToDataObject_Async( termsRawFactory );
         };
 
-        Func<PostsContextTermEntryObject.Raw[], Task<PostsContextTermEntryObject[]>> ctxTermsFactory = async ctxTermEntries => {
-            return await ServerDataAccess_PostsContexts.ToTermEntriesDataObjects_Async(
+        Func<PostsQueryTermEntryObject.Raw[], Task<PostsQueryTermEntryObject[]>> queryTermsFactory = async queryTermEntries => {
+            return await ServerDataAccess_PostsQuery.ToTermEntriesDataObjects_Async(
                 dbCon,
                 termsDataSrc,
-                ctxTermEntries
+                queryTermEntries
             );
         };
 
-        Func<PostsContextId, Task<PostsContextObject>> postsContextFactory = async id => {
-            PostsContextObject.Raw? ctxRaw = await postsContextsDataSrc.GetById_Async(
+        Func<PostsQueryId, Task<PostsQueryObject>> postsQueryFactory = async id => {
+            PostsQueryObject.Raw? queryRaw = await postsQueryDataSrc.GetById_Async(
                 dbCon: dbCon,
-                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
-                postsContextId: id,
+                postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
+                postsQueryId: id,
                 alsoGetEntries: true
             );
-            if( ctxRaw is null ) {
-                throw new Exception( $"PostsContext with id {id} not found." );
+            if( queryRaw is null ) {
+                throw new Exception( $"PostsQuery with id {id} not found." );
             }
 
-            return await ctxRaw.ToDataObject_Async( ctxTermsFactory );
+            return await queryRaw.ToDataObject_Async( queryTermsFactory );
         };
 
-        return await dbEntry.ToDataObject_Async( postsContextFactory, termsFactory );
+        return await dbEntry.ToDataObject_Async( postsQueryFactory, termsFactory );
     }
 }

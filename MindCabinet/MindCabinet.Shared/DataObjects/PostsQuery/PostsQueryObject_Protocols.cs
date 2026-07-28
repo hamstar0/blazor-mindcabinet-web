@@ -1,16 +1,16 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextObject {
+public partial class PostsQueryObject {
     public static Raw CreateRaw(
-            PostsContextId id,
+            PostsQueryId id,
             string name,
             string? description,
             SimpleUserId owner,
-            PostsContextTermEntryObject.Raw[] entries ) {
+            PostsQueryTermEntryObject.Raw[] entries ) {
         return new Raw {
             Id = id,
             Name = name,
@@ -20,8 +20,8 @@ public partial class PostsContextObject {
         };
     }
 
-    public class Raw : IRawDataObject { //IHasId<PostsContextId>
-        public PostsContextId Id { get; set; } = default;
+    public class Raw : IRawDataObject { //IHasId<PostsQueryId>
+        public PostsQueryId Id { get; set; } = default;
 
         public string Name { get; set; } = "";
 
@@ -29,7 +29,7 @@ public partial class PostsContextObject {
 
         public SimpleUserId Owner { get; set; }
 
-        public PostsContextTermEntryObject.Raw[] Entries { get; set; } = [];
+        public PostsQueryTermEntryObject.Raw[] Entries { get; set; } = [];
 
 
 
@@ -37,7 +37,7 @@ public partial class PostsContextObject {
             if( !ignoreId && this.Id == default ) {
                 return false;
             }
-            if( !PostsContextObject.ValidateName(this.Name) ) {
+            if( !PostsQueryObject.ValidateName(this.Name) ) {
                 return false;
             }
             if( this.Owner == 0 ) {
@@ -49,12 +49,12 @@ public partial class PostsContextObject {
             return true;
         }
 
-        public async Task<PostsContextObject> ToDataObject_Async(
-                    Func<PostsContextTermEntryObject.Raw[],
-                    Task<PostsContextTermEntryObject[]>> ctxTermsFactory ) {
-            PostsContextTermEntryObject[] entries = await ctxTermsFactory( this.Entries );
+        public async Task<PostsQueryObject> ToDataObject_Async(
+                    Func<PostsQueryTermEntryObject.Raw[],
+                    Task<PostsQueryTermEntryObject[]>> queryTermsFactory ) {
+            PostsQueryTermEntryObject[] entries = await queryTermsFactory( this.Entries );
 
-            return new PostsContextObject(
+            return new PostsQueryObject(
                 id: this.Id,
                 name: this.Name,
                 description: this.Description,
@@ -76,20 +76,20 @@ public partial class PostsContextObject {
         }
 
         
-        public IEnumerable<PostsContextTermEntryObject.Raw> GetRequiredEntries() {
+        public IEnumerable<PostsQueryTermEntryObject.Raw> GetRequiredEntries() {
             return this.Entries
                 .Where( e => e.IsRequired );
         }
 
-        public IEnumerable<PostsContextTermEntryObject.Raw> GetOptionalEntries() {
+        public IEnumerable<PostsQueryTermEntryObject.Raw> GetOptionalEntries() {
             return this.Entries
                 .Where( e => !e.IsRequired );
         }
     }
     
 
-    public PostsContextObject.Raw ToRaw() {
-        return PostsContextObject.CreateRaw(
+    public PostsQueryObject.Raw ToRaw() {
+        return PostsQueryObject.CreateRaw(
             id: this.Id,
             name: this.Name ?? "",
             description: this.Description,

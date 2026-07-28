@@ -4,7 +4,7 @@ using System.Threading;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Client.Services.DataAccess;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.Text.Json;
 
 
@@ -19,13 +19,13 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
 
 
         public class GetByCriteria_Params(
-                    PostsContextId postsContextId,
+                    PostsQueryId postsQueryId,
                     string? bodyPattern,
                     TermId[] additionalTagIds,
                     bool sortAscendingByDate,
                     int pageNumber,
                     int postsPerPage ) {
-            public PostsContextId PostsContextId { get; set; } = postsContextId;
+            public PostsQueryId PostsQueryId { get; set; } = postsQueryId;
             public string? BodyPattern { get; set; } = bodyPattern;
             public TermId[] AdditionalTagIds { get; set; } = additionalTagIds;
             public bool SortAscendingByDate { get; set; } = sortAscendingByDate;
@@ -35,7 +35,7 @@ public partial class ClientDataAccess_PrioritizedPosts : IClientDataAccess {
 
             public override string ToString() {
                 return "Prioritized Posts Params: "
-                    +this.PostsContextId+", "
+                    +this.PostsQueryId+", "
                     +((this.BodyPattern is not null) ? $"[\"{this.BodyPattern}\", " : "")
                     +"["+string.Join(",", this.AdditionalTagIds)+"], "
                     +this.SortAscendingByDate+", "

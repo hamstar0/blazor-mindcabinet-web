@@ -39,8 +39,8 @@ public partial class ClientSessionManager(
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimpleUsers usersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
-                ServerDataAccess_PostsContexts postsContextsDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 bool isInstalling ) {
         if( !string.IsNullOrEmpty(this.CurrentSessionId) ) {
             return false;
@@ -64,8 +64,8 @@ public partial class ClientSessionManager(
                 termsDataSrc: termsDataSrc,
                 usersDataSrc: usersDataSrc,
                 userAppDataSrc: userAppDataSrc,
-                postsContextsDataSrc: postsContextsDataSrc,
-                postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                postsQueryDataSrc: postsQueryDataSrc,
+                postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
                 sessId: sessId,
                 isInstalling: isInstalling
             );
@@ -80,8 +80,8 @@ public partial class ClientSessionManager(
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimpleUsers usersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
-                ServerDataAccess_PostsContexts postsContextsDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc ) {
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc ) {
         if( this.IsLoaded ) {
             return false;
         }
@@ -99,8 +99,8 @@ public partial class ClientSessionManager(
             termsDataSrc: termsDataSrc,
             usersDataSrc: usersDataSrc,
             userAppDataSrc: userAppDataSrc,
-            postsContextsDataSrc: postsContextsDataSrc,
-            postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+            postsQueryDataSrc: postsQueryDataSrc,
+            postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
             sessId: sessId,
             isInstalling: false
         );
@@ -127,8 +127,8 @@ public partial class ClientSessionManager(
                 ServerDataAccess_Terms termsDataSrc,
                 ServerDataAccess_SimpleUsers usersDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
-                ServerDataAccess_PostsContexts postsContextsDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 string sessId,
                 bool isInstalling ) {
         this.CurrentSessionId = sessId;
@@ -149,8 +149,8 @@ public partial class ClientSessionManager(
                 ? await ServerDataAccess_UserAppData.ToDataObject_Async(
                     dbCon: dbCon,
                     termsDataSrc: termsDataSrc,
-                    postsContextsDataSrc: postsContextsDataSrc,
-                    postsContextTermEntryDataSrc: postsContextTermEntryDataSrc,
+                    postsQueryDataSrc: postsQueryDataSrc,
+                    postsQueryTermEntryDataSrc: postsQueryTermEntryDataSrc,
                     dbEntry: userAppDataRaw
                 )
                 : null;

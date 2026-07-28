@@ -1,18 +1,18 @@
 ﻿@using MindCabinet.Shared.DataObjects;
-@using MindCabinet.Shared.DataObjects.PostsContext;
+@using MindCabinet.Shared.DataObjects.PostsQuery
 @using MindCabinet.Shared.DataObjects.Term;
 
 
 
-<div component-name="@nameof(MultiPostsContextRender)"
+<div component-name="@nameof(MultiPostsQueryRender)"
         class="basic @(this.AddedClasses ?? "")"
         style="background-color: white;"
         @onfocusin=@(e => this.HasFocus = true)
         @onfocusout=@(e => this.HasFocus = false)>
-    @foreach( PostsContextObject context in this.Contexts ) {
-        <PostsContextRender
+    @foreach( PostsQueryObject context in this.Queries ) {
+        <PostsQueryRender
                 AddedClasses="ib"
-                Context=@context
+                Query=@context
                 OnClick_Async=@(async e => await this.OnClickEach_UI_Async(context, e)) />
     }
 </div>
@@ -20,10 +20,10 @@
 
 
 @code {
-    private async Task OnClickEach_UI_Async( PostsContextObject context, MouseEventArgs args ) {
+    private async Task OnClickEach_UI_Async( PostsQueryObject query, MouseEventArgs args ) {
         if( this.OnClick_Async is not null ) {
             //this.HasFocus = await this.OnClickEach_Async( term, args );
-            await this.OnClick_Async( context, args );
+            await this.OnClick_Async( query, args );
         }
     }
 }

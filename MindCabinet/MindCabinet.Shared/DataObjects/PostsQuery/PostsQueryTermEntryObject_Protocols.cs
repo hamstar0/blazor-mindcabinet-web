@@ -1,17 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 using MindCabinet.Shared.DataObjects.Term;
 
-namespace MindCabinet.Shared.DataObjects.PostsContext;
+namespace MindCabinet.Shared.DataObjects.PostsQuery;
 
 
-public partial class PostsContextTermEntryObject {
+public partial class PostsQueryTermEntryObject {
     public static Raw CreateRaw(
-            PostsContextId postsContextId,
+            PostsQueryId postsQueryId,
             TermId termId,
             double priority,
             bool isRequired ) {
         return new Raw {
-            PostsContextId = postsContextId,
+            PostsQueryId = postsQueryId,
             TermId = termId,
             Priority = priority,
             IsRequired = isRequired
@@ -19,7 +19,7 @@ public partial class PostsContextTermEntryObject {
     }
 
     public class Raw : IRawDataObject {
-        public PostsContextId PostsContextId { get; set; } = default;
+        public PostsQueryId PostsQueryId { get; set; } = default;
 
         public TermId TermId { get; set; } = default;
 
@@ -29,8 +29,8 @@ public partial class PostsContextTermEntryObject {
 
 
 
-        public bool IsValid( bool ignorePostsContextId ) {
-            if( !ignorePostsContextId && this.PostsContextId == default ) {
+        public bool IsValid( bool ignorePostsQueryId ) {
+            if( !ignorePostsQueryId && this.PostsQueryId == default ) {
                 return false;
             }
             if( this.TermId == default ) {
@@ -39,9 +39,9 @@ public partial class PostsContextTermEntryObject {
             return true;
         }
 
-		public async Task<PostsContextTermEntryObject> ToDataObject_Async(
+		public async Task<PostsQueryTermEntryObject> ToDataObject_Async(
                     Func<TermId, Task<TermObject>> termFactory ) {
-            return new PostsContextTermEntryObject(
+            return new PostsQueryTermEntryObject(
                 term: await termFactory( this.TermId ),
                 priority: this.Priority,
                 isRequired: this.IsRequired
@@ -50,7 +50,7 @@ public partial class PostsContextTermEntryObject {
 
         public Prototype ToPrototype() {
             return new Prototype {
-                PostsContextId = this.PostsContextId,
+                PostsQueryId = this.PostsQueryId,
                 TermId = this.TermId,
                 Priority = this.Priority,
                 IsRequired = this.IsRequired
@@ -59,9 +59,9 @@ public partial class PostsContextTermEntryObject {
 	}
 
 
-    public Raw ToRaw( PostsContextId contextId ) {
+    public Raw ToRaw( PostsQueryId contextId ) {
         return new Raw {
-            PostsContextId = contextId,
+            PostsQueryId = contextId,
             TermId = this.Term.Id,
             Priority = this.Priority,
             IsRequired = this.IsRequired

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services;
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.Utility;
 using System.ComponentModel.DataAnnotations;
 using System.Text;

@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 
 
 namespace MindCabinet.Data.DataAccess;
@@ -18,8 +18,8 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
                 ServerDataAccess_SimplePosts simplePostsDataSrc,
                 ServerDataAccess_UserTermFavorites favoriteTermsDataSrc,
                 ServerDataAccess_UserTermsHistory historyTermsDataSrc,
-                ServerDataAccess_PostsContexts postsContextDataSrc,
-                ServerDataAccess_PostsContextTermEntry postsContextTermEntryDataSrc,
+                ServerDataAccess_PostsQuery postsQueryDataSrc,
+                ServerDataAccess_PostsQueryTermEntry postsQueryTermEntryDataSrc,
                 ServerDataAccess_UserAppData userAppDataSrc,
                 ServerDataAccess_ServerData serverDataSrc ) {
         if( await DbAccess.IsInstalled(dbCon) ) {
@@ -72,12 +72,12 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
             return false;
         }
 
-        success = await postsContextDataSrc.Install_Async( dbCon );
+        success = await postsQueryDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
 
-        success = await postsContextTermEntryDataSrc.Install_Async( dbCon );
+        success = await postsQueryTermEntryDataSrc.Install_Async( dbCon );
         if( !success ) {
             return false;
         }
@@ -92,8 +92,8 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         (success, defaultUserId) = await simpleUsersDataSrc.Install_After_Async(
             dbCon,
             termsDataSrc,
-            postsContextDataSrc,
-            postsContextTermEntryDataSrc,
+            postsQueryDataSrc,
+            postsQueryTermEntryDataSrc,
             serverDataSrc,
             userAppDataSrc
         );
@@ -108,8 +108,8 @@ public partial class ServerDataAccess_Install : IServerDataAccess {
         (success, defaultUserAsTermId) = await simpleUsersDataSrc.Install_AfterDefaultUserAndServerData_Async(
             dbCon,
             termsDataSrc,
-            postsContextDataSrc,
-            postsContextTermEntryDataSrc,
+            postsQueryDataSrc,
+            postsQueryTermEntryDataSrc,
             serverDataSrc,
             userAppDataSrc,
             defaultUserId

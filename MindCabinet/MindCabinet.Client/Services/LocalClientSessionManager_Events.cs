@@ -2,7 +2,7 @@
 using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.Net.Http.Json;
 
 namespace MindCabinet.Client.Services;
@@ -12,8 +12,8 @@ public partial class LocalClientSessionManager {
     private Dictionary<string, Func<DataBundle?, Task>> OnUserAndAppDataLoaded_Async = new();
     private DataBundle? OnUserAndAppDataLoaded_PromisedData = null;
 
-    private Dictionary<string, Func<PostsContextObject?, Task>> OnPostsContextChanged_Async = new();
-    private PostsContextObject? OnPostsContextChanged_PromisedData = null;
+    private Dictionary<string, Func<PostsQueryObject?, Task>> OnPostsQueryChanged_Async = new();
+    private PostsQueryObject? OnPostsQueryChanged_PromisedData = null;
 
     private Dictionary<string, Func<SimpleUserObject.ClientObject, Task>> OnUserLogin_Async = new();
     private SimpleUserObject.ClientObject? OnUserLogin_PromisedData = null;
@@ -32,11 +32,11 @@ public partial class LocalClientSessionManager {
         );
     }
 
-    private async Task TriggerPostsContextChanged_Async( PostsContextObject? context ) {
-        this.OnPostsContextChanged_PromisedData = context;
+    private async Task TriggerPostsQueryChanged_Async( PostsQueryObject? context ) {
+        this.OnPostsQueryChanged_PromisedData = context;
 
         await Task.WhenAll(
-            this.OnPostsContextChanged_Async
+            this.OnPostsQueryChanged_Async
                 .Select( kv => kv.Value.Invoke(context) )
         );
     }
@@ -52,12 +52,12 @@ public partial class LocalClientSessionManager {
         if( this.Data is null ) {
             throw new InvalidOperationException( "Current session UserAndAppData is null in TriggerUserLogin." );
         }
-        if( this.Data.UserAppData?.CurrentPostsContext is null ) {
-            throw new InvalidOperationException( "Current session PostsContext is null in TriggerUserLogin." );
+        if( this.Data.UserAppData?.CurrentPostsQuery is null ) {
+            throw new InvalidOperationException( "Current session PostsQuery is null in TriggerUserLogin." );
         }
 
         await this.TriggerUserAndAppDataLoaded_Async( this.Data );
-        await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.CurrentPostsContext! );
+        await this.TriggerPostsQueryChanged_Async( this.Data.UserAppData?.CurrentPostsQuery! );
     }
 
     private async Task TriggerUserLogout_Async( SimpleUserObject.ClientObject user ) {
@@ -69,7 +69,7 @@ public partial class LocalClientSessionManager {
         );
 
         await this.TriggerUserAndAppDataLoaded_Async( null );
-        await this.TriggerPostsContextChanged_Async( null );
+        await this.TriggerPostsQueryChanged_Async( null );
     }
 
 
@@ -83,13 +83,13 @@ public partial class LocalClientSessionManager {
         }
     }
 
-    public async Task RegisterPostsContextEvent_Async( string name, Func<PostsContextObject?, Task> callback ) {
-        this.OnPostsContextChanged_Async.Add( name, callback );
+    public async Task RegisterPostsQueryEvent_Async( string name, Func<PostsQueryObject?, Task> callback ) {
+        this.OnPostsQueryChanged_Async.Add( name, callback );
 
-        if( this.OnPostsContextChanged_PromisedData is not null ) {
-            await callback.Invoke( this.OnPostsContextChanged_PromisedData );
+        if( this.OnPostsQueryChanged_PromisedData is not null ) {
+            await callback.Invoke( this.OnPostsQueryChanged_PromisedData );
 
-            this.OnPostsContextChanged_PromisedData = null;    // why werent these added before?
+            this.OnPostsQueryChanged_PromisedData = null;    // why werent these added before?
         }
     }
 

@@ -4,7 +4,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Joined;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.Data;
 using MindCabinet.Utility;
 using System.Text.Json;
@@ -15,7 +15,7 @@ namespace MindCabinet.Data.DataAccess.Composite;
 
 public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
     private (string sql, IDictionary<string, object> sqlParams) GetByCriteriaSql(
-                PostsContextObject.Raw postsContext,
+                PostsQueryObject.Raw postsQuery,
                 string? bodyPattern,
                 bool sortAscendingByDate,
                 int postsPerPage,
@@ -47,11 +47,11 @@ public partial class ServerDataAccess_PrioritizedPosts : IServerDataAccess {
         //
 
         IEnumerable<TermId> allTagIds = additionalRequiredTagIds.Concat(
-            postsContext.GetRequiredEntries()
+            postsQuery.GetRequiredEntries()
                 .Select( e => e.TermId )
                 .Where( id => !additionalRequiredTagIds.Contains(id) )
         );
-        IEnumerable<TermId> anyTagIds = postsContext.GetOptionalEntries()
+        IEnumerable<TermId> anyTagIds = postsQuery.GetOptionalEntries()
             .Select( e => e.TermId );
 
         if( allTagIds.Count() > 0 ) {

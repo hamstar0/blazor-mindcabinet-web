@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MindCabinet.Client.Services.DataAccess;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
@@ -23,7 +23,7 @@ public partial class ClientDataAccess_ClientSessionBundle : IClientDataAccess {
 
             public UserAppDataObject.Raw? UserAppData { get; set; }
 
-            public PostsContextObject.Raw? UserAppData_PostsContext { get; set; }
+            public PostsQueryObject.Raw? UserAppData_PostsQuery { get; set; }
 
             public TermObject.Raw? UserAppData_UserDefaultTerm { get; set; }
         }

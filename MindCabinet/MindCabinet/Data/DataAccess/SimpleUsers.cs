@@ -6,7 +6,7 @@ using MindCabinet.Client.Site.Pages;
 using MindCabinet.DataObjects;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.DataObjects.Term;
 using MindCabinet.Shared.Utility;
 using System.Data;
@@ -47,10 +47,10 @@ public partial class ServerDataAccess_SimpleUsers : IServerDataAccess {
 
     public class SimpleUserQueryResult(
                 SimpleUserObject.Raw? user,
-                PostsContextObject.Raw? defaultPostsContext,
+                PostsQueryObject.Raw? defaultPostsQuery,
                 TermObject.Raw? asTerm, bool alreadyExists ) {
         public SimpleUserObject.Raw? User = user;
-        public PostsContextObject.Raw? UserDefaultPostsContextId = defaultPostsContext;
+        public PostsQueryObject.Raw? UserDefaultPostsQueryId = defaultPostsQuery;
         public TermObject.Raw? UserAsTermId = asTerm;
         public bool AlreadyExists = alreadyExists;
     }

@@ -8,7 +8,7 @@ using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;

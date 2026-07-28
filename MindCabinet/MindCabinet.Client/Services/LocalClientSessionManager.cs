@@ -3,7 +3,7 @@ using MindCabinet.Client.Services.DbAccess;
 using MindCabinet.Client.Services.DbAccess.Bundled;
 using MindCabinet.Shared.DataObjects;
 using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Shared.Utility;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -100,7 +100,7 @@ public partial class LocalClientSessionManager(
 
         if( triggerEvents ) {
             await this.TriggerUserAndAppDataLoaded_Async( userAndAppData );
-            await this.TriggerPostsContextChanged_Async( this.Data.UserAppData?.CurrentPostsContext );
+            await this.TriggerPostsQueryChanged_Async( this.Data.UserAppData?.CurrentPostsQuery );
         }
     }
     
@@ -110,7 +110,7 @@ public partial class LocalClientSessionManager(
 
         if( triggerEvents ) {
             await this.TriggerUserAndAppDataLoaded_Async( null );
-            await this.TriggerPostsContextChanged_Async( null );
+            await this.TriggerPostsQueryChanged_Async( null );
         }
     }
 }

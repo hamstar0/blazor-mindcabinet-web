@@ -7,7 +7,7 @@ using MindCabinet.Data;
 using MindCabinet.Data.DataAccess;
 using MindCabinet.Services;
 using MindCabinet.Shared.DataObjects;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using MindCabinet.Utility.Attributes;
 using System.Data;
 using System.Security.Cryptography;
@@ -61,10 +61,10 @@ public class SessionBundleController(
                 )
                 : null,
             UserAppData = this.SessionManager.UserAppDataOfSession?.ToRaw(),
-            UserAppData_PostsContext = this.SessionManager.UserAppDataOfSession?.CurrentPostsContext?.ToRaw(),
+            UserAppData_PostsQuery = this.SessionManager.UserAppDataOfSession?.CurrentPostsQuery?.ToRaw(),
             UserAppData_UserDefaultTerm = this.SessionManager.UserAppDataOfSession?.UserDefaultTerm?.ToRaw()
         };
-//this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsContext) );
+//this.Logger.LogInformation( "SESS CTX "+JsonSerializer.Serialize(userAppData_PostsQuery) );
 
         return ret;
     }

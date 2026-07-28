@@ -1,5 +1,5 @@
 ﻿using MindCabinet.Shared.DataObjects.Term;
-using MindCabinet.Shared.DataObjects.PostsContext;
+using MindCabinet.Shared.DataObjects.PostsQuery;
 using System.Text.Json.Serialization;
 
 
@@ -9,11 +9,11 @@ namespace MindCabinet.Shared.DataObjects;
 public partial class UserAppDataObject {
     public static Raw CreateRaw(
             SimpleUserId simpleUserId,
-            PostsContextId currentPostsContextId,
+            PostsQueryId currentPostsQueryId,
             TermId userDefaultTermId ) {
         return new Raw {
             SimpleUserId = simpleUserId,
-            CurrentPostsContextId = currentPostsContextId,
+            CurrentPostsQueryId = currentPostsQueryId,
             UserDefaultTermId = userDefaultTermId
         };
     }
@@ -21,17 +21,17 @@ public partial class UserAppDataObject {
     public class Raw : IRawDataObject {
 		public SimpleUserId SimpleUserId { get; set; }
         
-		public PostsContextId CurrentPostsContextId { get; set; }
+		public PostsQueryId CurrentPostsQueryId { get; set; }
 
 		public TermId UserDefaultTermId { get; set; }
 
         
         public async Task<UserAppDataObject> ToDataObject_Async(
-                    Func<PostsContextId, Task<PostsContextObject>> postsContextFactory,
+                    Func<PostsQueryId, Task<PostsQueryObject>> postsQueryFactory,
                     Func<TermId, Task<TermObject>> termsFactory ) {
             return new UserAppDataObject(
                 simpleUserId: this.SimpleUserId,
-                currentPostsContext: await postsContextFactory( this.CurrentPostsContextId ),
+                currentPostsQuery: await postsQueryFactory( this.CurrentPostsQueryId ),
                 userDefaultTerm: await termsFactory( this.UserDefaultTermId )
             );
         }
