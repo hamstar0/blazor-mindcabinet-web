@@ -161,9 +161,26 @@ public partial class AllTermsRichEditor : ComponentBase {
             }
         );
 
-        picker needs to update with latest posts context
+        PostsQueryObject.Raw? raw = await this.PostsQueryDataSrc.GetForCurrentUserById_Async( ret.Id );
+        if( raw is null ) {
+            throw new Exception( "No query found for term." );
+        }
 
-        await CurrentPostsQueryPicker.Main.PickPostsQuery_Async( ret.Id );
+        await CurrentPostsQueryPicker.Main.ForceQueryPickedCallback_Async(
+            await ClientDataAccess_PostsQuery.ConvertRawToDataObject_Async(
+                termsDataSrc: this.TermsDataSrc,
+                queryRaw: raw
+            )
+        );
+        // await CurrentPostsQueryPicker.Main.SetSearch_Async(
+        //     CurrentPostsQueryPicker.Main.Value,
+        //     true
+        // );
+
+        // if( !await CurrentPostsQueryPicker.Main.PickQuery_Async(ret.Id) ) {
+        //     await CurrentPostsQueryPicker.Main.SetSearch_Async( "", true );
+        //     await CurrentPostsQueryPicker.Main.PickQuery_Async( ret.Id );
+        // }
 
         this.Navigation.Navigate( $"{MainPanel.Main.PostsTabId}.{CurrentPostsBrowserTabs.Main.Id}" );
     }

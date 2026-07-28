@@ -12,11 +12,7 @@ namespace MindCabinet.Client.Components.Application.Pickers;
 
 
 public partial class CurrentPostsQueryPicker : ComponentBase {
-    public static CurrentPostsQueryPicker Main { get; private set; } = null!;
-
-
-
-    private string Value = "";
+    public string Value { get; private set; } = "";
 
 
     [Inject]
@@ -71,38 +67,17 @@ public partial class CurrentPostsQueryPicker : ComponentBase {
     }
 
 
-    private async Task TrySearchQuery_Async( string searchText ) {
-        if( searchText.Length == 0 ) {
-            this.SearchOptions = new List<PostsQueryObject>();
+    private async Task<IEnumerable<PostsQueryObject>> GetQueriesFromSearch_Async( string search ) {
+        if( search.Length == 0 ) {
             // this.SearchPosition = 0;
-
-            return;
+            return new List<PostsQueryObject>();
         }
 
         IEnumerable<PostsQueryObject.Raw> queriesRaw = (await this.PostsQueryDataSrc.GetForCurrentUserByCriteria_Async(
-            new ClientDataAccess_PostsQuery.IAPI.GetByCriteria_Params { NameContains = searchText }
+            new ClientDataAccess_PostsQuery.IAPI.GetByCriteria_Params { NameContains = this.Value }
         )).Queries;
 
-        this.SearchOptions = await ClientDataAccess_PostsQuery
+        return await ClientDataAccess_PostsQuery
             .ConvertRawsToDataObjects_Async( this.TermsDataSrc, queriesRaw.ToArray() );
-    }
-
-    private async Task SelectSearchResults_UI_Async( PostsQueryObject query ) {
-        if( this.Disabled ) {
-            return;
-        }
-        //if( !this.IsSearchFocused ) {
-        //    return;
-        //}
-
-        this.SearchOptions = new List<PostsQueryObject>();
-        // this.SearchPosition = 0;
-        this.Value = query.Name;
-
-        //await this.MySessionMngr.SetCurrentQuery_Await( this.UserAppDataSrc, query );     Pick from current only
-        
-        await this.OnQueryPicked_Async( query );
-
-        this.StateHasChanged();
     }
 }

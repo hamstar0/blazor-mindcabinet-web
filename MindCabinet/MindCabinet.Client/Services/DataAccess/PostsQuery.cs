@@ -29,6 +29,12 @@ public partial class ClientDataAccess_PostsQuery : IClientDataAccess {
     }
 
 
+    public async Task<PostsQueryObject.Raw?> GetForCurrentUserById_Async( PostsQueryId id ) {
+        return (await this.GetForCurrentUserByCriteria_Async(
+            new IAPI.GetByCriteria_Params { Ids = [id] }
+        )).Queries.FirstOrDefault();
+    }
+
     public async Task<IAPI.Get_Return> GetForCurrentUserByCriteria_Async(
                 IAPI.GetByCriteria_Params parameters ) {
         if( this.MySessionMngr.UserId is null ) {
@@ -40,7 +46,7 @@ public partial class ClientDataAccess_PostsQuery : IClientDataAccess {
         IAPI.Get_Return ret;
 
         IEnumerable<PostsQueryObject.Raw?> cached = Cache_ById.GetMany( parameters.Ids );
-        if( parameters.Ids.Length > 0 && cached.Count() == parameters.Ids.Length ) {
+        if( parameters.Ids.Length > 0 && cached.Count() == parameters.Ids.Length ) {    // TODO optimize
             ret = new IAPI.Get_Return {
                 Queries = cached.Select( c => c! )
             };

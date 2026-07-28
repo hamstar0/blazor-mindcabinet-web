@@ -83,20 +83,26 @@ await Task.CompletedTask;
             return;
         }
 
-        this.Value = inputText;
-
-        await this.TrySearchQuery_Async( inputText );
-    }
-
-
-    public async Task PickPostsQuery_Async( PostsQueryId id ) {
-        PostsQueryObject? query = this.SearchOptions
-            .FirstOrDefault( o => o.Id == id );
-        if( query is null ) {
-            throw new Exception( "No such option found." );
+        if( this.Value == inputText ) {
+            return;
         }
 
+        this.Value = inputText;
+        this.SearchOptions = await this.GetQueriesFromSearch_Async( inputText );
+        
+        this.StateHasChanged();
+    }
+
+    private async Task SelectSearchResults_UI_Async( PostsQueryObject query ) {
+        if( this.Disabled ) {
+            return;
+        }
+        //if( !this.IsSearchFocused ) {
+        //    return;
+        //}
+
         this.SearchOptions = new List<PostsQueryObject>();
+        // this.SearchPosition = 0;
         this.Value = query.Name;
 
         //await this.MySessionMngr.SetCurrentQuery_Await( this.UserAppDataSrc, query );     Pick from current only
