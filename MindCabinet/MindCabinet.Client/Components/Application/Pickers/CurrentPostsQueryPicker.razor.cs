@@ -41,7 +41,7 @@ public partial class CurrentPostsQueryPicker : ComponentBase {
 
 
     [Parameter, EditorRequired]
-    public PostsQueryObject[] InitialSearchOptionsCache { get; set; } = [];       // hackish
+    public Func<Task<PostsQueryObject[]>> InitialSearchOptions { get; set; } = null!;
 
 
     [Parameter, EditorRequired]
@@ -61,7 +61,7 @@ public partial class CurrentPostsQueryPicker : ComponentBase {
         this.Value = this.InitialSelectedSearchOption?.Name ?? "";   // sorta blindly trusting this!
 
         // await this.TrySearchQuery_Async( this.Value );
-        this.SearchOptions = this.InitialSearchOptionsCache.ToList();
+        this.SearchOptions = await this.InitialSearchOptions();
 
         CurrentPostsQueryPicker.Main = this;
     }

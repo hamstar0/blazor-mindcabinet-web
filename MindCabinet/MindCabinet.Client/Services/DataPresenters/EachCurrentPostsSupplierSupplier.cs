@@ -16,22 +16,16 @@ namespace MindCabinet.Client.Services.DataPresenters;
 public partial class EachCurrentPostsSupplierSupplier(
                 ILogger<EachCurrentPostsSupplierSupplier> logger,
                 ClientDataAccess_Terms termsDataSrc,
-                LocalClientSessionManager mySessionMngr,
                 ClientDataAccess_PostsQuery postsQueryDataSrc,
                 ClientDataAccess_PrioritizedPosts prioritizedPostsDataSrc
             ) : IClientDataProcessors {
     private ILogger<EachCurrentPostsSupplierSupplier> Logger = logger;
-
-    private LocalClientSessionManager MySessionMngr = mySessionMngr;
 
     private ClientDataAccess_Terms TermsDataSrc = termsDataSrc;
 
     private ClientDataAccess_PostsQuery PostsQueryDataSrc = postsQueryDataSrc;
 
     private ClientDataAccess_PrioritizedPosts PrioritizedPostsDataSrc = prioritizedPostsDataSrc;
-
-
-    private List<PostsSupplier> Suppliers_Cache = new();
 
 
 
@@ -47,7 +41,6 @@ public partial class EachCurrentPostsSupplierSupplier(
 
         return currContexts.Select( context => new PostsSupplier(
             logger: this.Logger,
-            mySessionMngr: this.MySessionMngr,
             postsDataSrc: this.PrioritizedPostsDataSrc,
             postsQuery: context
         ) );

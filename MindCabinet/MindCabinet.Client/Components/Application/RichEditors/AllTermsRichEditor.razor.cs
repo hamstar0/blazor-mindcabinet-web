@@ -166,11 +166,14 @@ public partial class AllTermsRichEditor : ComponentBase {
             throw new Exception( "No query found for term." );
         }
 
+        await CurrentPostsBrowserTabs.Main.RefreshBrowsers_Async( true );
+
         await CurrentPostsQueryPicker.Main.ForceQueryPickedCallback_Async(
-            await ClientDataAccess_PostsQuery.ConvertRawToDataObject_Async(
+            query: await ClientDataAccess_PostsQuery.ConvertRawToDataObject_Async(
                 termsDataSrc: this.TermsDataSrc,
                 queryRaw: raw
-            )
+            ),
+            forceStateChangeFirst: true
         );
         // await CurrentPostsQueryPicker.Main.SetSearch_Async(
         //     CurrentPostsQueryPicker.Main.Value,
@@ -182,6 +185,6 @@ public partial class AllTermsRichEditor : ComponentBase {
         //     await CurrentPostsQueryPicker.Main.PickQuery_Async( ret.Id );
         // }
 
-        this.Navigation.Navigate( $"{MainPanel.Main.PostsTabId}.{CurrentPostsBrowserTabs.Main.Id}" );
+        this.Navigation.Navigate( $"{MainPanel.Main.PostsTabId}.{CurrentPostsBrowserTabs.Main.GetTabId(raw.Name)}" );
     }
 }

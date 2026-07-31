@@ -44,13 +44,14 @@ v0.7
 -	Implement tag removals for (own) posts
 -	Validate favorites submit to not allow invalid user id
 -	Trim whitespace from text inputs
--	Rename PostsContext to PostsQuery
+-	Changing tabs in the posts browser sets the given query as the user's current (update in query picker and editor)
+-	 Rename PostsContext to PostsQuery
 -	Implement terms editor suite (included favorites editor, existing terms editor)
 	-	Set favorites 'favor' to work by usage (uses increment favor)
-		Change remove button to instead deploy a tab of all posts using that given tag
-		-	@Test
 
-		
+	
+	-	Change remove button to instead deploy a tab of all posts using that given tag
+		-	@Test
 		-	On button press, create and navigate to a new tab for temporary single-term PostsContext
 			-	Implement new PostsContext creation as pre-load Action on navigation (give unique name)
 			-	Implement navigation

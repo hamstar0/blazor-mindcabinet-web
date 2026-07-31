@@ -14,12 +14,12 @@
         <div>
             <span>Sort by date: </span>
             @{
-                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_asc_@(this.Id)"
+                <input type="radio" name=@this.SortName id=@this.SortAscendingId
                         @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(true) ) />
-                    <label for="sort_by_create_date_asc_@(this.Id)">Ascending</label>
-                <input type="radio" name="sort_by_create_date" id="sort_by_create_date_desc_@(this.Id)" checked
+                    <label for=@this.SortAscendingId>Ascending</label>
+                <input type="radio" name=@this.SortName id=@this.SortDescendingId checked
                         @onchange=@( async (e) => await this.SetCreateDateSort_UI_Async(false) ) />
-                    <label for="sort_by_create_date_desc_@(this.Id)">Descending</label>
+                    <label for=@this.SortDescendingId>Descending</label>
             }
         </div>
         <div style="margin-left: auto; margin-right: 0;">
@@ -49,6 +49,12 @@
 
 
 @code {
+    private string SortName => "sort_by_create_date_"+this.Id;
+    private string SortAscendingId => "sort_by_create_date_asc_"+this.Id;
+    private string SortDescendingId => "sort_by_create_date_desc_"+this.Id;
+
+
+    
     private async Task SetFilterTags_UI_Async( IEnumerable<TermObject> tags, TermObject tag, bool isAdded ) {
 //ConsoleermriteLine( "tags changed: "+JsonSerializer.Serialize(tags)+", tag: "+tag.ToString()+", isAdded: "+isAdded );
         await this.SetFilterTags_Async( tags );

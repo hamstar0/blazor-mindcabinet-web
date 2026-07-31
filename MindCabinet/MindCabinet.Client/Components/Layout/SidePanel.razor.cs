@@ -31,8 +31,6 @@ public partial class SidePanel {
     [Parameter]
     public Func<Task>? OnStateChange_Async { get; set; } = null;
 
-    private PostsQueryObject[] Contexts_Cache = [];
-
 
 
 	protected override async Task OnInitializedAsync() {
@@ -42,13 +40,7 @@ public partial class SidePanel {
             name: "Sidebar",
             callback: async queryMaybe => this.StateHasChanged()
         );
-	}
-
-	protected override async Task OnParametersSetAsync() {
-		await base.OnParametersSetAsync();
-
-        this.Contexts_Cache = await this.GetContexts_Async();
-	}
+    }
 
 
     private async Task<PostsQueryObject[]> GetContexts_Async() {

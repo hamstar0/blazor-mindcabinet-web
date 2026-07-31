@@ -9,24 +9,24 @@
 
 
 <div component-name="@nameof(CurrentPostsQueryPicker)"
-        class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
+            class="basic @(this.Disabled ? "disabled" : null) @(this.AddedClasses ?? "")">
     <input type="text"
-            disabled=@this.Disabled
-            title=@this.Description
-            placeholder="Enter search"
-            @onfocusin=@(e => this.IsSearchFocused = true)
-            @onfocusout=@(e => this.IsSearchFocused = false)
-            @onkeydown=@this.OnInputKey_UI_Async
-            @bind:event="oninput"
-            @bind:get=@this.Value
-            @bind:set=@this.OnInputSearch_UI_Async />
+                disabled=@this.Disabled
+                title=@this.Description
+                placeholder="Enter search"
+                @onfocusin=@(e => this.IsSearchFocused = true)
+                @onfocusout=@(e => this.IsSearchFocused = false)
+                @onkeydown=@this.OnInputKey_UI_Async
+                @bind:event="oninput"
+                @bind:get=@this.Value
+                @bind:set=@this.OnInputSearch_UI_Async />
     <div>
         <div style="position: absolute; display: inline-block;">
             @* @if( (this.IsSearchFocused || (this.SearchResultsElement?.HasFocus ?? false)) && this.SearchOptions.Count() > 0 ) { *@
             @if( this.SearchOptions.Count() > 0 ) {
                 <MultiPostsQueryRender
-                        Queries=@this.SearchOptions
-                        OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
+                            Queries=@this.SearchOptions
+                            OnClick_Async=@(async (t, _) => await this.SelectSearchResults_UI_Async(t)) />
             }
        </div>
     </div>

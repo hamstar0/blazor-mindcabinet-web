@@ -8,7 +8,7 @@
 @if( this.MySessionMngr.UserId is not null ) {
     <CurrentPostsQueryPicker
         Description="Select the current 'context'"
-        InitialSearchOptionsCache=@this.Contexts_Cache
+        InitialSearchOptions=@this.GetContexts_Async
         InitialSelectedSearchOption=@this.MySessionMngr.GetCurrentContext()
         OnQueryPicked_Async=@this.OnContextSelect_UI_Async />
     <hr />

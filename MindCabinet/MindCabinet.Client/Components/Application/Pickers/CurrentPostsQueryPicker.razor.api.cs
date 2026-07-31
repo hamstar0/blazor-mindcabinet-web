@@ -49,7 +49,11 @@ public partial class CurrentPostsQueryPicker : ComponentBase {
         return true;
     }
 
-    internal async Task ForceQueryPickedCallback_Async( PostsQueryObject query ) {
+    internal async Task ForceQueryPickedCallback_Async( PostsQueryObject query, bool forceStateChangeFirst ) {
+        if( forceStateChangeFirst ) {
+            this.StateHasChanged();
+        }
+
         await this.OnQueryPicked_Async( query );
     }
 }

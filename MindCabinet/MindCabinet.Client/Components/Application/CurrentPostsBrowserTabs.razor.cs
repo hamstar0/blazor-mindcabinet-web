@@ -54,11 +54,16 @@ public partial class CurrentPostsBrowserTabs : ComponentBase {
 		await base.OnParametersSetAsync();
 
         this.Suppliers_Cache = (await this.TabsData.GetPostsSuppliers_Async())
-            .ToArray();
+            .ToArray(); //suppliers should not be cached?
 	}
 
-    public async Task RefreshBrowsers_Async() {
+    public async Task RefreshBrowsers_Async( bool refreshSources ) {
         await Task.CompletedTask;
+
+        if( refreshSources ) {
+            this.Suppliers_Cache = (await this.TabsData.GetPostsSuppliers_Async())
+                .ToArray();
+        }
         
         // foreach( PostsBrowser browser in this._PostsBrowsersByTabIndex ) {
         //     await browser.RefreshPosts_Async();

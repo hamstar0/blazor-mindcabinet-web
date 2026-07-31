@@ -86,7 +86,7 @@ public class UserAppDataController : ControllerBase, ClientDataAccess_UserAppDat
             dbCon: dbCon,
             simpleUserId: this.SessionManager.UserOfSession.Id,
             postsQueryId: parameters.CurrentPostsQueryId ?? 0,
-            userDefaultTermId: parameters.UserDefaultTermId ?? 0
+            userDefaultTermId: this.SessionManager.UserAppDataOfSession?.UserDefaultTerm.Id ?? 0    //parameters.UserDefaultTermId <- this is never updated from the client
         );
 
         return new {};

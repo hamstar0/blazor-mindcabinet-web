@@ -15,14 +15,11 @@ namespace MindCabinet.Client.Services.DataPresenters;
 
 public partial class PostsSupplier(
                 ILogger logger,
-                LocalClientSessionManager mySessionMngr,
                 ClientDataAccess_PrioritizedPosts postsDataSrc,
                 PostsQueryObject postsQuery
             ) {
     private ILogger Logger = logger;
 
-    private LocalClientSessionManager MySessionMngr = mySessionMngr;
-    
     private ClientDataAccess_PrioritizedPosts PrioritizedPostsDataSrc = postsDataSrc;
     
     private PostsQueryObject PostsQuery = postsQuery;

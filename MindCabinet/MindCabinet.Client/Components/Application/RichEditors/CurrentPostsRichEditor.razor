@@ -33,7 +33,7 @@
 //Console.WriteLine( "OnPostSubmit_UI_Async "+posts+", "+search.ToString() );
 
         if( this.TabbedPostsBrowserComponent is not null ) {
-            await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async();
+            await this.TabbedPostsBrowserComponent.RefreshBrowsers_Async( false );
         }
     }
 }

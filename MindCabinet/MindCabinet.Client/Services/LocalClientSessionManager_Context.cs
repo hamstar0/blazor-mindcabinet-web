@@ -20,7 +20,7 @@ public partial class LocalClientSessionManager {
         }
 
         await userAppDataSrc.UpdateForCurrentUser_Async( new UserAppDataObject.Prototype {
-            SimpleUserId = this.UserId,
+            //SimpleUserId = this.UserId,
             CurrentPostsQueryId = query.Id
         } );
         this.Data.UserAppData.SetCurrentPostsQuery( query );
