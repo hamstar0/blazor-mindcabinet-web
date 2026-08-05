@@ -17,6 +17,9 @@ public partial class TermInputEditor : ComponentBase {
     [Inject]
     public ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
+    [Inject]
+    public ClientDataAccess_UserTermFavorites FavTermsDataSrc { get; set; } = null!;
+
 
     [Parameter]
     public string? AddedClasses { get; set; } = null;
@@ -97,7 +100,11 @@ public partial class TermInputEditor : ComponentBase {
         }
 
         IEnumerable<TermObject.Raw> termsRaw = (await this.TermsDataSrc.GetByCriteria_Async(
-            new ClientDataAccess_Terms.IAPI.GetByCriteria_Params { TermPattern = termText!, ContextTermId = null, ContextTermPattern = null }
+            new ClientDataAccess_Terms.IAPI.GetByCriteria_Params {
+                TermPattern = termText!,
+                ContextTermId = null,
+                ContextTermPattern = null
+            }
         )).Terms;
 
         IEnumerable<Task<TermObject>> termTasks = termsRaw.Select(
@@ -122,6 +129,8 @@ public partial class TermInputEditor : ComponentBase {
         this.SearchOptions = new List<TermObject>();
         // this.SearchPosition = 0;
         this.Value = term.Term;
+
+        await this.FavTermsDataSrc.IncrementFavorForTerm_Async( term.Id );
 
         await this.OnTermConfirm_Async( term, false );
 

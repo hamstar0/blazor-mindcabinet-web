@@ -47,11 +47,14 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task AddTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
+    public async Task AddTermsForCurrentUser_Async( Dictionary<TermId, int> termIdToFavor ) {
         await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.AddTermsForCurrentUser_Async)}",
-            parameters: parameters
+            parameters: new IAPI.EditForCurrentUser_Params {
+                TermIds = termIdToFavor.Keys.ToArray(),
+                TermFavors = termIdToFavor.Values.ToArray()
+            }
         );
 
         //
@@ -60,11 +63,13 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task RemoveTermsForCurrentUser_Async( IAPI.RemoveForCurrentUser_Params parameters ) {
+    public async Task RemoveTermsForCurrentUser_Async( TermId[] TermIds ) {
         await IClientDataAccess.CallAPI_Async<IAPI.RemoveForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.RemoveTermsForCurrentUser_Async)}",
-            parameters: parameters
+            parameters: new IAPI.RemoveForCurrentUser_Params {
+                TermIds = TermIds
+            }
         );
 
         //
@@ -73,11 +78,27 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
     }
 
 
-    public async Task UpdateTermsForCurrentUser_Async( IAPI.EditForCurrentUser_Params parameters ) {
+    public async Task UpdateTermsForCurrentUser_Async( Dictionary<TermId, int> termIdToFavor ) {
         await IClientDataAccess.CallAPI_Async<IAPI.EditForCurrentUser_Params>(
             http: this.Http,
             route: $"{IAPI.BaseRoute}/{nameof(IAPI.UpdateTermsForCurrentUser_Async)}",
-            parameters: parameters
+            parameters: new IAPI.EditForCurrentUser_Params {
+                TermIds = termIdToFavor.Keys.ToArray(),
+                TermFavors = termIdToFavor.Values.ToArray()
+            }
+        );
+
+        //
+
+        Cache_ForCurrentUser = null;
+    }
+
+
+    public async Task IncrementFavorForTerm_Async( TermId termId ) {
+        await IClientDataAccess.CallAPI_Async<IAPI.IncrementFavorForTerm_Params>(
+            http: this.Http,
+            route: $"{IAPI.BaseRoute}/{nameof(IAPI.IncrementFavorForTerm_Async)}",
+            parameters: new IAPI.IncrementFavorForTerm_Params { TermId = termId }
         );
 
         //

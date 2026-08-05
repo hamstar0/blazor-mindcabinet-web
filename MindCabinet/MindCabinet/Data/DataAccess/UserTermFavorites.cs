@@ -172,4 +172,34 @@ public partial class ServerDataAccess_UserTermFavorites(
 
         ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Remove( simpleUserId );
     }
+
+
+    public async Task<bool> IncrementFavorForTerm_Async(
+                IDbConnection dbCon,
+                SimpleUserId simpleUserId,
+                TermId termId ) {
+        if( simpleUserId == 0 ) {
+            throw new ArgumentException( "SimpleUserId is not valid (must be non-zero)." );
+        }
+        if( termId == 0 ) {
+            throw new ArgumentException( "TermId is not valid (must be non-zero)." );
+        }
+
+        int rowsAffected = await dbCon.ExecuteAsync(
+            $@"UPDATE {TableName}
+                SET {TableColumn_Favor} = {TableColumn_Favor} + 1
+                WHERE {TableColumn_SimpleUserId} = @SimpleUserId
+                    AND {TableColumn_FavTermId} = @FavTermId;",
+            new {
+                SimpleUserId = (long)simpleUserId,
+                FavTermId = (long)termId
+            }
+        );
+
+        //
+
+        ServerDataAccess_UserTermFavorites.Cache_BySimpleUserId.Remove( simpleUserId );
+
+        return rowsAffected > 0;
+    }
 }

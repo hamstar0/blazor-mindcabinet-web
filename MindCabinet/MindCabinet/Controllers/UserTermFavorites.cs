@@ -113,4 +113,24 @@ public partial class UserTermFavoritesController : ControllerBase, ClientDataAcc
 
         return new object();
     }
+
+
+    public async Task<bool> IncrementFavorForTerm_Async( ClientDataAccess_UserTermFavorites.IAPI.IncrementFavorForTerm_Params parameters ) {
+        if( this.SessionManager.UserOfSession is null ) {
+            throw new InvalidOperationException( "No user in session" );
+        }
+
+        using IDbConnection dbCon = await this.DbAccess.GetDbConnection_Async( true );
+
+        bool hasIncremented = await this.FavoriteTermsDataSrc.IncrementFavorForTerm_Async(
+            dbCon,
+            this.SessionManager.UserOfSession.Id,
+            parameters.TermId
+        );
+        // if( !hasIncremented ) {
+        //     this.Logger.LogWarning( "leet haxor" );
+        // }
+
+        return hasIncremented;
+    }
 }

@@ -19,10 +19,10 @@ public partial class TermSearchPicker : ComponentBase {
     private ClientDataAccess_Terms TermsDataSrc { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserTermFavorites UserTermFavoritesDataSrc { get; set; } = null!;
+    private ClientDataAccess_UserTermFavorites FavTermsDataSrc { get; set; } = null!;
 
     [Inject]
-    private ClientDataAccess_UserTermsHistory UserTermsHistoryDataSrc { get; set; } = null!;
+    private ClientDataAccess_UserTermsHistory TermsHistoryDataSrc { get; set; } = null!;
 
     [Inject]
     private LocalClientSessionManager MySessionMngr { get; set; } = null!;
@@ -82,9 +82,9 @@ public partial class TermSearchPicker : ComponentBase {
 
     private async Task InitializeTermOptions_Async() {
         IEnumerable<UserTermFavoriteObject.Raw> favTerms
-            = await this.UserTermFavoritesDataSrc.GetFavTermsForCurrentUser_Async();
+            = await this.FavTermsDataSrc.GetFavTermsForCurrentUser_Async();
         IEnumerable<UserTermHistoryObject.Raw> histTerms
-            = await this.UserTermsHistoryDataSrc.GetHistTermsForCurrentUser_Async();
+            = await this.TermsHistoryDataSrc.GetHistTermsForCurrentUser_Async();
 
         this.FavoriteTerms_Cache = await ClientDataAccess_UserTermFavorites.ConvertRawsToClientObjects_Async(
             termsDataSrc: this.TermsDataSrc,
@@ -117,6 +117,8 @@ public partial class TermSearchPicker : ComponentBase {
         this.Value = term.Term ?? "";
 
         this.SearchOptions = new List<TermObject>();
+
+        await this.FavTermsDataSrc.IncrementFavorForTerm_Async( term.Id );
 
         await this.OnTermSelect_Async.Invoke( term );
     }

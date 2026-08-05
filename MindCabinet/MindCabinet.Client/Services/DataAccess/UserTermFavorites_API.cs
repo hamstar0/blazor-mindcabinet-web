@@ -30,5 +30,12 @@ public partial class ClientDataAccess_UserTermFavorites : IClientDataAccess {
         public Task<object> RemoveTermsForCurrentUser_Async( RemoveForCurrentUser_Params parameters );
         
         public Task<object> UpdateTermsForCurrentUser_Async( EditForCurrentUser_Params parameters );
+
+
+
+        public class IncrementFavorForTerm_Params {
+            public TermId TermId { get; set; }
+        }
+        public Task<bool> IncrementFavorForTerm_Async( IncrementFavorForTerm_Params parameters );
     }
 }
